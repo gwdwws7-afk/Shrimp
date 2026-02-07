@@ -64,6 +64,7 @@ namespace ThirdPersonController
         public bool IsGrounded => isGrounded;
         public bool IsSprinting => isSprinting;
         public bool IsCrouching => isCrouching;
+        public bool IsJumping => isJumping;
         public float CurrentSpeed => currentVelocity.magnitude;
         public Vector3 MoveDirection => moveDirection;
 

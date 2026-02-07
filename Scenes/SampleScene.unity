@@ -38,6 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -273,6 +274,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a7a8f396331a43b3812e2638be1a311b, type: 3}
+--- !u!1 &888899544 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8504710007967951295, guid: 8732ca168c916584cb02e6ff6b83b2ff, type: 3}
+  m_PrefabInstance: {fileID: 5742903066206363817}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -503,11 +509,155 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5391caaf11134aa4d9b4f4868781456c, type: 3}
   m_PrefabInstance: {fileID: 1345501760}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1753198171
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1753198173}
+  - component: {fileID: 1753198172}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1753198172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753198171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12566d53c0b5592408ef59b1dec9f9f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyPrefab: {fileID: 2085776811}
+  player: {fileID: 543450653653644993}
+  spawnCount: 10
+  spawnRadius: 5
+  spawnHeight: 0.5
+  enemyHealth: 50
+  showDebugInfo: 1
+--- !u!4 &1753198173
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753198171}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.5770882, y: 2.0568285, z: -0.09899668}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2085776811 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: a7a8f396331a43b3812e2638be1a311b, type: 3}
+  m_PrefabInstance: {fileID: 833650043}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &543450653653644993 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7374266337761899106, guid: 8732ca168c916584cb02e6ff6b83b2ff, type: 3}
   m_PrefabInstance: {fileID: 5742903066206363817}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &543450653653644999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 888899544}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2edae748a13751a4ea5cc34c99e295b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blockDamageReduction: 0.8
+  perfectBlockWindow: 0.2
+  perfectBlockCooldown: 1
+  dodgeDistance: 4
+  dodgeDuration: 0.4
+  dodgeCooldown: 0.8
+  invincibilityDuration: 0.3
+  blockKey: 325
+  dodgeKey: 32
+  playerTransform: {fileID: 0}
+  playerRigidbody: {fileID: 0}
+  animator: {fileID: 0}
+--- !u!114 &543450653653645000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 888899544}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af5ee20dd3cc82249ae599c3c96091fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxStamina: 100
+  currentStamina: 0
+  recoveryRate: 15
+  recoveryDelay: 1
+  heavyAttackCost: 20
+  dodgeCost: 15
+  blockCostPerSecond: 5
+  sprintCostPerSecond: 10
+  isExhausted: 0
+  exhaustionDuration: 2
+--- !u!114 &543450653653645001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 888899544}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8626d419abe583043a34ab9d81f71b3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackRange: 2
+  attackAngle: 120
+  attackCooldown: 0.5
+  attackDamage: 25
+  attackKnockback: 5
+  maxComboCount: 50
+  comboResetTime: 1.5
+  comboWindowTime: 0.8
+  tier1DamageMultiplier: 1.1
+  tier2DamageMultiplier: 1.25
+  tier3DamageMultiplier: 1.5
+  tier3LifeStealPercent: 0.05
+  berserkThreshold: 50
+  berserkDuration: 3
+  berserkAttackRangeMultiplier: 2
+  berserkDamageMultiplier: 2
+  berserkInvincible: 1
+  attackOrigin: {fileID: 0}
+  attackRadius: 1
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  attackEffect: {fileID: 0}
+  weaponTrail: {fileID: 0}
+  berserkAuraEffect: {fileID: 0}
+  attackSounds: []
+  berserkStartSound: {fileID: 0}
+  attackAnimTrigger: Attack
+  comboAnimParam: ComboCount
+  berserkAnimParam: IsBerserk
 --- !u!1001 &5742903066206363817
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -607,7 +757,16 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8504710007967951295, guid: 8732ca168c916584cb02e6ff6b83b2ff, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 543450653653645000}
+    - targetCorrespondingSourceObject: {fileID: 8504710007967951295, guid: 8732ca168c916584cb02e6ff6b83b2ff, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 543450653653644999}
+    - targetCorrespondingSourceObject: {fileID: 8504710007967951295, guid: 8732ca168c916584cb02e6ff6b83b2ff, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 543450653653645001}
   m_SourcePrefab: {fileID: 100100000, guid: 8732ca168c916584cb02e6ff6b83b2ff, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
@@ -618,3 +777,4 @@ SceneRoots:
   - {fileID: 5742903066206363817}
   - {fileID: 1345501760}
   - {fileID: 833650043}
+  - {fileID: 1753198173}

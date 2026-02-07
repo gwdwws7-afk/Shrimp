@@ -63,6 +63,8 @@ namespace ThirdPersonController
         private Animator animator;
         private AudioSource audioSource;
         private PlayerHealth playerHealth;
+        private StaminaSystem staminaSystem;
+        private BlockDodgeSystem blockDodgeSystem;
 
         private int currentCombo = 0;
         private float comboResetTimer;
@@ -93,12 +95,36 @@ namespace ThirdPersonController
             animator = GetComponent<Animator>();
             audioSource = GetComponent<AudioSource>();
             playerHealth = GetComponent<PlayerHealth>();
+            staminaSystem = GetComponent<StaminaSystem>();
+            blockDodgeSystem = GetComponent<BlockDodgeSystem>();
 
             if (attackOrigin == null)
                 attackOrigin = transform;
                 
             // 保存基础攻击范围
             baseAttackRange = attackRange;
+        }
+
+        private void Start()
+        {
+            // 订阅事件到全局事件系统
+            SubscribeToGameEvents();
+        }
+
+        private void OnDestroy()
+        {
+            UnsubscribeFromGameEvents();
+        }
+
+        private void SubscribeToGameEvents()
+        {
+            OnComboChanged += (combo) => GameEvents.ComboChanged(combo);
+            OnBerserkStateChanged += (active) => GameEvents.BerserkStateChanged(active);
+        }
+
+        private void UnsubscribeFromGameEvents()
+        {
+            // 清理事件订阅
         }
 
         private void Update()
@@ -244,6 +270,10 @@ namespace ThirdPersonController
 
         private void HandleInput()
         {
+            // 检查是否在格挡或闪避
+            if (blockDodgeSystem != null && (blockDodgeSystem.IsBlocking || blockDodgeSystem.IsDodging))
+                return;
+
             if (input.AttackPressed && canAttack && !isAttacking)
             {
                 PerformAttack();

@@ -48,7 +48,9 @@ namespace ThirdPersonController
             currentHealth -= damage;
             currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
+            // 触发事件
             OnHealthChanged?.Invoke(currentHealth, maxHealth);
+            GameEvents.PlayerDamaged(damage, damageSource);
 
             if (currentHealth <= 0)
             {
@@ -67,7 +69,9 @@ namespace ThirdPersonController
             currentHealth += amount;
             currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
+            // 触发事件
             OnHealthChanged?.Invoke(currentHealth, maxHealth);
+            GameEvents.PlayerHealed(amount);
         }
 
         private IEnumerator HitReaction(Vector3 damageSource, float knockbackForce)
@@ -163,7 +167,9 @@ namespace ThirdPersonController
             if (combat != null)
                 combat.enabled = false;
 
+            // 触发事件
             OnDeath?.Invoke();
+            GameEvents.PlayerDeath();
         }
 
         public void Respawn(Vector3 respawnPosition)
@@ -188,7 +194,9 @@ namespace ThirdPersonController
                 animator.Rebind();
             }
 
+            // 触发事件
             OnHealthChanged?.Invoke(currentHealth, maxHealth);
+            GameEvents.PlayerRespawn();
         }
     }
 }
