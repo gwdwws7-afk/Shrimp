@@ -98,8 +98,7 @@ namespace ThirdPersonController
             staminaSystem = GetComponent<StaminaSystem>();
             blockDodgeSystem = GetComponent<BlockDodgeSystem>();
 
-            if (attackOrigin == null)
-                attackOrigin = transform;
+            EnsureAttackOrigin();
                 
             // 保存基础攻击范围
             baseAttackRange = attackRange;
@@ -109,6 +108,16 @@ namespace ThirdPersonController
         {
             // 订阅事件到全局事件系统
             SubscribeToGameEvents();
+        }
+
+        private void Reset()
+        {
+            EnsureAttackOrigin();
+        }
+
+        private void OnValidate()
+        {
+            EnsureAttackOrigin();
         }
 
         private void OnDestroy()
@@ -274,6 +283,9 @@ namespace ThirdPersonController
             if (blockDodgeSystem != null && (blockDodgeSystem.IsBlocking || blockDodgeSystem.IsDodging))
                 return;
 
+            if (movement != null && movement.IsJumping)
+                return;
+
             if (input.AttackPressed && canAttack && !isAttacking)
             {
                 PerformAttack();
@@ -367,8 +379,14 @@ namespace ThirdPersonController
         {
             hitEnemies.Clear();
 
+            Transform origin = GetAttackOrigin();
+            if (origin == null)
+            {
+                return;
+            }
+
             // Find all enemies in range
-            Collider[] hitColliders = Physics.OverlapSphere(attackOrigin.position, attackRange, enemyLayers);
+            Collider[] hitColliders = Physics.OverlapSphere(origin.position, attackRange, enemyLayers);
             
             // 计算伤害倍率
             float damageMultiplier = GetDamageMultiplier();
@@ -471,9 +489,15 @@ namespace ThirdPersonController
 
         private void OnDrawGizmosSelected()
         {
+            Transform origin = GetAttackOrigin();
+            if (origin == null)
+            {
+                return;
+            }
+
             // Draw attack range
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(attackOrigin.position, attackRange);
+            Gizmos.DrawWireSphere(origin.position, attackRange);
 
             // Draw attack angle
             Vector3 leftBoundary = Quaternion.Euler(0, -attackAngle * 0.5f, 0) * transform.forward;
@@ -482,6 +506,24 @@ namespace ThirdPersonController
             Gizmos.color = Color.yellow;
             Gizmos.DrawRay(transform.position, leftBoundary * attackRange);
             Gizmos.DrawRay(transform.position, rightBoundary * attackRange);
+        }
+
+        private Transform GetAttackOrigin()
+        {
+            if (attackOrigin == null)
+            {
+                EnsureAttackOrigin();
+            }
+
+            return attackOrigin;
+        }
+
+        private void EnsureAttackOrigin()
+        {
+            if (attackOrigin == null)
+            {
+                attackOrigin = transform;
+            }
         }
     }
 }

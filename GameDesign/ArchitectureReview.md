@@ -16,11 +16,11 @@
 ```
 ThirdPersonController/Scripts/
 ├── Combat/          - 战斗相关 (耐力、格挡闪避)
-├── Core/            - 核心工具 (事件、单例、调试)
+├── Core/            - 核心工具 (事件、单例、调试、音频、屏幕特效)
 ├── Enemy/           - 敌人系统
 ├── Player/          - 玩家系统
-├── UI/              - 用户界面
-└── VFX/             - 视觉效果
+├── Skills/          - 技能系统
+└── UI/              - 用户界面
 ```
 
 **评价**: 按功能模块划分清晰，符合Unity最佳实践
@@ -44,7 +44,7 @@ ThirdPersonController/Scripts/
 | **UI** | UI_ComboCounter.cs | 202 | ✅ |
 | **UI** | UI_SkillBar.cs | 154 | ✅ |
 | **UI** | UI_DamageText.cs | 130 | ✅ |
-| **VFX** | ScreenEffectManager.cs | 280 | ✅ |
+| **Core** | ScreenEffectManager.cs | 280 | ✅ |
 
 ### ✅ 原有文件 (13个)
 
@@ -114,8 +114,6 @@ ThirdPersonController/Scripts/
 - Combat/*.cs (2个文件)
 - UI/ 文件夹
 - UI/*.cs (6个文件)
-- VFX/ 文件夹
-- VFX/*.cs (1个文件)
 - Core/GameEvents.cs
 - Core/Singleton.cs
 - Player/PlayerCombat.cs (更新后)

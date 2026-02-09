@@ -23,7 +23,7 @@ namespace ThirdPersonController.Editor
             
             EditorGUILayout.HelpBox(
                 "此工具将自动：\n" +
-                "1. 从 fbx/starman 导入模型\n" +
+                "1. 从 fbx/Characters/starman 导入模型\n" +
                 "2. 创建并配置材质球\n" +
                 "3. 添加所有必需组件\n" +
                 "4. 创建预制体到 Assets/Prefabs/Enemies/",
@@ -41,7 +41,7 @@ namespace ThirdPersonController.Editor
         
         private void CreateStarmanPrefab()
         {
-            string modelPath = "Assets/fbx/starman/Meshy_AI_biped/Meshy_AI_Animation_Walking_frame_rate_60.fbx";
+            string modelPath = "Assets/fbx/Characters/starman/Meshy_AI_biped/Meshy_AI_Animation_Walking_frame_rate_60.fbx";
             
             // 检查模型是否存在
             GameObject modelAsset = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
@@ -136,7 +136,7 @@ namespace ThirdPersonController.Editor
                 material.renderQueue = -1;
                 
                 // 加载贴图
-                string texturePath = "Assets/fbx/starman/Meshy_AI_biped/";
+                string texturePath = "Assets/fbx/Characters/starman/Meshy_AI_biped/";
                 
                 Texture2D albedo = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath + "Meshy_AI_texture_0.png");
                 Texture2D normal = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath + "Meshy_AI_texture_0_normal.png");

@@ -125,7 +125,7 @@ namespace ThirdPersonController
         /// <summary>
         /// 消耗耐力
         /// </summary>
-        protected bool ConsumeStamina(StaminaSystem stamina)
+        public bool ConsumeStamina(StaminaSystem stamina)
         {
             if (stamina == null) return true;
             return stamina.ConsumeStamina(staminaCost);

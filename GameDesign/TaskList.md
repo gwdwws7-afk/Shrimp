@@ -29,8 +29,8 @@
 - [ ] 高连击时屏幕震动
 
 **相关文件**: 
-- `GameDesign/Scripts/UI/UI_ComboCounter.cs` (新建)
-- `GameDesign/Prefabs/UI/ComboCounter.prefab` (新建)
+- `ThirdPersonController/Scripts/UI/UI_ComboCounter.cs`
+- `Assets/Prefabs/UI/ComboCounter.prefab` (新建)
 
 ---
 
@@ -41,7 +41,7 @@
 - [ ] 摄像机震动效果
 - [ ] 全局光照变化 (红色调)
 
-**相关文件**: `GameDesign/Scripts/Core/ScreenEffectManager.cs` (新建)
+**相关文件**: `ThirdPersonController/Scripts/Core/ScreenEffectManager.cs`
 
 ---
 
@@ -64,9 +64,9 @@
 - [ ] 技能解锁检查
 
 **相关文件**: 
-- `GameDesign/Scripts/Skills/SkillBase.cs` (新建)
-- `GameDesign/Scripts/Skills/SkillManager.cs` (新建)
-- `GameDesign/ScriptableObjects/Skills/` (新建文件夹)
+- `ThirdPersonController/Scripts/Skills/SkillBase.cs`
+- `ThirdPersonController/Scripts/Skills/SkillManager.cs`
+- `ThirdPersonController/ScriptableObjects/Skills/` (新建文件夹)
 
 ---
 
@@ -93,7 +93,7 @@
 - [ ] 技能高亮/禁用状态
 - [ ] 技能提示信息
 
-**相关文件**: `GameDesign/Scripts/UI/UI_SkillBar.cs` (新建)
+**相关文件**: `ThirdPersonController/Scripts/UI/UI_SkillBar.cs`
 
 ---
 
@@ -105,7 +105,7 @@
 - [ ] 耐力UI条
 
 **相关文件**: 
-- `GameDesign/Scripts/Player/StaminaSystem.cs` (新建)
+- `ThirdPersonController/Scripts/Combat/StaminaSystem.cs`
 - 修改: `ThirdPersonController/Scripts/Player/PlayerMovement.cs`
 
 ---

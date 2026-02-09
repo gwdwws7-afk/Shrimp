@@ -23,7 +23,7 @@ namespace ThirdPersonController.Editor
         
         private void BuildPrefab()
         {
-            string modelPath = "Assets/fbx/starman/Meshy_AI_biped/Meshy_AI_Animation_Walking_frame_rate_60.fbx";
+            string modelPath = "Assets/fbx/Characters/starman/Meshy_AI_biped/Meshy_AI_Animation_Walking_frame_rate_60.fbx";
             GameObject model = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
             
             if (model == null)
@@ -40,7 +40,7 @@ namespace ThirdPersonController.Editor
             
             // 创建材质
             Material mat = new Material(Shader.Find("Standard"));
-            string texPath = "Assets/fbx/starman/Meshy_AI_biped/";
+            string texPath = "Assets/fbx/Characters/starman/Meshy_AI_biped/";
             
             Texture2D albedo = AssetDatabase.LoadAssetAtPath<Texture2D>(texPath + "Meshy_AI_texture_0.png");
             Texture2D normal = AssetDatabase.LoadAssetAtPath<Texture2D>(texPath + "Meshy_AI_texture_0_normal.png");

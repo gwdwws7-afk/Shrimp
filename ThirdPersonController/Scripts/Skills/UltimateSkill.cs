@@ -46,6 +46,15 @@ namespace ThirdPersonController
             Time.timeScale = 1f;
         }
         
+        private System.Collections.IEnumerator RestoreAIAfterDelay(EnemyAI enemyAI, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            if (enemyAI != null)
+            {
+                enemyAI.enabled = true;
+            }
+        }
+        
         private void ExecuteUltimate(Transform caster)
         {
             // 全屏范围检测
@@ -80,8 +89,8 @@ namespace ThirdPersonController
                     if (enemyAI != null)
                     {
                         enemyAI.enabled = false;
-                        caster.GetComponent<MonoBehaviour>().Invoke(
-                            () => { if (enemyAI != null) enemyAI.enabled = true; }, stunDuration);
+                        caster.GetComponent<MonoBehaviour>().StartCoroutine(
+                            RestoreAIAfterDelay(enemyAI, stunDuration));
                     }
                 }
             }

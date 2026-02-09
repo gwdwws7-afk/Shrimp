@@ -45,6 +45,7 @@ namespace ThirdPersonController
         private PlayerInputHandler input;
         private CapsuleCollider capsuleCollider;
         private Animator animator;
+        private PlayerCombat combat;
 
         private bool isGrounded;
         private bool wasGrounded;
@@ -74,6 +75,7 @@ namespace ThirdPersonController
             input = GetComponent<PlayerInputHandler>();
             capsuleCollider = GetComponent<CapsuleCollider>();
             animator = GetComponent<Animator>();
+            combat = GetComponent<PlayerCombat>();
 
             rb.freezeRotation = true;
             rb.interpolation = RigidbodyInterpolation.Interpolate;
@@ -172,6 +174,12 @@ namespace ThirdPersonController
 
         private void HandleJumpBuffer()
         {
+            if (combat != null && combat.IsAttacking)
+            {
+                jumpBufferTimer = 0f;
+                return;
+            }
+
             // 跳跃缓冲 - 在落地前按空格可以立即跳跃
             if (input.JumpPressed)
             {
@@ -195,6 +203,11 @@ namespace ThirdPersonController
 
         private void HandleJump()
         {
+            if (combat != null && combat.IsAttacking)
+            {
+                return;
+            }
+
             bool canJumpNow = (isGrounded || coyoteTimeTimer > 0) && !isCrouching;
             
             // 如果有跳跃缓冲且可以跳跃

@@ -967,42 +967,29 @@ public class GameManager : Singleton<GameManager>
 
 ```
 Assets/
-├── _GameDesign/
-│   ├── Scripts/
-│   │   ├── Player/
-│   │   ├── Enemy/
-│   │   ├── Combat/
-│   │   ├── Skills/
-│   │   ├── DOTS/
-│   │   ├── UI/
-│   │   ├── VFX/
-│   │   ├── Audio/
-│   │   ├── Core/
-│   │   └── Utils/
-│   ├── Prefabs/
-│   │   ├── Player/
-│   │   ├── Enemies/
-│   │   ├── Skills/
-│   │   ├── Effects/
-│   │   └── UI/
-│   ├── ScriptableObjects/
-│   │   ├── Skills/
-│   │   ├── Enemies/
-│   │   └── Weapons/
-│   ├── Models/
-│   │   ├── Characters/
-│   │   ├── Enemies/
-│   │   └── Environment/
-│   ├── Materials/
-│   ├── Textures/
+├── Character/
+├── GameDesign/
+├── Scenes/
+├── ThirdPersonController/
 │   ├── Animations/
-│   ├── Audio/
-│   ├── Scenes/
-│   └── Resources/
-│
-├── Plugins/
-├── ThirdParty/
-└── StreamingAssets/
+│   ├── Editor/
+│   ├── Inputs/
+│   ├── Materials/
+│   ├── ScriptableObjects/
+│   └── Scripts/
+│       ├── Combat/
+│       ├── Core/
+│       ├── Enemy/
+│       ├── Player/
+│       ├── Skills/
+│       └── UI/
+├── Prefabs/
+├── Resources/
+├── animator/
+├── fbx/
+│   ├── Characters/
+│   └── Environment/
+└── Plugins/
 ```
 
 ---
