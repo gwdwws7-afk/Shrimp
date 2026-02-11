@@ -23,6 +23,14 @@ namespace ThirdPersonController
         public int attackDamage = 25;
         public float attackKnockback = 5f;
 
+        [Header("Combo Definition")]
+        public AttackComboDefinition comboDefinition;
+        public bool useAnimationEvents = true;
+        public float inputBufferTime = 0.2f;
+        public float hitStopDuration = 0.05f;
+        public bool lockMovementDuringAttack = true;
+        public bool lockRotationDuringAttack = false;
+
         [Header("Combo Settings")]
         public int maxComboCount = 50;              // 最大50连击
         public float comboResetTime = 1.5f;
@@ -65,16 +73,27 @@ namespace ThirdPersonController
         private PlayerHealth playerHealth;
         private StaminaSystem staminaSystem;
         private BlockDodgeSystem blockDodgeSystem;
+        private PlayerActionController actionController;
 
         private int currentCombo = 0;
         private float comboResetTimer;
-        private float comboWindowTimer;
-        private float attackCooldownTimer;
         private bool canAttack = true;
         private bool isAttacking = false;
         private bool isBerserk = false;             // 是否在狂暴状态
         private float berserkTimer = 0f;            // 狂暴倒计时
         private float baseAttackRange;              // 记录基础攻击范围
+
+        private int currentStepIndex = -1;
+        private AttackStep currentStep;
+        private float currentStepStartTime;
+        private float currentStepEndTime;
+        private bool attackHitTriggered;
+        private bool attackBuffered;
+        private float attackBufferTimer;
+        private bool queuedNextAttack;
+        private int queuedStepIndex = -1;
+        private Coroutine attackRoutine;
+        private AttackStep fallbackStep;
 
         private List<Collider> hitEnemies = new List<Collider>();
 
@@ -82,6 +101,8 @@ namespace ThirdPersonController
         public int CurrentCombo => currentCombo;
         public ComboTier CurrentTier => GetCurrentTier();
         public bool IsBerserk => isBerserk;
+        public float ComboResetNormalized => GetComboResetTime() <= 0f ? 0f : Mathf.Clamp01(comboResetTimer / GetComboResetTime());
+        public float ComboResetRemaining => comboResetTimer;
         
         // 事件：连击变化
         public System.Action<int> OnComboChanged;
@@ -97,6 +118,7 @@ namespace ThirdPersonController
             playerHealth = GetComponent<PlayerHealth>();
             staminaSystem = GetComponent<StaminaSystem>();
             blockDodgeSystem = GetComponent<BlockDodgeSystem>();
+            actionController = GetComponent<PlayerActionController>();
 
             EnsureAttackOrigin();
                 
@@ -108,6 +130,11 @@ namespace ThirdPersonController
         {
             // 订阅事件到全局事件系统
             SubscribeToGameEvents();
+
+            if (actionController != null)
+            {
+                actionController.OnActionInterrupted += HandleActionInterrupted;
+            }
         }
 
         private void Reset()
@@ -123,6 +150,11 @@ namespace ThirdPersonController
         private void OnDestroy()
         {
             UnsubscribeFromGameEvents();
+
+            if (actionController != null)
+            {
+                actionController.OnActionInterrupted -= HandleActionInterrupted;
+            }
         }
 
         private void SubscribeToGameEvents()
@@ -161,7 +193,7 @@ namespace ThirdPersonController
                 berserkTimer -= Time.deltaTime;
                 
                 // 狂暴期间保持连击计时器刷新，防止连击中断
-                comboResetTimer = comboResetTime;
+                comboResetTimer = GetComboResetTime();
                 
                 if (berserkTimer <= 0f)
                 {
@@ -250,17 +282,15 @@ namespace ThirdPersonController
 
         private void HandleCooldowns()
         {
-            // Attack cooldown
-            if (!canAttack)
+            if (attackBuffered)
             {
-                attackCooldownTimer -= Time.deltaTime;
-                if (attackCooldownTimer <= 0f)
+                attackBufferTimer -= Time.deltaTime;
+                if (attackBufferTimer <= 0f)
                 {
-                    canAttack = true;
+                    attackBuffered = false;
                 }
             }
 
-            // Combo reset timer
             if (currentCombo > 0)
             {
                 comboResetTimer -= Time.deltaTime;
@@ -270,71 +300,253 @@ namespace ThirdPersonController
                 }
             }
 
-            // Combo window timer
-            if (comboWindowTimer > 0f)
+            if (isAttacking && currentStep != null && Time.time >= currentStepEndTime)
             {
-                comboWindowTimer -= Time.deltaTime;
+                FinishAttackStep();
             }
         }
 
         private void HandleInput()
         {
-            // 检查是否在格挡或闪避
-            if (blockDodgeSystem != null && (blockDodgeSystem.IsBlocking || blockDodgeSystem.IsDodging))
+            if (input.AttackPressed)
+            {
+                BufferAttack();
+            }
+
+            TryConsumeBufferedAttack();
+        }
+
+        private void BufferAttack()
+        {
+            if (!CanBufferAttack())
+            {
                 return;
+            }
+
+            attackBuffered = true;
+            attackBufferTimer = GetInputBufferTime();
+        }
+
+        private bool CanBufferAttack()
+        {
+            if (blockDodgeSystem != null && (blockDodgeSystem.IsBlocking || blockDodgeSystem.IsDodging))
+            {
+                return false;
+            }
 
             if (movement != null && movement.IsJumping)
-                return;
-
-            if (input.AttackPressed && canAttack && !isAttacking)
             {
-                PerformAttack();
+                return false;
             }
+
+            return true;
+        }
+
+        private void TryConsumeBufferedAttack()
+        {
+            if (!attackBuffered)
+            {
+                return;
+            }
+
+            if (!isAttacking)
+            {
+                if (!CanStartAttack())
+                {
+                    return;
+                }
+
+                attackBuffered = false;
+                PerformAttack();
+                return;
+            }
+
+            if (IsWithinComboWindow())
+            {
+                int nextStepIndex = GetNextStepIndex();
+                if (nextStepIndex >= 0)
+                {
+                    QueueNextAttack(nextStepIndex);
+                    attackBuffered = false;
+                }
+            }
+        }
+
+        private bool CanStartAttack()
+        {
+            if (!canAttack)
+            {
+                return false;
+            }
+
+            if (movement != null && movement.IsJumping)
+            {
+                return false;
+            }
+
+            if (actionController != null && !actionController.CanStartAction(PlayerActionState.Attack))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void QueueNextAttack(int stepIndex)
+        {
+            queuedNextAttack = true;
+            queuedStepIndex = stepIndex;
         }
 
         private void PerformAttack()
         {
+            int nextStepIndex = GetNextStepIndex();
+            if (nextStepIndex < 0)
+            {
+                return;
+            }
+
+            StartAttackStep(nextStepIndex);
+        }
+
+        private void StartAttackStep(int stepIndex)
+        {
+            AttackStep step = GetStepDefinition(stepIndex);
+            if (step == null)
+            {
+                return;
+            }
+
+            if (step.requireGrounded && movement != null && !movement.IsGrounded)
+            {
+                return;
+            }
+
+            if (staminaSystem != null && step.staminaCost > 0f)
+            {
+                if (!staminaSystem.ConsumeStamina(step.staminaCost))
+                {
+                    return;
+                }
+            }
+
+            bool allowInterrupt = step.allowDodgeCancel || step.allowBlockCancel;
+            if (actionController != null)
+            {
+                bool started = actionController.TryStartAction(
+                    PlayerActionState.Attack,
+                    ActionPriority.Attack,
+                    step.hitDelay + step.recoveryTime,
+                    lockMovementDuringAttack,
+                    lockRotationDuringAttack,
+                    true,
+                    allowInterrupt);
+
+                if (!started)
+                {
+                    return;
+                }
+            }
+
             isAttacking = true;
             canAttack = false;
-            attackCooldownTimer = attackCooldown;
+            currentStepIndex = stepIndex;
+            currentStep = step;
+            currentStepStartTime = Time.time;
+            currentStepEndTime = currentStepStartTime + step.hitDelay + step.recoveryTime;
+            attackHitTriggered = false;
+            queuedNextAttack = false;
+            queuedStepIndex = -1;
 
-            // Increment combo
-            if (comboWindowTimer > 0f && currentCombo < maxComboCount)
-            {
-                currentCombo++;
-            }
-            else
+            int maxCombo = GetMaxComboCount();
+            if (currentCombo <= 0)
             {
                 currentCombo = 1;
             }
+            else
+            {
+                currentCombo = Mathf.Min(currentCombo + 1, maxCombo);
+            }
 
-            comboResetTimer = comboResetTime;
-            comboWindowTimer = comboWindowTime;
-            
-            // 检查是否触发狂暴模式
+            comboResetTimer = GetComboResetTime();
+
             if (currentCombo >= berserkThreshold && !isBerserk)
             {
                 EnterBerserkMode();
             }
-            
-            // 触发连击变化事件
+
             OnComboChanged?.Invoke(currentCombo);
-            
-            // 根据连击等级播放不同音效
             PlayComboSound();
 
-            // Trigger animation
             if (animator != null && animator.runtimeAnimatorController != null)
             {
-                animator.SetTrigger("Attack");
-                animator.SetInteger("ComboCount", Mathf.Min(currentCombo, 3)); // 动画最多3段
+                animator.SetTrigger(attackAnimTrigger);
+                animator.SetInteger(comboAnimParam, step.animationComboIndex);
             }
 
-            // Play effects
             PlayAttackEffects();
 
-            // Start attack sequence
-            StartCoroutine(AttackSequence());
+            if (attackRoutine != null)
+            {
+                StopCoroutine(attackRoutine);
+            }
+
+            attackRoutine = StartCoroutine(AttackRoutine(step));
+        }
+
+        private void FinishAttackStep()
+        {
+            if (!isAttacking)
+            {
+                return;
+            }
+
+            if (attackRoutine != null)
+            {
+                StopCoroutine(attackRoutine);
+                attackRoutine = null;
+            }
+
+            if (queuedNextAttack && queuedStepIndex >= 0)
+            {
+                StartAttackStep(queuedStepIndex);
+                return;
+            }
+
+            isAttacking = false;
+            canAttack = true;
+            currentStepIndex = -1;
+            currentStep = null;
+            queuedNextAttack = false;
+            queuedStepIndex = -1;
+
+            if (actionController != null)
+            {
+                actionController.EndAction(PlayerActionState.Attack);
+            }
+        }
+
+        private void CancelAttack()
+        {
+            if (attackRoutine != null)
+            {
+                StopCoroutine(attackRoutine);
+                attackRoutine = null;
+            }
+
+            isAttacking = false;
+            canAttack = true;
+            currentStepIndex = -1;
+            currentStep = null;
+            queuedNextAttack = false;
+            queuedStepIndex = -1;
+            attackBuffered = false;
+            ResetCombo();
+
+            if (actionController != null)
+            {
+                actionController.EndAction(PlayerActionState.Attack);
+            }
         }
         
         // 根据连击等级播放音效
@@ -353,29 +565,161 @@ namespace ThirdPersonController
             audioSource.pitch = 1f; // 恢复默认音调
         }
 
-        private IEnumerator AttackSequence()
+        private float GetComboResetTime()
         {
-            // Enable weapon trail
-            if (weaponTrail != null)
-                weaponTrail.emitting = true;
+            if (comboDefinition != null)
+            {
+                return comboDefinition.comboResetTime;
+            }
 
-            // Wait for hit frame (adjust based on animation)
-            yield return new WaitForSeconds(0.15f);
-
-            // Detect and damage enemies
-            DetectAndDamageEnemies();
-
-            // Wait for rest of attack animation
-            yield return new WaitForSeconds(0.35f);
-
-            // Disable weapon trail
-            if (weaponTrail != null)
-                weaponTrail.emitting = false;
-
-            isAttacking = false;
+            return comboResetTime;
         }
 
-        private void DetectAndDamageEnemies()
+        private float GetInputBufferTime()
+        {
+            if (comboDefinition != null && comboDefinition.inputBufferTime > 0f)
+            {
+                return comboDefinition.inputBufferTime;
+            }
+
+            return inputBufferTime;
+        }
+
+        private int GetMaxComboCount()
+        {
+            if (comboDefinition != null)
+            {
+                return comboDefinition.maxComboCount;
+            }
+
+            return maxComboCount;
+        }
+
+        private bool IsWithinComboWindow()
+        {
+            if (currentStep == null)
+            {
+                return false;
+            }
+
+            float elapsed = Time.time - currentStepStartTime;
+            return elapsed >= currentStep.comboWindowStart && elapsed <= currentStep.comboWindowEnd;
+        }
+
+        private int GetNextStepIndex()
+        {
+            if (comboDefinition == null)
+            {
+                return 0;
+            }
+
+            if (currentStepIndex < 0)
+            {
+                return comboDefinition.HasStep(0) ? 0 : -1;
+            }
+
+            if (currentStep == null)
+            {
+                return -1;
+            }
+
+            int nextIndex = currentStep.nextStepIndex >= 0 ? currentStep.nextStepIndex : currentStepIndex + 1;
+            return comboDefinition.HasStep(nextIndex) ? nextIndex : -1;
+        }
+
+        private AttackStep GetStepDefinition(int stepIndex)
+        {
+            if (comboDefinition != null && comboDefinition.HasStep(stepIndex))
+            {
+                return comboDefinition.GetStep(stepIndex);
+            }
+
+            if (fallbackStep == null)
+            {
+                fallbackStep = new AttackStep
+                {
+                    name = "Fallback",
+                    animationComboIndex = Mathf.Clamp(stepIndex + 1, 1, 3),
+                    baseDamage = attackDamage,
+                    damageMultiplier = 1f,
+                    knockback = attackKnockback,
+                    range = attackRange,
+                    angle = attackAngle,
+                    radius = attackRadius,
+                    hitDelay = 0.15f,
+                    recoveryTime = 0.35f,
+                    comboWindowStart = 0f,
+                    comboWindowEnd = comboWindowTime,
+                    staminaCost = 0f,
+                    allowDodgeCancel = true,
+                    allowBlockCancel = true,
+                    requireGrounded = true,
+                    nextStepIndex = -1
+                };
+            }
+
+            fallbackStep.baseDamage = attackDamage;
+            fallbackStep.knockback = attackKnockback;
+            fallbackStep.range = attackRange;
+            fallbackStep.angle = attackAngle;
+            fallbackStep.radius = attackRadius;
+            fallbackStep.comboWindowEnd = comboWindowTime;
+            fallbackStep.animationComboIndex = Mathf.Clamp(stepIndex + 1, 1, 3);
+
+            return fallbackStep;
+        }
+
+        private void DoAttackHit(AttackStep step)
+        {
+            if (attackHitTriggered)
+            {
+                return;
+            }
+
+            attackHitTriggered = true;
+            DetectAndDamageEnemies(step);
+        }
+
+        private void HandleActionInterrupted(PlayerActionState interrupted, PlayerActionState byState)
+        {
+            if (interrupted == PlayerActionState.Attack)
+            {
+                CancelAttack();
+            }
+        }
+
+        private IEnumerator AttackRoutine(AttackStep step)
+        {
+            if (weaponTrail != null)
+            {
+                weaponTrail.emitting = true;
+            }
+
+            if (!useAnimationEvents)
+            {
+                yield return new WaitForSeconds(step.hitDelay);
+                DoAttackHit(step);
+            }
+            else
+            {
+                yield return new WaitForSeconds(step.hitDelay);
+                if (!attackHitTriggered)
+                {
+                    DoAttackHit(step);
+                }
+            }
+
+            yield return new WaitForSeconds(step.recoveryTime);
+
+            if (weaponTrail != null)
+            {
+                weaponTrail.emitting = false;
+            }
+
+            FinishAttackStep();
+        }
+
+        private void DetectAndDamageEnemies(AttackStep step)
         {
             hitEnemies.Clear();
 
@@ -385,23 +729,40 @@ namespace ThirdPersonController
                 return;
             }
 
+            float range = step != null && step.range > 0f ? step.range : attackRange;
+            if (isBerserk && step != null && step.range > 0f)
+            {
+                range *= berserkAttackRangeMultiplier;
+            }
+            float angle = step != null && step.angle > 0f ? step.angle : attackAngle;
+            float hitRadius = step != null && step.radius > 0f ? step.radius : attackRadius;
+
             // Find all enemies in range
-            Collider[] hitColliders = Physics.OverlapSphere(origin.position, attackRange, enemyLayers);
+            Collider[] hitColliders = Physics.OverlapSphere(origin.position, Mathf.Max(range, hitRadius), enemyLayers);
             
             // 计算伤害倍率
             float damageMultiplier = GetDamageMultiplier();
-            int finalDamage = Mathf.RoundToInt(attackDamage * damageMultiplier);
+            int baseDamage = step != null ? step.baseDamage : attackDamage;
+            float stepMultiplier = step != null ? step.damageMultiplier : 1f;
+            int finalDamage = Mathf.RoundToInt(baseDamage * stepMultiplier * damageMultiplier);
+            float knockback = step != null ? step.knockback : attackKnockback;
             
             // 计算治疗量（Tier3以上吸血）
             int totalDamageDealt = 0;
 
             foreach (var hitCollider in hitColliders)
             {
+                if (hitEnemies.Contains(hitCollider))
+                {
+                    continue;
+                }
+
                 // Check angle
                 Vector3 directionToEnemy = (hitCollider.transform.position - transform.position).normalized;
                 float angleToEnemy = Vector3.Angle(transform.forward, directionToEnemy);
+                float distanceToEnemy = Vector3.Distance(origin.position, hitCollider.transform.position);
 
-                if (angleToEnemy <= attackAngle * 0.5f)
+                if (distanceToEnemy <= range && angleToEnemy <= angle * 0.5f)
                 {
                     // Apply damage
                     EnemyHealth enemyHealth = hitCollider.GetComponent<EnemyHealth>();
@@ -411,15 +772,21 @@ namespace ThirdPersonController
                         if (berserkInvincible && isBerserk)
                         {
                             // 狂暴模式下可以穿透敌人防御
-                            enemyHealth.TakeDamage(finalDamage, transform.position, attackKnockback * 2f);
+                            enemyHealth.TakeDamage(finalDamage, transform.position, knockback * 2f);
                         }
                         else
                         {
-                            enemyHealth.TakeDamage(finalDamage, transform.position, attackKnockback);
+                            enemyHealth.TakeDamage(finalDamage, transform.position, knockback);
                         }
                         
                         totalDamageDealt += finalDamage;
                         hitEnemies.Add(hitCollider);
+                        GameEvents.DamageDealt(finalDamage, hitCollider.transform.position, false);
+                        GameEvents.ShowDamageText(finalDamage, hitCollider.transform.position, false);
+                        if (hitStopDuration > 0f)
+                        {
+                            HitStopManager.Trigger(hitStopDuration);
+                        }
                     }
                 }
             }
@@ -462,7 +829,11 @@ namespace ThirdPersonController
         {
             int previousCombo = currentCombo;
             currentCombo = 0;
-            
+            comboResetTimer = 0f;
+            attackBuffered = false;
+            queuedNextAttack = false;
+            queuedStepIndex = -1;
+             
             // 触发连击变化事件
             OnComboChanged?.Invoke(0);
             
@@ -479,12 +850,28 @@ namespace ThirdPersonController
         // Animation events - called from animation clips
         public void OnAttackStart()
         {
-            // Can be used to enable hit detection
+            if (weaponTrail != null)
+            {
+                weaponTrail.emitting = true;
+            }
         }
 
         public void OnAttackEnd()
         {
-            // Can be used to disable hit detection
+            if (weaponTrail != null)
+            {
+                weaponTrail.emitting = false;
+            }
+
+            FinishAttackStep();
+        }
+
+        public void AnimEvent_AttackHit()
+        {
+            if (currentStep != null)
+            {
+                DoAttackHit(currentStep);
+            }
         }
 
         private void OnDrawGizmosSelected()
@@ -495,17 +882,20 @@ namespace ThirdPersonController
                 return;
             }
 
+            float range = currentStep != null && currentStep.range > 0f ? currentStep.range : attackRange;
+            float angle = currentStep != null && currentStep.angle > 0f ? currentStep.angle : attackAngle;
+
             // Draw attack range
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(origin.position, attackRange);
+            Gizmos.DrawWireSphere(origin.position, range);
 
             // Draw attack angle
-            Vector3 leftBoundary = Quaternion.Euler(0, -attackAngle * 0.5f, 0) * transform.forward;
-            Vector3 rightBoundary = Quaternion.Euler(0, attackAngle * 0.5f, 0) * transform.forward;
+            Vector3 leftBoundary = Quaternion.Euler(0, -angle * 0.5f, 0) * transform.forward;
+            Vector3 rightBoundary = Quaternion.Euler(0, angle * 0.5f, 0) * transform.forward;
 
             Gizmos.color = Color.yellow;
-            Gizmos.DrawRay(transform.position, leftBoundary * attackRange);
-            Gizmos.DrawRay(transform.position, rightBoundary * attackRange);
+            Gizmos.DrawRay(transform.position, leftBoundary * range);
+            Gizmos.DrawRay(transform.position, rightBoundary * range);
         }
 
         private Transform GetAttackOrigin()

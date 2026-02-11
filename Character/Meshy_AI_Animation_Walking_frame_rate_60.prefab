@@ -858,6 +858,8 @@ GameObject:
   - component: {fileID: 6143267666418570636}
   - component: {fileID: 928111301263920612}
   - component: {fileID: 8712660010750301562}
+  - component: {fileID: 1234567890123456780}
+  - component: {fileID: 1234567890123456781}
   - component: {fileID: 5547784804453351938}
   m_Layer: 0
   m_Name: Meshy_AI_Animation_Walking_frame_rate_60
@@ -984,6 +986,32 @@ MonoBehaviour:
   crouchTransitionSpeed: 10
   maxSlopeAngle: 45
   slopeCheckDistance: 0.5
+--- !u!114 &1234567890123456780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8504710007967951295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9252bf98083c40a09278863a5e6895df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1234567890123456781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8504710007967951295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c95bb74ecfcf4675b1cef6bc43695904, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultHitStopDuration: 0.06
+  maxHitStopDuration: 0.12
 --- !u!136 &5547784804453351938
 CapsuleCollider:
   m_ObjectHideFlags: 0

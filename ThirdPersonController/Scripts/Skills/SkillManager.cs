@@ -22,6 +22,7 @@ namespace ThirdPersonController
         public Transform playerTransform;
         public StaminaSystem staminaSystem;
         public PlayerInputHandler inputHandler;
+        public PlayerActionController actionController;
         
         // 技能释放原点（通常是从玩家位置稍微前方）
         public Vector3 CastOrigin => playerTransform.position + playerTransform.forward * 0.5f + Vector3.up * 1f;
@@ -36,6 +37,9 @@ namespace ThirdPersonController
             
             if (inputHandler == null)
                 inputHandler = GetComponent<PlayerInputHandler>();
+
+            if (actionController == null)
+                actionController = GetComponent<PlayerActionController>();
         }
         
         private void Update()
@@ -88,6 +92,11 @@ namespace ThirdPersonController
                 Debug.Log($"技能槽 {index} 为空");
                 return false;
             }
+
+            if (actionController != null && !actionController.CanStartAction(PlayerActionState.Skill))
+            {
+                return false;
+            }
             
             // 检查是否可以释放
             if (!skill.CanExecute(playerTransform, staminaSystem))
@@ -95,6 +104,21 @@ namespace ThirdPersonController
                 return false;
             }
             
+            if (actionController != null)
+            {
+                if (!actionController.TryStartAction(
+                    PlayerActionState.Skill,
+                    ActionPriority.Skill,
+                    skill.castDuration,
+                    skill.lockMovement,
+                    skill.lockRotation,
+                    true,
+                    skill.interruptible))
+                {
+                    return false;
+                }
+            }
+
             // 获取目标位置（玩家前方）
             Vector3 targetPosition = GetTargetPosition();
             
@@ -102,7 +126,14 @@ namespace ThirdPersonController
             skill.Execute(playerTransform, targetPosition);
             
             // 消耗耐力
-            skill.ConsumeStamina(staminaSystem);
+            if (!skill.ConsumeStamina(staminaSystem))
+            {
+                if (actionController != null)
+                {
+                    actionController.EndAction(PlayerActionState.Skill);
+                }
+                return false;
+            }
             
             // 开始冷却
             skill.StartCooldown();

@@ -46,6 +46,7 @@ namespace ThirdPersonController
         private CapsuleCollider capsuleCollider;
         private Animator animator;
         private PlayerCombat combat;
+        private PlayerActionController actionController;
 
         private bool isGrounded;
         private bool wasGrounded;
@@ -76,6 +77,7 @@ namespace ThirdPersonController
             capsuleCollider = GetComponent<CapsuleCollider>();
             animator = GetComponent<Animator>();
             combat = GetComponent<PlayerCombat>();
+            actionController = GetComponent<PlayerActionController>();
 
             rb.freezeRotation = true;
             rb.interpolation = RigidbodyInterpolation.Interpolate;
@@ -150,6 +152,13 @@ namespace ThirdPersonController
 
         private void HandleMovement()
         {
+            if (actionController != null && actionController.IsMovementLocked)
+            {
+                currentVelocity = Vector3.zero;
+                rb.velocity = new Vector3(0f, rb.velocity.y, 0f);
+                return;
+            }
+
             if (moveDirection.magnitude > 0.1f)
             {
                 // 平滑加速
@@ -157,9 +166,12 @@ namespace ThirdPersonController
                     moveDirection * targetSpeed, acceleration * Time.fixedDeltaTime);
 
                 // 旋转朝向移动方向
-                Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-                rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, 
-                    rotationSpeed * Time.fixedDeltaTime));
+                if (actionController == null || !actionController.IsRotationLocked)
+                {
+                    Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+                    rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, 
+                        rotationSpeed * Time.fixedDeltaTime));
+                }
             }
             else
             {
@@ -174,6 +186,12 @@ namespace ThirdPersonController
 
         private void HandleJumpBuffer()
         {
+            if (actionController != null && actionController.CurrentState != PlayerActionState.Locomotion)
+            {
+                jumpBufferTimer = 0f;
+                return;
+            }
+
             if (combat != null && combat.IsAttacking)
             {
                 jumpBufferTimer = 0f;
@@ -203,6 +221,11 @@ namespace ThirdPersonController
 
         private void HandleJump()
         {
+            if (actionController != null && actionController.CurrentState != PlayerActionState.Locomotion)
+            {
+                return;
+            }
+
             if (combat != null && combat.IsAttacking)
             {
                 return;

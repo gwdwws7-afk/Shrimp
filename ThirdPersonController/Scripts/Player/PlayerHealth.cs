@@ -9,6 +9,7 @@ namespace ThirdPersonController
         public int maxHealth = 100;
         public float invincibilityTime = 1f;
         public float damageFlashDuration = 0.2f;
+        public float hitStunDuration = 0.3f;
 
         [Header("UI")]
         public GameObject damageEffect;
@@ -22,6 +23,7 @@ namespace ThirdPersonController
         private bool isDead = false;
         private Animator animator;
         private Renderer[] renderers;
+        private PlayerActionController actionController;
 
         public int CurrentHealth => currentHealth;
         public int MaxHealth => maxHealth;
@@ -39,6 +41,7 @@ namespace ThirdPersonController
             currentHealth = maxHealth;
             animator = GetComponent<Animator>();
             renderers = GetComponentsInChildren<Renderer>();
+            actionController = GetComponent<PlayerActionController>();
         }
 
         public void TakeDamage(int damage, Vector3 damageSource, float knockbackForce = 0f)
@@ -58,6 +61,10 @@ namespace ThirdPersonController
             }
             else
             {
+                if (actionController != null)
+                {
+                    actionController.TryStartAction(PlayerActionState.Hit, ActionPriority.Hit, hitStunDuration, true, true, true, false);
+                }
                 StartCoroutine(HitReaction(damageSource, knockbackForce));
             }
         }
@@ -152,6 +159,11 @@ namespace ThirdPersonController
         {
             isDead = true;
 
+            if (actionController != null)
+            {
+                actionController.TryStartAction(PlayerActionState.Dead, ActionPriority.Dead, 0f, true, true, false, false);
+            }
+
             // Play death animation
             if (animator != null && animator.runtimeAnimatorController != null)
             {
@@ -177,6 +189,11 @@ namespace ThirdPersonController
             currentHealth = maxHealth;
             isDead = false;
             isInvincible = false;
+
+            if (actionController != null)
+            {
+                actionController.EndAction(PlayerActionState.Dead);
+            }
 
             transform.position = respawnPosition;
 

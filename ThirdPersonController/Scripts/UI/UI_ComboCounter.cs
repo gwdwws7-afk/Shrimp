@@ -13,6 +13,7 @@ namespace ThirdPersonController
         public Text comboText;               // 连击数字文本
         public Image comboGauge;             // 连击进度条（倒计时）
         public CanvasGroup canvasGroup;      // 用于淡入淡出
+        public PlayerCombat combat;
         
         [Header("等级颜色")]
         public Color tier1Color = Color.white;                    // Tier 1: 白色
@@ -45,6 +46,11 @@ namespace ThirdPersonController
             if (berserkEffect != null)
             {
                 berserkEffect.SetActive(false);
+            }
+
+            if (combat == null)
+            {
+                combat = FindObjectOfType<PlayerCombat>();
             }
             
             // 订阅事件
@@ -134,10 +140,14 @@ namespace ThirdPersonController
         private void UpdateGauge()
         {
             if (comboGauge == null) return;
-            
-            // 这里可以根据PlayerCombat的comboResetTimer来显示倒计时
-            // 需要从PlayerCombat获取剩余时间比例
-            // 暂时不实现具体逻辑，留待后续集成
+
+            if (combat == null)
+            {
+                comboGauge.fillAmount = 0f;
+                return;
+            }
+
+            comboGauge.fillAmount = combat.ComboResetNormalized;
         }
         
         /// <summary>

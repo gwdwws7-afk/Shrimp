@@ -38,6 +38,7 @@ namespace ThirdPersonController
         // 组件
         private StaminaSystem staminaSystem;
         private PlayerInputHandler inputHandler;
+        private PlayerActionController actionController;
         
         // 计时器
         private float blockStartTime = 0f;
@@ -54,6 +55,7 @@ namespace ThirdPersonController
         {
             staminaSystem = GetComponent<StaminaSystem>();
             inputHandler = GetComponent<PlayerInputHandler>();
+            actionController = GetComponent<PlayerActionController>();
             
             if (playerTransform == null)
                 playerTransform = transform;
@@ -110,6 +112,14 @@ namespace ThirdPersonController
         
         private void StartBlock()
         {
+            if (actionController != null)
+            {
+                if (!actionController.TryStartAction(PlayerActionState.Block, ActionPriority.Block, 0f, true, false, false, true))
+                {
+                    return;
+                }
+            }
+
             IsBlocking = true;
             blockStartTime = Time.time;
             CanPerfectBlock = false;  // 刚按下时不能完美格挡
@@ -138,6 +148,11 @@ namespace ThirdPersonController
         {
             IsBlocking = false;
             CanPerfectBlock = false;
+
+            if (actionController != null)
+            {
+                actionController.EndAction(PlayerActionState.Block);
+            }
             
             // 动画
             if (animator != null)
@@ -250,10 +265,22 @@ namespace ThirdPersonController
         /// </summary>
         private void TryDodge(Vector3 direction)
         {
+            if (actionController != null)
+            {
+                if (!actionController.TryStartAction(PlayerActionState.Dodge, ActionPriority.Dodge, dodgeDuration, true, true, true, true))
+                {
+                    return;
+                }
+            }
+
             // 检查耐力
             if (!staminaSystem.ConsumeDodge())
             {
                 Debug.Log("⚠️ 耐力不足，无法闪避");
+                if (actionController != null)
+                {
+                    actionController.EndAction(PlayerActionState.Dodge);
+                }
                 return;
             }
             
@@ -291,6 +318,10 @@ namespace ThirdPersonController
             // 闪避动作完成后
             yield return new WaitForSeconds(dodgeDuration - invincibilityDuration);
             IsDodging = false;
+            if (actionController != null)
+            {
+                actionController.EndAction(PlayerActionState.Dodge);
+            }
         }
         
         #endregion
@@ -302,7 +333,8 @@ namespace ThirdPersonController
         /// </summary>
         public bool CanBlock()
         {
-            return !IsDodging && staminaSystem.HasStamina;
+            bool canAction = actionController == null || actionController.CanStartAction(PlayerActionState.Block);
+            return canAction && !IsDodging && staminaSystem.HasStamina;
         }
         
         /// <summary>
@@ -310,7 +342,8 @@ namespace ThirdPersonController
         /// </summary>
         public bool CanDodge()
         {
-            return !IsBlocking && !IsDodging && dodgeCooldownTimer <= 0 && staminaSystem.HasStamina;
+            bool canAction = actionController == null || actionController.CanStartAction(PlayerActionState.Dodge);
+            return canAction && !IsBlocking && !IsDodging && dodgeCooldownTimer <= 0 && staminaSystem.HasStamina;
         }
         
         /// <summary>
@@ -334,6 +367,10 @@ namespace ThirdPersonController
                 StopAllCoroutines();
                 IsDodging = false;
                 IsInvincible = false;
+                if (actionController != null)
+                {
+                    actionController.EndAction(PlayerActionState.Dodge);
+                }
             }
         }
         

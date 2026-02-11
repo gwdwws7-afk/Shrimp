@@ -8,6 +8,7 @@ namespace ThirdPersonController
         [Header("Health Settings")]
         public int maxHealth = 50;
         public float deathDelay = 2f;
+        public float hitStunDuration = 0.2f;
 
         [Header("Visual Effects")]
         public ParticleSystem hitEffect;
@@ -24,6 +25,8 @@ namespace ThirdPersonController
         private Animator animator;
         private AudioSource audioSource;
         private Rigidbody rb;
+        private EnemyAI ai;
+        private Coroutine hitStunRoutine;
 
         public int CurrentHealth => currentHealth;
         public bool IsDead => isDead;
@@ -34,6 +37,7 @@ namespace ThirdPersonController
             animator = GetComponent<Animator>();
             audioSource = GetComponent<AudioSource>();
             rb = GetComponent<Rigidbody>();
+            ai = GetComponent<EnemyAI>();
         }
 
         public void TakeDamage(int damage, Vector3 damageSource, float knockbackForce = 0f)
@@ -64,6 +68,15 @@ namespace ThirdPersonController
             if (animator != null && animator.runtimeAnimatorController != null)
             {
                 animator.SetTrigger("Hit");
+            }
+
+            if (hitStunDuration > 0f && ai != null)
+            {
+                if (hitStunRoutine != null)
+                {
+                    StopCoroutine(hitStunRoutine);
+                }
+                hitStunRoutine = StartCoroutine(HitStun());
             }
 
             if (currentHealth <= 0)
@@ -113,6 +126,17 @@ namespace ThirdPersonController
         {
             yield return new WaitForSeconds(deathDelay);
             Destroy(gameObject);
+        }
+
+        private IEnumerator HitStun()
+        {
+            ai.enabled = false;
+            yield return new WaitForSeconds(hitStunDuration);
+            if (!isDead)
+            {
+                ai.enabled = true;
+            }
+            hitStunRoutine = null;
         }
     }
 }

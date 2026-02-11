@@ -22,6 +22,12 @@ namespace ThirdPersonController
         public int damage = 50;
         public float range = 5f;
         public float effectDuration = 2f;
+
+        [Header("动作控制")]
+        public float castDuration = 0.5f;
+        public bool lockMovement = true;
+        public bool lockRotation = true;
+        public bool interruptible = false;
         
         [Header("视觉效果")]
         public GameObject effectPrefab;
