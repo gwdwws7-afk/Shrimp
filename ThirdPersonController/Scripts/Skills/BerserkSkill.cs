@@ -20,18 +20,33 @@ namespace ThirdPersonController
         [Header("持续回血")]
         public bool enableLifeRegen = true;
         public float lifeRegenPerSecond = 5f;
+
+        private void OnEnable()
+        {
+            if (category == SkillCategory.None)
+            {
+                category = SkillCategory.Burst;
+            }
+
+            if (useAnimationEvents)
+            {
+                impactDelay = 0.16f;
+                recoveryDelay = 0.25f;
+                impactShakeDuration = 0.12f;
+                impactShakeStrength = 0.18f;
+            }
+        }
         
         public override void Execute(Transform caster, Vector3 targetPosition)
         {
-            // 播放特效
-            SpawnEffect(caster.position, caster.rotation);
-            PlaySound(castSound, caster.position);
-            
-            // 开始狂暴Coroutine
-            caster.GetComponent<MonoBehaviour>().StartCoroutine(
-                BerserkCoroutine(caster));
-            
-            Debug.Log($"🔥 狂暴化启动！持续 {duration} 秒");
+            StartSkillTimeline(caster, caster.position, caster.rotation, () =>
+            {
+                // 开始狂暴Coroutine
+                caster.GetComponent<MonoBehaviour>().StartCoroutine(
+                    BerserkCoroutine(caster));
+
+                Debug.Log($"🔥 狂暴化启动！持续 {duration} 秒");
+            });
         }
         
         private IEnumerator BerserkCoroutine(Transform caster)

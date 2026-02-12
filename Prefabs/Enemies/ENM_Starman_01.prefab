@@ -540,6 +540,7 @@ GameObject:
   - component: {fileID: 8499933296191397550}
   - component: {fileID: 3428021663999840443}
   - component: {fileID: 2774565791061537586}
+  - component: {fileID: 1234567890123456789}
   - component: {fileID: 5168819464407403950}
   m_Layer: 0
   m_Name: ENM_Starman_01
@@ -652,11 +653,15 @@ MonoBehaviour:
   maxHealth: 50
   deathDelay: 2
   hitEffect: {fileID: 0}
+  heavyHitEffect: {fileID: 0}
+  knockdownEffect: {fileID: 0}
   deathEffect: {fileID: 0}
   hitSound: {fileID: 0}
   deathSound: {fileID: 0}
   dropItems: []
   dropChance: 0.3
+  enemyType: 0
+  expReward: 1
 --- !u!114 &2774565791061537586
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -669,22 +674,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81172782bd47f4e4ab4ebba2dfb7ad75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectionRange: 15
-  attackRange: 2
-  fieldOfView: 120
+  detectionRange: 18
+  attackRange: 2.2
+  fieldOfView: 130
   playerLayer:
     serializedVersion: 2
     m_Bits: 0
   obstructionLayer:
     serializedVersion: 2
     m_Bits: 1
-  patrolSpeed: 2
-  chaseSpeed: 3
-  rotationSpeed: 5
-  stoppingDistance: 1.5
-  attackCooldown: 1.5
+  patrolSpeed: 2.2
+  chaseSpeed: 3.6
+  rotationSpeed: 7
+  stoppingDistance: 1.6
+  attackCooldown: 1.8
   attackDamage: 10
-  attackKnockback: 3
+  attackKnockback: 2.6
+  attackWindup: 0.45
+  attackActiveTime: 0.12
+  attackRecovery: 0.5
+  attackHitRadius: 1.15
+  attackHitAngle: 120
+  attackOrigin: {fileID: 0}
   patrolPoints: []
   waitTimeAtPoint: 3
   randomPatrol: 0
@@ -692,6 +703,33 @@ MonoBehaviour:
   moveSpeedParam: MoveSpeed
   attackTrigger: Attack
   isChasingParam: IsChasing
+  hitTrigger: Hit
+  knockdownTrigger: Knockdown
+  useCrowdCoordinator: 1
+  ringStandoffDistance: 3
+--- !u!114 &1234567890123456789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5352883075750062607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07d9524700b647ddb35e0953a00e12e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  knockbackThreshold: 2
+  knockdownThreshold: 6
+  profile: {fileID: 0}
+  flinchDuration: 0.2
+  knockbackDuration: 0.25
+  knockbackDistance: 1.2
+  knockdownDuration: 0.35
+  knockdownDistance: 2.5
+  knockdownRecoverTime: 0.6
+  flinchTrigger: Hit
+  knockdownTrigger: Knockdown
 --- !u!95 &5168819464407403950
 Animator:
   serializedVersion: 5

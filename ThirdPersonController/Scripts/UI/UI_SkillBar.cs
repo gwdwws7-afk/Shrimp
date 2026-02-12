@@ -28,6 +28,18 @@ namespace ThirdPersonController
         public Color normalColor = Color.white;
         public Color cooldownColor = Color.gray;
         public Color readyColor = new Color(0.5f, 1f, 0.5f);
+
+        [Header("分类颜色")]
+        public Color crowdControlColor = new Color(0.4f, 0.7f, 1f);
+        public Color burstColor = new Color(1f, 0.5f, 0.4f);
+        public Color mobilityColor = new Color(0.5f, 1f, 0.6f);
+        public Color gatherColor = new Color(0.8f, 0.6f, 1f);
+
+        [Header("Legend")]
+        public bool showLegend = true;
+        public float legendOffsetY = -90f;
+
+        public SkillManager skillManager;
         
         private void Start()
         {
@@ -43,6 +55,16 @@ namespace ThirdPersonController
             // 订阅事件
             GameEvents.OnSkillUsed += OnSkillUsed;
             GameEvents.OnSkillReady += OnSkillReady;
+
+            if (skillManager == null)
+            {
+                skillManager = FindObjectOfType<SkillManager>();
+            }
+        }
+
+        private void Update()
+        {
+            UpdateFromManager();
         }
         
         private void OnDestroy()
@@ -50,6 +72,37 @@ namespace ThirdPersonController
             // 取消订阅
             GameEvents.OnSkillUsed -= OnSkillUsed;
             GameEvents.OnSkillReady -= OnSkillReady;
+        }
+
+        private void OnGUI()
+        {
+            if (!showLegend)
+            {
+                return;
+            }
+
+            GUIStyle style = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 12,
+                alignment = TextAnchor.MiddleLeft,
+                normal = { textColor = Color.white }
+            };
+
+            float width = 380f;
+            float height = 20f;
+            float x = (Screen.width - width) * 0.5f;
+            float y = Screen.height + legendOffsetY;
+
+            GUILayout.BeginArea(new Rect(x, y, width, height));
+            GUILayout.BeginHorizontal();
+
+            DrawLegendItem("群控", crowdControlColor, style);
+            DrawLegendItem("爆发", burstColor, style);
+            DrawLegendItem("位移", mobilityColor, style);
+            DrawLegendItem("聚怪", gatherColor, style);
+
+            GUILayout.EndHorizontal();
+            GUILayout.EndArea();
         }
         
         /// <summary>
@@ -109,6 +162,33 @@ namespace ThirdPersonController
                 }
             }
         }
+
+        public void UpdateSkillSlot(int index, SkillBase skill)
+        {
+            if (skill == null)
+            {
+                return;
+            }
+
+            UpdateSkillSlot(index, skill.icon, skill.cooldown, skill.cooldownTimer);
+
+            if (skillSlots[index].icon != null)
+            {
+                if (skill.cooldownTimer > 0f)
+                {
+                    skillSlots[index].icon.color = cooldownColor;
+                }
+                else
+                {
+                    skillSlots[index].icon.color = GetCategoryColor(skill.category);
+                }
+            }
+
+            if (skillSlots[index].keyText != null)
+            {
+                skillSlots[index].keyText.color = GetCategoryColor(skill.category);
+            }
+        }
         
         /// <summary>
         /// 设置技能图标
@@ -147,6 +227,50 @@ namespace ThirdPersonController
         private void OnSkillReady(string skillName)
         {
             // 技能冷却完成
+        }
+
+        private void UpdateFromManager()
+        {
+            if (skillManager == null || skillManager.skills == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < skillSlots.Length && i < skillManager.skills.Length; i++)
+            {
+                SkillBase skill = skillManager.skills[i];
+                if (skill == null)
+                {
+                    continue;
+                }
+
+                UpdateSkillSlot(i, skill);
+            }
+        }
+
+        private Color GetCategoryColor(SkillCategory category)
+        {
+            switch (category)
+            {
+                case SkillCategory.CrowdControl:
+                    return crowdControlColor;
+                case SkillCategory.Burst:
+                    return burstColor;
+                case SkillCategory.Mobility:
+                    return mobilityColor;
+                case SkillCategory.Gather:
+                    return gatherColor;
+                default:
+                    return readyColor;
+            }
+        }
+
+        private void DrawLegendItem(string label, Color color, GUIStyle style)
+        {
+            Color previous = GUI.color;
+            GUI.color = color;
+            GUILayout.Label(label, style, GUILayout.Width(80));
+            GUI.color = previous;
         }
         
         #endregion

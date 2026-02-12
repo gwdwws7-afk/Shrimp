@@ -19,26 +19,41 @@ namespace ThirdPersonController
         [Header("特效")]
         public float slowMotionDuration = 1f;
         public float slowMotionScale = 0.3f;
+
+        private void OnEnable()
+        {
+            if (category == SkillCategory.None)
+            {
+                category = SkillCategory.Burst;
+            }
+
+            if (useAnimationEvents)
+            {
+                impactDelay = 0.26f;
+                recoveryDelay = 0.38f;
+                impactShakeDuration = 0.18f;
+                impactShakeStrength = 0.3f;
+            }
+        }
         
         public override void Execute(Transform caster, Vector3 targetPosition)
         {
-            // 慢动作效果
-            Time.timeScale = slowMotionScale;
-            caster.GetComponent<MonoBehaviour>().Invoke(nameof(RestoreTimeScale), slowMotionDuration);
-            
-            // 播放特效
-            SpawnEffect(caster.position, caster.rotation);
-            PlaySound(castSound, caster.position);
-            
             // 触发动画
             Animator animator = caster.GetComponent<Animator>();
             if (animator != null)
             {
                 animator.SetTrigger("Ultimate");
             }
-            
-            // 执行全屏攻击
-            ExecuteUltimate(caster);
+
+            StartSkillTimeline(caster, caster.position, caster.rotation, () =>
+            {
+                // 慢动作效果
+                Time.timeScale = slowMotionScale;
+                caster.GetComponent<MonoBehaviour>().Invoke(nameof(RestoreTimeScale), slowMotionDuration);
+
+                // 执行全屏攻击
+                ExecuteUltimate(caster);
+            });
         }
         
         private void RestoreTimeScale()

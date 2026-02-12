@@ -12,22 +12,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c734880e49a245b6a87442223e3eb7cf, type: 3}
   m_Name: AttackComboDefinition
   m_EditorClassIdentifier: 
-  comboResetTime: 1.5
+  comboResetTime: 1.1
   maxComboCount: 50
-  inputBufferTime: 0.35
+  inputBufferTime: 0.24
   steps:
   - name: N1
     animationComboIndex: 1
     baseDamage: 25
     damageMultiplier: 1
-    knockback: 5
-    range: 2
-    angle: 120
+    knockback: 6
+    range: 2.8
+    angle: 150
     radius: 1
-    hitDelay: 0.15
-    recoveryTime: 0.35
-    comboWindowStart: 0.1
-    comboWindowEnd: 0.55
+    forwardOffset: 0.4
+    heightOffset: 0
+    additionalHitDelays: []
+    perTargetHitCooldown: 0
+    hitDelay: 0.11
+    recoveryTime: 0.28
+    comboWindowStart: 0.08
+    comboWindowEnd: 0.5
     staminaCost: 0
     allowDodgeCancel: 1
     allowBlockCancel: 1
@@ -37,14 +41,18 @@ MonoBehaviour:
     animationComboIndex: 2
     baseDamage: 30
     damageMultiplier: 1.1
-    knockback: 6
-    range: 2.2
-    angle: 120
+    knockback: 7.5
+    range: 3.3
+    angle: 180
     radius: 1.1
-    hitDelay: 0.17
-    recoveryTime: 0.4
-    comboWindowStart: 0.12
-    comboWindowEnd: 0.6
+    forwardOffset: 0.65
+    heightOffset: 0
+    additionalHitDelays: []
+    perTargetHitCooldown: 0
+    hitDelay: 0.13
+    recoveryTime: 0.3
+    comboWindowStart: 0.1
+    comboWindowEnd: 0.55
     staminaCost: 0
     allowDodgeCancel: 1
     allowBlockCancel: 1
@@ -54,14 +62,21 @@ MonoBehaviour:
     animationComboIndex: 3
     baseDamage: 40
     damageMultiplier: 1.2
-    knockback: 7
-    range: 2.4
-    angle: 120
+    knockback: 9.5
+    range: 4.2
+    angle: 220
     radius: 1.2
-    hitDelay: 0.2
-    recoveryTime: 0.5
-    comboWindowStart: 0.15
-    comboWindowEnd: 0.7
+    forwardOffset: 0.9
+    heightOffset: 0
+    additionalHitDelays:
+    - 0.08
+    - 0.2
+    - 0.32
+    perTargetHitCooldown: 0.1
+    hitDelay: 0.14
+    recoveryTime: 0.42
+    comboWindowStart: 0.12
+    comboWindowEnd: 0.75
     staminaCost: 0
     allowDodgeCancel: 1
     allowBlockCancel: 1

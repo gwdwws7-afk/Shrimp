@@ -18,24 +18,39 @@ namespace ThirdPersonController
         [Header("伤害")]
         public int landingDamage = 40;
         public float landingKnockback = 8f;
+
+        private void OnEnable()
+        {
+            if (category == SkillCategory.None)
+            {
+                category = SkillCategory.Gather;
+            }
+
+            if (useAnimationEvents)
+            {
+                impactDelay = 0.24f;
+                recoveryDelay = 0.32f;
+                impactShakeDuration = 0.12f;
+                impactShakeStrength = 0.22f;
+            }
+        }
         
         public override void Execute(Transform caster, Vector3 targetPosition)
         {
-            // 播放特效
-            SpawnEffect(caster.position, caster.rotation);
-            PlaySound(castSound, caster.position);
-            
             // 触发动画
             Animator animator = caster.GetComponent<Animator>();
             if (animator != null)
             {
                 animator.SetTrigger("Pull");
             }
-            
-            // 牵引敌人
-            PullEnemies(caster);
-            
-            Debug.Log($"🌀 异种之握！牵引 {pullRadius}m 内的敌人");
+
+            StartSkillTimeline(caster, caster.position, caster.rotation, () =>
+            {
+                // 牵引敌人
+                PullEnemies(caster);
+
+                Debug.Log($"🌀 异种之握！牵引 {pullRadius}m 内的敌人");
+            });
         }
         
         private void PullEnemies(Transform caster)

@@ -5,7 +5,7 @@ namespace ThirdPersonController
 {
     [RequireComponent(typeof(NavMeshAgent))]
     [RequireComponent(typeof(EnemyHealth))]
-    public class EnemyAI : MonoBehaviour
+    public class EnemyAI : MonoBehaviour, IPoolable
     {
         [Header("Detection")]
         public float detectionRange = 15f;
@@ -48,6 +48,15 @@ namespace ThirdPersonController
         public bool useCrowdCoordinator = true;
         public float ringStandoffDistance = 2.4f;
 
+        [Header("Performance")]
+        public float aiUpdateInterval = 0.08f;
+        public float aiUpdateJitter = 0.02f;
+        public float nearUpdateInterval = 0.05f;
+        public float farUpdateInterval = 0.18f;
+        public float nearUpdateDistance = 8f;
+        public float farUpdateDistance = 18f;
+        public float farAnimationUpdateInterval = 0.2f;
+
         private NavMeshAgent agent;
         private EnemyHealth health;
         private Transform player;
@@ -57,6 +66,8 @@ namespace ThirdPersonController
         private bool isAttacking = false;
         private float attackPhaseTimer = 0f;
         private bool attackHitApplied = false;
+        private float nextDecisionTime = 0f;
+        private float nextAnimationTime = 0f;
 
         private int currentPatrolIndex = 0;
         private float waitTimer;
@@ -80,6 +91,22 @@ namespace ThirdPersonController
             if (useCrowdCoordinator)
             {
                 crowdCoordinator = FindObjectOfType<EnemyCrowdCoordinator>();
+                if (crowdCoordinator != null)
+                {
+                    crowdCoordinator.Register(this);
+                }
+            }
+        }
+
+        private void OnEnable()
+        {
+            if (useCrowdCoordinator)
+            {
+                if (crowdCoordinator == null)
+                {
+                    crowdCoordinator = FindObjectOfType<EnemyCrowdCoordinator>();
+                }
+
                 if (crowdCoordinator != null)
                 {
                     crowdCoordinator.Register(this);
@@ -115,9 +142,48 @@ namespace ThirdPersonController
             }
 
             HandleCooldowns();
+            if (isAttacking)
+            {
+                Attack();
+                UpdateAnimations();
+                return;
+            }
+
+            if (Time.time < nextDecisionTime)
+            {
+                UpdateAnimations();
+                return;
+            }
+
+            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+            float interval = GetUpdateInterval(distanceToPlayer);
+            float jitter = aiUpdateJitter > 0f ? Random.Range(-aiUpdateJitter, aiUpdateJitter) : 0f;
+            nextDecisionTime = Time.time + Mathf.Max(0.02f, interval + jitter);
+
             DetectPlayer();
             UpdateState();
             ExecuteState();
+        }
+
+        private float GetUpdateInterval(float distanceToPlayer)
+        {
+            if (farUpdateDistance <= nearUpdateDistance)
+            {
+                return aiUpdateInterval;
+            }
+
+            if (distanceToPlayer <= nearUpdateDistance)
+            {
+                return nearUpdateInterval;
+            }
+
+            if (distanceToPlayer >= farUpdateDistance)
+            {
+                return farUpdateInterval;
+            }
+
+            float t = Mathf.InverseLerp(nearUpdateDistance, farUpdateDistance, distanceToPlayer);
+            return Mathf.Lerp(nearUpdateInterval, farUpdateInterval, t);
         }
 
         private void HandleCooldowns()
@@ -375,6 +441,28 @@ namespace ThirdPersonController
         {
             if (animator == null || animator.runtimeAnimatorController == null) return;
 
+            if (Time.time < nextAnimationTime)
+            {
+                return;
+            }
+
+            if (player != null)
+            {
+                float distance = Vector3.Distance(transform.position, player.position);
+                if (distance >= farUpdateDistance)
+                {
+                    nextAnimationTime = Time.time + Mathf.Max(0.02f, farAnimationUpdateInterval);
+                }
+                else
+                {
+                    nextAnimationTime = Time.time;
+                }
+            }
+            else
+            {
+                nextAnimationTime = Time.time;
+            }
+
             float moveSpeed = agent.velocity.magnitude / chaseSpeed;
             animator.SetFloat("MoveSpeed", moveSpeed);
             animator.SetBool("IsChasing", isChasing);
@@ -424,6 +512,32 @@ namespace ThirdPersonController
             {
                 agent.isStopped = false;
             }
+        }
+
+        public void OnSpawned()
+        {
+            ResetState();
+        }
+
+        public void OnDespawned()
+        {
+            ReleaseAttackToken();
+            isSuppressed = false;
+        }
+
+        private void ResetState()
+        {
+            isSuppressed = false;
+            hasAttackToken = false;
+            isAttacking = false;
+            attackPhaseTimer = 0f;
+            attackHitApplied = false;
+            isChasing = false;
+            waitTimer = 0f;
+            attackCooldownTimer = 0f;
+            currentState = State.Patrol;
+            nextDecisionTime = 0f;
+            nextAnimationTime = 0f;
         }
 
         private void OnDrawGizmosSelected()

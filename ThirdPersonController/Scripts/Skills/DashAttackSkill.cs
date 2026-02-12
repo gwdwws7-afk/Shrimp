@@ -19,19 +19,34 @@ namespace ThirdPersonController
         [Header("无敌")]
         public bool invincibleDuringDash = true;
         public float invincibilityDuration = 0.5f;
+
+        private void OnEnable()
+        {
+            if (category == SkillCategory.None)
+            {
+                category = SkillCategory.Mobility;
+            }
+
+            if (useAnimationEvents)
+            {
+                impactDelay = 0.08f;
+                recoveryDelay = 0.22f;
+                impactShakeDuration = 0.1f;
+                impactShakeStrength = 0.2f;
+            }
+        }
         
         public override void Execute(Transform caster, Vector3 targetPosition)
         {
-            caster.GetComponent<MonoBehaviour>().StartCoroutine(
-                DashCoroutine(caster));
+            StartSkillTimeline(caster, caster.position, caster.rotation, () =>
+            {
+                caster.GetComponent<MonoBehaviour>().StartCoroutine(
+                    DashCoroutine(caster));
+            });
         }
         
         private System.Collections.IEnumerator DashCoroutine(Transform caster)
         {
-            // 播放特效
-            SpawnEffect(caster.position, caster.rotation);
-            PlaySound(castSound, caster.position);
-            
             // 触发动画
             Animator animator = caster.GetComponent<Animator>();
             if (animator != null)

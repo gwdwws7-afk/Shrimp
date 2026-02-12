@@ -30,11 +30,16 @@ namespace ThirdPersonController
         [Header("音效库")]
         public AudioClip[] attackSounds;
         public AudioClip[] hitSounds;
+        public AudioClip[] heavyHitSounds;
+        public AudioClip[] knockdownHitSounds;
         public AudioClip[] enemyDeathSounds;
         public AudioClip[] comboSounds;
         public AudioClip berserkStartSound;
         public AudioClip[] skillSounds;
         public AudioClip[] footstepSounds;
+
+        [Header("事件监听")]
+        public bool listenToCombatEvents = true;
         
         [Header("背景音乐")]
         public AudioClip[] bgmTracks;
@@ -49,6 +54,23 @@ namespace ThirdPersonController
             base.OnAwake();
             InitializeAudioSources();
             InitializeSFXPool();
+        }
+
+        private void OnEnable()
+        {
+            if (!listenToCombatEvents)
+            {
+                return;
+            }
+
+            GameEvents.OnEnemyHit += HandleEnemyHit;
+            GameEvents.OnEnemyKilled += HandleEnemyKilled;
+        }
+
+        private void OnDisable()
+        {
+            GameEvents.OnEnemyHit -= HandleEnemyHit;
+            GameEvents.OnEnemyKilled -= HandleEnemyKilled;
         }
         
         private void InitializeAudioSources()
@@ -204,6 +226,27 @@ namespace ThirdPersonController
             int index = Random.Range(0, hitSounds.Length);
             PlaySFXAtPosition(hitSounds[index], position);
         }
+
+        public void PlayHitSound(Vector3 position, EnemyHitReactionType reactionType)
+        {
+            AudioClip[] source = hitSounds;
+            if (reactionType == EnemyHitReactionType.Knockdown && knockdownHitSounds.Length > 0)
+            {
+                source = knockdownHitSounds;
+            }
+            else if (reactionType == EnemyHitReactionType.Knockback && heavyHitSounds.Length > 0)
+            {
+                source = heavyHitSounds;
+            }
+
+            if (source == null || source.Length == 0)
+            {
+                return;
+            }
+
+            int index = Random.Range(0, source.Length);
+            PlaySFXAtPosition(source[index], position);
+        }
         
         /// <summary>
         /// 播放敌人死亡音效
@@ -271,6 +314,16 @@ namespace ThirdPersonController
         }
         
         #endregion
+
+        private void HandleEnemyHit(int damage, Vector3 position, EnemyHitReactionType reactionType)
+        {
+            PlayHitSound(position, reactionType);
+        }
+
+        private void HandleEnemyKilled(EnemyType type, Vector3 position, int expReward)
+        {
+            PlayEnemyDeathSound(position);
+        }
         
         #region 音量控制
         

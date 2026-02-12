@@ -23,6 +23,9 @@ namespace ThirdPersonController
         public int attackDamage = 25;
         public float attackKnockback = 5f;
 
+        [Header("Damage Curve")]
+        public DamageCurveProfile damageCurveProfile;
+
         [Header("Combo Definition")]
         public AttackComboDefinition comboDefinition;
         public bool useAnimationEvents = true;
@@ -33,8 +36,12 @@ namespace ThirdPersonController
 
         [Header("Combo Settings")]
         public int maxComboCount = 50;              // 最大50连击
-        public float comboResetTime = 1.5f;
+        public float comboResetTime = 1.1f;
         public float comboWindowTime = 0.8f;
+
+        [Header("Combo Unlocks")]
+        [Tooltip("0 means no limit, otherwise limits combo step count.")]
+        public int maxComboStepsUnlocked = 0;
         
         [Header("Combo Tier Settings")]
         public float tier1DamageMultiplier = 1.1f;  // 1-10连击
@@ -75,6 +82,8 @@ namespace ThirdPersonController
         private BlockDodgeSystem blockDodgeSystem;
         private PlayerActionController actionController;
         private PlayerInputBuffer inputBuffer;
+        private PlayerMusouSystem musouSystem;
+        private PlayerStatsController statsController;
 
         private int currentCombo = 0;
         private float comboResetTimer;
@@ -97,6 +106,8 @@ namespace ThirdPersonController
         private AttackStep fallbackStep;
 
         private List<Collider> hitEnemies = new List<Collider>();
+        private readonly Dictionary<Collider, float> lastHitTimes = new Dictionary<Collider, float>();
+        private float primaryHitTime = -1f;
 
         public bool IsAttacking => isAttacking;
         public int CurrentCombo => currentCombo;
@@ -121,6 +132,13 @@ namespace ThirdPersonController
             blockDodgeSystem = GetComponent<BlockDodgeSystem>();
             actionController = GetComponent<PlayerActionController>();
             inputBuffer = GetComponent<PlayerInputBuffer>();
+            musouSystem = GetComponent<PlayerMusouSystem>();
+            statsController = GetComponent<PlayerStatsController>();
+
+            if (damageCurveProfile == null)
+            {
+                damageCurveProfile = DamageCurveProfile.GetDefaultProfile();
+            }
 
             EnsureAttackOrigin();
                 
@@ -270,9 +288,7 @@ namespace ThirdPersonController
         // 获取当前伤害倍率
         private float GetDamageMultiplier()
         {
-            if (isBerserk) return berserkDamageMultiplier;
-            
-            return GetCurrentTier() switch
+            float multiplier = GetCurrentTier() switch
             {
                 ComboTier.Tier1 => tier1DamageMultiplier,
                 ComboTier.Tier2 => tier2DamageMultiplier,
@@ -280,6 +296,18 @@ namespace ThirdPersonController
                 ComboTier.Tier4 => berserkDamageMultiplier,
                 _ => 1f
             };
+
+            if (isBerserk)
+            {
+                multiplier = berserkDamageMultiplier;
+            }
+
+            if (musouSystem != null)
+            {
+                multiplier *= musouSystem.DamageMultiplier;
+            }
+
+            return multiplier;
         }
 
         private void HandleCooldowns()
@@ -484,8 +512,11 @@ namespace ThirdPersonController
             currentStepIndex = stepIndex;
             currentStep = step;
             currentStepStartTime = Time.time;
-            currentStepEndTime = currentStepStartTime + step.hitDelay + step.recoveryTime;
+            float additionalHitDelay = GetMaxAdditionalHitDelay(step);
+            currentStepEndTime = currentStepStartTime + step.hitDelay + additionalHitDelay + step.recoveryTime;
             attackHitTriggered = false;
+            primaryHitTime = -1f;
+            lastHitTimes.Clear();
             queuedNextAttack = false;
             queuedStepIndex = -1;
 
@@ -572,6 +603,8 @@ namespace ThirdPersonController
             queuedNextAttack = false;
             queuedStepIndex = -1;
             attackBuffered = false;
+            lastHitTimes.Clear();
+            primaryHitTime = -1f;
             if (inputBuffer != null)
             {
                 inputBuffer.ClearAction(BufferedActionType.Attack);
@@ -655,6 +688,15 @@ namespace ThirdPersonController
             return maxComboCount;
         }
 
+        public void SetMaxComboStepsUnlocked(int steps)
+        {
+            maxComboStepsUnlocked = steps;
+            if (maxComboStepsUnlocked < 0)
+            {
+                maxComboStepsUnlocked = 0;
+            }
+        }
+
         private bool IsWithinComboWindow()
         {
             if (currentStep == null)
@@ -670,7 +712,13 @@ namespace ThirdPersonController
         {
             if (comboDefinition == null)
             {
-                return 0;
+                return GetMaxComboStepsUnlocked() > 0 ? 0 : -1;
+            }
+
+            int allowedSteps = GetMaxComboStepsUnlocked();
+            if (allowedSteps <= 0)
+            {
+                return -1;
             }
 
             if (currentStepIndex < 0)
@@ -684,11 +732,22 @@ namespace ThirdPersonController
             }
 
             int nextIndex = currentStep.nextStepIndex >= 0 ? currentStep.nextStepIndex : currentStepIndex + 1;
+            if (nextIndex >= allowedSteps)
+            {
+                return -1;
+            }
+
             return comboDefinition.HasStep(nextIndex) ? nextIndex : -1;
         }
 
         private AttackStep GetStepDefinition(int stepIndex)
         {
+            int allowedSteps = GetMaxComboStepsUnlocked();
+            if (allowedSteps <= 0 || stepIndex >= allowedSteps)
+            {
+                return null;
+            }
+
             if (comboDefinition != null && comboDefinition.HasStep(stepIndex))
             {
                 return comboDefinition.GetStep(stepIndex);
@@ -725,8 +784,107 @@ namespace ThirdPersonController
             fallbackStep.radius = attackRadius;
             fallbackStep.comboWindowEnd = comboWindowTime;
             fallbackStep.animationComboIndex = Mathf.Clamp(stepIndex + 1, 1, 3);
+            fallbackStep.forwardOffset = 0f;
+            fallbackStep.heightOffset = 0f;
+            fallbackStep.perTargetHitCooldown = 0f;
+            if (fallbackStep.additionalHitDelays != null)
+            {
+                fallbackStep.additionalHitDelays.Clear();
+            }
 
             return fallbackStep;
+        }
+
+        private int GetMaxComboStepsUnlocked()
+        {
+            int totalSteps = comboDefinition != null ? comboDefinition.steps.Count : 1;
+            if (maxComboStepsUnlocked <= 0)
+            {
+                return totalSteps;
+            }
+
+            return Mathf.Clamp(maxComboStepsUnlocked, 0, totalSteps);
+        }
+
+        private Vector3 GetAttackCenter(AttackStep step, out Vector3 forward)
+        {
+            Transform origin = GetAttackOrigin();
+            Vector3 center = origin != null ? origin.position : transform.position;
+
+            forward = origin != null ? origin.forward : transform.forward;
+            forward.y = 0f;
+            if (forward.sqrMagnitude < 0.001f)
+            {
+                forward = transform.forward;
+                forward.y = 0f;
+            }
+            forward = forward.normalized;
+
+            float forwardOffset = step != null ? step.forwardOffset : 0f;
+            float heightOffset = step != null ? step.heightOffset : 0f;
+
+            center += forward * forwardOffset;
+            center += Vector3.up * heightOffset;
+
+            return center;
+        }
+
+        private float GetMaxAdditionalHitDelay(AttackStep step)
+        {
+            if (step == null || step.additionalHitDelays == null || step.additionalHitDelays.Count == 0)
+            {
+                return 0f;
+            }
+
+            float maxDelay = 0f;
+            for (int i = 0; i < step.additionalHitDelays.Count; i++)
+            {
+                float delay = step.additionalHitDelays[i];
+                if (delay > maxDelay)
+                {
+                    maxDelay = delay;
+                }
+            }
+
+            return maxDelay;
+        }
+
+        private List<float> GetSortedAdditionalHitDelays(AttackStep step)
+        {
+            if (step == null || step.additionalHitDelays == null || step.additionalHitDelays.Count == 0)
+            {
+                return null;
+            }
+
+            List<float> delays = new List<float>(step.additionalHitDelays);
+            delays.Sort();
+            return delays;
+        }
+
+        private float GetRangeMultiplier()
+        {
+            float multiplier = 1f;
+            if (isBerserk)
+            {
+                multiplier *= berserkAttackRangeMultiplier;
+            }
+
+            if (musouSystem != null)
+            {
+                multiplier *= musouSystem.RangeMultiplier;
+            }
+
+            return multiplier;
+        }
+
+        private float GetKnockbackMultiplier()
+        {
+            if (musouSystem == null)
+            {
+                return 1f;
+            }
+
+            return musouSystem.KnockbackMultiplier;
         }
 
         private void DoAttackHit(AttackStep step)
@@ -737,6 +895,12 @@ namespace ThirdPersonController
             }
 
             attackHitTriggered = true;
+            primaryHitTime = Time.time;
+            DetectAndDamageEnemies(step);
+        }
+
+        private void TriggerAdditionalHit(AttackStep step)
+        {
             DetectAndDamageEnemies(step);
         }
 
@@ -755,17 +919,32 @@ namespace ThirdPersonController
                 weaponTrail.emitting = true;
             }
 
-            if (!useAnimationEvents)
+            yield return new WaitForSeconds(step.hitDelay);
+            if (!attackHitTriggered)
             {
-                yield return new WaitForSeconds(step.hitDelay);
                 DoAttackHit(step);
             }
-            else
+
+            List<float> additionalHitDelays = GetSortedAdditionalHitDelays(step);
+            if (additionalHitDelays != null)
             {
-                yield return new WaitForSeconds(step.hitDelay);
-                if (!attackHitTriggered)
+                float baseHitTime = primaryHitTime > 0f ? primaryHitTime : Time.time;
+                for (int i = 0; i < additionalHitDelays.Count; i++)
                 {
-                    DoAttackHit(step);
+                    float delay = additionalHitDelays[i];
+                    if (delay < 0f)
+                    {
+                        delay = 0f;
+                    }
+
+                    float targetTime = baseHitTime + delay;
+                    float waitTime = targetTime - Time.time;
+                    if (waitTime > 0f)
+                    {
+                        yield return new WaitForSeconds(waitTime);
+                    }
+
+                    TriggerAdditionalHit(step);
                 }
             }
 
@@ -783,29 +962,53 @@ namespace ThirdPersonController
         {
             hitEnemies.Clear();
 
-            Transform origin = GetAttackOrigin();
-            if (origin == null)
-            {
-                return;
-            }
+            Vector3 attackForward;
+            Vector3 attackCenter = GetAttackCenter(step, out attackForward);
 
             float range = step != null && step.range > 0f ? step.range : attackRange;
-            if (isBerserk && step != null && step.range > 0f)
+            if (statsController != null)
             {
-                range *= berserkAttackRangeMultiplier;
+                range = statsController.ApplyAttackRange(range);
             }
+            range *= GetRangeMultiplier();
             float angle = step != null && step.angle > 0f ? step.angle : attackAngle;
+            if (statsController != null)
+            {
+                angle = statsController.ApplyAttackAngle(angle);
+            }
             float hitRadius = step != null && step.radius > 0f ? step.radius : attackRadius;
 
             // Find all enemies in range
-            Collider[] hitColliders = Physics.OverlapSphere(origin.position, Mathf.Max(range, hitRadius), enemyLayers);
+            Collider[] hitColliders = Physics.OverlapSphere(attackCenter, Mathf.Max(range, hitRadius), enemyLayers);
             
             // 计算伤害倍率
             float damageMultiplier = GetDamageMultiplier();
             int baseDamage = step != null ? step.baseDamage : attackDamage;
+            if (statsController != null)
+            {
+                baseDamage = statsController.ApplyAttackDamage(baseDamage);
+            }
+
+            float damageCurveMultiplier = 1f;
+            if (damageCurveProfile != null)
+            {
+                damageCurveMultiplier = damageCurveProfile.GetDamageMultiplier(baseDamage);
+            }
             float stepMultiplier = step != null ? step.damageMultiplier : 1f;
-            int finalDamage = Mathf.RoundToInt(baseDamage * stepMultiplier * damageMultiplier);
+            int finalDamage = Mathf.RoundToInt(baseDamage * stepMultiplier * damageMultiplier * damageCurveMultiplier);
             float knockback = step != null ? step.knockback : attackKnockback;
+            if (statsController != null)
+            {
+                knockback = statsController.ApplyAttackKnockback(knockback);
+            }
+            if (damageCurveProfile != null)
+            {
+                knockback *= damageCurveProfile.GetKnockbackMultiplier(baseDamage);
+            }
+            knockback *= GetKnockbackMultiplier();
+
+            float perTargetCooldown = step != null ? Mathf.Max(0f, step.perTargetHitCooldown) : 0f;
+            float now = Time.time;
             
             // 计算治疗量（Tier3以上吸血）
             int totalDamageDealt = 0;
@@ -816,13 +1019,34 @@ namespace ThirdPersonController
                 {
                     continue;
                 }
+                hitEnemies.Add(hitCollider);
+
+                if (lastHitTimes.TryGetValue(hitCollider, out float lastHitTime))
+                {
+                    if (perTargetCooldown <= 0f)
+                    {
+                        continue;
+                    }
+
+                    if (now - lastHitTime < perTargetCooldown)
+                    {
+                        continue;
+                    }
+                }
 
                 // Check angle
-                Vector3 directionToEnemy = (hitCollider.transform.position - transform.position).normalized;
-                float angleToEnemy = Vector3.Angle(transform.forward, directionToEnemy);
-                float distanceToEnemy = Vector3.Distance(origin.position, hitCollider.transform.position);
+                Vector3 toEnemy = hitCollider.transform.position - attackCenter;
+                toEnemy.y = 0f;
+                float distanceToEnemy = toEnemy.magnitude;
+                if (distanceToEnemy <= 0.001f || distanceToEnemy > range)
+                {
+                    continue;
+                }
 
-                if (distanceToEnemy <= range && angleToEnemy <= angle * 0.5f)
+                Vector3 directionToEnemy = toEnemy / distanceToEnemy;
+                float angleToEnemy = Vector3.Angle(attackForward, directionToEnemy);
+
+                if (angleToEnemy <= angle * 0.5f)
                 {
                     // Apply damage
                     EnemyHealth enemyHealth = hitCollider.GetComponent<EnemyHealth>();
@@ -840,7 +1064,7 @@ namespace ThirdPersonController
                         }
                         
                         totalDamageDealt += finalDamage;
-                        hitEnemies.Add(hitCollider);
+                        lastHitTimes[hitCollider] = now;
                         GameEvents.DamageDealt(finalDamage, hitCollider.transform.position, false);
                         GameEvents.ShowDamageText(finalDamage, hitCollider.transform.position, false);
                         if (hitStopDuration > 0f)
@@ -936,26 +1160,32 @@ namespace ThirdPersonController
 
         private void OnDrawGizmosSelected()
         {
-            Transform origin = GetAttackOrigin();
-            if (origin == null)
-            {
-                return;
-            }
+            Vector3 attackForward;
+            Vector3 attackCenter = GetAttackCenter(currentStep, out attackForward);
 
             float range = currentStep != null && currentStep.range > 0f ? currentStep.range : attackRange;
+            if (statsController != null)
+            {
+                range = statsController.ApplyAttackRange(range);
+            }
+            range *= GetRangeMultiplier();
             float angle = currentStep != null && currentStep.angle > 0f ? currentStep.angle : attackAngle;
+            if (statsController != null)
+            {
+                angle = statsController.ApplyAttackAngle(angle);
+            }
 
             // Draw attack range
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(origin.position, range);
+            Gizmos.DrawWireSphere(attackCenter, range);
 
             // Draw attack angle
-            Vector3 leftBoundary = Quaternion.Euler(0, -angle * 0.5f, 0) * transform.forward;
-            Vector3 rightBoundary = Quaternion.Euler(0, angle * 0.5f, 0) * transform.forward;
+            Vector3 leftBoundary = Quaternion.Euler(0, -angle * 0.5f, 0) * attackForward;
+            Vector3 rightBoundary = Quaternion.Euler(0, angle * 0.5f, 0) * attackForward;
 
             Gizmos.color = Color.yellow;
-            Gizmos.DrawRay(transform.position, leftBoundary * range);
-            Gizmos.DrawRay(transform.position, rightBoundary * range);
+            Gizmos.DrawRay(attackCenter, leftBoundary * range);
+            Gizmos.DrawRay(attackCenter, rightBoundary * range);
         }
 
         private Transform GetAttackOrigin()

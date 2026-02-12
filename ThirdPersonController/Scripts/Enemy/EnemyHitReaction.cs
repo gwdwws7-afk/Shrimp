@@ -17,6 +17,9 @@ namespace ThirdPersonController
         public float knockbackThreshold = 2f;
         public float knockdownThreshold = 6f;
 
+        [Header("Profile")]
+        public EnemyHitReactionProfile profile;
+
         [Header("Flinch")]
         public float flinchDuration = 0.2f;
 
@@ -37,17 +40,26 @@ namespace ThirdPersonController
         private NavMeshAgent agent;
         private EnemyAI ai;
         private Coroutine reactionRoutine;
+        private EnemyHitReactionType lastReactionType = EnemyHitReactionType.Flinch;
+
+        public EnemyHitReactionType LastReactionType => lastReactionType;
 
         private void Awake()
         {
             animator = GetComponent<Animator>();
             agent = GetComponent<NavMeshAgent>();
             ai = GetComponent<EnemyAI>();
+
+            if (profile == null)
+            {
+                profile = EnemyHitReactionProfile.GetDefaultProfile();
+            }
         }
 
-        public void ApplyHit(Vector3 damageSource, float knockbackForce)
+        public EnemyHitReactionType ApplyHit(Vector3 damageSource, float knockbackForce)
         {
             EnemyHitReactionType reactionType = GetReactionType(knockbackForce);
+            lastReactionType = reactionType;
 
             if (reactionRoutine != null)
             {
@@ -55,6 +67,7 @@ namespace ThirdPersonController
             }
 
             reactionRoutine = StartCoroutine(ReactionRoutine(reactionType, damageSource));
+            return reactionType;
         }
 
         public void CancelReaction()
@@ -76,17 +89,39 @@ namespace ThirdPersonController
 
             Vector3 knockbackDirection = GetKnockbackDirection(damageSource);
 
+            float flinchTime = flinchDuration;
+            float knockbackTime = knockbackDuration;
+            float knockbackDist = knockbackDistance;
+            float knockdownTime = knockdownDuration;
+            float knockdownDist = knockdownDistance;
+            float knockdownRecover = knockdownRecoverTime;
+            float knockdownLift = 0f;
+            if (profile != null)
+            {
+                flinchTime = profile.flinchDuration;
+                knockbackTime = profile.knockbackDuration;
+                knockbackDist = profile.knockbackDistance;
+                knockdownTime = profile.knockdownDuration;
+                knockdownDist = profile.knockdownDistance;
+                knockdownRecover = profile.knockdownRecoverTime;
+                knockdownLift = profile.knockdownLift;
+            }
+
             switch (reactionType)
             {
                 case EnemyHitReactionType.Flinch:
-                    yield return new WaitForSeconds(flinchDuration);
+                    yield return new WaitForSeconds(flinchTime);
                     break;
                 case EnemyHitReactionType.Knockback:
-                    yield return MoveKnockback(knockbackDirection, knockbackDistance, knockbackDuration);
+                    yield return MoveKnockback(knockbackDirection, knockbackDist, knockbackTime);
                     break;
                 case EnemyHitReactionType.Knockdown:
-                    yield return MoveKnockback(knockbackDirection, knockdownDistance, knockdownDuration);
-                    yield return new WaitForSeconds(knockdownRecoverTime);
+                    yield return MoveKnockback(knockbackDirection, knockdownDist, knockdownTime);
+                    if (knockdownLift > 0f)
+                    {
+                        yield return MoveLift(knockdownLift, knockdownTime);
+                    }
+                    yield return new WaitForSeconds(knockdownRecover);
                     break;
             }
 
@@ -96,12 +131,20 @@ namespace ThirdPersonController
 
         private EnemyHitReactionType GetReactionType(float knockbackForce)
         {
-            if (knockbackForce >= knockdownThreshold)
+            float knockback = knockbackThreshold;
+            float knockdown = knockdownThreshold;
+            if (profile != null)
+            {
+                knockback = profile.knockbackThreshold;
+                knockdown = profile.knockdownThreshold;
+            }
+
+            if (knockbackForce >= knockdown)
             {
                 return EnemyHitReactionType.Knockdown;
             }
 
-            if (knockbackForce >= knockbackThreshold)
+            if (knockbackForce >= knockback)
             {
                 return EnemyHitReactionType.Knockback;
             }
@@ -166,6 +209,27 @@ namespace ThirdPersonController
             }
 
             transform.position = targetPosition;
+        }
+
+        private IEnumerator MoveLift(float height, float duration)
+        {
+            if (height <= 0f || duration <= 0f)
+            {
+                yield break;
+            }
+
+            Vector3 start = transform.position;
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                float t = elapsed / duration;
+                float lift = Mathf.Sin(t * Mathf.PI) * height;
+                transform.position = new Vector3(start.x, start.y + lift, start.z);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            transform.position = start;
         }
 
         private void SuspendAgentControl()

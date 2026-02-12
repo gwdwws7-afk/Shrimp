@@ -48,6 +48,12 @@ namespace ThirdPersonController
         public float range = 2f;
         public float angle = 120f;
         public float radius = 1f;
+        public float forwardOffset = 0f;
+        public float heightOffset = 0f;
+
+        [Header("Multi-Hit")]
+        public List<float> additionalHitDelays = new List<float>();
+        public float perTargetHitCooldown = 0f;
 
         [Header("Timing")]
         public float hitDelay = 0.15f;

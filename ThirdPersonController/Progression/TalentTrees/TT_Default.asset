@@ -1,0 +1,123 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c7d0c2e1f0c4c3a9c2b4d6e7f8a9b0c, type: 3}
+  m_Name: TT_Default
+  m_EditorClassIdentifier: 
+  nodes:
+  - id: offense_1
+    title: Deep Strikes
+    branch: 0
+    cost: 1
+    prerequisites: []
+    modifiers:
+    - stat: 0
+      type: 1
+      value: 0.08
+  - id: combo_2
+    title: Combo Step II
+    branch: 0
+    cost: 1
+    prerequisites:
+    - offense_1
+    modifiers: []
+  - id: offense_2
+    title: Riptide Pressure
+    branch: 0
+    cost: 1
+    prerequisites:
+    - offense_1
+    modifiers:
+    - stat: 0
+      type: 1
+      value: 0.08
+  - id: combo_3
+    title: Combo Step III
+    branch: 0
+    cost: 1
+    prerequisites:
+    - combo_2
+    modifiers: []
+  - id: offense_3
+    title: Wide Sweep
+    branch: 0
+    cost: 1
+    prerequisites:
+    - offense_2
+    modifiers:
+    - stat: 1
+      type: 1
+      value: 0.1
+  - id: control_1
+    title: Arc Mastery
+    branch: 1
+    cost: 1
+    prerequisites: []
+    modifiers:
+    - stat: 2
+      type: 0
+      value: 10
+  - id: musou_unlock
+    title: Musou Awakening
+    branch: 1
+    cost: 1
+    prerequisites:
+    - control_1
+    modifiers: []
+  - id: control_2
+    title: Shock Impact
+    branch: 1
+    cost: 1
+    prerequisites:
+    - control_1
+    modifiers:
+    - stat: 3
+      type: 1
+      value: 0.15
+  - id: control_3
+    title: Surge Focus
+    branch: 1
+    cost: 1
+    prerequisites:
+    - control_2
+    modifiers:
+    - stat: 7
+      type: 1
+      value: 0.15
+  - id: survival_1
+    title: Abyss Shell
+    branch: 2
+    cost: 1
+    prerequisites: []
+    modifiers:
+    - stat: 4
+      type: 1
+      value: 0.1
+  - id: survival_2
+    title: Deep Reserves
+    branch: 2
+    cost: 1
+    prerequisites:
+    - survival_1
+    modifiers:
+    - stat: 5
+      type: 1
+      value: 0.1
+  - id: survival_3
+    title: Tidal Footwork
+    branch: 2
+    cost: 1
+    prerequisites:
+    - survival_2
+    modifiers:
+    - stat: 6
+      type: 1
+      value: 0.08

@@ -19,23 +19,38 @@ namespace ThirdPersonController
         
         [Header("击退")]
         public float knockbackForce = 8f;
+
+        private void OnEnable()
+        {
+            if (category == SkillCategory.None)
+            {
+                category = SkillCategory.Burst;
+            }
+
+            if (useAnimationEvents)
+            {
+                impactDelay = 0.12f;
+                recoveryDelay = 0.2f;
+                impactShakeDuration = 0.1f;
+                impactShakeStrength = 0.15f;
+            }
+        }
         
         public override void Execute(Transform caster, Vector3 targetPosition)
         {
-            // 播放特效
-            SpawnEffect(caster.position, caster.rotation);
-            PlaySound(castSound, caster.position);
-            
-            // 开始旋风Coroutine
-            caster.GetComponent<MonoBehaviour>().StartCoroutine(
-                WhirlwindCoroutine(caster));
-            
             // 触发动画
             Animator animator = caster.GetComponent<Animator>();
             if (animator != null)
             {
                 animator.SetTrigger("Whirlwind");
             }
+
+            StartSkillTimeline(caster, caster.position, caster.rotation, () =>
+            {
+                // 开始旋风Coroutine
+                caster.GetComponent<MonoBehaviour>().StartCoroutine(
+                    WhirlwindCoroutine(caster));
+            });
         }
         
         private IEnumerator WhirlwindCoroutine(Transform caster)

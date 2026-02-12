@@ -27,6 +27,7 @@ namespace ThirdPersonController
         public PlayerInputHandler inputHandler;
         public PlayerActionController actionController;
         public PlayerInputBuffer inputBuffer;
+        public SkillTimelineController timelineController;
         
         // 技能释放原点（通常是从玩家位置稍微前方）
         public Vector3 CastOrigin => playerTransform.position + playerTransform.forward * 0.5f + Vector3.up * 1f;
@@ -47,6 +48,9 @@ namespace ThirdPersonController
 
             if (inputBuffer == null)
                 inputBuffer = GetComponent<PlayerInputBuffer>();
+
+            if (timelineController == null)
+                timelineController = GetComponent<SkillTimelineController>();
         }
         
         private void Update()
@@ -145,7 +149,7 @@ namespace ThirdPersonController
                 if (!actionController.TryStartAction(
                     PlayerActionState.Skill,
                     ActionPriority.Skill,
-                    skill.castDuration,
+                    skill.GetTimelineDuration(),
                     skill.lockMovement,
                     skill.lockRotation,
                     true,
@@ -160,7 +164,7 @@ namespace ThirdPersonController
             Vector3 targetPosition = GetTargetPosition();
             
             // 执行技能
-            skill.Execute(playerTransform, targetPosition);
+            skill.ExecuteWithTimeline(playerTransform, targetPosition, timelineController);
             
             // 消耗耐力
             if (!skill.ConsumeStamina(staminaSystem))

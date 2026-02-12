@@ -1,0 +1,8 @@
+namespace ThirdPersonController
+{
+    public interface IPoolable
+    {
+        void OnSpawned();
+        void OnDespawned();
+    }
+}

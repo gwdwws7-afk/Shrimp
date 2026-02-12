@@ -37,6 +37,19 @@ namespace ThirdPersonController
         
         public float StaminaPercent => currentStamina / maxStamina;
         public bool HasStamina => currentStamina > 0 && !isExhausted;
+
+        public void ApplyMaxStamina(float newMaxStamina, bool keepPercent)
+        {
+            if (newMaxStamina < 1f)
+            {
+                newMaxStamina = 1f;
+            }
+
+            float percent = keepPercent ? StaminaPercent : 1f;
+            maxStamina = newMaxStamina;
+            currentStamina = Mathf.Clamp(maxStamina * percent, 0f, maxStamina);
+            NotifyStaminaChanged();
+        }
         
         private void Awake()
         {

@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Collections.Generic;
 
 namespace ThirdPersonController
 {
@@ -27,6 +28,11 @@ namespace ThirdPersonController
         public int unlockedLevels = 1;
         public int enemiesKilled = 0;
         public int highestCombo = 0;
+        public int talentPoints = 0;
+        public int killsSinceLastTalentPoint = 0;
+        public List<string> unlockedTalentNodes = new List<string>();
+        public List<string> ownedPearlIds = new List<string>();
+        public List<string> equippedPearlIds = new List<string>();
         
         // 设置数据
         public float masterVolume = 1f;
@@ -73,6 +79,7 @@ namespace ThirdPersonController
         {
             base.OnAwake();
             CurrentData = new GameData();
+            EnsureProgressionLists();
             LoadSettings(); // 启动时加载设置
         }
         
@@ -150,6 +157,7 @@ namespace ThirdPersonController
                 {
                     Debug.Log("⚠️ 没有找到存档文件，创建新游戏");
                     CurrentData = new GameData();
+                    EnsureProgressionLists();
                     return false;
                 }
                 
@@ -164,6 +172,7 @@ namespace ThirdPersonController
                 
                 // 反序列化
                 CurrentData = JsonUtility.FromJson<GameData>(json);
+                EnsureProgressionLists();
                 
                 Debug.Log($"✅ 游戏已加载: {CurrentData.saveTime}");
                 OnLoadCompleted?.Invoke();
@@ -173,6 +182,7 @@ namespace ThirdPersonController
             {
                 Debug.LogError($"❌ 加载游戏失败: {e.Message}");
                 CurrentData = new GameData();
+                EnsureProgressionLists();
                 return false;
             }
         }
@@ -369,8 +379,34 @@ namespace ThirdPersonController
                 Debug.Log($"当前关卡: {CurrentData.currentLevel}");
                 Debug.Log($"击杀数: {CurrentData.enemiesKilled}");
                 Debug.Log($"最高连击: {CurrentData.highestCombo}");
+                Debug.Log($"天赋点: {CurrentData.talentPoints}");
+                Debug.Log($"已解锁天赋: {CurrentData.unlockedTalentNodes?.Count ?? 0}");
+                Debug.Log($"珍珠数量: {CurrentData.ownedPearlIds?.Count ?? 0}");
                 Debug.Log($"游戏时长: {CurrentData.totalPlayTime:F1}秒");
                 Debug.Log($"最后保存: {CurrentData.saveTime}");
+            }
+        }
+
+        private void EnsureProgressionLists()
+        {
+            if (CurrentData == null)
+            {
+                return;
+            }
+
+            if (CurrentData.unlockedTalentNodes == null)
+            {
+                CurrentData.unlockedTalentNodes = new List<string>();
+            }
+
+            if (CurrentData.ownedPearlIds == null)
+            {
+                CurrentData.ownedPearlIds = new List<string>();
+            }
+
+            if (CurrentData.equippedPearlIds == null)
+            {
+                CurrentData.equippedPearlIds = new List<string>();
             }
         }
         

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c7b6a5d4e3f4a2b9c8d7e6f5a4b3c2d, type: 3}
+  m_Name: DefaultHitReactionProfile
+  m_EditorClassIdentifier: 
+  knockbackThreshold: 1.5
+  knockdownThreshold: 4.2
+  flinchDuration: 0.15
+  knockbackDuration: 0.18
+  knockbackDistance: 1.9
+  knockdownDuration: 0.24
+  knockdownDistance: 3.8
+  knockdownRecoverTime: 0.5
+  knockdownLift: 0.6

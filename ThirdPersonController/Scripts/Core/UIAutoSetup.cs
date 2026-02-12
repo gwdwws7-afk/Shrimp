@@ -46,6 +46,7 @@ namespace ThirdPersonController
             // 3. 配置各个UI组件
             SetupHPBar(uiManager, canvas);
             SetupStaminaBar(uiManager, canvas);
+            SetupMusouBar(uiManager, canvas);
             SetupComboCounter(uiManager, canvas);
             SetupSkillBar(uiManager, canvas);
             SetupDamageTextSystem(uiManager, canvas);
@@ -292,6 +293,31 @@ namespace ThirdPersonController
                 uiManager.staminaBar = staminaBar;
             }
         }
+
+        /// <summary>
+        /// 设置无双槽UI
+        /// </summary>
+        private void SetupMusouBar(UIManager uiManager, Canvas canvas)
+        {
+            if (uiManager.musouBar != null)
+            {
+                if (logDebugInfo) Debug.Log("✓ MusouBar已配置");
+                return;
+            }
+
+            UI_MusouBar musouBar = FindObjectOfType<UI_MusouBar>();
+
+            if (musouBar == null && createIfNotExists)
+            {
+                musouBar = CreateMusouBarUI(canvas);
+                if (logDebugInfo) Debug.Log("✓ 创建MusouBar UI");
+            }
+
+            if (musouBar != null)
+            {
+                uiManager.musouBar = musouBar;
+            }
+        }
         
         /// <summary>
         /// 创建耐力条UI元素
@@ -361,6 +387,113 @@ namespace ThirdPersonController
             staminaBar.fillImage = fillImage;
             
             return staminaBar;
+        }
+
+        /// <summary>
+        /// 创建无双槽UI元素
+        /// </summary>
+        private UI_MusouBar CreateMusouBarUI(Canvas canvas)
+        {
+            GameObject musouObj = new GameObject("MusouBar");
+            musouObj.transform.SetParent(canvas.transform, false);
+
+            RectTransform rectTransform = musouObj.AddComponent<RectTransform>();
+            rectTransform.anchorMin = new Vector2(0, 1);
+            rectTransform.anchorMax = new Vector2(0, 1);
+            rectTransform.pivot = new Vector2(0, 1);
+            rectTransform.anchoredPosition = new Vector2(20, -105);
+            rectTransform.sizeDelta = new Vector2(300, 22);
+
+            UI_MusouBar musouBar = musouObj.AddComponent<UI_MusouBar>();
+
+            // 背景
+            GameObject bgObj = new GameObject("Background");
+            bgObj.transform.SetParent(musouObj.transform, false);
+            Image bgImage = bgObj.AddComponent<Image>();
+            bgImage.color = new Color(0.2f, 0.2f, 0.2f, 0.8f);
+
+            RectTransform bgRect = bgObj.GetComponent<RectTransform>();
+            bgRect.anchorMin = Vector2.zero;
+            bgRect.anchorMax = Vector2.one;
+            bgRect.offsetMin = Vector2.zero;
+            bgRect.offsetMax = Vector2.zero;
+
+            // Slider
+            GameObject sliderObj = new GameObject("Slider");
+            sliderObj.transform.SetParent(musouObj.transform, false);
+            Slider slider = sliderObj.AddComponent<Slider>();
+
+            RectTransform sliderRect = sliderObj.GetComponent<RectTransform>();
+            sliderRect.anchorMin = Vector2.zero;
+            sliderRect.anchorMax = Vector2.one;
+            sliderRect.offsetMin = new Vector2(3, 3);
+            sliderRect.offsetMax = new Vector2(-3, -3);
+
+            // Fill Area
+            GameObject fillAreaObj = new GameObject("Fill Area");
+            fillAreaObj.transform.SetParent(sliderObj.transform, false);
+            RectTransform fillAreaRect = fillAreaObj.AddComponent<RectTransform>();
+            fillAreaRect.anchorMin = Vector2.zero;
+            fillAreaRect.anchorMax = Vector2.one;
+            fillAreaRect.offsetMin = Vector2.zero;
+            fillAreaRect.offsetMax = Vector2.zero;
+
+            // Fill
+            GameObject fillObj = new GameObject("Fill");
+            fillObj.transform.SetParent(fillAreaObj.transform, false);
+            Image fillImage = fillObj.AddComponent<Image>();
+            fillImage.color = new Color(0.2f, 0.6f, 1f);
+
+            RectTransform fillRect = fillObj.GetComponent<RectTransform>();
+            fillRect.anchorMin = Vector2.zero;
+            fillRect.anchorMax = Vector2.one;
+            fillRect.offsetMin = Vector2.zero;
+            fillRect.offsetMax = Vector2.zero;
+
+            slider.fillRect = fillRect;
+            slider.value = 0f;
+
+            // Label
+            GameObject labelObj = new GameObject("MusouLabel");
+            labelObj.transform.SetParent(musouObj.transform, false);
+            Text labelText = labelObj.AddComponent<Text>();
+            labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            labelText.fontSize = 16;
+            labelText.color = new Color(1f, 1f, 1f, 0.85f);
+            labelText.alignment = TextAnchor.MiddleLeft;
+            labelText.text = "无双";
+
+            RectTransform labelRect = labelObj.GetComponent<RectTransform>();
+            labelRect.anchorMin = new Vector2(0, 0);
+            labelRect.anchorMax = new Vector2(0, 1);
+            labelRect.pivot = new Vector2(0, 0.5f);
+            labelRect.anchoredPosition = new Vector2(6, 0);
+            labelRect.sizeDelta = new Vector2(60, 0);
+
+            // Ready Text
+            GameObject readyObj = new GameObject("ReadyText");
+            readyObj.transform.SetParent(musouObj.transform, false);
+            Text readyText = readyObj.AddComponent<Text>();
+            readyText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            readyText.fontSize = 16;
+            readyText.color = new Color(1f, 0.8f, 0.2f, 1f);
+            readyText.alignment = TextAnchor.UpperLeft;
+            readyText.text = "可发动 V";
+
+            RectTransform readyRect = readyObj.GetComponent<RectTransform>();
+            readyRect.anchorMin = new Vector2(0, 1);
+            readyRect.anchorMax = new Vector2(0, 1);
+            readyRect.pivot = new Vector2(0, 0);
+            readyRect.anchoredPosition = new Vector2(0, 18);
+            readyRect.sizeDelta = new Vector2(140, 20);
+
+            // Bind
+            musouBar.musouSlider = slider;
+            musouBar.fillImage = fillImage;
+            musouBar.labelText = labelText;
+            musouBar.readyText = readyText;
+
+            return musouBar;
         }
         
         /// <summary>
@@ -652,6 +785,7 @@ namespace ThirdPersonController
                 Debug.Log($"UIManager: ✓");
                 Debug.Log($"  - HPBar: {(uiManager.hpBar != null ? "✓" : "✗")}");
                 Debug.Log($"  - StaminaBar: {(uiManager.staminaBar != null ? "✓" : "✗")}");
+                Debug.Log($"  - MusouBar: {(uiManager.musouBar != null ? "✓" : "✗")}");
                 Debug.Log($"  - ComboCounter: {(uiManager.comboCounter != null ? "✓" : "✗")}");
                 Debug.Log($"  - SkillBar: {(uiManager.skillBar != null ? "✓" : "✗")}");
                 Debug.Log($"  - DamageTextParent: {(uiManager.damageTextParent != null ? "✓" : "✗")}");

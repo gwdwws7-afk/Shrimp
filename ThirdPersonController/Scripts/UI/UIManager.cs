@@ -18,6 +18,7 @@ namespace ThirdPersonController
         [Header("UI组件")]
         public UI_HPBar hpBar;
         public UI_StaminaBar staminaBar;
+        public UI_MusouBar musouBar;
         public UI_ComboCounter comboCounter;
         public UI_SkillBar skillBar;
         
@@ -28,6 +29,10 @@ namespace ThirdPersonController
         // UI状态
         private bool isPaused = false;
         private Stack<GameObject> uiStack = new Stack<GameObject>();  // UI层级栈
+
+        private string toastMessage = string.Empty;
+        private float toastTimer = 0f;
+        private float toastDuration = 0f;
         
         // 事件
         public System.Action<bool> OnPauseStateChanged;
@@ -273,8 +278,29 @@ namespace ThirdPersonController
         /// </summary>
         private void ShowMessage(string message, float duration)
         {
-            // TODO: 实现消息提示系统
-            Debug.Log($"[消息] {message}");
+            toastMessage = message;
+            toastDuration = Mathf.Max(0.1f, duration);
+            toastTimer = toastDuration;
+        }
+
+        private void OnGUI()
+        {
+            if (toastTimer <= 0f || string.IsNullOrEmpty(toastMessage))
+            {
+                return;
+            }
+
+            toastTimer -= Time.unscaledDeltaTime;
+            float alpha = Mathf.Clamp01(toastTimer / toastDuration);
+            GUIStyle style = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 16,
+                alignment = TextAnchor.UpperCenter,
+                normal = { textColor = new Color(1f, 1f, 1f, alpha) }
+            };
+
+            Rect rect = new Rect(0, 20, Screen.width, 30);
+            GUI.Label(rect, toastMessage, style);
         }
         
         #endregion

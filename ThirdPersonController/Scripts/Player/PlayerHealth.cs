@@ -36,6 +36,19 @@ namespace ThirdPersonController
         public delegate void DeathEvent();
         public event DeathEvent OnDeath;
 
+        public void ApplyMaxHealth(int newMaxHealth, bool keepPercent)
+        {
+            if (newMaxHealth < 1)
+            {
+                newMaxHealth = 1;
+            }
+
+            float percent = keepPercent ? HealthPercent : 1f;
+            maxHealth = newMaxHealth;
+            currentHealth = Mathf.Clamp(Mathf.RoundToInt(maxHealth * percent), 0, maxHealth);
+            OnHealthChanged?.Invoke(currentHealth, maxHealth);
+        }
+
         private void Awake()
         {
             currentHealth = maxHealth;

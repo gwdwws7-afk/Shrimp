@@ -33,6 +33,14 @@ namespace ThirdPersonController
         [Header("受伤效果")]
         public float damageFlashDuration = 0.2f;
         public float damageShakeStrength = 0.3f;
+
+        [Header("命中震动")]
+        public float flinchShakeDuration = 0.08f;
+        public float flinchShakeStrength = 0.12f;
+        public float knockbackShakeDuration = 0.12f;
+        public float knockbackShakeStrength = 0.2f;
+        public float knockdownShakeDuration = 0.18f;
+        public float knockdownShakeStrength = 0.28f;
         
         private void Awake()
         {
@@ -78,6 +86,7 @@ namespace ThirdPersonController
             GameEvents.OnComboChanged += OnComboChanged;
             GameEvents.OnBerserkStateChanged += OnBerserkStateChanged;
             GameEvents.OnDamageDealt += OnDamageDealt;
+            GameEvents.OnEnemyHit += OnEnemyHit;
         }
         
         private void UnsubscribeFromEvents()
@@ -86,6 +95,7 @@ namespace ThirdPersonController
             GameEvents.OnComboChanged -= OnComboChanged;
             GameEvents.OnBerserkStateChanged -= OnBerserkStateChanged;
             GameEvents.OnDamageDealt -= OnDamageDealt;
+            GameEvents.OnEnemyHit -= OnEnemyHit;
         }
         
         #region 相机震动
@@ -272,6 +282,22 @@ namespace ThirdPersonController
             if (isCritical)
             {
                 ShakeCamera(0.1f, 0.1f, 5);
+            }
+        }
+
+        private void OnEnemyHit(int damage, Vector3 position, EnemyHitReactionType reactionType)
+        {
+            switch (reactionType)
+            {
+                case EnemyHitReactionType.Knockdown:
+                    ShakeCamera(knockdownShakeDuration, knockdownShakeStrength, 10);
+                    break;
+                case EnemyHitReactionType.Knockback:
+                    ShakeCamera(knockbackShakeDuration, knockbackShakeStrength, 8);
+                    break;
+                default:
+                    ShakeCamera(flinchShakeDuration, flinchShakeStrength, 6);
+                    break;
             }
         }
         

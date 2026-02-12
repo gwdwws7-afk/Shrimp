@@ -89,7 +89,7 @@ namespace ThirdPersonController
                     spawnPos += new Vector3(2f, 0, 2f);
                 }
                 
-                GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+                GameObject enemy = ObjectPoolManager.Spawn(enemyPrefab, spawnPos, Quaternion.identity);
                 
                 // 设置敌人血量
                 EnemyHealth health = enemy.GetComponent<EnemyHealth>();
@@ -114,7 +114,7 @@ namespace ThirdPersonController
             EnemyHealth[] enemies = FindObjectsOfType<EnemyHealth>();
             foreach (var enemy in enemies)
             {
-                Destroy(enemy.gameObject);
+                ObjectPoolManager.Despawn(enemy.gameObject);
             }
             
             Debug.Log($"🗑️ 清理了 {enemies.Length} 个敌人");

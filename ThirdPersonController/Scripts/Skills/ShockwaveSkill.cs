@@ -14,22 +14,38 @@ namespace ThirdPersonController
         public float coneRange = 8f;        // 扇形距离
         public float stunDuration = 2f;     // 眩晕时间
         public float knockbackForce = 12f;  // 击退力度
+
+        private void OnEnable()
+        {
+            if (category == SkillCategory.None)
+            {
+                category = SkillCategory.CrowdControl;
+            }
+
+            if (useAnimationEvents)
+            {
+                impactDelay = 0.22f;
+                recoveryDelay = 0.28f;
+                impactShakeDuration = 0.12f;
+                impactShakeStrength = 0.18f;
+            }
+        }
         
         public override void Execute(Transform caster, Vector3 targetPosition)
         {
-            // 播放特效
-            SpawnEffect(caster.position + caster.forward * 2f, caster.rotation);
-            PlaySound(castSound, caster.position);
-            
             // 触发动画
             Animator animator = caster.GetComponent<Animator>();
             if (animator != null)
             {
                 animator.SetTrigger("Shockwave");
             }
-            
-            // 检测扇形范围内敌人
-            DetectAndDamage(caster);
+
+            Vector3 impactPosition = caster.position + caster.forward * 2f;
+            StartSkillTimeline(caster, impactPosition, caster.rotation, () =>
+            {
+                // 检测扇形范围内敌人
+                DetectAndDamage(caster);
+            });
         }
         
         private void DetectAndDamage(Transform caster)
@@ -74,10 +90,8 @@ namespace ThirdPersonController
                 }
             }
             
-            // 播放命中音效
-            if (hitCount > 0 && hitSound != null)
+            if (hitCount > 0)
             {
-                PlaySound(hitSound, caster.position);
                 Debug.Log($"💥 震荡波命中 {hitCount} 个敌人！");
             }
         }

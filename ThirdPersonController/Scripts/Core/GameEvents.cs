@@ -38,11 +38,28 @@ namespace ThirdPersonController
         // 狂暴模式变化
         public static event Action<bool> OnBerserkStateChanged;
         public static void BerserkStateChanged(bool isActive) => OnBerserkStateChanged?.Invoke(isActive);
+
+        // 无双值变化
+        public static event Action<float, float> OnMusouChanged;
+        public static void MusouChanged(float current, float max) => OnMusouChanged?.Invoke(current, max);
+
+        // 无双状态变化
+        public static event Action<bool> OnMusouStateChanged;
+        public static void MusouStateChanged(bool isActive) => OnMusouStateChanged?.Invoke(isActive);
+
+        // 无双疲劳状态变化
+        public static event Action<bool> OnMusouFatigueStateChanged;
+        public static void MusouFatigueStateChanged(bool isActive) => OnMusouFatigueStateChanged?.Invoke(isActive);
         
         // 造成伤害
         public static event Action<int, Vector3, bool> OnDamageDealt;
         public static void DamageDealt(int damage, Vector3 position, bool isCritical = false) 
             => OnDamageDealt?.Invoke(damage, position, isCritical);
+
+        // 敌人受击反馈
+        public static event Action<int, Vector3, EnemyHitReactionType> OnEnemyHit;
+        public static void EnemyHit(int damage, Vector3 position, EnemyHitReactionType reactionType) 
+            => OnEnemyHit?.Invoke(damage, position, reactionType);
         
         // 击杀敌人
         public static event Action<EnemyType, Vector3, int> OnEnemyKilled;
