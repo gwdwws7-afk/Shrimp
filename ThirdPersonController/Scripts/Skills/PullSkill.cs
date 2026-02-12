@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace ThirdPersonController
 {
@@ -18,6 +19,8 @@ namespace ThirdPersonController
         [Header("伤害")]
         public int landingDamage = 40;
         public float landingKnockback = 8f;
+
+        private readonly List<Collider> hitTargets = new List<Collider>();
 
         private void OnEnable()
         {
@@ -55,10 +58,17 @@ namespace ThirdPersonController
         
         private void PullEnemies(Transform caster)
         {
-            Collider[] hitColliders = Physics.OverlapSphere(caster.position, pullRadius, LayerMask.GetMask("Enemy"));
-            
-            foreach (var hitCollider in hitColliders)
+            float adjustedRadius = GetModifiedRange(caster, pullRadius);
+            HitQuery.OverlapSphere(caster.position, adjustedRadius, LayerMask.GetMask("Enemy"), hitTargets);
+
+            for (int i = 0; i < hitTargets.Count; i++)
             {
+                Collider hitCollider = hitTargets[i];
+                if (hitCollider == null)
+                {
+                    continue;
+                }
+
                 EnemyHealth enemyHealth = hitCollider.GetComponent<EnemyHealth>();
                 Rigidbody enemyRb = hitCollider.GetComponent<Rigidbody>();
                 EnemyAI enemyAI = hitCollider.GetComponent<EnemyAI>();
@@ -71,27 +81,36 @@ namespace ThirdPersonController
                     // 计算牵引方向和力度
                     Vector3 pullDirection = (caster.position - hitCollider.transform.position).normalized;
                     float distance = Vector3.Distance(caster.position, hitCollider.transform.position);
-                    float forceMultiplier = 1f - (distance / pullRadius); // 越近拉力越大
+                    float forceMultiplier = 1f - (distance / adjustedRadius); // 越近拉力越大
                     
                     // 应用牵引力
                     enemyRb.AddForce(pullDirection * pullForce * forceMultiplier + Vector3.up * liftHeight, ForceMode.Impulse);
                     
                     // 启动协程处理落地伤害
                     caster.GetComponent<MonoBehaviour>().StartCoroutine(
-                        HandleLanding(hitCollider.gameObject, enemyHealth, enemyRb, enemyAI, caster));
+                        HandleLanding(hitCollider.gameObject, enemyHealth, enemyAI, caster));
                 }
             }
             
-            if (hitColliders.Length > 0)
+            if (hitTargets.Count > 0)
             {
-                Debug.Log($"🎯 牵引了 {hitColliders.Length} 个敌人");
+                Debug.Log($"🎯 牵引了 {hitTargets.Count} 个敌人");
             }
         }
         
-        private System.Collections.IEnumerator HandleLanding(GameObject enemy, EnemyHealth health, Rigidbody rb, EnemyAI ai, Transform caster)
+        private System.Collections.IEnumerator HandleLanding(GameObject enemy, EnemyHealth health, EnemyAI ai, Transform caster)
         {
             // 等待浮空时间
             yield return new WaitForSeconds(floatDuration);
+
+            if (health == null || health.IsDead)
+            {
+                if (ai != null)
+                {
+                    ai.enabled = true;
+                }
+                yield break;
+            }
             
             // 检查是否落地
             float checkTimer = 0f;
@@ -105,7 +124,30 @@ namespace ThirdPersonController
                     hasLanded = true;
                     
                     // 造成落地伤害
-                    health.TakeDamage(landingDamage, caster.position, landingKnockback);
+                    int adjustedDamage = GetModifiedDamage(caster, landingDamage);
+                    float adjustedKnockback = GetModifiedKnockback(caster, landingKnockback);
+
+                    DamageContext context = new DamageContext
+                    {
+                        source = caster,
+                        sourceType = DamageSourceType.PlayerSkill,
+                        damage = adjustedDamage,
+                        knockback = adjustedKnockback,
+                        damageOrigin = caster.position,
+                        hitPoint = enemy.transform.position,
+                        hasHitPoint = true,
+                        isCritical = false,
+                        showDamageText = true,
+                        hitStopDuration = 0f
+                    };
+
+                    Collider targetCollider = health.GetComponent<Collider>();
+                    if (targetCollider == null)
+                    {
+                        targetCollider = enemy.GetComponentInChildren<Collider>();
+                    }
+
+                    DamageService.ApplyDamage(context, targetCollider);
                     
                     // 恢复AI
                     if (ai != null) ai.enabled = true;

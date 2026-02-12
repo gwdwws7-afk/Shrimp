@@ -8,7 +8,25 @@ namespace ThirdPersonController
         public List<StrongholdController> strongholds = new List<StrongholdController>();
         public bool autoStartFirst = true;
 
+        [Header("Completion")]
+        public bool triggerLevelCompleteOnFinish = true;
+        public bool triggerVictoryOnFinish = true;
+        public int levelId = 1;
+
         private int currentIndex = -1;
+
+        public StrongholdController ActiveStronghold
+        {
+            get
+            {
+                if (currentIndex < 0 || currentIndex >= strongholds.Count)
+                {
+                    return null;
+                }
+
+                return strongholds[currentIndex];
+            }
+        }
 
         private void Awake()
         {
@@ -54,7 +72,27 @@ namespace ThirdPersonController
 
             if (currentIndex >= 0 && currentIndex < strongholds.Count && strongholds[currentIndex] == stronghold)
             {
-                ActivateNextStronghold();
+                if (currentIndex >= strongholds.Count - 1)
+                {
+                    HandleSequenceCompleted();
+                }
+                else
+                {
+                    ActivateNextStronghold();
+                }
+            }
+        }
+
+        private void HandleSequenceCompleted()
+        {
+            if (triggerLevelCompleteOnFinish)
+            {
+                GameEvents.LevelCompleted(levelId);
+            }
+
+            if (triggerVictoryOnFinish)
+            {
+                GameEvents.GameOver(true);
             }
         }
 

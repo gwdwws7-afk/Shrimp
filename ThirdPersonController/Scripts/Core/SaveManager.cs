@@ -137,6 +137,13 @@ namespace ThirdPersonController
                 CurrentData.currentHealth = playerHealth.CurrentHealth;
                 CurrentData.maxHealth = playerHealth.MaxHealth;
             }
+
+            PlayerExperienceSystem experienceSystem = FindObjectOfType<PlayerExperienceSystem>();
+            if (experienceSystem != null)
+            {
+                CurrentData.playerLevel = experienceSystem.level;
+                CurrentData.currentExp = experienceSystem.currentExp;
+            }
             
             // 更新时间
             CurrentData.saveTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");

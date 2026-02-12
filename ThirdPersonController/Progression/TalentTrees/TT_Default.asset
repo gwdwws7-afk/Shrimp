@@ -121,3 +121,43 @@ MonoBehaviour:
     - stat: 6
       type: 1
       value: 0.08
+  - id: offense_4
+    title: Spellwake
+    branch: 0
+    cost: 1
+    prerequisites:
+    - offense_3
+    modifiers:
+    - stat: 8
+      type: 1
+      value: 0.1
+  - id: control_4
+    title: Cycle Pulse
+    branch: 1
+    cost: 1
+    prerequisites:
+    - control_3
+    modifiers:
+    - stat: 9
+      type: 1
+      value: -0.08
+  - id: control_5
+    title: Expanded Reach
+    branch: 1
+    cost: 1
+    prerequisites:
+    - control_3
+    modifiers:
+    - stat: 10
+      type: 1
+      value: 0.12
+  - id: survival_4
+    title: Breath Economy
+    branch: 2
+    cost: 1
+    prerequisites:
+    - survival_3
+    modifiers:
+    - stat: 12
+      type: 1
+      value: -0.1

@@ -170,7 +170,8 @@ namespace ThirdPersonController
                 return;
             }
 
-            UpdateSkillSlot(index, skill.icon, skill.cooldown, skill.cooldownTimer);
+            float cooldownDuration = skill.cooldownDuration > 0f ? skill.cooldownDuration : skill.cooldown;
+            UpdateSkillSlot(index, skill.icon, cooldownDuration, skill.cooldownTimer);
 
             if (skillSlots[index].icon != null)
             {

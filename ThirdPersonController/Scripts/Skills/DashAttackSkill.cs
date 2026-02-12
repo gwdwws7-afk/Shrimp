@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.Serialization;
+using System.Collections.Generic;
 
 namespace ThirdPersonController
 {
@@ -18,7 +20,13 @@ namespace ThirdPersonController
         
         [Header("无敌")]
         public bool invincibleDuringDash = true;
-        public float invincibilityDuration = 0.5f;
+        [FormerlySerializedAs("invincibilityDuration")]
+        public float dashInvincibilityDuration = 0.5f;
+
+        private readonly List<Collider> hitTargets = new List<Collider>();
+        [System.NonSerialized] private Coroutine dashRoutine;
+        [System.NonSerialized] private MonoBehaviour activeRunner;
+        [System.NonSerialized] private PlayerMovement cachedMovement;
 
         private void OnEnable()
         {
@@ -26,6 +34,8 @@ namespace ThirdPersonController
             {
                 category = SkillCategory.Mobility;
             }
+
+            endsOnRecovery = false;
 
             if (useAnimationEvents)
             {
@@ -40,9 +50,39 @@ namespace ThirdPersonController
         {
             StartSkillTimeline(caster, caster.position, caster.rotation, () =>
             {
-                caster.GetComponent<MonoBehaviour>().StartCoroutine(
-                    DashCoroutine(caster));
+                activeRunner = caster.GetComponent<MonoBehaviour>();
+                if (activeRunner != null)
+                {
+                    if (dashRoutine != null)
+                    {
+                        activeRunner.StopCoroutine(dashRoutine);
+                    }
+                    dashRoutine = activeRunner.StartCoroutine(DashCoroutine(caster));
+                }
             });
+        }
+
+        public override float GetActionDuration()
+        {
+            float dashDuration = dashSpeed > 0f ? dashDistance / dashSpeed : 0f;
+            return Mathf.Max(base.GetActionDuration(), dashDuration);
+        }
+
+        public override void OnInterrupted(Transform caster)
+        {
+            if (activeRunner != null && dashRoutine != null)
+            {
+                activeRunner.StopCoroutine(dashRoutine);
+            }
+
+            if (cachedMovement != null)
+            {
+                cachedMovement.enabled = true;
+            }
+
+            dashRoutine = null;
+            activeRunner = null;
+            cachedMovement = null;
         }
         
         private System.Collections.IEnumerator DashCoroutine(Transform caster)
@@ -58,12 +98,12 @@ namespace ThirdPersonController
             PlayerHealth health = caster.GetComponent<PlayerHealth>();
             if (health != null && invincibleDuringDash)
             {
-                // 这里可以添加无敌逻辑
+                health.ApplyInvincibility(dashInvincibilityDuration);
             }
             
             // 禁用玩家控制
-            PlayerMovement movement = caster.GetComponent<PlayerMovement>();
-            if (movement != null) movement.enabled = false;
+            cachedMovement = caster.GetComponent<PlayerMovement>();
+            if (cachedMovement != null) cachedMovement.enabled = false;
             
             // 计算起点和终点
             Vector3 startPos = caster.position;
@@ -97,30 +137,48 @@ namespace ThirdPersonController
             caster.position = endPos;
             
             // 恢复控制
-            if (movement != null) movement.enabled = true;
-            
+            if (cachedMovement != null) cachedMovement.enabled = true;
+
             // 播放结束特效
             SpawnEffect(endPos, caster.rotation);
+
+            dashRoutine = null;
+            activeRunner = null;
+            cachedMovement = null;
+            NotifySkillEnded(caster);
         }
         
         private void DetectEnemiesInPath(Vector3 from, Vector3 to, float width, Transform caster)
         {
-            Vector3 direction = (to - from).normalized;
-            float distance = Vector3.Distance(from, to);
-            
-            // 使用BoxCast检测路径上的敌人
-            RaycastHit[] hits = Physics.BoxCastAll(from, Vector3.one * width * 0.5f, 
-                direction, Quaternion.LookRotation(direction), distance, 
-                LayerMask.GetMask("Enemy"));
-            
-            foreach (var hit in hits)
+            int adjustedDamage = GetModifiedDamage(caster, pathDamage);
+            float adjustedKnockback = GetModifiedKnockback(caster, pathKnockback);
+            float adjustedWidth = GetModifiedRange(caster, width);
+
+            HitQuery.BoxCastPath(from, to, Vector3.one * adjustedWidth * 0.5f, LayerMask.GetMask("Enemy"), hitTargets);
+
+            for (int i = 0; i < hitTargets.Count; i++)
             {
-                EnemyHealth enemyHealth = hit.collider.GetComponent<EnemyHealth>();
-                if (enemyHealth != null)
+                Collider hitCollider = hitTargets[i];
+                if (hitCollider == null)
                 {
-                    Vector3 knockbackDir = (hit.collider.transform.position - caster.position).normalized;
-                    enemyHealth.TakeDamage(pathDamage, caster.position, pathKnockback);
+                    continue;
                 }
+
+                DamageContext context = new DamageContext
+                {
+                    source = caster,
+                    sourceType = DamageSourceType.PlayerSkill,
+                    damage = adjustedDamage,
+                    knockback = adjustedKnockback,
+                    damageOrigin = caster.position,
+                    hitPoint = hitCollider.bounds.center,
+                    hasHitPoint = true,
+                    isCritical = false,
+                    showDamageText = true,
+                    hitStopDuration = 0f
+                };
+
+                DamageService.ApplyDamage(context, hitCollider);
             }
         }
     }

@@ -12,6 +12,11 @@ namespace ThirdPersonController
         private bool impactTriggered;
         private bool recoveryTriggered;
         private Coroutine fallbackRoutine;
+        private bool isActive;
+
+        public bool IsActive => isActive;
+
+        public event System.Action OnTimelineEnded;
 
         public void BeginTimeline(float impactDelay, float recoveryDelay, System.Action impactAction, System.Action recoveryAction)
         {
@@ -21,6 +26,7 @@ namespace ThirdPersonController
             this.recoveryAction = recoveryAction;
             impactTriggered = false;
             recoveryTriggered = false;
+            isActive = true;
 
             if (fallbackRoutine != null)
             {
@@ -28,6 +34,28 @@ namespace ThirdPersonController
             }
 
             fallbackRoutine = StartCoroutine(FallbackRoutine());
+        }
+
+        public void CancelTimeline(bool invokeRecovery = true)
+        {
+            if (!isActive)
+            {
+                return;
+            }
+
+            if (fallbackRoutine != null)
+            {
+                StopCoroutine(fallbackRoutine);
+                fallbackRoutine = null;
+            }
+
+            if (invokeRecovery && !recoveryTriggered)
+            {
+                recoveryTriggered = true;
+                recoveryAction?.Invoke();
+            }
+
+            EndTimeline();
         }
 
         public void SkillImpactEvent()
@@ -60,6 +88,20 @@ namespace ThirdPersonController
 
             recoveryTriggered = true;
             recoveryAction?.Invoke();
+            EndTimeline();
+        }
+
+        private void EndTimeline()
+        {
+            if (!isActive)
+            {
+                return;
+            }
+
+            isActive = false;
+            impactAction = null;
+            recoveryAction = null;
+            OnTimelineEnded?.Invoke();
         }
 
         private IEnumerator FallbackRoutine()

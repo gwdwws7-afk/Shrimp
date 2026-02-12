@@ -78,12 +78,12 @@ Month 5-6 (Phase 3: 打磨上线)
 - **引擎**: Unity 2022.3 LTS
 - **渲染管线**: Built-in (可升级到URP)
 - **脚本**: C#
-- **输入系统**: Unity Input System
-- **动画**: Animator + Animation Rigging
-- **大规模敌人**: Unity DOTS 1.0
-- **物理**: Unity Physics (DOTS)
-- **特效**: Visual Effect Graph
-- **UI**: UI Toolkit / uGUI
+- **输入系统**: Legacy Input (旧 Input，已使用)
+- **动画**: Animator
+- **大规模敌人**: Mono + 对象池 + AI 降频（现用），DOTS 规划
+- **物理**: Unity Physics
+- **特效**: ParticleSystem + ScreenEffectManager
+- **UI**: uGUI（现用），UI Toolkit 规划
 - **版本控制**: Git
 
 ---

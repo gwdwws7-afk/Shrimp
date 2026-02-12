@@ -22,7 +22,7 @@ namespace ThirdPersonController
         
         [Header("输入")]
         public KeyCode blockKey = KeyCode.Mouse2;     // 鼠标中键格挡
-        public KeyCode dodgeKey = KeyCode.Space;      // 空格闪避
+        public KeyCode dodgeKey = KeyCode.LeftAlt;    // 左Alt闪避
 
         [Header("Input Buffer")]
         public float blockBufferTime = 0.25f;
@@ -164,7 +164,10 @@ namespace ThirdPersonController
             // 动画
             if (animator != null)
             {
-                animator.SetBool("IsBlocking", true);
+                if (HasAnimatorParameter(animator, "IsBlocking"))
+                {
+                    animator.SetBool("IsBlocking", true);
+                }
             }
             
             OnBlockStart?.Invoke();
@@ -196,7 +199,10 @@ namespace ThirdPersonController
             // 动画
             if (animator != null)
             {
-                animator.SetBool("IsBlocking", false);
+                if (HasAnimatorParameter(animator, "IsBlocking"))
+                {
+                    animator.SetBool("IsBlocking", false);
+                }
             }
             
             OnBlockEnd?.Invoke();
@@ -238,7 +244,10 @@ namespace ThirdPersonController
             // 触发反击动画
             if (animator != null)
             {
-                animator.SetTrigger("CounterAttack");
+                if (HasAnimatorParameter(animator, "CounterAttack"))
+                {
+                    animator.SetTrigger("CounterAttack");
+                }
             }
             
             // 反击效果（可以造成伤害、眩晕敌人等）
@@ -372,7 +381,10 @@ namespace ThirdPersonController
             // 闪避动画
             if (animator != null)
             {
-                animator.SetTrigger("Dodge");
+                if (HasAnimatorParameter(animator, "Dodge"))
+                {
+                    animator.SetTrigger("Dodge");
+                }
             }
             
             // 无敌帧
@@ -449,6 +461,24 @@ namespace ThirdPersonController
                     actionController.EndAction(PlayerActionState.Dodge);
                 }
             }
+        }
+
+        private bool HasAnimatorParameter(Animator target, string parameterName)
+        {
+            if (target == null || string.IsNullOrEmpty(parameterName))
+            {
+                return false;
+            }
+
+            foreach (var param in target.parameters)
+            {
+                if (param.name == parameterName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
         
         #endregion

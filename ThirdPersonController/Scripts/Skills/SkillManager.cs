@@ -29,6 +29,9 @@ namespace ThirdPersonController
         public PlayerInputBuffer inputBuffer;
         public SkillTimelineController timelineController;
         
+        private SkillBase activeSkill;
+        private Transform activeCaster;
+
         // 技能释放原点（通常是从玩家位置稍微前方）
         public Vector3 CastOrigin => playerTransform.position + playerTransform.forward * 0.5f + Vector3.up * 1f;
         
@@ -51,6 +54,32 @@ namespace ThirdPersonController
 
             if (timelineController == null)
                 timelineController = GetComponent<SkillTimelineController>();
+        }
+
+        private void OnEnable()
+        {
+            if (actionController != null)
+            {
+                actionController.OnActionInterrupted += HandleActionInterrupted;
+            }
+
+            if (timelineController != null)
+            {
+                timelineController.OnTimelineEnded += HandleTimelineEnded;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (actionController != null)
+            {
+                actionController.OnActionInterrupted -= HandleActionInterrupted;
+            }
+
+            if (timelineController != null)
+            {
+                timelineController.OnTimelineEnded -= HandleTimelineEnded;
+            }
         }
         
         private void Update()
@@ -149,7 +178,7 @@ namespace ThirdPersonController
                 if (!actionController.TryStartAction(
                     PlayerActionState.Skill,
                     ActionPriority.Skill,
-                    skill.GetTimelineDuration(),
+                    skill.GetActionDuration(),
                     skill.lockMovement,
                     skill.lockRotation,
                     true,
@@ -163,11 +192,13 @@ namespace ThirdPersonController
             // 获取目标位置（玩家前方）
             Vector3 targetPosition = GetTargetPosition();
             
+            SetActiveSkill(skill, playerTransform);
+
             // 执行技能
             skill.ExecuteWithTimeline(playerTransform, targetPosition, timelineController);
             
             // 消耗耐力
-            if (!skill.ConsumeStamina(staminaSystem))
+            if (!skill.ConsumeStamina(staminaSystem, playerTransform))
             {
                 if (actionController != null)
                 {
@@ -177,7 +208,7 @@ namespace ThirdPersonController
             }
             
             // 开始冷却
-            skill.StartCooldown();
+            skill.StartCooldown(playerTransform);
             
             Debug.Log($"✨ 释放技能: {skill.skillName}");
             
@@ -249,6 +280,7 @@ namespace ThirdPersonController
                 {
                     skill.cooldownTimer = 0;
                     skill.isReady = true;
+                    skill.cooldownDuration = 0f;
                 }
             }
             Debug.Log("🔄 所有技能冷却已重置");
@@ -263,8 +295,74 @@ namespace ThirdPersonController
             {
                 skills[index].cooldownTimer = 0;
                 skills[index].isReady = true;
+                skills[index].cooldownDuration = 0f;
                 GameEvents.SkillReady(skills[index].skillName);
             }
+        }
+
+        public void NotifySkillEnded(SkillBase skill)
+        {
+            if (skill == null || activeSkill != skill)
+            {
+                return;
+            }
+
+            ClearActiveSkill();
+        }
+
+        private void SetActiveSkill(SkillBase skill, Transform caster)
+        {
+            activeSkill = skill;
+            activeCaster = caster;
+        }
+
+        private void ClearActiveSkill()
+        {
+            activeSkill = null;
+            activeCaster = null;
+        }
+
+        private void HandleTimelineEnded()
+        {
+            if (activeSkill == null)
+            {
+                return;
+            }
+
+            if (activeSkill.endsOnRecovery)
+            {
+                ClearActiveSkill();
+            }
+        }
+
+        private void HandleActionInterrupted(PlayerActionState fromState, PlayerActionState toState)
+        {
+            if (fromState != PlayerActionState.Skill)
+            {
+                return;
+            }
+
+            CancelActiveSkill();
+        }
+
+        private void CancelActiveSkill()
+        {
+            if (activeSkill == null)
+            {
+                if (timelineController != null)
+                {
+                    timelineController.CancelTimeline(false);
+                }
+                return;
+            }
+
+            if (timelineController != null && timelineController.IsActive)
+            {
+                timelineController.CancelTimeline(false);
+            }
+
+            activeSkill.OnInterrupted(activeCaster);
+            ClearActiveSkill();
         }
     }
 }

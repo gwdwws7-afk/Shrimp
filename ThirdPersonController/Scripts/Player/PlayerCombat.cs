@@ -35,7 +35,7 @@ namespace ThirdPersonController
         public bool lockRotationDuringAttack = false;
 
         [Header("Combo Settings")]
-        public int maxComboCount = 50;              // 最大50连击
+        public int maxComboCount = 999;              // 最大999连击
         public float comboResetTime = 1.1f;
         public float comboWindowTime = 0.8f;
 
@@ -520,26 +520,6 @@ namespace ThirdPersonController
             queuedNextAttack = false;
             queuedStepIndex = -1;
 
-            int maxCombo = GetMaxComboCount();
-            if (currentCombo <= 0)
-            {
-                currentCombo = 1;
-            }
-            else
-            {
-                currentCombo = Mathf.Min(currentCombo + 1, maxCombo);
-            }
-
-            comboResetTimer = GetComboResetTime();
-
-            if (currentCombo >= berserkThreshold && !isBerserk)
-            {
-                EnterBerserkMode();
-            }
-
-            OnComboChanged?.Invoke(currentCombo);
-            PlayComboSound();
-
             if (animator != null && animator.runtimeAnimatorController != null)
             {
                 animator.SetTrigger(attackAnimTrigger);
@@ -979,7 +959,7 @@ namespace ThirdPersonController
             float hitRadius = step != null && step.radius > 0f ? step.radius : attackRadius;
 
             // Find all enemies in range
-            Collider[] hitColliders = Physics.OverlapSphere(attackCenter, Mathf.Max(range, hitRadius), enemyLayers);
+            HitQuery.OverlapCone(attackCenter, attackForward, range, angle, hitRadius, enemyLayers, hitEnemies, 0);
             
             // 计算伤害倍率
             float damageMultiplier = GetDamageMultiplier();
@@ -1013,13 +993,13 @@ namespace ThirdPersonController
             // 计算治疗量（Tier3以上吸血）
             int totalDamageDealt = 0;
 
-            foreach (var hitCollider in hitColliders)
+            for (int i = 0; i < hitEnemies.Count; i++)
             {
-                if (hitEnemies.Contains(hitCollider))
+                Collider hitCollider = hitEnemies[i];
+                if (hitCollider == null)
                 {
                     continue;
                 }
-                hitEnemies.Add(hitCollider);
 
                 if (lastHitTimes.TryGetValue(hitCollider, out float lastHitTime))
                 {
@@ -1034,43 +1014,29 @@ namespace ThirdPersonController
                     }
                 }
 
-                // Check angle
-                Vector3 toEnemy = hitCollider.transform.position - attackCenter;
-                toEnemy.y = 0f;
-                float distanceToEnemy = toEnemy.magnitude;
-                if (distanceToEnemy <= 0.001f || distanceToEnemy > range)
+                // Apply damage
+                EnemyHealth enemyHealth = hitCollider.GetComponent<EnemyHealth>();
+                if (enemyHealth != null)
                 {
-                    continue;
-                }
-
-                Vector3 directionToEnemy = toEnemy / distanceToEnemy;
-                float angleToEnemy = Vector3.Angle(attackForward, directionToEnemy);
-
-                if (angleToEnemy <= angle * 0.5f)
-                {
-                    // Apply damage
-                    EnemyHealth enemyHealth = hitCollider.GetComponent<EnemyHealth>();
-                    if (enemyHealth != null)
+                    float appliedKnockback = berserkInvincible && isBerserk ? knockback * 2f : knockback;
+                    DamageContext context = new DamageContext
                     {
-                        // 检查狂暴无敌状态
-                        if (berserkInvincible && isBerserk)
-                        {
-                            // 狂暴模式下可以穿透敌人防御
-                            enemyHealth.TakeDamage(finalDamage, transform.position, knockback * 2f);
-                        }
-                        else
-                        {
-                            enemyHealth.TakeDamage(finalDamage, transform.position, knockback);
-                        }
-                        
+                        source = transform,
+                        sourceType = DamageSourceType.PlayerAttack,
+                        damage = finalDamage,
+                        knockback = appliedKnockback,
+                        damageOrigin = transform.position,
+                        hitPoint = hitCollider.bounds.center,
+                        hasHitPoint = true,
+                        isCritical = false,
+                        showDamageText = true,
+                        hitStopDuration = hitStopDuration
+                    };
+
+                    if (DamageService.ApplyDamage(context, hitCollider))
+                    {
                         totalDamageDealt += finalDamage;
                         lastHitTimes[hitCollider] = now;
-                        GameEvents.DamageDealt(finalDamage, hitCollider.transform.position, false);
-                        GameEvents.ShowDamageText(finalDamage, hitCollider.transform.position, false);
-                        if (hitStopDuration > 0f)
-                        {
-                            HitStopManager.Trigger(hitStopDuration);
-                        }
                     }
                 }
             }
@@ -1129,6 +1095,34 @@ namespace ThirdPersonController
             // 如果在狂暴状态且狂暴时间未到，不重置狂暴（狂暴自然结束）
             // 如果不在狂暴状态，正常重置
             Debug.Log($"连击重置！最高连击: {previousCombo}");
+        }
+
+        public void RegisterHit(int damage)
+        {
+            if (damage <= 0)
+            {
+                return;
+            }
+
+            int maxCombo = GetMaxComboCount();
+            if (currentCombo <= 0)
+            {
+                currentCombo = 1;
+            }
+            else
+            {
+                currentCombo = Mathf.Min(currentCombo + 1, maxCombo);
+            }
+
+            comboResetTimer = GetComboResetTime();
+
+            if (currentCombo >= berserkThreshold && !isBerserk)
+            {
+                EnterBerserkMode();
+            }
+
+            OnComboChanged?.Invoke(currentCombo);
+            PlayComboSound();
         }
 
         // Animation events - called from animation clips

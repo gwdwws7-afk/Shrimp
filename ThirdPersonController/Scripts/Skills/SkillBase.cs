@@ -11,6 +11,14 @@ namespace ThirdPersonController
         Gather
     }
 
+    public enum SkillDefenseTiming
+    {
+        None,
+        OnCast,
+        OnImpact,
+        OnRecovery
+    }
+
     /// <summary>
     /// 技能基类 - ScriptableObject
     /// 所有技能都继承此类
@@ -41,6 +49,15 @@ namespace ThirdPersonController
         public bool lockRotation = true;
         public bool interruptible = false;
 
+        [Header("防御节奏")]
+        public SkillDefenseTiming invincibilityTiming = SkillDefenseTiming.None;
+        public float invincibilityDuration = 0f;
+        [Range(0f, 0.95f)]
+        public float damageReduction = 0f;
+        public float damageReductionDuration = 0f;
+        public SkillDefenseTiming damageReductionTiming = SkillDefenseTiming.None;
+        public bool endsOnRecovery = true;
+
         [Header("节奏点")]
         public bool useAnimationEvents = true;
         public float impactDelay = 0.15f;
@@ -70,6 +87,9 @@ namespace ThirdPersonController
         public bool isReady = true;
 
         [System.NonSerialized]
+        public float cooldownDuration = 0f;
+
+        [System.NonSerialized]
         protected SkillTimelineController timelineController;
         
         /// <summary>
@@ -85,6 +105,15 @@ namespace ThirdPersonController
             Execute(caster, targetPosition);
             this.timelineController = null;
         }
+
+        public virtual float GetActionDuration()
+        {
+            return Mathf.Max(castDuration, GetTimelineDuration());
+        }
+
+        public virtual void OnInterrupted(Transform caster)
+        {
+        }
         
         /// <summary>
         /// 检查是否可以释放技能
@@ -95,7 +124,8 @@ namespace ThirdPersonController
             if (!isReady) return false;
             
             // 检查耐力
-            if (stamina != null && !stamina.HasEnoughStamina(staminaCost))
+            float cost = GetModifiedStaminaCost(caster);
+            if (stamina != null && !stamina.HasEnoughStamina(cost))
             {
                 GameEvents.ShowMessage("耐力不足！", 1f);
                 return false;
@@ -107,13 +137,14 @@ namespace ThirdPersonController
         /// <summary>
         /// 开始冷却
         /// </summary>
-        public virtual void StartCooldown()
+        public virtual void StartCooldown(Transform caster)
         {
-            cooldownTimer = cooldown;
+            cooldownDuration = GetModifiedCooldown(caster);
+            cooldownTimer = cooldownDuration;
             isReady = false;
             
             // 触发技能使用事件
-            GameEvents.SkillUsed(skillName, cooldown);
+            GameEvents.SkillUsed(skillName, cooldownDuration);
         }
         
         /// <summary>
@@ -141,7 +172,8 @@ namespace ThirdPersonController
         public float GetCooldownProgress()
         {
             if (isReady) return 0f;
-            return cooldownTimer / cooldown;
+            float duration = cooldownDuration > 0f ? cooldownDuration : cooldown;
+            return duration <= 0f ? 0f : cooldownTimer / duration;
         }
 
         public float GetTimelineDuration()
@@ -276,15 +308,39 @@ namespace ThirdPersonController
                 return;
             }
 
+            ApplyDefense(caster, SkillDefenseTiming.OnCast);
+
             MonoBehaviour runner = caster.GetComponent<MonoBehaviour>();
             if (runner == null)
             {
                 PlayCastFX(caster.position, caster.rotation);
+                ApplyDefense(caster, SkillDefenseTiming.OnImpact);
                 onImpact?.Invoke();
                 PlayImpactFX(impactPosition, impactRotation);
+                ApplyDefense(caster, SkillDefenseTiming.OnRecovery);
                 onRecovery?.Invoke();
+                if (endsOnRecovery)
+                {
+                    NotifySkillEnded(caster);
+                }
                 return;
             }
+
+            System.Action impactWrapper = () =>
+            {
+                ApplyDefense(caster, SkillDefenseTiming.OnImpact);
+                onImpact?.Invoke();
+            };
+
+            System.Action recoveryWrapper = () =>
+            {
+                ApplyDefense(caster, SkillDefenseTiming.OnRecovery);
+                onRecovery?.Invoke();
+                if (endsOnRecovery)
+                {
+                    NotifySkillEnded(caster);
+                }
+            };
 
             if (useAnimationEvents && timelineController != null)
             {
@@ -294,14 +350,14 @@ namespace ThirdPersonController
                     recoveryDelay,
                     () =>
                     {
-                        onImpact?.Invoke();
+                        impactWrapper?.Invoke();
                         PlayImpactFX(impactPosition, impactRotation);
                     },
-                    onRecovery);
+                    recoveryWrapper);
                 return;
             }
 
-            runner.StartCoroutine(SkillTimelineRoutine(caster, impactPosition, impactRotation, onImpact, onRecovery));
+            runner.StartCoroutine(SkillTimelineRoutine(caster, impactPosition, impactRotation, impactWrapper, recoveryWrapper));
         }
 
         private System.Collections.IEnumerator SkillTimelineRoutine(Transform caster, Vector3 impactPosition, Quaternion impactRotation,
@@ -328,10 +384,120 @@ namespace ThirdPersonController
         /// <summary>
         /// 消耗耐力
         /// </summary>
-        public bool ConsumeStamina(StaminaSystem stamina)
+        public bool ConsumeStamina(StaminaSystem stamina, Transform caster)
         {
             if (stamina == null) return true;
-            return stamina.ConsumeStamina(staminaCost);
+            float cost = GetModifiedStaminaCost(caster);
+            return stamina.ConsumeStamina(cost);
+        }
+
+        protected void NotifySkillEnded(Transform caster)
+        {
+            if (caster == null)
+            {
+                return;
+            }
+
+            SkillManager manager = caster.GetComponent<SkillManager>();
+            if (manager != null)
+            {
+                manager.NotifySkillEnded(this);
+            }
+        }
+
+        private void ApplyDefense(Transform caster, SkillDefenseTiming timing)
+        {
+            if (caster == null)
+            {
+                return;
+            }
+
+            PlayerHealth health = caster.GetComponent<PlayerHealth>();
+            if (health == null)
+            {
+                return;
+            }
+
+            if (invincibilityTiming == timing && invincibilityDuration > 0f)
+            {
+                health.ApplyInvincibility(invincibilityDuration);
+            }
+
+            if (damageReductionTiming == timing && damageReduction > 0f && damageReductionDuration > 0f)
+            {
+                health.ApplyDamageReduction(damageReduction, damageReductionDuration);
+            }
+        }
+
+        protected int GetModifiedDamage(Transform caster, int baseDamage)
+        {
+            PlayerStatsController stats = GetStatsController(caster);
+            if (stats == null)
+            {
+                return baseDamage;
+            }
+
+            return stats.ApplySkillDamage(baseDamage);
+        }
+
+        protected float GetModifiedCooldown(Transform caster)
+        {
+            PlayerStatsController stats = GetStatsController(caster);
+            if (stats == null)
+            {
+                return cooldown;
+            }
+
+            return stats.ApplySkillCooldown(cooldown);
+        }
+
+        protected float GetModifiedRange(Transform caster, float baseRange)
+        {
+            PlayerStatsController stats = GetStatsController(caster);
+            if (stats == null)
+            {
+                return baseRange;
+            }
+
+            return stats.ApplySkillRange(baseRange);
+        }
+
+        protected float GetModifiedKnockback(Transform caster, float baseKnockback)
+        {
+            PlayerStatsController stats = GetStatsController(caster);
+            if (stats == null)
+            {
+                return baseKnockback;
+            }
+
+            return stats.ApplySkillKnockback(baseKnockback);
+        }
+
+        protected float GetModifiedStaminaCost(Transform caster)
+        {
+            PlayerStatsController stats = GetStatsController(caster);
+            if (stats == null)
+            {
+                return staminaCost;
+            }
+
+            return stats.ApplySkillStaminaCost(staminaCost);
+        }
+
+        private PlayerStatsController GetStatsController(Transform caster)
+        {
+            if (caster == null)
+            {
+                return null;
+            }
+
+            PlayerStatsController stats = caster.GetComponent<PlayerStatsController>();
+            if (stats == null)
+            {
+                stats = caster.GetComponentInParent<PlayerStatsController>();
+            }
+
+            return stats;
         }
     }
 }

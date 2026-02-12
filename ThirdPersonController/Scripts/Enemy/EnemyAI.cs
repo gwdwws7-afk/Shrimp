@@ -62,6 +62,8 @@ namespace ThirdPersonController
         private Transform player;
         private EnemyCrowdCoordinator crowdCoordinator;
         private bool isSuppressed = false;
+        private bool isStunned = false;
+        private float stunTimer = 0f;
         private bool hasAttackToken = false;
         private bool isAttacking = false;
         private float attackPhaseTimer = 0f;
@@ -133,6 +135,14 @@ namespace ThirdPersonController
         private void Update()
         {
             if (health.IsDead) return;
+
+            UpdateStun();
+            if (isStunned)
+            {
+                UpdateAnimations();
+                return;
+            }
+
             if (isSuppressed) return;
 
             if (player == null)
@@ -163,6 +173,25 @@ namespace ThirdPersonController
             DetectPlayer();
             UpdateState();
             ExecuteState();
+        }
+
+        private void UpdateStun()
+        {
+            if (!isStunned)
+            {
+                return;
+            }
+
+            stunTimer -= Time.deltaTime;
+            if (stunTimer <= 0f)
+            {
+                isStunned = false;
+                agent.isStopped = false;
+            }
+            else
+            {
+                agent.isStopped = true;
+            }
         }
 
         private float GetUpdateInterval(float distanceToPlayer)
@@ -510,7 +539,31 @@ namespace ThirdPersonController
             }
             else
             {
-                agent.isStopped = false;
+                if (!isStunned)
+                {
+                    agent.isStopped = false;
+                }
+            }
+        }
+
+        public void ApplyStun(float duration)
+        {
+            if (duration <= 0f || health.IsDead)
+            {
+                return;
+            }
+
+            stunTimer = Mathf.Max(stunTimer, duration);
+            isStunned = true;
+            ReleaseAttackToken();
+            isAttacking = false;
+            attackPhaseTimer = 0f;
+            attackHitApplied = false;
+            agent.isStopped = true;
+
+            if (animator != null && animator.runtimeAnimatorController != null && !string.IsNullOrEmpty(hitTrigger))
+            {
+                animator.SetTrigger(hitTrigger);
             }
         }
 
@@ -528,6 +581,8 @@ namespace ThirdPersonController
         private void ResetState()
         {
             isSuppressed = false;
+            isStunned = false;
+            stunTimer = 0f;
             hasAttackToken = false;
             isAttacking = false;
             attackPhaseTimer = 0f;

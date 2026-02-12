@@ -8,7 +8,7 @@ namespace ThirdPersonController
     {
         [Header("Combo Settings")]
         public float comboResetTime = 1.5f;
-        public int maxComboCount = 50;
+        public int maxComboCount = 999;
 
         [Header("Input Buffer")]
         public float inputBufferTime = 0.3f;

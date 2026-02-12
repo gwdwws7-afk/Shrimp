@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AttackComboDefinition
   m_EditorClassIdentifier: 
   comboResetTime: 1.1
-  maxComboCount: 50
+  maxComboCount: 999
   inputBufferTime: 0.24
   steps:
   - name: N1

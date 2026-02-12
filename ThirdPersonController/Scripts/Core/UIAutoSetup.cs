@@ -47,6 +47,8 @@ namespace ThirdPersonController
             SetupHPBar(uiManager, canvas);
             SetupStaminaBar(uiManager, canvas);
             SetupMusouBar(uiManager, canvas);
+            SetupExperienceBar(uiManager, canvas);
+            SetupStrongholdWavePanel(uiManager, canvas);
             SetupComboCounter(uiManager, canvas);
             SetupSkillBar(uiManager, canvas);
             SetupDamageTextSystem(uiManager, canvas);
@@ -495,6 +497,234 @@ namespace ThirdPersonController
 
             return musouBar;
         }
+
+        /// <summary>
+        /// 设置据点波次UI
+        /// </summary>
+        private void SetupStrongholdWavePanel(UIManager uiManager, Canvas canvas)
+        {
+            if (uiManager.strongholdWavePanel != null)
+            {
+                if (logDebugInfo) Debug.Log("✓ StrongholdWavePanel已配置");
+                return;
+            }
+
+            UI_StrongholdWavePanel panel = FindObjectOfType<UI_StrongholdWavePanel>();
+            if (panel == null && createIfNotExists)
+            {
+                panel = CreateStrongholdWavePanelUI(canvas);
+                if (logDebugInfo) Debug.Log("✓ 创建StrongholdWavePanel UI");
+            }
+
+            if (panel != null)
+            {
+                uiManager.strongholdWavePanel = panel;
+            }
+        }
+
+        /// <summary>
+        /// 创建据点波次UI
+        /// </summary>
+        private UI_StrongholdWavePanel CreateStrongholdWavePanelUI(Canvas canvas)
+        {
+            GameObject panelObj = new GameObject("StrongholdWavePanel");
+            panelObj.transform.SetParent(canvas.transform, false);
+
+            RectTransform rectTransform = panelObj.AddComponent<RectTransform>();
+            rectTransform.anchorMin = new Vector2(0.5f, 1f);
+            rectTransform.anchorMax = new Vector2(0.5f, 1f);
+            rectTransform.pivot = new Vector2(0.5f, 1f);
+            rectTransform.anchoredPosition = new Vector2(0f, -20f);
+            rectTransform.sizeDelta = new Vector2(380f, 80f);
+
+            CanvasGroup canvasGroup = panelObj.AddComponent<CanvasGroup>();
+            canvasGroup.alpha = 0f;
+
+            UI_StrongholdWavePanel panel = panelObj.AddComponent<UI_StrongholdWavePanel>();
+            panel.canvasGroup = canvasGroup;
+
+            // Background
+            GameObject bgObj = new GameObject("Background");
+            bgObj.transform.SetParent(panelObj.transform, false);
+            Image bgImage = bgObj.AddComponent<Image>();
+            bgImage.color = new Color(0.05f, 0.08f, 0.12f, 0.8f);
+
+            RectTransform bgRect = bgObj.GetComponent<RectTransform>();
+            bgRect.anchorMin = Vector2.zero;
+            bgRect.anchorMax = Vector2.one;
+            bgRect.offsetMin = Vector2.zero;
+            bgRect.offsetMax = Vector2.zero;
+
+            // Title
+            Text title = CreatePanelText(panelObj.transform, "Title", "据点推进", 14, TextAnchor.UpperLeft, new Vector2(12, -8));
+            panel.titleText = title;
+
+            // Wave
+            Text wave = CreatePanelText(panelObj.transform, "WaveText", "波次 1/1", 16, TextAnchor.MiddleLeft, new Vector2(12, -30));
+            panel.waveText = wave;
+
+            // Remaining
+            Text remaining = CreatePanelText(panelObj.transform, "RemainingText", "剩余 0/0", 14, TextAnchor.MiddleRight, new Vector2(-12, -30));
+            panel.remainingText = remaining;
+
+            // State
+            Text state = CreatePanelText(panelObj.transform, "StateText", "", 12, TextAnchor.LowerLeft, new Vector2(12, -56));
+            panel.stateText = state;
+
+            return panel;
+        }
+
+        private Text CreatePanelText(Transform parent, string name, string content, int fontSize, TextAnchor anchor, Vector2 anchoredPosition)
+        {
+            GameObject textObj = new GameObject(name);
+            textObj.transform.SetParent(parent, false);
+            Text text = textObj.AddComponent<Text>();
+            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            text.fontSize = fontSize;
+            text.color = Color.white;
+            text.alignment = anchor;
+            text.text = content;
+
+            RectTransform rect = textObj.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0f, 1f);
+            rect.anchorMax = new Vector2(1f, 1f);
+            rect.pivot = new Vector2(0f, 1f);
+            rect.anchoredPosition = anchoredPosition;
+            rect.sizeDelta = new Vector2(-24f, 20f);
+
+            return text;
+        }
+
+        /// <summary>
+        /// 设置经验条UI
+        /// </summary>
+        private void SetupExperienceBar(UIManager uiManager, Canvas canvas)
+        {
+            if (uiManager.experienceBar != null)
+            {
+                if (logDebugInfo) Debug.Log("✓ ExperienceBar已配置");
+                return;
+            }
+
+            UI_ExperienceBar experienceBar = FindObjectOfType<UI_ExperienceBar>();
+
+            if (experienceBar == null && createIfNotExists)
+            {
+                experienceBar = CreateExperienceBarUI(canvas);
+                if (logDebugInfo) Debug.Log("✓ 创建ExperienceBar UI");
+            }
+
+            if (experienceBar != null)
+            {
+                uiManager.experienceBar = experienceBar;
+            }
+        }
+
+        /// <summary>
+        /// 创建经验条UI元素
+        /// </summary>
+        private UI_ExperienceBar CreateExperienceBarUI(Canvas canvas)
+        {
+            GameObject expObj = new GameObject("ExperienceBar");
+            expObj.transform.SetParent(canvas.transform, false);
+
+            RectTransform rectTransform = expObj.AddComponent<RectTransform>();
+            rectTransform.anchorMin = new Vector2(0, 1);
+            rectTransform.anchorMax = new Vector2(0, 1);
+            rectTransform.pivot = new Vector2(0, 1);
+            rectTransform.anchoredPosition = new Vector2(20, -135);
+            rectTransform.sizeDelta = new Vector2(300, 18);
+
+            UI_ExperienceBar experienceBar = expObj.AddComponent<UI_ExperienceBar>();
+
+            // Background
+            GameObject bgObj = new GameObject("Background");
+            bgObj.transform.SetParent(expObj.transform, false);
+            Image bgImage = bgObj.AddComponent<Image>();
+            bgImage.color = new Color(0.1f, 0.1f, 0.15f, 0.8f);
+
+            RectTransform bgRect = bgObj.GetComponent<RectTransform>();
+            bgRect.anchorMin = Vector2.zero;
+            bgRect.anchorMax = Vector2.one;
+            bgRect.offsetMin = Vector2.zero;
+            bgRect.offsetMax = Vector2.zero;
+
+            // Slider
+            GameObject sliderObj = new GameObject("Slider");
+            sliderObj.transform.SetParent(expObj.transform, false);
+            Slider slider = sliderObj.AddComponent<Slider>();
+
+            RectTransform sliderRect = sliderObj.GetComponent<RectTransform>();
+            sliderRect.anchorMin = Vector2.zero;
+            sliderRect.anchorMax = Vector2.one;
+            sliderRect.offsetMin = new Vector2(4, 4);
+            sliderRect.offsetMax = new Vector2(-4, -4);
+
+            // Fill Area
+            GameObject fillAreaObj = new GameObject("Fill Area");
+            fillAreaObj.transform.SetParent(sliderObj.transform, false);
+            RectTransform fillAreaRect = fillAreaObj.AddComponent<RectTransform>();
+            fillAreaRect.anchorMin = Vector2.zero;
+            fillAreaRect.anchorMax = Vector2.one;
+            fillAreaRect.offsetMin = Vector2.zero;
+            fillAreaRect.offsetMax = Vector2.zero;
+
+            // Fill
+            GameObject fillObj = new GameObject("Fill");
+            fillObj.transform.SetParent(fillAreaObj.transform, false);
+            Image fillImage = fillObj.AddComponent<Image>();
+            fillImage.color = new Color(0.4f, 0.8f, 1f);
+
+            RectTransform fillRect = fillObj.GetComponent<RectTransform>();
+            fillRect.anchorMin = Vector2.zero;
+            fillRect.anchorMax = Vector2.one;
+            fillRect.offsetMin = Vector2.zero;
+            fillRect.offsetMax = Vector2.zero;
+
+            slider.fillRect = fillRect;
+            slider.value = 0f;
+
+            // Level Text
+            GameObject levelObj = new GameObject("LevelText");
+            levelObj.transform.SetParent(expObj.transform, false);
+            Text levelText = levelObj.AddComponent<Text>();
+            levelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            levelText.fontSize = 12;
+            levelText.color = new Color(1f, 1f, 1f, 0.85f);
+            levelText.alignment = TextAnchor.MiddleLeft;
+            levelText.text = "Lv 1";
+
+            RectTransform levelRect = levelObj.GetComponent<RectTransform>();
+            levelRect.anchorMin = Vector2.zero;
+            levelRect.anchorMax = Vector2.one;
+            levelRect.pivot = new Vector2(0, 0.5f);
+            levelRect.anchoredPosition = new Vector2(8, 0);
+            levelRect.sizeDelta = new Vector2(60, 0);
+
+            // Exp Text
+            GameObject expTextObj = new GameObject("ExpText");
+            expTextObj.transform.SetParent(expObj.transform, false);
+            Text expText = expTextObj.AddComponent<Text>();
+            expText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            expText.fontSize = 12;
+            expText.color = new Color(1f, 1f, 1f, 0.7f);
+            expText.alignment = TextAnchor.MiddleRight;
+            expText.text = "0/0";
+
+            RectTransform expRect = expTextObj.GetComponent<RectTransform>();
+            expRect.anchorMin = Vector2.zero;
+            expRect.anchorMax = Vector2.one;
+            expRect.pivot = new Vector2(1f, 0.5f);
+            expRect.anchoredPosition = new Vector2(-8, 0);
+            expRect.sizeDelta = new Vector2(140, 0);
+
+            // Bind
+            experienceBar.expSlider = slider;
+            experienceBar.levelText = levelText;
+            experienceBar.expText = expText;
+
+            return experienceBar;
+        }
         
         /// <summary>
         /// 设置连击计数器UI
@@ -786,6 +1016,8 @@ namespace ThirdPersonController
                 Debug.Log($"  - HPBar: {(uiManager.hpBar != null ? "✓" : "✗")}");
                 Debug.Log($"  - StaminaBar: {(uiManager.staminaBar != null ? "✓" : "✗")}");
                 Debug.Log($"  - MusouBar: {(uiManager.musouBar != null ? "✓" : "✗")}");
+                Debug.Log($"  - ExperienceBar: {(uiManager.experienceBar != null ? "✓" : "✗")}");
+                Debug.Log($"  - StrongholdWavePanel: {(uiManager.strongholdWavePanel != null ? "✓" : "✗")}");
                 Debug.Log($"  - ComboCounter: {(uiManager.comboCounter != null ? "✓" : "✗")}");
                 Debug.Log($"  - SkillBar: {(uiManager.skillBar != null ? "✓" : "✗")}");
                 Debug.Log($"  - DamageTextParent: {(uiManager.damageTextParent != null ? "✓" : "✗")}");

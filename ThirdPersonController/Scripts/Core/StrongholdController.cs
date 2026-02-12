@@ -85,6 +85,7 @@ namespace ThirdPersonController
         private Transform player;
         private Coroutine strongholdRoutine;
         private int spawnPointCursor = 0;
+        private int currentWaveIndex = -1;
 
         private bool isActive;
         private bool isRunning;
@@ -93,6 +94,8 @@ namespace ThirdPersonController
         public bool IsActive => isActive;
         public bool IsRunning => isRunning;
         public bool IsCompleted => isCompleted;
+        public int CurrentWaveIndex => currentWaveIndex;
+        public int TotalWaves => waves != null ? waves.Count : 0;
 
         private void Awake()
         {
@@ -185,6 +188,7 @@ namespace ThirdPersonController
             }
 
             isRunning = false;
+            currentWaveIndex = -1;
         }
 
         public void NotifyEnemyDestroyed(int waveIndex, bool isElite)
@@ -216,12 +220,14 @@ namespace ThirdPersonController
             {
                 runtimes.Add(new WaveRuntime());
             }
+            currentWaveIndex = -1;
         }
 
         private IEnumerator StrongholdRoutine()
         {
             for (int i = 0; i < waves.Count; i++)
             {
+                currentWaveIndex = i;
                 OnWaveStarted?.Invoke(this, i);
                 yield return StartCoroutine(SpawnWaveRoutine(i));
 
@@ -236,7 +242,80 @@ namespace ThirdPersonController
 
             isRunning = false;
             isCompleted = true;
+            currentWaveIndex = -1;
             OnStrongholdCompleted?.Invoke(this);
+        }
+
+        public bool TryGetWaveStatus(out int waveIndex, out int totalWaves, out int remaining, out int plannedTotal)
+        {
+            totalWaves = TotalWaves;
+            waveIndex = currentWaveIndex;
+            remaining = 0;
+            plannedTotal = 0;
+
+            if (!isRunning || waveIndex < 0 || waveIndex >= runtimes.Count)
+            {
+                return false;
+            }
+
+            WaveRuntime runtime = runtimes[waveIndex];
+            remaining = runtime.totalAlive;
+            plannedTotal = GetPlannedWaveTotal(waveIndex);
+            return true;
+        }
+
+        public string GetWaveDisplayName(int waveIndex)
+        {
+            if (waveIndex < 0 || waveIndex >= waves.Count)
+            {
+                return string.Empty;
+            }
+
+            string name = waves[waveIndex].name;
+            if (string.IsNullOrEmpty(name))
+            {
+                return $"Wave {waveIndex + 1}";
+            }
+
+            return name;
+        }
+
+        private int GetPlannedWaveTotal(int waveIndex)
+        {
+            if (waveIndex < 0 || waveIndex >= waves.Count)
+            {
+                return 0;
+            }
+
+            StrongholdWave wave = waves[waveIndex];
+            int total = 0;
+            if (wave.groups != null)
+            {
+                for (int i = 0; i < wave.groups.Count; i++)
+                {
+                    WaveSpawnGroup group = wave.groups[i];
+                    if (group == null)
+                    {
+                        continue;
+                    }
+                    total += Mathf.Max(0, group.count);
+                }
+            }
+
+            if (wave.eliteTrigger != null && wave.eliteTrigger.enabled && wave.eliteTrigger.eliteGroups != null)
+            {
+                for (int i = 0; i < wave.eliteTrigger.eliteGroups.Count; i++)
+                {
+                    WaveSpawnGroup group = wave.eliteTrigger.eliteGroups[i];
+                    if (group == null)
+                    {
+                        continue;
+                    }
+                    total += Mathf.Max(0, group.count);
+                }
+            }
+
+            return total;
         }
 
         private IEnumerator SpawnWaveRoutine(int waveIndex)

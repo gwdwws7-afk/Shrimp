@@ -165,6 +165,33 @@ namespace ThirdPersonController
             return Mathf.Max(0f, ApplyModifiers(1f, StatType.MusouGain));
         }
 
+        public int ApplySkillDamage(int baseDamage)
+        {
+            float value = ApplyModifiers(baseDamage, StatType.SkillDamage);
+            return Mathf.Max(1, Mathf.RoundToInt(value));
+        }
+
+        public float ApplySkillCooldown(float baseCooldown)
+        {
+            float value = ApplyModifiers(baseCooldown, StatType.SkillCooldown);
+            return Mathf.Max(0.1f, value);
+        }
+
+        public float ApplySkillRange(float baseRange)
+        {
+            return Mathf.Max(0.1f, ApplyModifiers(baseRange, StatType.SkillRange));
+        }
+
+        public float ApplySkillKnockback(float baseKnockback)
+        {
+            return Mathf.Max(0f, ApplyModifiers(baseKnockback, StatType.SkillKnockback));
+        }
+
+        public float ApplySkillStaminaCost(float baseCost)
+        {
+            return Mathf.Max(0f, ApplyModifiers(baseCost, StatType.SkillStaminaCost));
+        }
+
         private float ApplyModifiers(float baseValue, StatType stat)
         {
             float flat = 0f;

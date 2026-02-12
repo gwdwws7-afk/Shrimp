@@ -19,6 +19,8 @@ namespace ThirdPersonController
         public UI_HPBar hpBar;
         public UI_StaminaBar staminaBar;
         public UI_MusouBar musouBar;
+        public UI_ExperienceBar experienceBar;
+        public UI_StrongholdWavePanel strongholdWavePanel;
         public UI_ComboCounter comboCounter;
         public UI_SkillBar skillBar;
         

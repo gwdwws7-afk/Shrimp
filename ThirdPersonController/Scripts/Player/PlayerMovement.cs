@@ -53,6 +53,7 @@ namespace ThirdPersonController
         private bool isSprinting;
         private bool isCrouching;
         private bool isJumping;
+        private bool suppressJumpUntilRelease;
 
         // 计时器
         private float jumpBufferTimer;
@@ -188,24 +189,27 @@ namespace ThirdPersonController
         {
             if (actionController != null && actionController.CurrentState != PlayerActionState.Locomotion)
             {
+                if (input.JumpPressed)
+                {
+                    suppressJumpUntilRelease = true;
+                }
                 jumpBufferTimer = 0f;
                 return;
             }
 
             if (combat != null && combat.IsAttacking)
             {
+                if (input.JumpPressed)
+                {
+                    suppressJumpUntilRelease = true;
+                }
                 jumpBufferTimer = 0f;
                 return;
             }
 
-            // 跳跃缓冲 - 在落地前按空格可以立即跳跃
-            if (input.JumpPressed)
+            if (!input.JumpHeld)
             {
-                jumpBufferTimer = jumpBufferTime;
-            }
-            else if (jumpBufferTimer > 0)
-            {
-                jumpBufferTimer -= Time.deltaTime;
+                suppressJumpUntilRelease = false;
             }
 
             // 土狼时间 - 离开地面后短时间内仍可跳跃
@@ -216,6 +220,23 @@ namespace ThirdPersonController
             else if (coyoteTimeTimer > 0)
             {
                 coyoteTimeTimer -= Time.deltaTime;
+            }
+
+            // 跳跃缓冲 - 在落地前按空格可以立即跳跃
+            if (input.JumpPressed)
+            {
+                if (!suppressJumpUntilRelease && (isGrounded || coyoteTimeTimer > 0f) && !isCrouching)
+                {
+                    jumpBufferTimer = jumpBufferTime;
+                }
+                else
+                {
+                    suppressJumpUntilRelease = true;
+                }
+            }
+            else if (jumpBufferTimer > 0)
+            {
+                jumpBufferTimer -= Time.deltaTime;
             }
         }
 
@@ -336,7 +357,20 @@ namespace ThirdPersonController
             if (animator == null) return;
             if (animator.runtimeAnimatorController == null) return;
 
-            animator.SetFloat("Speed", currentVelocity.magnitude / sprintSpeed);
+            float horizontalSpeed = currentVelocity.magnitude;
+            if (rb != null)
+            {
+                Vector3 velocity = rb.velocity;
+                velocity.y = 0f;
+                horizontalSpeed = velocity.magnitude;
+            }
+
+            if (isGrounded && moveDirection.magnitude > 0.1f && horizontalSpeed < 0.1f)
+            {
+                horizontalSpeed = targetSpeed;
+            }
+
+            animator.SetFloat("Speed", horizontalSpeed / sprintSpeed);
             animator.SetBool("IsGrounded", isGrounded);
             animator.SetBool("IsCrouching", isCrouching);
         }

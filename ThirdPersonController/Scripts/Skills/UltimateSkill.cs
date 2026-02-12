@@ -20,6 +20,11 @@ namespace ThirdPersonController
         public float slowMotionDuration = 1f;
         public float slowMotionScale = 0.3f;
 
+        private readonly List<Collider> hitTargets = new List<Collider>();
+        [System.NonSerialized] private Coroutine slowMotionRoutine;
+        [System.NonSerialized] private MonoBehaviour activeRunner;
+        [System.NonSerialized] private bool slowMotionActive;
+
         private void OnEnable()
         {
             if (category == SkillCategory.None)
@@ -48,64 +53,122 @@ namespace ThirdPersonController
             StartSkillTimeline(caster, caster.position, caster.rotation, () =>
             {
                 // 慢动作效果
-                Time.timeScale = slowMotionScale;
-                caster.GetComponent<MonoBehaviour>().Invoke(nameof(RestoreTimeScale), slowMotionDuration);
+                if (slowMotionDuration > 0f)
+                {
+                    activeRunner = caster.GetComponent<MonoBehaviour>();
+                    if (activeRunner != null)
+                    {
+                        if (slowMotionRoutine != null)
+                        {
+                            activeRunner.StopCoroutine(slowMotionRoutine);
+                        }
+                        slowMotionRoutine = activeRunner.StartCoroutine(SlowMotionRoutine());
+                    }
+                    else
+                    {
+                        ApplySlowMotion();
+                        RestoreTimeScale();
+                    }
+                }
 
                 // 执行全屏攻击
                 ExecuteUltimate(caster);
             });
         }
-        
+
+        public override void OnInterrupted(Transform caster)
+        {
+            RestoreTimeScale();
+            if (activeRunner != null && slowMotionRoutine != null)
+            {
+                activeRunner.StopCoroutine(slowMotionRoutine);
+            }
+
+            slowMotionRoutine = null;
+            activeRunner = null;
+        }
+
+        private System.Collections.IEnumerator SlowMotionRoutine()
+        {
+            ApplySlowMotion();
+            yield return new WaitForSecondsRealtime(slowMotionDuration);
+            RestoreTimeScale();
+            slowMotionRoutine = null;
+            activeRunner = null;
+        }
+
+        private void ApplySlowMotion()
+        {
+            slowMotionActive = true;
+            Time.timeScale = slowMotionScale;
+        }
+
         private void RestoreTimeScale()
         {
-            Time.timeScale = 1f;
-        }
-        
-        private System.Collections.IEnumerator RestoreAIAfterDelay(EnemyAI enemyAI, float delay)
-        {
-            yield return new WaitForSeconds(delay);
-            if (enemyAI != null)
+            if (!slowMotionActive)
             {
-                enemyAI.enabled = true;
+                return;
             }
+
+            slowMotionActive = false;
+            Time.timeScale = 1f;
         }
         
         private void ExecuteUltimate(Transform caster)
         {
             // 全屏范围检测
-            Collider[] hitColliders = Physics.OverlapSphere(caster.position, effectRadius, LayerMask.GetMask("Enemy"));
+            float adjustedRadius = GetModifiedRange(caster, effectRadius);
+            int adjustedDamage = GetModifiedDamage(caster, damage);
+            float adjustedKnockback = GetModifiedKnockback(caster, knockbackForce);
+
+            HitQuery.OverlapSphere(caster.position, adjustedRadius, LayerMask.GetMask("Enemy"), hitTargets);
             
             List<EnemyHealth> killedEnemies = new List<EnemyHealth>();
             int hitCount = 0;
-            
-            foreach (var hitCollider in hitColliders)
+
+            for (int i = 0; i < hitTargets.Count; i++)
             {
+                Collider hitCollider = hitTargets[i];
+                if (hitCollider == null)
+                {
+                    continue;
+                }
+
                 EnemyHealth enemyHealth = hitCollider.GetComponent<EnemyHealth>();
                 EnemyAI enemyAI = hitCollider.GetComponent<EnemyAI>();
-                
+
                 if (enemyHealth != null)
                 {
                     int previousHealth = enemyHealth.CurrentHealth;
-                    
-                    // 造成伤害
-                    Vector3 knockbackDir = (hitCollider.transform.position - caster.position).normalized;
-                    knockbackDir.y = 0.5f;
-                    enemyHealth.TakeDamage(damage, caster.position, knockbackForce);
-                    
-                    hitCount++;
-                    
-                    // 检查是否击杀
-                    if (enemyHealth.IsDead && previousHealth > 0)
+
+                    DamageContext context = new DamageContext
                     {
-                        killedEnemies.Add(enemyHealth);
-                    }
-                    
-                    // 眩晕
-                    if (enemyAI != null)
+                        source = caster,
+                        sourceType = DamageSourceType.PlayerSkill,
+                        damage = adjustedDamage,
+                        knockback = adjustedKnockback,
+                        damageOrigin = caster.position,
+                        hitPoint = hitCollider.bounds.center,
+                        hasHitPoint = true,
+                        isCritical = false,
+                        showDamageText = true,
+                        hitStopDuration = 0f
+                    };
+
+                    if (DamageService.ApplyDamage(context, hitCollider))
                     {
-                        enemyAI.enabled = false;
-                        caster.GetComponent<MonoBehaviour>().StartCoroutine(
-                            RestoreAIAfterDelay(enemyAI, stunDuration));
+                        hitCount++;
+
+                        if (enemyHealth.IsDead && previousHealth > 0)
+                        {
+                            killedEnemies.Add(enemyHealth);
+                        }
+
+                        // 眩晕
+                        if (enemyAI != null)
+                        {
+                            enemyAI.ApplyStun(stunDuration);
+                        }
                     }
                 }
             }

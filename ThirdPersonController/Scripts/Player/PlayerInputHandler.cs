@@ -28,6 +28,7 @@ namespace ThirdPersonController
         public Vector2 MoveInput { get; private set; }
         public Vector2 LookInput { get; private set; }
         public bool JumpPressed { get; private set; }
+        public bool JumpHeld { get; private set; }
         public bool SprintPressed { get; private set; }
         public bool CrouchPressed { get; private set; }
         public bool AttackPressed { get; private set; }
@@ -56,6 +57,7 @@ namespace ThirdPersonController
 
             // 读取按键状态
             JumpPressed = Input.GetKeyDown(jumpKey);
+            JumpHeld = Input.GetKey(jumpKey);
             SprintPressed = Input.GetKey(sprintKey);
             CrouchPressed = Input.GetKey(crouchKey);
             AttackPressed = Input.GetKeyDown(attackKey);

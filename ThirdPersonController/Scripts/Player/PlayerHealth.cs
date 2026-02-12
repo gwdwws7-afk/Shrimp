@@ -24,6 +24,11 @@ namespace ThirdPersonController
         private Animator animator;
         private Renderer[] renderers;
         private PlayerActionController actionController;
+        private BlockDodgeSystem blockDodgeSystem;
+
+        private float externalInvincibilityTimer = 0f;
+        private float damageReductionTimer = 0f;
+        private float damageReductionPercent = 0f;
 
         public int CurrentHealth => currentHealth;
         public int MaxHealth => maxHealth;
@@ -55,18 +60,63 @@ namespace ThirdPersonController
             animator = GetComponent<Animator>();
             renderers = GetComponentsInChildren<Renderer>();
             actionController = GetComponent<PlayerActionController>();
+            blockDodgeSystem = GetComponent<BlockDodgeSystem>();
+        }
+
+        private void Update()
+        {
+            if (externalInvincibilityTimer > 0f)
+            {
+                externalInvincibilityTimer -= Time.deltaTime;
+            }
+
+            if (damageReductionTimer > 0f)
+            {
+                damageReductionTimer -= Time.deltaTime;
+                if (damageReductionTimer <= 0f)
+                {
+                    damageReductionPercent = 0f;
+                }
+            }
         }
 
         public void TakeDamage(int damage, Vector3 damageSource, float knockbackForce = 0f)
         {
-            if (isInvincible || isDead) return;
+            if (isDead) return;
 
-            currentHealth -= damage;
+            if (IsInvincible())
+            {
+                return;
+            }
+
+            int finalDamage = Mathf.Max(0, damage);
+            if (blockDodgeSystem != null)
+            {
+                finalDamage = blockDodgeSystem.ProcessBlockDamage(finalDamage);
+            }
+
+            if (finalDamage <= 0)
+            {
+                return;
+            }
+
+            if (damageReductionPercent > 0f)
+            {
+                finalDamage = Mathf.RoundToInt(finalDamage * (1f - damageReductionPercent));
+                finalDamage = Mathf.Max(0, finalDamage);
+            }
+
+            if (finalDamage <= 0)
+            {
+                return;
+            }
+
+            currentHealth -= finalDamage;
             currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
             // 触发事件
             OnHealthChanged?.Invoke(currentHealth, maxHealth);
-            GameEvents.PlayerDamaged(damage, damageSource);
+            GameEvents.PlayerDamaged(finalDamage, damageSource);
 
             if (currentHealth <= 0)
             {
@@ -89,6 +139,53 @@ namespace ThirdPersonController
                 }
                 StartCoroutine(HitReaction(damageSource, knockbackForce));
             }
+        }
+
+        public void ApplyInvincibility(float duration)
+        {
+            if (duration <= 0f)
+            {
+                return;
+            }
+
+            externalInvincibilityTimer = Mathf.Max(externalInvincibilityTimer, duration);
+        }
+
+        public void ApplyDamageReduction(float reductionPercent, float duration)
+        {
+            if (duration <= 0f)
+            {
+                return;
+            }
+
+            float clamped = Mathf.Clamp01(reductionPercent);
+            if (clamped <= 0f)
+            {
+                return;
+            }
+
+            damageReductionPercent = Mathf.Max(damageReductionPercent, clamped);
+            damageReductionTimer = Mathf.Max(damageReductionTimer, duration);
+        }
+
+        private bool IsInvincible()
+        {
+            if (isInvincible)
+            {
+                return true;
+            }
+
+            if (externalInvincibilityTimer > 0f)
+            {
+                return true;
+            }
+
+            if (blockDodgeSystem != null && blockDodgeSystem.IsInvincible)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public void Heal(int amount)

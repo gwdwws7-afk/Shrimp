@@ -12,7 +12,12 @@ namespace ThirdPersonController
         MaxHealth,
         MaxStamina,
         MoveSpeed,
-        MusouGain
+        MusouGain,
+        SkillDamage,
+        SkillCooldown,
+        SkillRange,
+        SkillKnockback,
+        SkillStaminaCost
     }
 
     public enum ModifierType

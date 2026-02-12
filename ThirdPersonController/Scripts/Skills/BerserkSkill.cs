@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using System.Collections;
 
 namespace ThirdPersonController
@@ -15,7 +16,8 @@ namespace ThirdPersonController
         public float attackSpeedMultiplier = 1.5f;
         public float moveSpeedMultiplier = 1.3f;
         public float damageMultiplier = 1.3f;
-        public float damageReduction = 0.3f;
+        [FormerlySerializedAs("damageReduction")]
+        public float berserkDamageReduction = 0.3f;
         
         [Header("持续回血")]
         public bool enableLifeRegen = true;
@@ -34,6 +36,21 @@ namespace ThirdPersonController
                 recoveryDelay = 0.25f;
                 impactShakeDuration = 0.12f;
                 impactShakeStrength = 0.18f;
+            }
+
+            if (damageReduction <= 0f)
+            {
+                damageReduction = berserkDamageReduction;
+            }
+
+            if (damageReductionTiming == SkillDefenseTiming.None)
+            {
+                damageReductionTiming = SkillDefenseTiming.OnCast;
+            }
+
+            if (damageReductionDuration <= 0f)
+            {
+                damageReductionDuration = duration;
             }
         }
         

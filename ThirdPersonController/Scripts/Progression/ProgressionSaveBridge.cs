@@ -10,6 +10,7 @@ namespace ThirdPersonController
         public PearlInventory inventory;
         public PearlEquipment equipment;
         public TalentTree talentTree;
+        public PlayerExperienceSystem experienceSystem;
 
         [Header("Behavior")]
         public bool applyOnStart = true;
@@ -30,6 +31,11 @@ namespace ThirdPersonController
             if (talentTree == null)
             {
                 talentTree = GetComponent<TalentTree>();
+            }
+
+            if (experienceSystem == null)
+            {
+                experienceSystem = GetComponent<PlayerExperienceSystem>();
             }
         }
 
@@ -145,6 +151,12 @@ namespace ThirdPersonController
             {
                 SaveProgression();
             }
+
+            if (experienceSystem != null)
+            {
+                experienceSystem.level = Mathf.Max(1, data.playerLevel);
+                experienceSystem.currentExp = Mathf.Max(0, data.currentExp);
+            }
         }
 
         public void SaveProgression()
@@ -184,6 +196,12 @@ namespace ThirdPersonController
                     PearlItem pearl = equipment.equippedPearls[i];
                     data.equippedPearlIds.Add(pearl != null ? pearl.GetId() : string.Empty);
                 }
+            }
+
+            if (experienceSystem != null)
+            {
+                data.playerLevel = experienceSystem.level;
+                data.currentExp = experienceSystem.currentExp;
             }
 
             if (autoSaveOnChange)
