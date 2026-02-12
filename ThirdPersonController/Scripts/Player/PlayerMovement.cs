@@ -41,6 +41,10 @@ namespace ThirdPersonController
         public float standHeight = 1.8f;
         public float crouchTransitionSpeed = 10f;
 
+        [Header("Animation")]
+        public float speedDampTime = 0.12f;
+        public float speedStopThreshold = 0.15f;
+
         private Rigidbody rb;
         private PlayerInputHandler input;
         private CapsuleCollider capsuleCollider;
@@ -370,7 +374,23 @@ namespace ThirdPersonController
                 horizontalSpeed = targetSpeed;
             }
 
-            animator.SetFloat("Speed", horizontalSpeed / sprintSpeed);
+            if (moveDirection.magnitude <= 0.1f && horizontalSpeed <= speedStopThreshold)
+            {
+                horizontalSpeed = 0f;
+            }
+
+            float normalizedSpeed = sprintSpeed > 0f ? horizontalSpeed / sprintSpeed : 0f;
+            normalizedSpeed = Mathf.Clamp01(normalizedSpeed);
+
+            if (isGrounded && moveDirection.magnitude > 0.1f)
+            {
+                float instantSpeed = sprintSpeed > 0f ? targetSpeed / sprintSpeed : normalizedSpeed;
+                animator.SetFloat("Speed", Mathf.Clamp01(instantSpeed));
+            }
+            else
+            {
+                animator.SetFloat("Speed", normalizedSpeed, speedDampTime, Time.deltaTime);
+            }
             animator.SetBool("IsGrounded", isGrounded);
             animator.SetBool("IsCrouching", isCrouching);
         }
