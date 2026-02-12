@@ -24,6 +24,19 @@ namespace ThirdPersonController
         Dead = 100
     }
 
+    [System.Flags]
+    public enum ActionInterruptMask
+    {
+        None = 0,
+        Attack = 1 << 0,
+        Block = 1 << 1,
+        Dodge = 1 << 2,
+        Skill = 1 << 3,
+        Hit = 1 << 4,
+        Dead = 1 << 5,
+        All = Attack | Block | Dodge | Skill | Hit | Dead
+    }
+
     public class PlayerActionController : MonoBehaviour
     {
         [Header("State")]
@@ -35,6 +48,7 @@ namespace ThirdPersonController
         private bool lockMovement = false;
         private bool lockRotation = false;
         private bool interruptible = true;
+        private ActionInterruptMask interruptMask = ActionInterruptMask.All;
 
         public PlayerActionState CurrentState => currentState;
         public bool IsMovementLocked => lockMovement;
@@ -50,7 +64,7 @@ namespace ThirdPersonController
                 stateTimer -= Time.deltaTime;
                 if (stateTimer <= 0f && autoReturnToLocomotion)
                 {
-                    SetState(PlayerActionState.Locomotion, ActionPriority.Low, 0f, false, false, true, false);
+                    SetState(PlayerActionState.Locomotion, ActionPriority.Low, 0f, false, false, true, false, ActionInterruptMask.All);
                 }
             }
         }
@@ -60,6 +74,16 @@ namespace ThirdPersonController
             if (currentState == PlayerActionState.Dead)
             {
                 return false;
+            }
+
+            if (state == PlayerActionState.Dead)
+            {
+                return true;
+            }
+
+            if (state == PlayerActionState.Hit)
+            {
+                return true;
             }
 
             if (state == PlayerActionState.Attack)
@@ -97,27 +121,42 @@ namespace ThirdPersonController
             bool lockMove,
             bool lockRot,
             bool autoReturn,
-            bool allowInterrupt)
+            bool allowInterrupt,
+            ActionInterruptMask allowedInterrupts,
+            bool forceInterrupt = false)
         {
-            if (!CanStartAction(state))
+            if (!forceInterrupt && !CanStartAction(state))
+            {
+                return false;
+            }
+
+            if (currentState == PlayerActionState.Dead && state != PlayerActionState.Dead)
             {
                 return false;
             }
 
             if (currentState != PlayerActionState.Locomotion && currentState != state)
             {
-                if (!allowInterrupt || !interruptible || priority <= currentPriority)
+                if (!forceInterrupt)
                 {
-                    return false;
+                    if (!allowInterrupt || !interruptible || priority <= currentPriority)
+                    {
+                        return false;
+                    }
+
+                    if (!IsInterruptAllowed(state))
+                    {
+                        return false;
+                    }
                 }
 
                 PlayerActionState interruptedState = currentState;
-                SetState(state, priority, minDuration, lockMove, lockRot, autoReturn, allowInterrupt);
+                SetState(state, priority, minDuration, lockMove, lockRot, autoReturn, allowInterrupt, allowedInterrupts);
                 OnActionInterrupted?.Invoke(interruptedState, state);
                 return true;
             }
 
-            SetState(state, priority, minDuration, lockMove, lockRot, autoReturn, allowInterrupt);
+            SetState(state, priority, minDuration, lockMove, lockRot, autoReturn, allowInterrupt, allowedInterrupts);
             return true;
         }
 
@@ -128,7 +167,7 @@ namespace ThirdPersonController
                 return;
             }
 
-            SetState(PlayerActionState.Locomotion, ActionPriority.Low, 0f, false, false, true, false);
+            SetState(PlayerActionState.Locomotion, ActionPriority.Low, 0f, false, false, true, false, ActionInterruptMask.All);
         }
 
         private void SetState(
@@ -138,7 +177,8 @@ namespace ThirdPersonController
             bool lockMove,
             bool lockRot,
             bool autoReturn,
-            bool canInterrupt)
+            bool canInterrupt,
+            ActionInterruptMask allowedInterrupts)
         {
             PlayerActionState previousState = currentState;
             currentState = state;
@@ -148,10 +188,38 @@ namespace ThirdPersonController
             lockMovement = lockMove;
             lockRotation = lockRot;
             interruptible = canInterrupt;
+            interruptMask = allowedInterrupts;
 
             if (previousState != currentState)
             {
                 OnStateChanged?.Invoke(previousState, currentState);
+            }
+        }
+
+        private bool IsInterruptAllowed(PlayerActionState state)
+        {
+            ActionInterruptMask stateMask = GetMaskForState(state);
+            return (interruptMask & stateMask) != 0;
+        }
+
+        private ActionInterruptMask GetMaskForState(PlayerActionState state)
+        {
+            switch (state)
+            {
+                case PlayerActionState.Attack:
+                    return ActionInterruptMask.Attack;
+                case PlayerActionState.Block:
+                    return ActionInterruptMask.Block;
+                case PlayerActionState.Dodge:
+                    return ActionInterruptMask.Dodge;
+                case PlayerActionState.Skill:
+                    return ActionInterruptMask.Skill;
+                case PlayerActionState.Hit:
+                    return ActionInterruptMask.Hit;
+                case PlayerActionState.Dead:
+                    return ActionInterruptMask.Dead;
+                default:
+                    return ActionInterruptMask.None;
             }
         }
     }

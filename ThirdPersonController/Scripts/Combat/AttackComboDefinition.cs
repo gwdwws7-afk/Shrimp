@@ -11,7 +11,7 @@ namespace ThirdPersonController
         public int maxComboCount = 50;
 
         [Header("Input Buffer")]
-        public float inputBufferTime = 0.2f;
+        public float inputBufferTime = 0.3f;
 
         [Header("Attack Steps")]
         public List<AttackStep> steps = new List<AttackStep>();

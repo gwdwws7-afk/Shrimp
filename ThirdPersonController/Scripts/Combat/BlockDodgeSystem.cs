@@ -23,6 +23,10 @@ namespace ThirdPersonController
         [Header("输入")]
         public KeyCode blockKey = KeyCode.Mouse2;     // 鼠标中键格挡
         public KeyCode dodgeKey = KeyCode.Space;      // 空格闪避
+
+        [Header("Input Buffer")]
+        public float blockBufferTime = 0.25f;
+        public float dodgeBufferTime = 0.25f;
         
         [Header("参考")]
         public Transform playerTransform;
@@ -39,6 +43,7 @@ namespace ThirdPersonController
         private StaminaSystem staminaSystem;
         private PlayerInputHandler inputHandler;
         private PlayerActionController actionController;
+        private PlayerInputBuffer inputBuffer;
         
         // 计时器
         private float blockStartTime = 0f;
@@ -56,6 +61,7 @@ namespace ThirdPersonController
             staminaSystem = GetComponent<StaminaSystem>();
             inputHandler = GetComponent<PlayerInputHandler>();
             actionController = GetComponent<PlayerActionController>();
+            inputBuffer = GetComponent<PlayerInputBuffer>();
             
             if (playerTransform == null)
                 playerTransform = transform;
@@ -90,12 +96,35 @@ namespace ThirdPersonController
             if (IsDodging) return;  // 闪避时不能格挡
             
             bool blockPressed = Input.GetKey(blockKey);
-            
-            if (blockPressed && !IsBlocking)
+
+            if (inputBuffer != null)
             {
-                StartBlock();
+                if (blockPressed)
+                {
+                    inputBuffer.BufferAction(BufferedActionType.Block, blockBufferTime);
+                }
+                else
+                {
+                    inputBuffer.ClearAction(BufferedActionType.Block);
+                }
+
+                if (!IsBlocking && inputBuffer.HasAction(BufferedActionType.Block))
+                {
+                    if (StartBlock())
+                    {
+                        inputBuffer.TryConsume(BufferedActionType.Block, out _);
+                    }
+                }
             }
-            else if (!blockPressed && IsBlocking)
+            else
+            {
+                if (blockPressed && !IsBlocking)
+                {
+                    StartBlock();
+                }
+            }
+            
+            if (!blockPressed && IsBlocking)
             {
                 EndBlock();
             }
@@ -110,13 +139,21 @@ namespace ThirdPersonController
             }
         }
         
-        private void StartBlock()
+        private bool StartBlock()
         {
             if (actionController != null)
             {
-                if (!actionController.TryStartAction(PlayerActionState.Block, ActionPriority.Block, 0f, true, false, false, true))
+                if (!actionController.TryStartAction(
+                    PlayerActionState.Block,
+                    ActionPriority.Block,
+                    0f,
+                    true,
+                    false,
+                    false,
+                    true,
+                    ActionInterruptMask.Dodge))
                 {
-                    return;
+                    return false;
                 }
             }
 
@@ -134,6 +171,8 @@ namespace ThirdPersonController
             
             // 短暂延迟后才能完美格挡（防止按住即完美格挡）
             Invoke(nameof(EnablePerfectBlock), 0.1f);
+
+            return true;
         }
         
         private void EnablePerfectBlock()
@@ -226,7 +265,26 @@ namespace ThirdPersonController
                 
                 if (dodgeDirection != Vector3.zero)
                 {
-                    TryDodge(dodgeDirection);
+                    if (inputBuffer != null)
+                    {
+                        inputBuffer.BufferAction(BufferedActionType.Dodge, dodgeBufferTime, -1, dodgeDirection);
+                    }
+                    else
+                    {
+                        TryDodge(dodgeDirection);
+                    }
+                }
+            }
+
+            if (inputBuffer != null && inputBuffer.TryGet(BufferedActionType.Dodge, out BufferedActionEntry entry))
+            {
+                if (CanDodge() && HasDodgeStamina())
+                {
+                    Vector3 direction = entry.hasDirection ? entry.direction : GetDodgeDirection();
+                    if (TryDodge(direction))
+                    {
+                        inputBuffer.TryConsume(BufferedActionType.Dodge, out _);
+                    }
                 }
             }
         }
@@ -263,13 +321,21 @@ namespace ThirdPersonController
         /// <summary>
         /// 尝试闪避
         /// </summary>
-        private void TryDodge(Vector3 direction)
+        private bool TryDodge(Vector3 direction)
         {
             if (actionController != null)
             {
-                if (!actionController.TryStartAction(PlayerActionState.Dodge, ActionPriority.Dodge, dodgeDuration, true, true, true, true))
+                if (!actionController.TryStartAction(
+                    PlayerActionState.Dodge,
+                    ActionPriority.Dodge,
+                    dodgeDuration,
+                    true,
+                    true,
+                    true,
+                    true,
+                    ActionInterruptMask.None))
                 {
-                    return;
+                    return false;
                 }
             }
 
@@ -281,10 +347,21 @@ namespace ThirdPersonController
                 {
                     actionController.EndAction(PlayerActionState.Dodge);
                 }
-                return;
+                return false;
             }
             
             StartCoroutine(DodgeCoroutine(direction));
+            return true;
+        }
+
+        private bool HasDodgeStamina()
+        {
+            if (staminaSystem == null)
+            {
+                return true;
+            }
+
+            return staminaSystem.HasEnoughStamina(staminaSystem.dodgeCost);
         }
         
         private IEnumerator DodgeCoroutine(Vector3 direction)

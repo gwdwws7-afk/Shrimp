@@ -24,9 +24,8 @@ namespace ThirdPersonController
         private bool isDead = false;
         private Animator animator;
         private AudioSource audioSource;
-        private Rigidbody rb;
         private EnemyAI ai;
-        private Coroutine hitStunRoutine;
+        private EnemyHitReaction hitReaction;
 
         public int CurrentHealth => currentHealth;
         public bool IsDead => isDead;
@@ -36,8 +35,13 @@ namespace ThirdPersonController
             currentHealth = maxHealth;
             animator = GetComponent<Animator>();
             audioSource = GetComponent<AudioSource>();
-            rb = GetComponent<Rigidbody>();
             ai = GetComponent<EnemyAI>();
+            hitReaction = GetComponent<EnemyHitReaction>();
+
+            if (hitReaction != null && hitStunDuration > 0f)
+            {
+                hitReaction.flinchDuration = hitStunDuration;
+            }
         }
 
         public void TakeDamage(int damage, Vector3 damageSource, float knockbackForce = 0f)
@@ -57,26 +61,22 @@ namespace ThirdPersonController
                 audioSource.PlayOneShot(hitSound);
             }
 
-            // Apply knockback
-            if (knockbackForce > 0f && rb != null)
+            if (hitReaction != null)
             {
-                Vector3 knockbackDir = (transform.position - damageSource).normalized;
-                rb.AddForce(knockbackDir * knockbackForce, ForceMode.Impulse);
+                hitReaction.ApplyHit(damageSource, knockbackForce);
             }
-
-            // Trigger hit animation
-            if (animator != null && animator.runtimeAnimatorController != null)
+            else
             {
-                animator.SetTrigger("Hit");
-            }
-
-            if (hitStunDuration > 0f && ai != null)
-            {
-                if (hitStunRoutine != null)
+                // Fallback hit animation
+                if (animator != null && animator.runtimeAnimatorController != null)
                 {
-                    StopCoroutine(hitStunRoutine);
+                    animator.SetTrigger("Hit");
                 }
-                hitStunRoutine = StartCoroutine(HitStun());
+
+                if (hitStunDuration > 0f && ai != null)
+                {
+                    StartCoroutine(HitStunFallback());
+                }
             }
 
             if (currentHealth <= 0)
@@ -111,6 +111,11 @@ namespace ThirdPersonController
             if (ai != null)
                 ai.enabled = false;
 
+            if (hitReaction != null)
+            {
+                hitReaction.CancelReaction();
+            }
+
             // Drop loot
             if (dropItems.Length > 0 && Random.value < dropChance)
             {
@@ -128,7 +133,7 @@ namespace ThirdPersonController
             Destroy(gameObject);
         }
 
-        private IEnumerator HitStun()
+        private IEnumerator HitStunFallback()
         {
             ai.enabled = false;
             yield return new WaitForSeconds(hitStunDuration);
@@ -136,7 +141,6 @@ namespace ThirdPersonController
             {
                 ai.enabled = true;
             }
-            hitStunRoutine = null;
         }
     }
 }

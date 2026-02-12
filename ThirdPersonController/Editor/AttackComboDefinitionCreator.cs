@@ -18,7 +18,7 @@ namespace ThirdPersonController.Editor
             AttackComboDefinition combo = ScriptableObject.CreateInstance<AttackComboDefinition>();
             combo.comboResetTime = 1.5f;
             combo.maxComboCount = 50;
-            combo.inputBufferTime = 0.2f;
+            combo.inputBufferTime = 0.3f;
             combo.steps = CreateDefaultSteps();
 
             string assetPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(targetFolder, "AttackComboDefinition.asset"));

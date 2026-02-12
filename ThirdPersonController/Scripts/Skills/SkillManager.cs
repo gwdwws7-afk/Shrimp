@@ -17,12 +17,16 @@ namespace ThirdPersonController
             KeyCode.Q, KeyCode.W, KeyCode.E, 
             KeyCode.R, KeyCode.T, KeyCode.F 
         };
+
+        [Header("Input Buffer")]
+        public float skillBufferTime = 0.3f;
         
         [Header("参考")]
         public Transform playerTransform;
         public StaminaSystem staminaSystem;
         public PlayerInputHandler inputHandler;
         public PlayerActionController actionController;
+        public PlayerInputBuffer inputBuffer;
         
         // 技能释放原点（通常是从玩家位置稍微前方）
         public Vector3 CastOrigin => playerTransform.position + playerTransform.forward * 0.5f + Vector3.up * 1f;
@@ -40,6 +44,9 @@ namespace ThirdPersonController
 
             if (actionController == null)
                 actionController = GetComponent<PlayerActionController>();
+
+            if (inputBuffer == null)
+                inputBuffer = GetComponent<PlayerInputBuffer>();
         }
         
         private void Update()
@@ -74,7 +81,33 @@ namespace ThirdPersonController
             {
                 if (Input.GetKeyDown(skillKeys[i]))
                 {
-                    TryUseSkill(i);
+                    if (inputBuffer != null)
+                    {
+                        inputBuffer.BufferAction(BufferedActionType.Skill, skillBufferTime, i);
+                    }
+                    else
+                    {
+                        TryUseSkill(i);
+                    }
+                }
+            }
+
+            if (inputBuffer != null)
+            {
+                TryConsumeBufferedSkills();
+            }
+        }
+
+        private void TryConsumeBufferedSkills()
+        {
+            for (int i = 0; i < skills.Length; i++)
+            {
+                if (inputBuffer.TryGet(BufferedActionType.Skill, out _, i))
+                {
+                    if (TryUseSkill(i))
+                    {
+                        inputBuffer.TryConsume(BufferedActionType.Skill, out _, i);
+                    }
                 }
             }
         }
@@ -106,6 +139,9 @@ namespace ThirdPersonController
             
             if (actionController != null)
             {
+                ActionInterruptMask interruptMask = skill.interruptible
+                    ? (ActionInterruptMask.Dodge | ActionInterruptMask.Block)
+                    : ActionInterruptMask.None;
                 if (!actionController.TryStartAction(
                     PlayerActionState.Skill,
                     ActionPriority.Skill,
@@ -113,7 +149,8 @@ namespace ThirdPersonController
                     skill.lockMovement,
                     skill.lockRotation,
                     true,
-                    skill.interruptible))
+                    skill.interruptible,
+                    interruptMask))
                 {
                     return false;
                 }

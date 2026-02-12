@@ -63,7 +63,16 @@ namespace ThirdPersonController
             {
                 if (actionController != null)
                 {
-                    actionController.TryStartAction(PlayerActionState.Hit, ActionPriority.Hit, hitStunDuration, true, true, true, false);
+                    actionController.TryStartAction(
+                        PlayerActionState.Hit,
+                        ActionPriority.Hit,
+                        hitStunDuration,
+                        true,
+                        true,
+                        true,
+                        false,
+                        ActionInterruptMask.None,
+                        true);
                 }
                 StartCoroutine(HitReaction(damageSource, knockbackForce));
             }
@@ -161,7 +170,16 @@ namespace ThirdPersonController
 
             if (actionController != null)
             {
-                actionController.TryStartAction(PlayerActionState.Dead, ActionPriority.Dead, 0f, true, true, false, false);
+                actionController.TryStartAction(
+                    PlayerActionState.Dead,
+                    ActionPriority.Dead,
+                    0f,
+                    true,
+                    true,
+                    false,
+                    false,
+                    ActionInterruptMask.None,
+                    true);
             }
 
             // Play death animation

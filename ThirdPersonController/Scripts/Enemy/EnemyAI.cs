@@ -24,6 +24,12 @@ namespace ThirdPersonController
         public float attackCooldown = 1.5f;
         public int attackDamage = 10;
         public float attackKnockback = 3f;
+        public float attackWindup = 0.35f;
+        public float attackActiveTime = 0.1f;
+        public float attackRecovery = 0.45f;
+        public float attackHitRadius = 1.1f;
+        public float attackHitAngle = 120f;
+        public Transform attackOrigin;
 
         [Header("Patrol")]
         public Transform[] patrolPoints;
@@ -35,17 +41,29 @@ namespace ThirdPersonController
         public string moveSpeedParam = "MoveSpeed";
         public string attackTrigger = "Attack";
         public string isChasingParam = "IsChasing";
+        public string hitTrigger = "Hit";
+        public string knockdownTrigger = "Knockdown";
+
+        [Header("Crowd")]
+        public bool useCrowdCoordinator = true;
+        public float ringStandoffDistance = 2.4f;
 
         private NavMeshAgent agent;
         private EnemyHealth health;
         private Transform player;
+        private EnemyCrowdCoordinator crowdCoordinator;
+        private bool isSuppressed = false;
+        private bool hasAttackToken = false;
+        private bool isAttacking = false;
+        private float attackPhaseTimer = 0f;
+        private bool attackHitApplied = false;
 
         private int currentPatrolIndex = 0;
         private float waitTimer;
         private float attackCooldownTimer;
         private bool isChasing = false;
 
-        private enum State { Patrol, Chase, Attack }
+        private enum State { Patrol, Chase, Circle, Attack }
         private State currentState = State.Patrol;
 
         private void Awake()
@@ -58,6 +76,24 @@ namespace ThirdPersonController
                 animator = GetComponent<Animator>();
 
             FindPlayer();
+
+            if (useCrowdCoordinator)
+            {
+                crowdCoordinator = FindObjectOfType<EnemyCrowdCoordinator>();
+                if (crowdCoordinator != null)
+                {
+                    crowdCoordinator.Register(this);
+                }
+            }
+        }
+
+        private void OnDisable()
+        {
+            ReleaseAttackToken();
+            if (crowdCoordinator != null)
+            {
+                crowdCoordinator.Unregister(this);
+            }
         }
 
         private void FindPlayer()
@@ -70,6 +106,7 @@ namespace ThirdPersonController
         private void Update()
         {
             if (health.IsDead) return;
+            if (isSuppressed) return;
 
             if (player == null)
             {
@@ -93,32 +130,50 @@ namespace ThirdPersonController
         {
             float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-            if (distanceToPlayer <= detectionRange)
+            if (distanceToPlayer > detectionRange)
             {
-                Vector3 directionToPlayer = (player.position - transform.position).normalized;
-                float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+                isChasing = false;
+                return;
+            }
 
-                if (angleToPlayer <= fieldOfView * 0.5f)
+            Vector3 directionToPlayer = (player.position - transform.position).normalized;
+            float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+
+            if (angleToPlayer <= fieldOfView * 0.5f)
+            {
+                // Check if player is visible (not behind wall)
+                if (!Physics.Raycast(transform.position + Vector3.up, directionToPlayer,
+                    distanceToPlayer, obstructionLayer))
                 {
-                    // Check if player is visible (not behind wall)
-                    if (!Physics.Raycast(transform.position + Vector3.up, directionToPlayer, 
-                        distanceToPlayer, obstructionLayer))
-                    {
-                        isChasing = true;
-                    }
+                    isChasing = true;
+                    return;
                 }
             }
+
+            isChasing = false;
         }
 
         private void UpdateState()
         {
             float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
+            if (!isChasing || distanceToPlayer > attackRange)
+            {
+                ReleaseAttackToken();
+            }
+
             if (isChasing)
             {
                 if (distanceToPlayer <= attackRange)
                 {
-                    currentState = State.Attack;
+                    if (TryAcquireAttackToken())
+                    {
+                        currentState = State.Attack;
+                    }
+                    else
+                    {
+                        currentState = State.Circle;
+                    }
                 }
                 else
                 {
@@ -141,6 +196,9 @@ namespace ThirdPersonController
                 case State.Chase:
                     Chase();
                     break;
+                case State.Circle:
+                    Circle();
+                    break;
                 case State.Attack:
                     Attack();
                     break;
@@ -152,6 +210,8 @@ namespace ThirdPersonController
         private void Patrol()
         {
             if (patrolPoints.Length == 0) return;
+
+            agent.isStopped = false;
 
             agent.speed = patrolSpeed;
 
@@ -183,6 +243,7 @@ namespace ThirdPersonController
 
         private void Chase()
         {
+            agent.isStopped = false;
             agent.speed = chaseSpeed;
             agent.SetDestination(player.position);
 
@@ -199,6 +260,12 @@ namespace ThirdPersonController
 
         private void Attack()
         {
+            if (!hasAttackToken)
+            {
+                currentState = State.Circle;
+                return;
+            }
+
             agent.isStopped = true;
 
             // Rotate to face player
@@ -211,27 +278,96 @@ namespace ThirdPersonController
                     rotationSpeed * Time.deltaTime);
             }
 
-            // Perform attack
-            if (attackCooldownTimer <= 0)
+            if (!isAttacking && attackCooldownTimer <= 0f)
             {
-                PerformAttack();
+                StartAttackSequence();
                 attackCooldownTimer = attackCooldown;
+            }
+
+            if (isAttacking)
+            {
+                UpdateAttackSequence();
             }
         }
 
-        private void PerformAttack()
+        private void Circle()
         {
-            // Trigger animation
-            if (animator != null && animator.runtimeAnimatorController != null)
+            agent.isStopped = false;
+            agent.speed = chaseSpeed * 0.85f;
+
+            Vector3 targetPosition = player.position - transform.forward * ringStandoffDistance;
+            if (crowdCoordinator != null)
             {
-                animator.SetTrigger("Attack");
+                targetPosition = crowdCoordinator.GetRingPosition(this);
             }
 
-            // Damage player
-            PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
-            if (playerHealth != null)
+            agent.SetDestination(targetPosition);
+        }
+
+        private void StartAttackSequence()
+        {
+            isAttacking = true;
+            attackHitApplied = false;
+            attackPhaseTimer = attackWindup + attackActiveTime + attackRecovery;
+
+            if (animator != null && animator.runtimeAnimatorController != null)
             {
-                playerHealth.TakeDamage(attackDamage, transform.position, attackKnockback);
+                animator.SetTrigger(attackTrigger);
+            }
+        }
+
+        private void UpdateAttackSequence()
+        {
+            if (attackPhaseTimer <= 0f)
+            {
+                EndAttackSequence();
+                return;
+            }
+
+            float previous = attackPhaseTimer;
+            attackPhaseTimer -= Time.deltaTime;
+
+            float activeStart = attackRecovery + attackActiveTime;
+            float activeEnd = attackRecovery;
+
+            bool enteredActive = previous > activeStart && attackPhaseTimer <= activeStart;
+            bool inActive = attackPhaseTimer <= activeStart && attackPhaseTimer >= activeEnd;
+
+            if ((enteredActive || inActive) && !attackHitApplied)
+            {
+                PerformAttackHit();
+                attackHitApplied = true;
+            }
+
+            if (attackPhaseTimer <= 0f)
+            {
+                EndAttackSequence();
+            }
+        }
+
+        private void EndAttackSequence()
+        {
+            isAttacking = false;
+            attackPhaseTimer = 0f;
+            ReleaseAttackToken();
+        }
+
+        private void PerformAttackHit()
+        {
+            Transform origin = attackOrigin != null ? attackOrigin : transform;
+            Vector3 directionToPlayer = (player.position - origin.position).normalized;
+            directionToPlayer.y = 0;
+
+            float distanceToPlayer = Vector3.Distance(origin.position, player.position);
+            float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+
+            if (distanceToPlayer <= attackHitRadius && angleToPlayer <= attackHitAngle * 0.5f)
+            {
+                PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
+                if (playerHealth != null)
+                {
+                    playerHealth.TakeDamage(attackDamage, transform.position, attackKnockback);
+                }
             }
         }
 
@@ -242,6 +378,52 @@ namespace ThirdPersonController
             float moveSpeed = agent.velocity.magnitude / chaseSpeed;
             animator.SetFloat("MoveSpeed", moveSpeed);
             animator.SetBool("IsChasing", isChasing);
+        }
+
+        private bool TryAcquireAttackToken()
+        {
+            if (!useCrowdCoordinator || crowdCoordinator == null)
+            {
+                hasAttackToken = true;
+                return true;
+            }
+
+            hasAttackToken = crowdCoordinator.RequestAttackToken(this);
+            return hasAttackToken;
+        }
+
+        private void ReleaseAttackToken()
+        {
+            if (!hasAttackToken)
+            {
+                return;
+            }
+
+            hasAttackToken = false;
+            if (useCrowdCoordinator && crowdCoordinator != null)
+            {
+                crowdCoordinator.ReleaseAttackToken(this);
+            }
+        }
+
+        public void SetSuppressed(bool suppressed)
+        {
+            if (isSuppressed == suppressed)
+            {
+                return;
+            }
+
+            isSuppressed = suppressed;
+
+            if (suppressed)
+            {
+                ReleaseAttackToken();
+                agent.isStopped = true;
+            }
+            else
+            {
+                agent.isStopped = false;
+            }
         }
 
         private void OnDrawGizmosSelected()

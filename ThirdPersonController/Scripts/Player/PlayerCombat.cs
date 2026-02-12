@@ -26,7 +26,7 @@ namespace ThirdPersonController
         [Header("Combo Definition")]
         public AttackComboDefinition comboDefinition;
         public bool useAnimationEvents = true;
-        public float inputBufferTime = 0.2f;
+        public float inputBufferTime = 0.3f;
         public float hitStopDuration = 0.05f;
         public bool lockMovementDuringAttack = true;
         public bool lockRotationDuringAttack = false;
@@ -74,6 +74,7 @@ namespace ThirdPersonController
         private StaminaSystem staminaSystem;
         private BlockDodgeSystem blockDodgeSystem;
         private PlayerActionController actionController;
+        private PlayerInputBuffer inputBuffer;
 
         private int currentCombo = 0;
         private float comboResetTimer;
@@ -119,6 +120,7 @@ namespace ThirdPersonController
             staminaSystem = GetComponent<StaminaSystem>();
             blockDodgeSystem = GetComponent<BlockDodgeSystem>();
             actionController = GetComponent<PlayerActionController>();
+            inputBuffer = GetComponent<PlayerInputBuffer>();
 
             EnsureAttackOrigin();
                 
@@ -282,7 +284,7 @@ namespace ThirdPersonController
 
         private void HandleCooldowns()
         {
-            if (attackBuffered)
+            if (inputBuffer == null && attackBuffered)
             {
                 attackBufferTimer -= Time.deltaTime;
                 if (attackBufferTimer <= 0f)
@@ -323,6 +325,12 @@ namespace ThirdPersonController
                 return;
             }
 
+            if (inputBuffer != null)
+            {
+                inputBuffer.BufferAction(BufferedActionType.Attack, GetInputBufferTime());
+                return;
+            }
+
             attackBuffered = true;
             attackBufferTimer = GetInputBufferTime();
         }
@@ -344,7 +352,7 @@ namespace ThirdPersonController
 
         private void TryConsumeBufferedAttack()
         {
-            if (!attackBuffered)
+            if (!HasBufferedAttack())
             {
                 return;
             }
@@ -356,7 +364,7 @@ namespace ThirdPersonController
                     return;
                 }
 
-                attackBuffered = false;
+                ConsumeBufferedAttack();
                 PerformAttack();
                 return;
             }
@@ -367,9 +375,30 @@ namespace ThirdPersonController
                 if (nextStepIndex >= 0)
                 {
                     QueueNextAttack(nextStepIndex);
-                    attackBuffered = false;
+                    ConsumeBufferedAttack();
                 }
             }
+        }
+
+        private bool HasBufferedAttack()
+        {
+            if (inputBuffer != null)
+            {
+                return inputBuffer.HasAction(BufferedActionType.Attack);
+            }
+
+            return attackBuffered;
+        }
+
+        private void ConsumeBufferedAttack()
+        {
+            if (inputBuffer != null)
+            {
+                inputBuffer.TryConsume(BufferedActionType.Attack, out _);
+                return;
+            }
+
+            attackBuffered = false;
         }
 
         private bool CanStartAttack()
@@ -431,6 +460,7 @@ namespace ThirdPersonController
             }
 
             bool allowInterrupt = step.allowDodgeCancel || step.allowBlockCancel;
+            ActionInterruptMask interruptMask = GetAttackInterruptMask(step);
             if (actionController != null)
             {
                 bool started = actionController.TryStartAction(
@@ -440,7 +470,8 @@ namespace ThirdPersonController
                     lockMovementDuringAttack,
                     lockRotationDuringAttack,
                     true,
-                    allowInterrupt);
+                    allowInterrupt,
+                    interruptMask);
 
                 if (!started)
                 {
@@ -541,12 +572,41 @@ namespace ThirdPersonController
             queuedNextAttack = false;
             queuedStepIndex = -1;
             attackBuffered = false;
+            if (inputBuffer != null)
+            {
+                inputBuffer.ClearAction(BufferedActionType.Attack);
+            }
             ResetCombo();
 
             if (actionController != null)
             {
                 actionController.EndAction(PlayerActionState.Attack);
             }
+        }
+
+        private ActionInterruptMask GetAttackInterruptMask(AttackStep step)
+        {
+            ActionInterruptMask mask = ActionInterruptMask.None;
+
+            if (step != null)
+            {
+                if (step.allowDodgeCancel)
+                {
+                    mask |= ActionInterruptMask.Dodge;
+                }
+
+                if (step.allowBlockCancel)
+                {
+                    mask |= ActionInterruptMask.Block;
+                }
+
+                if (step.allowDodgeCancel || step.allowBlockCancel)
+                {
+                    mask |= ActionInterruptMask.Skill;
+                }
+            }
+
+            return mask;
         }
         
         // 根据连击等级播放音效

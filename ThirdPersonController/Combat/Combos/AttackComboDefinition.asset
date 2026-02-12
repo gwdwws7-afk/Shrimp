@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   comboResetTime: 1.5
   maxComboCount: 50
-  inputBufferTime: 0.2
+  inputBufferTime: 0.35
   steps:
   - name: N1
     animationComboIndex: 1

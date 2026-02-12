@@ -1888,7 +1888,22 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: a7a8f396331a43b3812e2638be1a311b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1337017462809489118}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: a7a8f396331a43b3812e2638be1a311b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6229582975589936948}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: a7a8f396331a43b3812e2638be1a311b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7013574787686540498}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: a7a8f396331a43b3812e2638be1a311b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2936312426119652097}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: a7a8f396331a43b3812e2638be1a311b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5280934887958723711}
   m_SourcePrefab: {fileID: 100100000, guid: a7a8f396331a43b3812e2638be1a311b, type: 3}
 --- !u!1 &857717912
 GameObject:
@@ -2040,6 +2055,7 @@ MonoBehaviour:
   comboText: {fileID: 505572884}
   comboGauge: {fileID: 0}
   canvasGroup: {fileID: 947423035}
+  combat: {fileID: 0}
   tier1Color: {r: 1, g: 1, b: 1, a: 1}
   tier2Color: {r: 1, g: 0.9, b: 0.2, a: 1}
   tier3Color: {r: 1, g: 0.3, b: 0.2, a: 1}
@@ -3200,15 +3216,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 5391caaf11134aa4d9b4f4868781456c, type: 3}
       propertyPath: m_LocalScale.x
-      value: 500
+      value: 5000
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5391caaf11134aa4d9b4f4868781456c, type: 3}
       propertyPath: m_LocalScale.y
-      value: 500
+      value: 5000
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5391caaf11134aa4d9b4f4868781456c, type: 3}
       propertyPath: m_LocalScale.z
-      value: 500
+      value: 5000
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5391caaf11134aa4d9b4f4868781456c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3216,7 +3232,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5391caaf11134aa4d9b4f4868781456c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.93
+      value: 31.19
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5391caaf11134aa4d9b4f4868781456c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3265,6 +3281,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5391caaf11134aa4d9b4f4868781456c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1345501762}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5391caaf11134aa4d9b4f4868781456c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1345501763}
   m_SourcePrefab: {fileID: 100100000, guid: 5391caaf11134aa4d9b4f4868781456c, type: 3}
 --- !u!1 &1345501761 stripped
 GameObject:
@@ -3291,8 +3310,39 @@ MeshCollider:
   m_Enabled: 1
   serializedVersion: 5
   m_Convex: 0
-  m_CookingOptions: 30
+  m_CookingOptions: 28
   m_Mesh: {fileID: 5461320835613783329, guid: 5391caaf11134aa4d9b4f4868781456c, type: 3}
+--- !u!114 &1345501763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1345501761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 23800000, guid: 1701e44436d73614bb591214c3461fa1, type: 2}
+  m_BuildHeightMesh: 0
 --- !u!1 &1361968051
 GameObject:
   m_ObjectHideFlags: 0
@@ -4417,6 +4467,137 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 100000, guid: a7a8f396331a43b3812e2638be1a311b, type: 3}
   m_PrefabInstance: {fileID: 833650043}
   m_PrefabAsset: {fileID: 0}
+--- !u!195 &1337017462809489118
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2085776811}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.4
+  m_Speed: 3
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 360
+  m_StoppingDistance: 1.5
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1.8
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!114 &6229582975589936948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2085776811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f331ce976be3aea4d97a559ec24666fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 50
+  deathDelay: 2
+  hitStunDuration: 0.2
+  hitEffect: {fileID: 0}
+  deathEffect: {fileID: 0}
+  hitSound: {fileID: 0}
+  deathSound: {fileID: 0}
+  dropItems: []
+  dropChance: 0.3
+--- !u!114 &7013574787686540498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2085776811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81172782bd47f4e4ab4ebba2dfb7ad75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  detectionRange: 15
+  attackRange: 2
+  fieldOfView: 120
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  obstructionLayer:
+    serializedVersion: 2
+    m_Bits: 1
+  patrolSpeed: 2
+  chaseSpeed: 5
+  rotationSpeed: 5
+  stoppingDistance: 1.5
+  attackCooldown: 1.5
+  attackDamage: 10
+  attackKnockback: 3
+  attackWindup: 0.35
+  attackActiveTime: 0.1
+  attackRecovery: 0.45
+  attackHitRadius: 1.1
+  attackHitAngle: 120
+  attackOrigin: {fileID: 0}
+  patrolPoints: []
+  waitTimeAtPoint: 3
+  randomPatrol: 0
+  animator: {fileID: 0}
+  moveSpeedParam: MoveSpeed
+  attackTrigger: Attack
+  isChasingParam: IsChasing
+  hitTrigger: Hit
+  knockdownTrigger: Knockdown
+  useCrowdCoordinator: 1
+  ringStandoffDistance: 2.4
+--- !u!114 &2936312426119652097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2085776811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07d9524700b647ddb35e0953a00e12e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  knockbackThreshold: 2
+  knockdownThreshold: 6
+  flinchDuration: 0.2
+  knockbackDuration: 0.25
+  knockbackDistance: 1.2
+  knockdownDuration: 0.35
+  knockdownDistance: 2.5
+  knockdownRecoverTime: 0.6
+  flinchTrigger: Hit
+  knockdownTrigger: Knockdown
+--- !u!95 &5280934887958723711
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2085776811}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 5f5dc41dfc093d9478372f2e7dc7233b, type: 3}
+  m_Controller: {fileID: 9100000, guid: 9a124949527149e6ba77bc23f6bcbe7e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!4 &543450653653644993 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7374266337761899106, guid: 8732ca168c916584cb02e6ff6b83b2ff, type: 3}
@@ -4443,6 +4624,8 @@ MonoBehaviour:
   invincibilityDuration: 0.3
   blockKey: 325
   dodgeKey: 32
+  blockBufferTime: 0.25
+  dodgeBufferTime: 0.25
   playerTransform: {fileID: 0}
   playerRigidbody: {fileID: 0}
   animator: {fileID: 0}
@@ -4485,6 +4668,12 @@ MonoBehaviour:
   attackCooldown: 0.5
   attackDamage: 25
   attackKnockback: 5
+  comboDefinition: {fileID: 0}
+  useAnimationEvents: 1
+  inputBufferTime: 0.2
+  hitStopDuration: 0.05
+  lockMovementDuringAttack: 1
+  lockRotationDuringAttack: 0
   maxComboCount: 50
   comboResetTime: 1.5
   comboWindowTime: 0.8
@@ -4540,11 +4729,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7374266337761899106, guid: 8732ca168c916584cb02e6ff6b83b2ff, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.609
+      value: 7.7
       objectReference: {fileID: 0}
     - target: {fileID: 7374266337761899106, guid: 8732ca168c916584cb02e6ff6b83b2ff, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.94
+      value: 36.67
       objectReference: {fileID: 0}
     - target: {fileID: 7374266337761899106, guid: 8732ca168c916584cb02e6ff6b83b2ff, type: 3}
       propertyPath: m_LocalRotation.w
