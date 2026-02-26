@@ -36,7 +36,12 @@ namespace ThirdPersonController
         private Coroutine deathRoutine;
 
         public int CurrentHealth => currentHealth;
+        public int MaxHealth => maxHealth;
         public bool IsDead => isDead;
+        public float defense = 0f;
+        
+        public System.Action<int, Vector3> OnDamageTaken;
+        public System.Action OnDeath;
 
         private void Awake()
         {
@@ -62,6 +67,8 @@ namespace ThirdPersonController
             if (isDead) return;
 
             currentHealth -= damage;
+            
+            OnDamageTaken?.Invoke(damage, damageSource);
 
             // Play hit effects
             if (hitEffect != null)
@@ -118,6 +125,7 @@ namespace ThirdPersonController
         private void Die()
         {
             isDead = true;
+            OnDeath?.Invoke();
 
             // Play death effects
             if (deathEffect != null)

@@ -864,6 +864,24 @@ namespace ThirdPersonController
             {
                 skillBar.skillSlots[i] = CreateSkillSlot(skillBarObj.transform, keys[i], i, startX + i * (slotSize + spacing), slotSize);
             }
+
+            GameObject attackHintObj = new GameObject("AttackInputHint");
+            attackHintObj.transform.SetParent(skillBarObj.transform, false);
+            Text attackHintText = attackHintObj.AddComponent<Text>();
+            attackHintText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            attackHintText.fontSize = 14;
+            attackHintText.color = new Color(1f, 1f, 1f, 0.8f);
+            attackHintText.alignment = TextAnchor.MiddleCenter;
+            attackHintText.text = "A: 左键  B: 右键";
+
+            RectTransform attackHintRect = attackHintObj.GetComponent<RectTransform>();
+            attackHintRect.anchorMin = new Vector2(0.5f, 1f);
+            attackHintRect.anchorMax = new Vector2(0.5f, 1f);
+            attackHintRect.pivot = new Vector2(0.5f, 0f);
+            attackHintRect.anchoredPosition = new Vector2(0f, 6f);
+            attackHintRect.sizeDelta = new Vector2(240f, 20f);
+
+            skillBar.attackInputHintText = attackHintText;
             
             return skillBar;
         }

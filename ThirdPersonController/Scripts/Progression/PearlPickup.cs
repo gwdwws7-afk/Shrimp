@@ -88,6 +88,7 @@ namespace ThirdPersonController
 
             collected = true;
             GameEvents.ShowMessage($"Pearl acquired: {pearl.pearlName}", 2f);
+            GameEvents.PearlCollected(pearl.id);
 
             if (pickupVfx != null)
             {

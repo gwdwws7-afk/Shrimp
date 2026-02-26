@@ -16,6 +16,9 @@ namespace ThirdPersonController.Editor
         private int selectedRunIndex = 0;
         private int selectedJumpIndex = 0;
         private int selectedAttackIndex = 0;
+        private int selectedAttack2Index = 0;
+        private int selectedAttack3Index = 0;
+        private int selectedAttackBIndex = 0;
         private int selectedHitIndex = 0;
         private int selectedDeathIndex = 0;
         private int selectedCrouchIndex = 0;
@@ -60,7 +63,10 @@ namespace ThirdPersonController.Editor
                 DrawAnimationSelector("Walk (Idle→Walk)", ref selectedWalkIndex);
                 DrawAnimationSelector("Run (Walk→Run)", ref selectedRunIndex);
                 DrawAnimationSelector("Jump", ref selectedJumpIndex);
-                DrawAnimationSelector("Attack", ref selectedAttackIndex);
+                DrawAnimationSelector("Attack 1 (Light)", ref selectedAttackIndex);
+                DrawAnimationSelector("Attack 2 (Light)", ref selectedAttack2Index);
+                DrawAnimationSelector("Attack 3 (Light)", ref selectedAttack3Index);
+                DrawAnimationSelector("Attack B (Heavy)", ref selectedAttackBIndex);
                 DrawAnimationSelector("Hit (受击)", ref selectedHitIndex);
                 DrawAnimationSelector("Death (死亡)", ref selectedDeathIndex);
                 DrawAnimationSelector("Crouch (蹲下)", ref selectedCrouchIndex);
@@ -189,6 +195,36 @@ namespace ThirdPersonController.Editor
                         if (selectedAttackIndex > 0 && availableAnimations.Length > selectedAttackIndex)
                         {
                             string animName = availableAnimations[selectedAttackIndex];
+                            if (animationDict.ContainsKey(animName))
+                            {
+                                state.state.motion = animationDict[animName];
+                            }
+                        }
+                        break;
+                    case "Attack_2":
+                        if (selectedAttack2Index > 0 && availableAnimations.Length > selectedAttack2Index)
+                        {
+                            string animName = availableAnimations[selectedAttack2Index];
+                            if (animationDict.ContainsKey(animName))
+                            {
+                                state.state.motion = animationDict[animName];
+                            }
+                        }
+                        break;
+                    case "Attack_3":
+                        if (selectedAttack3Index > 0 && availableAnimations.Length > selectedAttack3Index)
+                        {
+                            string animName = availableAnimations[selectedAttack3Index];
+                            if (animationDict.ContainsKey(animName))
+                            {
+                                state.state.motion = animationDict[animName];
+                            }
+                        }
+                        break;
+                    case "Attack_B":
+                        if (selectedAttackBIndex > 0 && availableAnimations.Length > selectedAttackBIndex)
+                        {
+                            string animName = availableAnimations[selectedAttackBIndex];
                             if (animationDict.ContainsKey(animName))
                             {
                                 state.state.motion = animationDict[animName];

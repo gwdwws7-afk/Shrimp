@@ -16,12 +16,20 @@ namespace ThirdPersonController
 
     public class PlayerCombat : MonoBehaviour
     {
+        private enum AttackInputType
+        {
+            Light,
+            Heavy
+        }
         [Header("Attack Settings")]
         public float attackRange = 2f;
         public float attackAngle = 120f;
         public float attackCooldown = 0.5f;
         public int attackDamage = 25;
         public float attackKnockback = 5f;
+        public float attackSpeed = 1f;
+        public float criticalRate = 0.05f;
+        public float criticalDamage = 1.5f;
 
         [Header("Damage Curve")]
         public DamageCurveProfile damageCurveProfile;
@@ -73,6 +81,11 @@ namespace ThirdPersonController
         public string comboAnimParam = "ComboCount";
         public string berserkAnimParam = "IsBerserk"; // 狂暴动画参数
 
+        private static readonly int AttackStateHash = Animator.StringToHash("Attack");
+        private static readonly int Attack2StateHash = Animator.StringToHash("Attack_2");
+        private static readonly int Attack3StateHash = Animator.StringToHash("Attack_3");
+        private static readonly int AttackBStateHash = Animator.StringToHash("Attack_B");
+
         private PlayerInputHandler input;
         private PlayerMovement movement;
         private Animator animator;
@@ -100,6 +113,7 @@ namespace ThirdPersonController
         private bool attackHitTriggered;
         private bool attackBuffered;
         private float attackBufferTimer;
+        private AttackInputType bufferedAttackType = AttackInputType.Light;
         private bool queuedNextAttack;
         private int queuedStepIndex = -1;
         private Coroutine attackRoutine;
@@ -180,6 +194,7 @@ namespace ThirdPersonController
         private void SubscribeToGameEvents()
         {
             OnComboChanged += (combo) => GameEvents.ComboChanged(combo);
+            OnComboChanged += (combo) => GameEvents.ComboCountChanged(combo);
             OnBerserkStateChanged += (active) => GameEvents.BerserkStateChanged(active);
         }
 
@@ -340,13 +355,18 @@ namespace ThirdPersonController
         {
             if (input.AttackPressed)
             {
-                BufferAttack();
+                BufferAttack(AttackInputType.Light);
+            }
+
+            if (input.HeavyAttackPressed)
+            {
+                BufferAttack(AttackInputType.Heavy);
             }
 
             TryConsumeBufferedAttack();
         }
 
-        private void BufferAttack()
+        private void BufferAttack(AttackInputType inputType)
         {
             if (!CanBufferAttack())
             {
@@ -355,12 +375,15 @@ namespace ThirdPersonController
 
             if (inputBuffer != null)
             {
-                inputBuffer.BufferAction(BufferedActionType.Attack, GetInputBufferTime());
+                inputBuffer.ClearAction(BufferedActionType.AttackLight);
+                inputBuffer.ClearAction(BufferedActionType.AttackHeavy);
+                inputBuffer.BufferAction(GetBufferedActionType(inputType), GetInputBufferTime());
                 return;
             }
 
             attackBuffered = true;
             attackBufferTimer = GetInputBufferTime();
+            bufferedAttackType = inputType;
         }
 
         private bool CanBufferAttack()
@@ -380,49 +403,74 @@ namespace ThirdPersonController
 
         private void TryConsumeBufferedAttack()
         {
-            if (!HasBufferedAttack())
+            if (!HasBufferedAttack(out AttackInputType inputType))
             {
                 return;
             }
 
             if (!isAttacking)
             {
+                if (inputType == AttackInputType.Heavy)
+                {
+                    return;
+                }
+
                 if (!CanStartAttack())
                 {
                     return;
                 }
 
-                ConsumeBufferedAttack();
-                PerformAttack();
+                ConsumeBufferedAttack(inputType);
+                PerformAttack(inputType);
                 return;
             }
 
             if (IsWithinComboWindow())
             {
-                int nextStepIndex = GetNextStepIndex();
+                int nextStepIndex = GetNextStepIndex(inputType);
                 if (nextStepIndex >= 0)
                 {
                     QueueNextAttack(nextStepIndex);
-                    ConsumeBufferedAttack();
+                    ConsumeBufferedAttack(inputType);
                 }
             }
         }
 
-        private bool HasBufferedAttack()
+        private bool HasBufferedAttack(out AttackInputType inputType)
         {
             if (inputBuffer != null)
             {
-                return inputBuffer.HasAction(BufferedActionType.Attack);
+                if (inputBuffer.TryGet(BufferedActionType.AttackHeavy, out _))
+                {
+                    inputType = AttackInputType.Heavy;
+                    return true;
+                }
+
+                if (inputBuffer.TryGet(BufferedActionType.AttackLight, out _))
+                {
+                    inputType = AttackInputType.Light;
+                    return true;
+                }
+
+                inputType = AttackInputType.Light;
+                return false;
             }
 
-            return attackBuffered;
+            if (attackBuffered)
+            {
+                inputType = bufferedAttackType;
+                return true;
+            }
+
+            inputType = AttackInputType.Light;
+            return false;
         }
 
-        private void ConsumeBufferedAttack()
+        private void ConsumeBufferedAttack(AttackInputType inputType)
         {
             if (inputBuffer != null)
             {
-                inputBuffer.TryConsume(BufferedActionType.Attack, out _);
+                inputBuffer.TryConsume(GetBufferedActionType(inputType), out _);
                 return;
             }
 
@@ -455,9 +503,9 @@ namespace ThirdPersonController
             queuedStepIndex = stepIndex;
         }
 
-        private void PerformAttack()
+        private void PerformAttack(AttackInputType inputType)
         {
-            int nextStepIndex = GetNextStepIndex();
+            int nextStepIndex = GetNextStepIndex(inputType);
             if (nextStepIndex < 0)
             {
                 return;
@@ -522,8 +570,13 @@ namespace ThirdPersonController
 
             if (animator != null && animator.runtimeAnimatorController != null)
             {
-                animator.SetTrigger(attackAnimTrigger);
-                animator.SetInteger(comboAnimParam, step.animationComboIndex);
+                int comboIndex = step.animationComboIndex;
+                bool played = TryPlayAttackAnimation(comboIndex);
+                animator.SetInteger(comboAnimParam, comboIndex);
+                if (!played)
+                {
+                    animator.SetTrigger(attackAnimTrigger);
+                }
             }
 
             PlayAttackEffects();
@@ -534,6 +587,30 @@ namespace ThirdPersonController
             }
 
             attackRoutine = StartCoroutine(AttackRoutine(step));
+        }
+
+        private bool TryPlayAttackAnimation(int comboIndex)
+        {
+            if (animator == null || animator.runtimeAnimatorController == null)
+            {
+                return false;
+            }
+
+            int stateHash = comboIndex switch
+            {
+                2 => Attack2StateHash,
+                3 => Attack3StateHash,
+                4 => AttackBStateHash,
+                _ => AttackStateHash
+            };
+
+            if (!animator.HasState(0, stateHash))
+            {
+                return false;
+            }
+
+            animator.Play(stateHash, 0, 0f);
+            return true;
         }
 
         private void FinishAttackStep()
@@ -555,6 +632,7 @@ namespace ThirdPersonController
                 return;
             }
 
+            ClearBufferedAttackInput();
             isAttacking = false;
             canAttack = true;
             currentStepIndex = -1;
@@ -566,6 +644,17 @@ namespace ThirdPersonController
             {
                 actionController.EndAction(PlayerActionState.Attack);
             }
+        }
+
+        private void ClearBufferedAttackInput()
+        {
+            if (inputBuffer != null)
+            {
+                inputBuffer.ClearAction(BufferedActionType.AttackLight);
+                inputBuffer.ClearAction(BufferedActionType.AttackHeavy);
+            }
+
+            attackBuffered = false;
         }
 
         private void CancelAttack()
@@ -587,7 +676,8 @@ namespace ThirdPersonController
             primaryHitTime = -1f;
             if (inputBuffer != null)
             {
-                inputBuffer.ClearAction(BufferedActionType.Attack);
+                inputBuffer.ClearAction(BufferedActionType.AttackLight);
+                inputBuffer.ClearAction(BufferedActionType.AttackHeavy);
             }
             ResetCombo();
 
@@ -688,7 +778,7 @@ namespace ThirdPersonController
             return elapsed >= currentStep.comboWindowStart && elapsed <= currentStep.comboWindowEnd;
         }
 
-        private int GetNextStepIndex()
+        private int GetNextStepIndex(AttackInputType inputType)
         {
             if (comboDefinition == null)
             {
@@ -703,6 +793,10 @@ namespace ThirdPersonController
 
             if (currentStepIndex < 0)
             {
+                if (inputType == AttackInputType.Heavy)
+                {
+                    return -1;
+                }
                 return comboDefinition.HasStep(0) ? 0 : -1;
             }
 
@@ -711,8 +805,12 @@ namespace ThirdPersonController
                 return -1;
             }
 
-            int nextIndex = currentStep.nextStepIndex >= 0 ? currentStep.nextStepIndex : currentStepIndex + 1;
-            if (nextIndex >= allowedSteps)
+            int nextIndex = ResolveNextStepIndex(currentStep, inputType);
+            int totalSteps = comboDefinition.steps.Count;
+            bool allowHeavyFinisher = inputType == AttackInputType.Heavy
+                && nextIndex == totalSteps - 1
+                && nextIndex == allowedSteps;
+            if (nextIndex >= allowedSteps && !allowHeavyFinisher)
             {
                 return -1;
             }
@@ -723,7 +821,11 @@ namespace ThirdPersonController
         private AttackStep GetStepDefinition(int stepIndex)
         {
             int allowedSteps = GetMaxComboStepsUnlocked();
-            if (allowedSteps <= 0 || stepIndex >= allowedSteps)
+            int totalSteps = comboDefinition != null ? comboDefinition.steps.Count : 1;
+            bool allowFinisherStep = comboDefinition != null
+                && stepIndex == totalSteps - 1
+                && stepIndex == allowedSteps;
+            if (allowedSteps <= 0 || (stepIndex >= allowedSteps && !allowFinisherStep))
             {
                 return null;
             }
@@ -767,12 +869,44 @@ namespace ThirdPersonController
             fallbackStep.forwardOffset = 0f;
             fallbackStep.heightOffset = 0f;
             fallbackStep.perTargetHitCooldown = 0f;
+            fallbackStep.nextStepOnLight = -1;
+            fallbackStep.nextStepOnHeavy = -1;
             if (fallbackStep.additionalHitDelays != null)
             {
                 fallbackStep.additionalHitDelays.Clear();
             }
 
             return fallbackStep;
+        }
+
+        private int ResolveNextStepIndex(AttackStep step, AttackInputType inputType)
+        {
+            if (step == null)
+            {
+                return -1;
+            }
+
+            if (inputType == AttackInputType.Heavy && step.nextStepOnHeavy >= 0)
+            {
+                return step.nextStepOnHeavy;
+            }
+
+            if (inputType == AttackInputType.Light && step.nextStepOnLight >= 0)
+            {
+                return step.nextStepOnLight;
+            }
+
+            if (inputType == AttackInputType.Light && step.nextStepIndex >= 0)
+            {
+                return step.nextStepIndex;
+            }
+
+            return -1;
+        }
+
+        private BufferedActionType GetBufferedActionType(AttackInputType inputType)
+        {
+            return inputType == AttackInputType.Heavy ? BufferedActionType.AttackHeavy : BufferedActionType.AttackLight;
         }
 
         private int GetMaxComboStepsUnlocked()

@@ -112,14 +112,12 @@ Month 5-6 (Phase 3: 打磨上线)
 - ✅ 动画系统
 
 ### 待开发
-- 🔲 连击系统升级
-- 🔲 技能系统 (6个技能)
-- 🔲 大规模敌人系统 (DOTS)
+- 🔲 技能 ScriptableObject 资产与特效/音效/图标配置
+- 🔲 Boss 预制体与 Boss UI 接线
+- 🔲 QuestSystem / LevelData / ChapterData 场景接线
+- 🔲 大规模敌人系统 (DOTS/Flow Field 原型)
 - 🔲 AI生成管线自动化
-- 🔲 完整UI系统
-- 🔲 音效系统
-- 🔲 特效系统
-- 🔲 成长系统
+- 🔲 关卡内容扩展与NavMesh烘焙
 
 ---
 

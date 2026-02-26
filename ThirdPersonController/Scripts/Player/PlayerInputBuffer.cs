@@ -6,6 +6,8 @@ namespace ThirdPersonController
     public enum BufferedActionType
     {
         Attack,
+        AttackLight,
+        AttackHeavy,
         Block,
         Dodge,
         Skill
@@ -195,6 +197,8 @@ namespace ThirdPersonController
             switch (action)
             {
                 case BufferedActionType.Attack:
+                case BufferedActionType.AttackLight:
+                case BufferedActionType.AttackHeavy:
                     return attackBufferTime;
                 case BufferedActionType.Block:
                     return blockBufferTime;

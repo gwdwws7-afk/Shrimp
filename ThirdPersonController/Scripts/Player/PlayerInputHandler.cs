@@ -19,6 +19,7 @@ namespace ThirdPersonController
         public KeyCode sprintKey = KeyCode.LeftShift;
         public KeyCode crouchKey = KeyCode.LeftControl;
         public KeyCode attackKey = KeyCode.Mouse0;
+        public KeyCode heavyAttackKey = KeyCode.Mouse1;
         public KeyCode interactKey = KeyCode.E;
 
         [Header("Cursor Settings")]
@@ -32,6 +33,7 @@ namespace ThirdPersonController
         public bool SprintPressed { get; private set; }
         public bool CrouchPressed { get; private set; }
         public bool AttackPressed { get; private set; }
+        public bool HeavyAttackPressed { get; private set; }
         public bool InteractPressed { get; private set; }
 
         private void Start()
@@ -61,6 +63,7 @@ namespace ThirdPersonController
             SprintPressed = Input.GetKey(sprintKey);
             CrouchPressed = Input.GetKey(crouchKey);
             AttackPressed = Input.GetKeyDown(attackKey);
+            HeavyAttackPressed = Input.GetKeyDown(heavyAttackKey);
             InteractPressed = Input.GetKeyDown(interactKey);
 
             // 处理光标锁定

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   comboResetTime: 1.1
   maxComboCount: 999
-  inputBufferTime: 0.24
+  inputBufferTime: 0.35
   steps:
   - name: N1
     animationComboIndex: 1
@@ -31,12 +31,14 @@ MonoBehaviour:
     hitDelay: 0.11
     recoveryTime: 0.28
     comboWindowStart: 0.08
-    comboWindowEnd: 0.5
+    comboWindowEnd: 0.7
     staminaCost: 0
     allowDodgeCancel: 1
     allowBlockCancel: 1
     requireGrounded: 1
     nextStepIndex: 1
+    nextStepOnLight: 1
+    nextStepOnHeavy: 3
   - name: N2
     animationComboIndex: 2
     baseDamage: 30
@@ -52,12 +54,14 @@ MonoBehaviour:
     hitDelay: 0.13
     recoveryTime: 0.3
     comboWindowStart: 0.1
-    comboWindowEnd: 0.55
+    comboWindowEnd: 0.8
     staminaCost: 0
     allowDodgeCancel: 1
     allowBlockCancel: 1
     requireGrounded: 1
     nextStepIndex: 2
+    nextStepOnLight: 2
+    nextStepOnHeavy: 3
   - name: N3
     animationComboIndex: 3
     baseDamage: 40
@@ -76,9 +80,34 @@ MonoBehaviour:
     hitDelay: 0.14
     recoveryTime: 0.42
     comboWindowStart: 0.12
-    comboWindowEnd: 0.75
+    comboWindowEnd: 0.95
     staminaCost: 0
     allowDodgeCancel: 1
     allowBlockCancel: 1
     requireGrounded: 1
     nextStepIndex: -1
+    nextStepOnLight: -1
+    nextStepOnHeavy: 3
+  - name: B1
+    animationComboIndex: 4
+    baseDamage: 55
+    damageMultiplier: 1.4
+    knockback: 12
+    range: 4.6
+    angle: 240
+    radius: 1.3
+    forwardOffset: 1.1
+    heightOffset: 0
+    additionalHitDelays: []
+    perTargetHitCooldown: 0
+    hitDelay: 0.18
+    recoveryTime: 0.55
+    comboWindowStart: 0.2
+    comboWindowEnd: 0.85
+    staminaCost: 10
+    allowDodgeCancel: 1
+    allowBlockCancel: 1
+    requireGrounded: 1
+    nextStepIndex: -1
+    nextStepOnLight: -1
+    nextStepOnHeavy: -1

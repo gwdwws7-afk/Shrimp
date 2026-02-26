@@ -34,6 +34,40 @@ namespace ThirdPersonController
         public List<string> ownedPearlIds = new List<string>();
         public List<string> equippedPearlIds = new List<string>();
         
+        // 章节进度
+        public int currentChapter = 1;
+        public int unlockedChapters = 1;
+        public List<int> completedChapters = new List<int>();
+        public List<int> completedLevels = new List<int>();
+        
+        // 关卡评分
+        [Serializable]
+        public class LevelScore
+        {
+            public string levelId = "";
+            public int stars = 0;
+            public int highScore = 0;
+            public float bestTime = 0f;
+            public bool noDamage = false;
+        }
+        public List<LevelScore> levelScores = new List<LevelScore>();
+        
+        // 成就进度
+        public List<string> unlockedAchievements = new List<string>();
+        public Dictionary<string, int> achievementProgress = new Dictionary<string, int>();
+        
+        // 统计
+        public int totalKills = 0;
+        public int totalDamage = 0;
+        public int longestCombo = 0;
+        public int bossesDefeated = 0;
+        public int pearlsCollected = 0;
+        
+        // 解锁
+        public bool hardModeUnlocked = false;
+        public bool nightmareModeUnlocked = false;
+        public bool newGamePlusUnlocked = false;
+        
         // 设置数据
         public float masterVolume = 1f;
         public float musicVolume = 0.7f;
@@ -45,10 +79,12 @@ namespace ThirdPersonController
         // 时间戳
         public string saveTime = "";
         public float totalPlayTime = 0f;
+        public string lastPlayedDate = "";
         
         public GameData()
         {
             saveTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            lastPlayedDate = DateTime.Now.ToString("yyyy-MM-dd");
         }
     }
     

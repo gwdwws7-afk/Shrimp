@@ -249,7 +249,7 @@ namespace ThirdPersonController
 
         private void ResumeAgentControl()
         {
-            if (agent != null)
+            if (agent != null && agent.isOnNavMesh)
             {
                 agent.Warp(transform.position);
                 agent.updatePosition = true;

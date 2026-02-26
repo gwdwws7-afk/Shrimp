@@ -5,6 +5,10 @@ namespace ThirdPersonController
 {
     public class LevelFlowController : MonoBehaviour
     {
+        [Header("Level Data")]
+        public LevelData levelData;
+        public ChapterData chapterData;
+        
         [Header("Scene Flow")]
         public string mainMenuSceneName = "MainMenu";
         public int levelId = 1;
@@ -16,6 +20,14 @@ namespace ThirdPersonController
         public string levelTitle = "Sample Level";
         public bool showOverlay = true;
 
+        [Header("Level Intro")]
+        public bool showLevelIntro = true;
+        public float introDuration = 3f;
+        
+        [Header("Timer")]
+        public bool useTimer = false;
+        public float levelTime = 0f;
+        
         [Header("Lighting")]
         public bool ensureLightingOnStart = true;
         public float fallbackLightIntensity = 1f;
@@ -23,9 +35,14 @@ namespace ThirdPersonController
         private bool menuOpen;
         private GUIStyle titleStyle;
         private GUIStyle buttonStyle;
+        private float currentLevelTime;
+        private bool levelStarted;
+        private bool levelEnded;
 
         private void Start()
         {
+            ApplyLevelData();
+            
             GameEvents.LevelStarted(levelId);
             if (SaveManager.Instance != null && SaveManager.Instance.CurrentData != null)
             {
@@ -36,7 +53,43 @@ namespace ThirdPersonController
             {
                 EnsureLighting();
             }
-            SetupStyles();
+            
+            if (showLevelIntro)
+            {
+                StartCoroutine(LevelIntroRoutine());
+            }
+            else
+            {
+                StartLevel();
+            }
+        }
+
+        private void ApplyLevelData()
+        {
+            if (levelData != null)
+            {
+                levelId = levelData.chapterId * 100 + int.Parse(levelData.levelId.Replace("LEVEL_", ""));
+                levelTitle = levelData.levelName;
+                useTimer = levelData.timeLimit > 0;
+                levelTime = levelData.timeLimit;
+            }
+            
+            if (chapterData != null)
+            {
+                levelTitle = $"{chapterData.chapterName} - {levelTitle}";
+            }
+        }
+        
+        private System.Collections.IEnumerator LevelIntroRoutine()
+        {
+            yield return new WaitForSeconds(introDuration);
+            StartLevel();
+        }
+        
+        private void StartLevel()
+        {
+            levelStarted = true;
+            currentLevelTime = 0f;
         }
 
         private void Update()
@@ -45,6 +98,23 @@ namespace ThirdPersonController
             {
                 ToggleMenu();
             }
+            
+            if (levelStarted && !levelEnded && useTimer)
+            {
+                currentLevelTime += Time.deltaTime;
+                
+                if (levelTime > 0 && currentLevelTime >= levelTime)
+                {
+                    HandleTimeUp();
+                }
+            }
+        }
+        
+        private void HandleTimeUp()
+        {
+            levelEnded = true;
+            GameEvents.ShowMessage("Time's Up!", 3f);
+            ExitToMenu();
         }
 
         private void OnGUI()

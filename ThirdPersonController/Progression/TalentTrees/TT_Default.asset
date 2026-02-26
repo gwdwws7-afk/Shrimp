@@ -18,16 +18,6 @@ MonoBehaviour:
     branch: 0
     cost: 1
     prerequisites: []
-    modifiers:
-    - stat: 0
-      type: 1
-      value: 0.08
-  - id: combo_2
-    title: Combo Step II
-    branch: 0
-    cost: 1
-    prerequisites:
-    - offense_1
     modifiers: []
   - id: offense_2
     title: Riptide Pressure
@@ -35,16 +25,6 @@ MonoBehaviour:
     cost: 1
     prerequisites:
     - offense_1
-    modifiers:
-    - stat: 0
-      type: 1
-      value: 0.08
-  - id: combo_3
-    title: Combo Step III
-    branch: 0
-    cost: 1
-    prerequisites:
-    - combo_2
     modifiers: []
   - id: offense_3
     title: Wide Sweep
@@ -52,25 +32,96 @@ MonoBehaviour:
     cost: 1
     prerequisites:
     - offense_2
-    modifiers:
-    - stat: 1
-      type: 1
-      value: 0.1
+    modifiers: []
+  - id: offense_4
+    title: Spellwake
+    branch: 0
+    cost: 1
+    prerequisites:
+    - offense_3
+    modifiers: []
+  - id: offense_5
+    title: Titanic Force
+    branch: 0
+    cost: 1
+    prerequisites:
+    - offense_4
+    modifiers: []
+  - id: offense_6
+    title: Critical Edge
+    branch: 0
+    cost: 1
+    prerequisites:
+    - offense_5
+    modifiers: []
+  - id: offense_7
+    title: Deadly Blow
+    branch: 0
+    cost: 1
+    prerequisites:
+    - offense_6
+    modifiers: []
+  - id: offense_8
+    title: Armor Breaker
+    branch: 0
+    cost: 1
+    prerequisites:
+    - offense_7
+    modifiers: []
+  - id: offense_9
+    title: Rapid Fury
+    branch: 0
+    cost: 1
+    prerequisites:
+    - offense_8
+    modifiers: []
+  - id: offense_10
+    title: Combo Master
+    branch: 0
+    cost: 1
+    prerequisites:
+    - offense_9
+    modifiers: []
+  - id: offense_11
+    title: Boss Slayer
+    branch: 0
+    cost: 1
+    prerequisites:
+    - offense_10
+    modifiers: []
+  - id: offense_12
+    title: Ultimate CD
+    branch: 0
+    cost: 1
+    prerequisites:
+    - offense_11
+    modifiers: []
+  - id: offense_13
+    title: Vampiric Strike
+    branch: 0
+    cost: 1
+    prerequisites:
+    - offense_12
+    modifiers: []
+  - id: offense_14
+    title: Berserk Extend
+    branch: 0
+    cost: 1
+    prerequisites:
+    - offense_13
+    modifiers: []
+  - id: offense_15
+    title: Lightning Chain
+    branch: 0
+    cost: 1
+    prerequisites:
+    - offense_14
+    modifiers: []
   - id: control_1
     title: Arc Mastery
     branch: 1
     cost: 1
     prerequisites: []
-    modifiers:
-    - stat: 2
-      type: 0
-      value: 10
-  - id: musou_unlock
-    title: Musou Awakening
-    branch: 1
-    cost: 1
-    prerequisites:
-    - control_1
     modifiers: []
   - id: control_2
     title: Shock Impact
@@ -78,86 +129,199 @@ MonoBehaviour:
     cost: 1
     prerequisites:
     - control_1
-    modifiers:
-    - stat: 3
-      type: 1
-      value: 0.15
+    modifiers: []
   - id: control_3
     title: Surge Focus
     branch: 1
     cost: 1
     prerequisites:
     - control_2
-    modifiers:
-    - stat: 7
-      type: 1
-      value: 0.15
-  - id: survival_1
-    title: Abyss Shell
-    branch: 2
-    cost: 1
-    prerequisites: []
-    modifiers:
-    - stat: 4
-      type: 1
-      value: 0.1
-  - id: survival_2
-    title: Deep Reserves
-    branch: 2
-    cost: 1
-    prerequisites:
-    - survival_1
-    modifiers:
-    - stat: 5
-      type: 1
-      value: 0.1
-  - id: survival_3
-    title: Tidal Footwork
-    branch: 2
-    cost: 1
-    prerequisites:
-    - survival_2
-    modifiers:
-    - stat: 6
-      type: 1
-      value: 0.08
-  - id: offense_4
-    title: Spellwake
-    branch: 0
-    cost: 1
-    prerequisites:
-    - offense_3
-    modifiers:
-    - stat: 8
-      type: 1
-      value: 0.1
+    modifiers: []
   - id: control_4
     title: Cycle Pulse
     branch: 1
     cost: 1
     prerequisites:
     - control_3
-    modifiers:
-    - stat: 9
-      type: 1
-      value: -0.08
+    modifiers: []
   - id: control_5
     title: Expanded Reach
     branch: 1
     cost: 1
     prerequisites:
-    - control_3
-    modifiers:
-    - stat: 10
-      type: 1
-      value: 0.12
+    - control_4
+    modifiers: []
+  - id: control_6
+    title: Air Superiority
+    branch: 1
+    cost: 1
+    prerequisites:
+    - control_5
+    modifiers: []
+  - id: control_7
+    title: Knockout Master
+    branch: 1
+    cost: 1
+    prerequisites:
+    - control_6
+    modifiers: []
+  - id: control_8
+    title: Crowd Control
+    branch: 1
+    cost: 1
+    prerequisites:
+    - control_7
+    modifiers: []
+  - id: control_9
+    title: Chain Reaction
+    branch: 1
+    cost: 1
+    prerequisites:
+    - control_8
+    modifiers: []
+  - id: control_10
+    title: Storm Caller
+    branch: 1
+    cost: 1
+    prerequisites:
+    - control_9
+    modifiers: []
+  - id: control_11
+    title: Elemental Fury
+    branch: 1
+    cost: 1
+    prerequisites:
+    - control_10
+    modifiers: []
+  - id: control_12
+    title: Concentration
+    branch: 1
+    cost: 1
+    prerequisites:
+    - control_11
+    modifiers: []
+  - id: control_13
+    title: Power Surge
+    branch: 1
+    cost: 1
+    prerequisites:
+    - control_12
+    modifiers: []
+  - id: control_14
+    title: Whirlwind Master
+    branch: 1
+    cost: 1
+    prerequisites:
+    - control_13
+    modifiers: []
+  - id: control_15
+    title: True Form
+    branch: 1
+    cost: 1
+    prerequisites:
+    - control_14
+    modifiers: []
+  - id: survival_1
+    title: Abyss Shell
+    branch: 2
+    cost: 1
+    prerequisites: []
+    modifiers: []
+  - id: survival_2
+    title: Deep Reserves
+    branch: 2
+    cost: 1
+    prerequisites:
+    - survival_1
+    modifiers: []
+  - id: survival_3
+    title: Tidal Footwork
+    branch: 2
+    cost: 1
+    prerequisites:
+    - survival_2
+    modifiers: []
   - id: survival_4
     title: Breath Economy
     branch: 2
     cost: 1
     prerequisites:
     - survival_3
-    modifiers:
-    - stat: 12
-      type: 1
-      value: -0.1
+    modifiers: []
+  - id: survival_5
+    title: Swift Recovery
+    branch: 2
+    cost: 1
+    prerequisites:
+    - survival_4
+    modifiers: []
+  - id: survival_6
+    title: Damage Shield
+    branch: 2
+    cost: 1
+    prerequisites:
+    - survival_5
+    modifiers: []
+  - id: survival_7
+    title: Second Wind
+    branch: 2
+    cost: 1
+    prerequisites:
+    - survival_6
+    modifiers: []
+  - id: survival_8
+    title: Potion Boost
+    branch: 2
+    cost: 1
+    prerequisites:
+    - survival_7
+    modifiers: []
+  - id: survival_9
+    title: Status Immune
+    branch: 2
+    cost: 1
+    prerequisites:
+    - survival_8
+    modifiers: []
+  - id: survival_10
+    title: Leech Attack
+    branch: 2
+    cost: 1
+    prerequisites:
+    - survival_9
+    modifiers: []
+  - id: survival_11
+    title: Iron Will
+    branch: 2
+    cost: 1
+    prerequisites:
+    - survival_10
+    modifiers: []
+  - id: survival_12
+    title: Last Stand
+    branch: 2
+    cost: 1
+    prerequisites:
+    - survival_11
+    modifiers: []
+  - id: survival_13
+    title: Extra Life
+    branch: 2
+    cost: 1
+    prerequisites:
+    - survival_12
+    modifiers: []
+  - id: survival_14
+    title: Damage Barrier
+    branch: 2
+    cost: 1
+    prerequisites:
+    - survival_13
+    modifiers: []
+  - id: survival_15
+    title: Phoenix Rebirth
+    branch: 2
+    cost: 1
+    prerequisites:
+    - survival_14
+    modifiers: []

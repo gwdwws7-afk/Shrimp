@@ -28,7 +28,10 @@
 | 状态 | 需要动画 | 推荐FBX来源 |
 |------|---------|------------|
 | Jump | Regular_Jump | fbx/Characters/sharkman/Meshy_AI_biped |
-| Attack | Right_Jab / Spartan_Kick | fbx/Characters/sharkman/Meshy_AI_biped |
+| Attack (1) | Right_Jab_from_Guard | fbx/Characters/sharkman/Meshy_AI_biped |
+| Attack (2) | Lunge_Spin_Kick | fbx/Characters/sharkman/Meshy_AI_biped |
+| Attack (3) | Male_Head_Down_Charge | fbx/Characters/sharkman/Meshy_AI_biped |
+| Attack (B) | Spartan_Kick | fbx/Characters/sharkman/Meshy_AI_biped |
 | Hit | (需要创建) | - |
 | Death | (需要创建) | - |
 | Crouch | (需要创建) | - |

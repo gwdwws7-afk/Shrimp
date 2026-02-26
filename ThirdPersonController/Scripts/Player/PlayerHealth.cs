@@ -10,6 +10,17 @@ namespace ThirdPersonController
         public float invincibilityTime = 1f;
         public float damageFlashDuration = 0.2f;
         public float hitStunDuration = 0.3f;
+        
+        [Header("Defense Settings")]
+        public float defense = 0f;
+        public float damageReduction = 0f;
+        public float healthRegen = 0f;
+        public float dodgeRate = 0f;
+        
+        [Header("Special Abilities")]
+        public int extraLives = 0;
+        public bool secondWindEnabled = false;
+        public float secondWindHealthPercent = 0.3f;
 
         [Header("UI")]
         public GameObject damageEffect;
@@ -34,6 +45,10 @@ namespace ThirdPersonController
         public int MaxHealth => maxHealth;
         public bool IsDead => isDead;
         public float HealthPercent => (float)currentHealth / maxHealth;
+        public float Defense => defense;
+        public float DamageReduction => damageReduction;
+        public float HealthRegen => healthRegen;
+        public float DodgeRate => dodgeRate;
 
         public delegate void HealthChangedEvent(int currentHealth, int maxHealth);
         public event HealthChangedEvent OnHealthChanged;
@@ -78,6 +93,16 @@ namespace ThirdPersonController
                     damageReductionPercent = 0f;
                 }
             }
+
+            if (healthRegen > 0 && !isDead && currentHealth < maxHealth)
+            {
+                Heal(Mathf.RoundToInt(healthRegen * Time.deltaTime));
+            }
+        }
+
+        public void ApplyMaxStamina(float newMaxStamina, bool keepPercent)
+        {
+            // 这个方法在StaminaSystem中有独立实现，这里不需要
         }
 
         public void TakeDamage(int damage, Vector3 damageSource, float knockbackForce = 0f)

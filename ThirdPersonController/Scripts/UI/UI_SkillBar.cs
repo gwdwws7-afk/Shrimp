@@ -39,6 +39,10 @@ namespace ThirdPersonController
         public bool showLegend = true;
         public float legendOffsetY = -90f;
 
+        [Header("Attack Input")]
+        public Text attackInputHintText;
+        public string attackInputHintLabel = "A: 左键  B: 右键";
+
         public SkillManager skillManager;
         
         private void Start()
@@ -50,6 +54,12 @@ namespace ThirdPersonController
                 {
                     skillSlots[i].keyText.text = keyBindings[i];
                 }
+            }
+
+            EnsureAttackInputHint();
+            if (attackInputHintText != null)
+            {
+                attackInputHintText.text = attackInputHintLabel;
             }
             
             // 订阅事件
@@ -247,6 +257,42 @@ namespace ThirdPersonController
 
                 UpdateSkillSlot(i, skill);
             }
+        }
+
+        private void EnsureAttackInputHint()
+        {
+            if (attackInputHintText != null)
+            {
+                return;
+            }
+
+            Transform existing = transform.Find("AttackInputHint");
+            if (existing != null)
+            {
+                attackInputHintText = existing.GetComponent<Text>();
+            }
+
+            if (attackInputHintText != null)
+            {
+                return;
+            }
+
+            GameObject hintObj = new GameObject("AttackInputHint");
+            hintObj.transform.SetParent(transform, false);
+            Text hintText = hintObj.AddComponent<Text>();
+            hintText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            hintText.fontSize = 14;
+            hintText.color = new Color(1f, 1f, 1f, 0.8f);
+            hintText.alignment = TextAnchor.MiddleCenter;
+
+            RectTransform hintRect = hintObj.GetComponent<RectTransform>();
+            hintRect.anchorMin = new Vector2(0.5f, 1f);
+            hintRect.anchorMax = new Vector2(0.5f, 1f);
+            hintRect.pivot = new Vector2(0.5f, 0f);
+            hintRect.anchoredPosition = new Vector2(0f, 6f);
+            hintRect.sizeDelta = new Vector2(240f, 20f);
+
+            attackInputHintText = hintText;
         }
 
         private Color GetCategoryColor(SkillCategory category)

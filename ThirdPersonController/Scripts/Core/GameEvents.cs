@@ -35,6 +35,10 @@ namespace ThirdPersonController
         public static event Action<int> OnComboChanged;
         public static void ComboChanged(int combo) => OnComboChanged?.Invoke(combo);
         
+        // 连击数变化（用于统计）
+        public static event Action<int> OnComboCountChanged;
+        public static void ComboCountChanged(int comboCount) => OnComboCountChanged?.Invoke(comboCount);
+        
         // 狂暴模式变化
         public static event Action<bool> OnBerserkStateChanged;
         public static void BerserkStateChanged(bool isActive) => OnBerserkStateChanged?.Invoke(isActive);
@@ -110,6 +114,14 @@ namespace ThirdPersonController
         public static event Action<bool> OnGameOver;
         public static void GameOver(bool isVictory) => OnGameOver?.Invoke(isVictory);
         
+        // 波次完成
+        public static event Action<StrongholdController, int> OnWaveCompleted;
+        public static void WaveCompleted(StrongholdController stronghold, int waveIndex) => OnWaveCompleted?.Invoke(stronghold, waveIndex);
+        
+        // 据点完成
+        public static event Action<StrongholdController> OnStrongholdCompleted;
+        public static void StrongholdCompleted(StrongholdController stronghold) => OnStrongholdCompleted?.Invoke(stronghold);
+        
         #endregion
 
         #region 经验/成长事件
@@ -135,6 +147,10 @@ namespace ThirdPersonController
         public static event Action<string, float> OnShowMessage;
         public static void ShowMessage(string message, float duration = 2f) 
             => OnShowMessage?.Invoke(message, duration);
+        
+        // 珍珠收集
+        public static event Action<string> OnPearlCollected;
+        public static void PearlCollected(string pearlId) => OnPearlCollected?.Invoke(pearlId);
         
         #endregion
     }

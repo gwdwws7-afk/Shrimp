@@ -4,6 +4,24 @@ using UnityEngine;
 
 namespace ThirdPersonController
 {
+    public enum WaveObjectiveType
+    {
+        KillAll,
+        Survival,
+        TimeAttack,
+        NoDamage,
+        Combo
+    }
+
+    [System.Serializable]
+    public class WaveObjective
+    {
+        public WaveObjectiveType objectiveType = WaveObjectiveType.KillAll;
+        public int targetValue = 0;
+        public float timeLimit = 0f;
+        public bool isOptional = false;
+    }
+
     [System.Serializable]
     public class WaveSpawnGroup
     {
@@ -31,6 +49,11 @@ namespace ThirdPersonController
         public bool shuffleSpawnPoints = true;
         public List<WaveSpawnGroup> groups = new List<WaveSpawnGroup>();
         public WaveEliteTrigger eliteTrigger = new WaveEliteTrigger();
+        
+        [Header("Objectives")]
+        public WaveObjective objective = new WaveObjective();
+        public bool useTimeLimit = false;
+        public float waveTimeLimit = 120f;
     }
 
     public class StrongholdController : MonoBehaviour
@@ -57,8 +80,15 @@ namespace ThirdPersonController
 
         [Header("Waves")]
         public List<StrongholdWave> waves = new List<StrongholdWave>();
-
-        public event System.Action<StrongholdController> OnStrongholdStarted;
+        
+        [Header("Objectives")]
+        public bool useObjectives = true;
+        public WaveObjective strongholdObjective = new WaveObjective();
+        public int comboTarget = 50;
+        public bool requireNoDamage = false;
+        
+        [Header("Events")]
+        public System.Action<StrongholdController> OnStrongholdStarted;
         public event System.Action<StrongholdController, int> OnWaveStarted;
         public event System.Action<StrongholdController, int> OnWaveCompleted;
         public event System.Action<StrongholdController> OnStrongholdCompleted;

@@ -17,11 +17,23 @@ namespace ThirdPersonController
         private float baseAttackRange;
         private float baseAttackAngle;
         private float baseAttackKnockback;
+        private float baseAttackSpeed;
+        private float baseCriticalRate;
+        private float baseCriticalDamage;
         private int baseMaxHealth;
         private float baseMaxStamina;
+        private float baseDefense;
+        private float baseDodgeRate;
+        private float baseHealthRegen;
         private float baseWalkSpeed;
         private float baseSprintSpeed;
         private float baseCrouchSpeed;
+        private float baseDodgeDistance;
+        private float baseDodgeInvincibility;
+        private float baseMusouGain;
+        private float baseLifeSteal;
+        private float baseBossDamage;
+        private float baseBerserkDuration;
 
         private readonly List<StatModifier> cachedModifiers = new List<StatModifier>();
 
@@ -74,11 +86,17 @@ namespace ThirdPersonController
                 baseAttackRange = combat.attackRange;
                 baseAttackAngle = combat.attackAngle;
                 baseAttackKnockback = combat.attackKnockback;
+                baseAttackSpeed = combat.attackSpeed;
+                baseCriticalRate = combat.criticalRate;
+                baseCriticalDamage = combat.criticalDamage;
             }
 
             if (health != null)
             {
                 baseMaxHealth = health.maxHealth;
+                baseDefense = 0;
+                baseDodgeRate = 0;
+                baseHealthRegen = 0;
             }
 
             if (stamina != null)
@@ -91,6 +109,8 @@ namespace ThirdPersonController
                 baseWalkSpeed = movement.walkSpeed;
                 baseSprintSpeed = movement.sprintSpeed;
                 baseCrouchSpeed = movement.crouchSpeed;
+                baseDodgeDistance = 3f;
+                baseDodgeInvincibility = 0.2f;
             }
         }
 
@@ -109,6 +129,7 @@ namespace ThirdPersonController
 
             ApplyVitalStats();
             ApplyMovementStats();
+            ApplyCombatStats();
         }
 
         private void ApplyVitalStats()
@@ -137,6 +158,24 @@ namespace ThirdPersonController
             movement.walkSpeed = baseWalkSpeed * moveMultiplier;
             movement.sprintSpeed = baseSprintSpeed * moveMultiplier;
             movement.crouchSpeed = baseCrouchSpeed * moveMultiplier;
+        }
+
+        private void ApplyCombatStats()
+        {
+            if (combat != null)
+            {
+                combat.attackSpeed = Mathf.Max(0.1f, ApplyModifiers(baseAttackSpeed, StatType.AttackSpeed));
+                combat.criticalRate = Mathf.Clamp01(ApplyModifiers(baseCriticalRate, StatType.CriticalRate));
+                combat.criticalDamage = Mathf.Max(1f, ApplyModifiers(baseCriticalDamage, StatType.CriticalDamage));
+            }
+
+            if (health != null)
+            {
+                health.defense = Mathf.Max(0, ApplyModifiers(baseDefense, StatType.Defense));
+                health.damageReduction = Mathf.Clamp01(ApplyModifiers(0, StatType.DamageReduction));
+                health.healthRegen = ApplyModifiers(baseHealthRegen, StatType.HealthRegen);
+                health.dodgeRate = Mathf.Clamp01(ApplyModifiers(baseDodgeRate, StatType.DodgeRate));
+            }
         }
 
         public int ApplyAttackDamage(int baseDamage)
@@ -190,6 +229,61 @@ namespace ThirdPersonController
         public float ApplySkillStaminaCost(float baseCost)
         {
             return Mathf.Max(0f, ApplyModifiers(baseCost, StatType.SkillStaminaCost));
+        }
+
+        public float ApplyLifeSteal()
+        {
+            return Mathf.Max(0f, ApplyModifiers(0f, StatType.LifeSteal));
+        }
+
+        public float ApplyBossDamage()
+        {
+            return Mathf.Max(1f, ApplyModifiers(1f, StatType.BossDamage));
+        }
+
+        public float ApplyComboDamage()
+        {
+            return Mathf.Max(1f, ApplyModifiers(1f, StatType.ComboDamage));
+        }
+
+        public float ApplyBerserkDuration(float baseDuration)
+        {
+            return Mathf.Max(0.1f, ApplyModifiers(baseDuration, StatType.BerserkDuration));
+        }
+
+        public float ApplyPotionEffect()
+        {
+            return Mathf.Max(1f, ApplyModifiers(1f, StatType.PotionEffect));
+        }
+
+        public float ApplyStatusResistance()
+        {
+            return Mathf.Max(0f, ApplyModifiers(0f, StatType.StatusResistance));
+        }
+
+        public int GetExtraLives()
+        {
+            return Mathf.Max(0, Mathf.RoundToInt(ApplyModifiers(0f, StatType.ExtraLife)));
+        }
+
+        public bool HasSecondWind()
+        {
+            return ApplyModifiers(0f, StatType.SecondWind) > 0.5f;
+        }
+
+        public float ApplySprintDistance()
+        {
+            return Mathf.Max(1f, ApplyModifiers(1f, StatType.SprintDistance));
+        }
+
+        public float ApplyDodgeDistance()
+        {
+            return Mathf.Max(1f, ApplyModifiers(baseDodgeDistance, StatType.DodgeDistance));
+        }
+
+        public float ApplyDodgeInvincibility()
+        {
+            return Mathf.Max(0.05f, ApplyModifiers(baseDodgeInvincibility, StatType.DodgeInvincibility));
         }
 
         private float ApplyModifiers(float baseValue, StatType stat)

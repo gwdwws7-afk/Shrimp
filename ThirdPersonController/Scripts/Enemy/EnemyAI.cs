@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -47,7 +48,22 @@ namespace ThirdPersonController
         [Header("Crowd")]
         public bool useCrowdCoordinator = true;
         public float ringStandoffDistance = 2.4f;
-
+        
+        [Header("Advanced AI")]
+        public bool canDodge = false;
+        public float dodgeChance = 0.1f;
+        public bool canBlock = false;
+        public float blockChance = 0.1f;
+        public bool canCharge = false;
+        public float chargeSpeed = 10f;
+        public float chargeWindup = 0.5f;
+        public bool canFlee = false;
+        public float fleeHealthThreshold = 0.2f;
+        
+        [Header("Attack Patterns")]
+        public bool useAttackPatterns = false;
+        public List<string> availablePatterns = new List<string>();
+        
         [Header("Performance")]
         public float aiUpdateInterval = 0.08f;
         public float aiUpdateJitter = 0.02f;
@@ -60,6 +76,8 @@ namespace ThirdPersonController
         private NavMeshAgent agent;
         private EnemyHealth health;
         private Transform player;
+        
+        public Transform Player => player;
         private EnemyCrowdCoordinator crowdCoordinator;
         private bool isSuppressed = false;
         private bool isStunned = false;
@@ -76,8 +94,15 @@ namespace ThirdPersonController
         private float attackCooldownTimer;
         private bool isChasing = false;
 
-        private enum State { Patrol, Chase, Circle, Attack }
+        private enum State { Patrol, Chase, Circle, Attack, Dodge, Block, Charge, Flee }
         private State currentState = State.Patrol;
+        
+        private bool isDodging = false;
+        private bool isBlocking = false;
+        private bool isCharging = false;
+        private bool isFleeing = false;
+        private Vector3 chargeTarget;
+        private float chargeTimer = 0f;
 
         private void Awake()
         {
@@ -560,10 +585,18 @@ namespace ThirdPersonController
             attackPhaseTimer = 0f;
             attackHitApplied = false;
             agent.isStopped = true;
-
-            if (animator != null && animator.runtimeAnimatorController != null && !string.IsNullOrEmpty(hitTrigger))
+        }
+        
+        public void SetStunned(bool stunned)
+        {
+            isStunned = stunned;
+            if (stunned)
             {
-                animator.SetTrigger(hitTrigger);
+                agent.isStopped = true;
+            }
+            else
+            {
+                agent.isStopped = false;
             }
         }
 

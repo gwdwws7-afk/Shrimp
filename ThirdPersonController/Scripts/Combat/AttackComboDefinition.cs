@@ -73,5 +73,7 @@ namespace ThirdPersonController
 
         [Header("Combo")]
         public int nextStepIndex = -1;
+        public int nextStepOnLight = -1;
+        public int nextStepOnHeavy = -1;
     }
 }

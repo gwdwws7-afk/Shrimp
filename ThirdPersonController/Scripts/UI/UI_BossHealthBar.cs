@@ -1,0 +1,197 @@
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using DG.Tweening;
+
+namespace ThirdPersonController
+{
+    public class UI_BossHealthBar : MonoBehaviour
+    {
+        [Header("References")]
+        public RectTransform barContainer;
+        public Image healthFillImage;
+        public Image healthBackgroundImage;
+        public TextMeshProUGUI bossNameText;
+        public TextMeshProUGUI healthText;
+        public CanvasGroup canvasGroup;
+        
+        [Header("Settings")]
+        public bool showOnStart = false;
+        public float fadeInDuration = 0.5f;
+        public float fadeOutDuration = 1f;
+        public Color phase1Color = Color.red;
+        public Color phase2Color = new Color(1f, 0.5f, 0f);
+        public Color phase3Color = Color.magenta;
+        
+        [Header("Animation")]
+        public float damageShakeDuration = 0.3f;
+        public float damageShakeStrength = 10f;
+        
+        private BossController boss;
+        private EnemyHealth bossHealth;
+        private int maxHealth;
+        private int currentHealth;
+        
+        private void Awake()
+        {
+            if (!showOnStart && canvasGroup != null)
+            {
+                canvasGroup.alpha = 0f;
+            }
+        }
+        
+        private void OnEnable()
+        {
+            FindBossAndSubscribe();
+        }
+        
+        private void OnDisable()
+        {
+            UnsubscribeFromBoss();
+        }
+        
+        private void FindBossAndSubscribe()
+        {
+            BossController[] bosses = FindObjectsOfType<BossController>();
+            
+            if (bosses.Length > 0)
+            {
+                SetupBoss(bosses[0]);
+            }
+        }
+        
+        public void SetupBoss(BossController newBoss)
+        {
+            UnsubscribeFromBoss();
+            
+            boss = newBoss;
+            
+            if (boss == null) return;
+            
+            bossHealth = boss.GetComponent<EnemyHealth>();
+            
+            if (bossHealth != null)
+            {
+                bossHealth.OnDamageTaken += HandleDamageTaken;
+                bossHealth.OnDeath += HandleDeath;
+            }
+            
+            boss.OnPhaseChanged += HandlePhaseChanged;
+            
+            maxHealth = boss.maxHealth;
+            currentHealth = maxHealth;
+            
+            if (bossNameText != null)
+            {
+                bossNameText.text = boss.name;
+            }
+            
+            Show();
+            UpdateHealthBar();
+        }
+        
+        private void UnsubscribeFromBoss()
+        {
+            if (boss != null)
+            {
+                boss.OnPhaseChanged -= HandlePhaseChanged;
+            }
+            
+            if (bossHealth != null)
+            {
+                bossHealth.OnDamageTaken -= HandleDamageTaken;
+                bossHealth.OnDeath -= HandleDeath;
+            }
+        }
+        
+        private void HandleDamageTaken(int damage, Vector3 source)
+        {
+            if (bossHealth != null)
+            {
+                currentHealth = bossHealth.CurrentHealth;
+                UpdateHealthBar();
+                ShakeBar();
+            }
+        }
+        
+        private void HandleDeath()
+        {
+            Hide();
+        }
+        
+        private void HandlePhaseChanged(int newPhase)
+        {
+            Color phaseColor = phase1Color;
+            
+            switch (newPhase)
+            {
+                case 1:
+                    phaseColor = phase1Color;
+                    break;
+                case 2:
+                    phaseColor = phase2Color;
+                    break;
+                case 3:
+                    phaseColor = phase3Color;
+                    break;
+            }
+            
+            if (healthFillImage != null)
+            {
+                healthFillImage.DOColor(phaseColor, 0.5f);
+            }
+            
+            if (bossNameText != null)
+            {
+                bossNameText.DOColor(phaseColor, 0.5f);
+            }
+        }
+        
+        private void UpdateHealthBar()
+        {
+            if (healthFillImage != null)
+            {
+                float healthPercent = maxHealth > 0 ? (float)currentHealth / maxHealth : 0f;
+                healthFillImage.fillAmount = healthPercent;
+            }
+            
+            if (healthText != null)
+            {
+                healthText.text = $"{currentHealth} / {maxHealth}";
+            }
+        }
+        
+        private void ShakeBar()
+        {
+            if (barContainer != null)
+            {
+                barContainer.DOKill();
+                barContainer.anchoredPosition = Vector2.zero;
+                barContainer.DOShakePosition(damageShakeDuration, damageShakeStrength, 10, 90f);
+            }
+        }
+        
+        public void Show()
+        {
+            if (canvasGroup != null)
+            {
+                canvasGroup.DOKill();
+                canvasGroup.DOFade(1f, fadeInDuration);
+            }
+        }
+        
+        public void Hide()
+        {
+            if (canvasGroup != null)
+            {
+                canvasGroup.DOKill();
+                canvasGroup.DOFade(0f, fadeOutDuration);
+            }
+        }
+        
+        private void OnDestroy()
+        {
+            UnsubscribeFromBoss();
+        }
+    }
+}
