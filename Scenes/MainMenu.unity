@@ -258,8 +258,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c6b9dfc2a5c4f70b2c5a9cf1533b7c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startSceneName: SampleScene
+  startSceneName: Level_01_TrenchRift
   loadSaveOnStart: 1
+  useProgressionSelection: 1
+  chapters:
+  - {fileID: 11400000, guid: b4e5f6a7c8d9e0f1a2b3c4d5e6f7a8b9, type: 2}
+  fallbackLevelData: {fileID: 0}
   startKey: 13
   quitKey: 27
   titleText: Abyss Warriors

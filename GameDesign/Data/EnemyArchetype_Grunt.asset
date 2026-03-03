@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac23d8a3dc3f4367841764df13547cf6, type: 3}
+  m_Name: EnemyArchetype_Grunt
+  m_EditorClassIdentifier: 
+  archetypeId: grunt
+  displayName: 深渊杂兵
+  enemyType: 0
+  maxHealth: 60
+  hitStunDuration: 0.2
+  defense: 0
+  expReward: 2
+  dropChance: 0.25
+  detectionRange: 14
+  attackRange: 2
+  fieldOfView: 120
+  patrolSpeed: 2.2
+  chaseSpeed: 4.2
+  rotationSpeed: 6
+  stoppingDistance: 1.5
+  attackCooldown: 1.6
+  attackDamage: 9
+  attackKnockback: 2.6
+  attackWindup: 0.4
+  attackActiveTime: 0.12
+  attackRecovery: 0.5
+  attackHitRadius: 1.1
+  attackHitAngle: 120
+  canDodge: 0
+  dodgeChance: 0.05
+  canBlock: 0
+  blockChance: 0.05
+  canCharge: 0
+  chargeSpeed: 9
+  chargeWindup: 0.5
+  canFlee: 0
+  fleeHealthThreshold: 0.2
+  useCrowdCoordinator: 1
+  ringStandoffDistance: 2.4
+  overrideAgentSettings: 1
+  agentSpeed: 3.4
+  agentAcceleration: 8
+  agentAngularSpeed: 360
+  agentStoppingDistance: 1.5
+  agentRadius: 0.4
+  agentHeight: 1.8
+  overrideHitReaction: 1
+  knockbackThreshold: 2
+  knockdownThreshold: 6
+  flinchDuration: 0.2
+  knockbackDuration: 0.25
+  knockbackDistance: 1.2
+  knockdownDuration: 0.35
+  knockdownDistance: 2.5
+  knockdownRecoverTime: 0.6

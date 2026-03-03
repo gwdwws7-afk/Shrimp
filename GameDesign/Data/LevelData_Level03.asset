@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51e0ad04fe93c66468de895afdeca490, type: 3}
+  m_Name: LevelData_Level03
+  m_EditorClassIdentifier: 
+  levelId: LEVEL_03
+  levelName: 热泉矿床
+  description: 稳定热泉矿床喷口，保护冷却装置，压制硫爆软体王。
+  chapterId: 1
+  difficulty: 1
+  recommendedLevel: 3
+  recommendedPower: 160
+  levelType: 0
+  timeLimit: 0
+  scoreTarget: 0
+  strongholds:
+  - strongholdId: Stronghold_01
+    required: 1
+    order: 0
+  - strongholdId: Stronghold_02
+    required: 0
+    order: 1
+  quests:
+  - questId: l03_vent_stabilization
+    required: 1
+    order: 0
+  - questId: l03_combo_50
+    required: 0
+    order: 1
+  strongholdOverrides:
+  - strongholdId: Stronghold_01
+    waves:
+    - waveIndex: 0
+      replaceEvents: 1
+      events:
+      - name: Reinforcement
+        eventType: 0
+        triggerOnRemaining: 4
+        spawnCount: 3
+        archetypeOverride: {fileID: 11400000, guid: a059d58600154f13bd410369ea8cf924, type: 2}
+    - waveIndex: 1
+      replaceEvents: 1
+      events:
+      - name: Hold Point
+        eventType: 2
+        holdDuration: 8
+        holdRadius: 5
+        archetypeOverride: {fileID: 11400000, guid: a06db0f69c764af7bdd821d48c1bfa54, type: 2}
+    - waveIndex: 2
+      replaceEvents: 1
+      events:
+      - name: Chase
+        eventType: 1
+        duration: 8
+        spawnCount: 2
+        archetypeOverride: {fileID: 11400000, guid: a059d58600154f13bd410369ea8cf924, type: 2}
+    - waveIndex: 3
+      replaceEvents: 1
+      events:
+      - name: Protect Target
+        eventType: 3
+        defenseTargetHealth: 260
+        spawnCount: 4
+        archetypeOverride: {fileID: 11400000, guid: a06db0f69c764af7bdd821d48c1bfa54, type: 2}
+  nextLevelId: LEVEL_04
+  starsRequired: 1
+  unlockCost: 0
+  baseExp: 420
+  basePearls: 3
+  baseCredits: 70
+  levelRewardMultiplier: 1.05
+  questRewardMultiplier: 1.0
+  dropChanceMultiplier: 1.0
+  sceneName: Level_03_ThermalVents
+  overrideBossSettings: 1
+  bossName: Boss_SulfurKing
+  bossPrototype: 1
+  bossMaxHealth: 3600
+  bossBaseDamage: 26
+  bossKnockback: 6
+  bossScaleMultiplier: 2.2
+  bossSpawnOffset: {x: 0, y: 0, z: 0}

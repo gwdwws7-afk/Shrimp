@@ -13,6 +13,7 @@ namespace ThirdPersonController
         [Header("Input")]
         public KeyCode toggleKey = KeyCode.T;
         public bool pauseGameWhenOpen = true;
+        public bool allowToggle = true;
 
         private bool isOpen;
         private int selectedSlot;
@@ -39,6 +40,11 @@ namespace ThirdPersonController
 
         private void Update()
         {
+            if (!allowToggle)
+            {
+                return;
+            }
+
             if (Input.GetKeyDown(toggleKey))
             {
                 Toggle();
@@ -47,14 +53,25 @@ namespace ThirdPersonController
 
         private void Toggle()
         {
-            isOpen = !isOpen;
-            if (pauseGameWhenOpen)
+            SetOpen(!isOpen, pauseGameWhenOpen);
+        }
+
+        public void SetOpen(bool open, bool controlTimeAndCursor)
+        {
+            isOpen = open;
+            if (controlTimeAndCursor)
             {
                 Time.timeScale = isOpen ? 0f : 1f;
+                Cursor.lockState = isOpen ? CursorLockMode.None : CursorLockMode.Locked;
+                Cursor.visible = isOpen;
             }
+        }
 
-            Cursor.lockState = isOpen ? CursorLockMode.None : CursorLockMode.Locked;
-            Cursor.visible = isOpen;
+        public void DrawEmbedded(Rect panelRect, bool showFooter)
+        {
+            GUILayout.BeginArea(panelRect);
+            DrawPanelContents(showFooter);
+            GUILayout.EndArea();
         }
 
         private void OnGUI()
@@ -70,8 +87,14 @@ namespace ThirdPersonController
             GUI.Box(panel, string.Empty);
 
             GUILayout.BeginArea(panel);
+            DrawPanelContents(true);
+            GUILayout.EndArea();
+        }
+
+        private void DrawPanelContents(bool showFooter)
+        {
             GUILayout.Space(6f);
-            GUILayout.Label("Progression", HeaderStyle());
+            GUILayout.Label("成长", HeaderStyle());
             GUILayout.Space(8f);
 
             GUILayout.BeginHorizontal();
@@ -80,19 +103,21 @@ namespace ThirdPersonController
             DrawTalentPanel();
             GUILayout.EndHorizontal();
 
-            GUILayout.FlexibleSpace();
-            GUILayout.Label("Press T to close", SmallStyle());
-            GUILayout.EndArea();
+            if (showFooter)
+            {
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("按 T 关闭", SmallStyle());
+            }
         }
 
         private void DrawEquipmentPanel()
         {
             GUILayout.BeginVertical(GUILayout.Width(360));
-            GUILayout.Label("Equipment", SectionStyle());
+            GUILayout.Label("装备", SectionStyle());
 
             if (equipment == null)
             {
-                GUILayout.Label("No equipment component.");
+                GUILayout.Label("未找到装备组件.");
                 GUILayout.EndVertical();
                 return;
             }
@@ -103,13 +128,13 @@ namespace ThirdPersonController
                 PearlItem pearl = equipment.equippedPearls[i];
                 string name = pearl != null ? pearl.pearlName : "(Empty)";
                 GUILayout.BeginHorizontal();
-                GUILayout.Label($"Slot {i + 1}: {name}", GUILayout.Width(220));
-                if (GUILayout.Button("Select", GUILayout.Width(60)))
+                GUILayout.Label($"槽位 {i + 1}: {name}", GUILayout.Width(220));
+                if (GUILayout.Button("选择", GUILayout.Width(60)))
                 {
                     selectedSlot = i;
                 }
 
-                if (pearl != null && GUILayout.Button("Unequip", GUILayout.Width(70)))
+                if (pearl != null && GUILayout.Button("卸下", GUILayout.Width(70)))
                 {
                     equipment.Unequip(i);
                 }
@@ -117,12 +142,12 @@ namespace ThirdPersonController
             }
 
             GUILayout.Space(10f);
-            GUILayout.Label($"Inventory (Select slot {selectedSlot + 1})", SectionStyle());
+            GUILayout.Label($"背包（选择槽位 {selectedSlot + 1}）", SectionStyle());
 
             inventoryScroll = GUILayout.BeginScrollView(inventoryScroll, GUILayout.Height(300));
             if (inventory == null || inventory.ownedPearls == null || inventory.ownedPearls.Count == 0)
             {
-                GUILayout.Label("No pearls collected.");
+                GUILayout.Label("暂无珍珠.");
             }
             else
             {
@@ -136,7 +161,7 @@ namespace ThirdPersonController
 
                     GUILayout.BeginHorizontal();
                     GUILayout.Label(pearl.pearlName, GUILayout.Width(200));
-                    if (GUILayout.Button("Equip", GUILayout.Width(80)))
+                    if (GUILayout.Button("装备", GUILayout.Width(80)))
                     {
                         equipment.Equip(pearl, selectedSlot);
                     }
@@ -151,21 +176,21 @@ namespace ThirdPersonController
         private void DrawTalentPanel()
         {
             GUILayout.BeginVertical();
-            GUILayout.Label("Talent Tree", SectionStyle());
+            GUILayout.Label("天赋树", SectionStyle());
 
             if (talentTree == null || talentTree.data == null)
             {
-                GUILayout.Label("No talent tree data.");
+                GUILayout.Label("未找到天赋树数据.");
                 GUILayout.EndVertical();
                 return;
             }
 
-            GUILayout.Label($"Available Points: {talentTree.availablePoints}");
+            GUILayout.Label($"可用点数: {talentTree.availablePoints}");
 
             talentScroll = GUILayout.BeginScrollView(talentScroll, GUILayout.Height(420));
-            DrawTalentBranch("Offense", TalentBranch.Offense);
-            DrawTalentBranch("Control", TalentBranch.Control);
-            DrawTalentBranch("Survival", TalentBranch.Survival);
+            DrawTalentBranch("进攻", TalentBranch.Offense);
+            DrawTalentBranch("控场", TalentBranch.Control);
+            DrawTalentBranch("生存", TalentBranch.Survival);
             GUILayout.EndScrollView();
 
             GUILayout.EndVertical();
@@ -186,13 +211,13 @@ namespace ThirdPersonController
                 }
 
                 bool unlocked = talentTree.IsUnlocked(node.id);
-                string status = unlocked ? "Unlocked" : "Locked";
+                string status = unlocked ? "已解锁" : "未解锁";
                 GUILayout.BeginHorizontal();
                 GUILayout.Label($"{node.title} [{status}]", GUILayout.Width(240));
 
                 if (!unlocked && talentTree.CanUnlock(node.id))
                 {
-                    if (GUILayout.Button("Unlock", GUILayout.Width(80)))
+                    if (GUILayout.Button("解锁", GUILayout.Width(80)))
                     {
                         talentTree.Unlock(node.id);
                     }

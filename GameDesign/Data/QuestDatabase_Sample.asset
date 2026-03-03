@@ -1,0 +1,1109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f5e3c9b0a4e6d7c8b9a0f1e2d3c4b5a, type: 3}
+  m_Name: QuestDatabase_Sample
+  m_EditorClassIdentifier: 
+  quests:
+  - questId: kill_50
+    questName: Cull 50
+    description: Defeat 50 enemies.
+    questType: 0
+    targetCount: 50
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages:
+    - stageId: kill_20
+      title: Warmup
+      description: Defeat 20 enemies.
+      questType: 0
+      targetCount: 20
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: kill_30
+      title: Push Forward
+      description: Defeat 30 more enemies.
+      questType: 0
+      targetCount: 30
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 80
+      pearls: 1
+      itemIds: []
+      credits: 20
+    difficultyRating: 1
+    isOptional: 0
+  - questId: combo_40
+    questName: Combo 40
+    description: Reach a 40 hit combo.
+    questType: 6
+    targetCount: 40
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 120
+      pearls: 1
+      itemIds: []
+      credits: 20
+    difficultyRating: 2
+    isOptional: 1
+  - questId: kill_60
+    questName: Cull 60
+    description: Defeat 60 enemies.
+    questType: 0
+    targetCount: 60
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 100
+      pearls: 1
+      itemIds: []
+      credits: 20
+    difficultyRating: 2
+    isOptional: 0
+  - questId: kill_80
+    questName: Cull 80
+    description: Defeat 80 enemies.
+    questType: 0
+    targetCount: 80
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 120
+      pearls: 1
+      itemIds: []
+      credits: 20
+    difficultyRating: 2
+    isOptional: 0
+  - questId: kill_100
+    questName: Cull 100
+    description: Defeat 100 enemies.
+    questType: 0
+    targetCount: 100
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 140
+      pearls: 2
+      itemIds: []
+      credits: 30
+    difficultyRating: 3
+    isOptional: 0
+  - questId: kill_120
+    questName: Cull 120
+    description: Defeat 120 enemies.
+    questType: 0
+    targetCount: 120
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 160
+      pearls: 2
+      itemIds: []
+      credits: 30
+    difficultyRating: 3
+    isOptional: 0
+  - questId: survive_60
+    questName: Hold 60
+    description: Survive for 60 seconds.
+    questType: 2
+    targetCount: 0
+    targetEnemyType: 0
+    targetTime: 60
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 110
+      pearls: 1
+      itemIds: []
+      credits: 20
+    difficultyRating: 2
+    isOptional: 0
+  - questId: survive_90
+    questName: Hold 90
+    description: Survive for 90 seconds.
+    questType: 2
+    targetCount: 0
+    targetEnemyType: 0
+    targetTime: 90
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 130
+      pearls: 1
+      itemIds: []
+      credits: 30
+    difficultyRating: 3
+    isOptional: 0
+  - questId: survive_120
+    questName: Hold 120
+    description: Survive for 120 seconds.
+    questType: 2
+    targetCount: 0
+    targetEnemyType: 0
+    targetTime: 120
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 150
+      pearls: 2
+      itemIds: []
+      credits: 30
+    difficultyRating: 3
+    isOptional: 0
+  - questId: wave_2
+    questName: Clear 2 Waves
+    description: Complete 2 waves.
+    questType: 7
+    targetCount: 2
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 110
+      pearls: 1
+      itemIds: []
+      credits: 20
+    difficultyRating: 2
+    isOptional: 0
+  - questId: wave_3
+    questName: Clear 3 Waves
+    description: Complete 3 waves.
+    questType: 7
+    targetCount: 3
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 130
+      pearls: 1
+      itemIds: []
+      credits: 25
+    difficultyRating: 2
+    isOptional: 0
+  - questId: wave_4
+    questName: Clear 4 Waves
+    description: Complete 4 waves.
+    questType: 7
+    targetCount: 4
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 150
+      pearls: 2
+      itemIds: []
+      credits: 30
+    difficultyRating: 3
+    isOptional: 0
+  - questId: wave_5
+    questName: Clear 5 Waves
+    description: Complete 5 waves.
+    questType: 7
+    targetCount: 5
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 170
+      pearls: 2
+      itemIds: []
+      credits: 35
+    difficultyRating: 3
+    isOptional: 0
+  - questId: clear_stronghold
+    questName: Clear Stronghold
+    description: Clear the stronghold.
+    questType: 8
+    targetCount: 1
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 140
+      pearls: 2
+      itemIds: []
+      credits: 40
+    difficultyRating: 3
+    isOptional: 0
+  - questId: combo_50
+    questName: Combo 50
+    description: Reach a 50 hit combo.
+    questType: 6
+    targetCount: 50
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 130
+      pearls: 1
+      itemIds: []
+      credits: 20
+    difficultyRating: 2
+    isOptional: 1
+  - questId: combo_60
+    questName: Combo 60
+    description: Reach a 60 hit combo.
+    questType: 6
+    targetCount: 60
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 150
+      pearls: 1
+      itemIds: []
+      credits: 30
+    difficultyRating: 3
+    isOptional: 1
+  - questId: combo_70
+    questName: Combo 70
+    description: Reach a 70 hit combo.
+    questType: 6
+    targetCount: 70
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 170
+      pearls: 2
+      itemIds: []
+      credits: 30
+    difficultyRating: 3
+    isOptional: 1
+  - questId: l01_rift_beacons
+    questName: Rift Beacon Protocol
+    description: Secure the fissure and synchronize the beacon line.
+    questType: 0
+    targetCount: 0
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages:
+    - stageId: l01_clear_rim
+      title: Clear the Rim
+      description: Eliminate hostiles around the fissure.
+      questType: 0
+      targetCount: 20
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l01_sync_beacons
+      title: Sync the Beacons
+      description: Hold the line while the beacon array stabilizes.
+      questType: 2
+      targetCount: 0
+      targetEnemyType: 0
+      targetTime: 45
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l01_purge_breach
+      title: Purge the Breach
+      description: Clean up the remaining swarm.
+      questType: 0
+      targetCount: 30
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 120
+      pearls: 1
+      itemIds: []
+      credits: 60
+    difficultyRating: 1
+    isOptional: 0
+  - questId: l01_combo_30
+    questName: Clean Cut
+    description: Reach a 30 hit combo.
+    questType: 6
+    targetCount: 30
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 60
+      pearls: 1
+      itemIds: []
+      credits: 20
+    difficultyRating: 1
+    isOptional: 1
+  - questId: l02_blackbox_recovery
+    questName: Blackbox Recovery
+    description: Recover the station blackbox and restore power.
+    questType: 0
+    targetCount: 0
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages:
+    - stageId: l02_clear_entry
+      title: Clear the Entry
+      description: Secure the outer dock.
+      questType: 0
+      targetCount: 25
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l02_restore_power
+      title: Restore Power
+      description: Hold while the grid boots.
+      questType: 2
+      targetCount: 0
+      targetEnemyType: 0
+      targetTime: 60
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l02_secure_labs
+      title: Secure the Labs
+      description: Complete the lab wing waves.
+      questType: 7
+      targetCount: 2
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 140
+      pearls: 1
+      itemIds: []
+      credits: 80
+    difficultyRating: 1
+    isOptional: 0
+  - questId: l02_salvage_sweep
+    questName: Salvage Sweep
+    description: Eliminate remaining intruders in the station.
+    questType: 0
+    targetCount: 60
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 80
+      pearls: 1
+      itemIds: []
+      credits: 30
+    difficultyRating: 2
+    isOptional: 1
+  - questId: l03_vent_stabilization
+    questName: Vent Stabilization
+    description: Stabilize the thermal vents and protect the coolant rig.
+    questType: 0
+    targetCount: 0
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages:
+    - stageId: l03_clear_vents
+      title: Clear the Vents
+      description: Eliminate threats around the vent field.
+      questType: 0
+      targetCount: 35
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l03_protect_rig
+      title: Protect the Rig
+      description: Keep the coolant rig intact during calibration.
+      questType: 3
+      targetCount: 0
+      targetEnemyType: 0
+      targetTime: 60
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 1
+    reward:
+      exp: 160
+      pearls: 1
+      itemIds: []
+      credits: 90
+    difficultyRating: 2
+    isOptional: 0
+  - questId: l03_combo_50
+    questName: Pressure Cut
+    description: Reach a 50 hit combo.
+    questType: 6
+    targetCount: 50
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 90
+      pearls: 1
+      itemIds: []
+      credits: 30
+    difficultyRating: 2
+    isOptional: 1
+  - questId: l04_coral_purge
+    questName: Coral Purge
+    description: Purge the infected coral and hold the bio-nodes.
+    questType: 0
+    targetCount: 0
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages:
+    - stageId: l04_clear_growth
+      title: Clear the Growth
+      description: Remove the parasite bloom.
+      questType: 0
+      targetCount: 40
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l04_hold_nodes
+      title: Hold the Nodes
+      description: Keep the bio-nodes secure during cleansing.
+      questType: 3
+      targetCount: 0
+      targetEnemyType: 0
+      targetTime: 75
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 1
+    reward:
+      exp: 170
+      pearls: 1
+      itemIds: []
+      credits: 95
+    difficultyRating: 2
+    isOptional: 0
+  - questId: l04_combo_50
+    questName: Coral Cutter
+    description: Reach a 50 hit combo.
+    questType: 6
+    targetCount: 50
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 90
+      pearls: 1
+      itemIds: []
+      credits: 30
+    difficultyRating: 2
+    isOptional: 1
+  - questId: l05_city_relay
+    questName: City Relay Restart
+    description: Restart the sunken city relay and open the transit gates.
+    questType: 0
+    targetCount: 0
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages:
+    - stageId: l05_clear_streets
+      title: Clear the Streets
+      description: Push through the flooded avenues.
+      questType: 0
+      targetCount: 60
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l05_hold_relay
+      title: Hold the Relay
+      description: Keep the relay online during restart.
+      questType: 2
+      targetCount: 0
+      targetEnemyType: 0
+      targetTime: 90
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l05_open_gates
+      title: Open the Gates
+      description: Complete the transit wave sequence.
+      questType: 7
+      targetCount: 4
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 200
+      pearls: 2
+      itemIds: []
+      credits: 120
+    difficultyRating: 3
+    isOptional: 0
+  - questId: l05_combo_60
+    questName: Floodbreaker
+    description: Reach a 60 hit combo.
+    questType: 6
+    targetCount: 60
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 110
+      pearls: 1
+      itemIds: []
+      credits: 40
+    difficultyRating: 3
+    isOptional: 1
+  - questId: l06_pipeline_shutdown
+    questName: Pipeline Shutdown
+    description: Shut down the black tide pipeline and hold the purge valves.
+    questType: 0
+    targetCount: 0
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages:
+    - stageId: l06_clear_junctions
+      title: Clear the Junctions
+      description: Secure the pipeline junctions.
+      questType: 0
+      targetCount: 70
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l06_hold_valves
+      title: Hold the Valves
+      description: Defend the purge valves during shutdown.
+      questType: 3
+      targetCount: 0
+      targetEnemyType: 0
+      targetTime: 90
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l06_flush_line
+      title: Flush the Line
+      description: Complete the final pipeline waves.
+      questType: 7
+      targetCount: 5
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 1
+    reward:
+      exp: 220
+      pearls: 2
+      itemIds: []
+      credits: 130
+    difficultyRating: 3
+    isOptional: 0
+  - questId: l06_combo_60
+    questName: Linebreaker
+    description: Reach a 60 hit combo.
+    questType: 6
+    targetCount: 60
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 120
+      pearls: 1
+      itemIds: []
+      credits: 40
+    difficultyRating: 3
+    isOptional: 1
+  - questId: l07_hangar_lockdown
+    questName: Hangar Lockdown
+    description: Lock down the abyss hangar and break the assembly chain.
+    questType: 0
+    targetCount: 0
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages:
+    - stageId: l07_clear_floor
+      title: Secure the Hangar
+      description: Clear the hangar floor.
+      questType: 0
+      targetCount: 80
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l07_hold_platform
+      title: Hold the Lift
+      description: Protect the lift platform during lockdown.
+      questType: 3
+      targetCount: 0
+      targetEnemyType: 0
+      targetTime: 90
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l07_break_chain
+      title: Break the Chain
+      description: Complete the hangar wave sequence.
+      questType: 7
+      targetCount: 5
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 1
+    reward:
+      exp: 240
+      pearls: 2
+      itemIds: []
+      credits: 150
+    difficultyRating: 4
+    isOptional: 0
+  - questId: l07_combo_70
+    questName: Chain Cutter
+    description: Reach a 70 hit combo.
+    questType: 6
+    targetCount: 70
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 130
+      pearls: 1
+      itemIds: []
+      credits: 50
+    difficultyRating: 4
+    isOptional: 1
+  - questId: l08_rift_cooling
+    questName: Rift Cooling Protocol
+    description: Stabilize the molten rift and prevent a thermal surge.
+    questType: 0
+    targetCount: 0
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages:
+    - stageId: l08_push_in
+      title: Push Into the Rift
+      description: Break through the rift defenders.
+      questType: 0
+      targetCount: 90
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l08_stabilize_core
+      title: Stabilize the Core
+      description: Hold while the coolant cycle completes.
+      questType: 2
+      targetCount: 0
+      targetEnemyType: 0
+      targetTime: 120
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 260
+      pearls: 2
+      itemIds: []
+      credits: 160
+    difficultyRating: 4
+    isOptional: 0
+  - questId: l08_kill_120
+    questName: Rift Sweep
+    description: Defeat 120 enemies in the molten rift.
+    questType: 0
+    targetCount: 120
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 140
+      pearls: 1
+      itemIds: []
+      credits: 50
+    difficultyRating: 4
+    isOptional: 1
+  - questId: l09_sanctum_disrupt
+    questName: Sanctum Disruption
+    description: Break the mirror nodes and disrupt the resonance field.
+    questType: 0
+    targetCount: 0
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages:
+    - stageId: l09_break_guardians
+      title: Break the Guardians
+      description: Defeat the mirror guardians.
+      questType: 0
+      targetCount: 100
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l09_disrupt_field
+      title: Disrupt the Field
+      description: Hold while the resonance collapses.
+      questType: 2
+      targetCount: 0
+      targetEnemyType: 0
+      targetTime: 120
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 280
+      pearls: 2
+      itemIds: []
+      credits: 170
+    difficultyRating: 4
+    isOptional: 0
+  - questId: l09_combo_70
+    questName: Mirror Breaker
+    description: Reach a 70 hit combo.
+    questType: 6
+    targetCount: 70
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 150
+      pearls: 1
+      itemIds: []
+      credits: 50
+    difficultyRating: 4
+    isOptional: 1
+  - questId: l10_hive_core
+    questName: Hive Core Breach
+    description: Breach the mother nest and destroy the core.
+    questType: 0
+    targetCount: 0
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages:
+    - stageId: l10_breach_hive
+      title: Breach the Hive
+      description: Cut through the hive defenders.
+      questType: 0
+      targetCount: 120
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l10_hold_breaker
+      title: Hold the Breaker
+      description: Protect the core breaker while it charges.
+      questType: 3
+      targetCount: 0
+      targetEnemyType: 0
+      targetTime: 120
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l10_final_waves
+      title: Final Resistance
+      description: Complete the last wave sequence.
+      questType: 7
+      targetCount: 5
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      useTimeLimit: 0
+      timeLimit: 0
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 1
+    reward:
+      exp: 320
+      pearls: 3
+      itemIds: []
+      credits: 200
+    difficultyRating: 5
+    isOptional: 0
+  - questId: l10_combo_80
+    questName: Abyss Breaker
+    description: Reach an 80 hit combo.
+    questType: 6
+    targetCount: 80
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 0
+    failOnGameOver: 0
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 160
+      pearls: 2
+      itemIds: []
+      credits: 60
+    difficultyRating: 5
+    isOptional: 1

@@ -158,6 +158,62 @@ RectTransform:
   - {fileID: 1575749601}
   m_Father: {fileID: 1361968052}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+
+--- !u!1 &990002001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 990002002}
+  - component: {fileID: 990002003}
+  m_Layer: 0
+  m_Name: BossSpawn_Guardian
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &990002002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990002001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &990002003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990002001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f4e5061728394a5b6c7d8e901a2b3c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bossPrefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
+  prototype: 1
+  bossName: Boss_Guardian
+  spawnOnStart: 1
+  spawnOffset: {x: 0, y: 0, z: 0}
+  scaleMultiplier: 2.2
+  maxHealth: 3800
+  expReward: 320
+  baseDamage: 28
+  knockback: 6
+  bossHealthBar: {fileID: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -120, y: 0}
@@ -5123,7 +5179,7 @@ MonoBehaviour:
     m_Bits: 0
   facePlayerOnSpawn: 1
   usePooling: 1
-  waveCompleteDelay: 1
+  waveCompleteDelay: 0.6
   waves:
   - name: Wave 1
     startDelay: 0.4
@@ -5159,6 +5215,103 @@ MonoBehaviour:
       - prefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
         count: 3
         spawnIntervalOverride: -1
+    events:
+    - name: Reinforcement
+      eventType: 0
+      enabled: 1
+      triggerDelay: 0.6
+      triggerOnRemaining: 4
+      duration: 6
+      spawnInterval: 0.35
+      spawnRadius: 5
+      useReinforcementPoints: 1
+      groups:
+      - prefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
+        count: 4
+        spawnIntervalOverride: -1
+      holdPoint: {fileID: 0}
+      holdRadius: 3
+      holdDuration: 6
+      holdDecayRate: 1
+      showHoldMarker: 1
+  - name: Wave 3
+    startDelay: 0.5
+    spawnInterval: 0.22
+    shuffleSpawnPoints: 1
+    groups:
+    - prefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
+      count: 18
+      spawnIntervalOverride: -1
+    eliteTrigger:
+      enabled: 1
+      triggerOnRemaining: 4
+      triggerDelay: 0.6
+      spawnInterval: 0.26
+      eliteGroups:
+      - prefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
+        count: 4
+        spawnIntervalOverride: -1
+    events:
+    - name: Chase
+      eventType: 1
+      enabled: 1
+      triggerDelay: 0.2
+      triggerOnRemaining: -1
+      duration: 10
+      spawnInterval: 1.2
+      spawnRadius: 7
+      useReinforcementPoints: 0
+      groups:
+      - prefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
+        count: 2
+        spawnIntervalOverride: -1
+      holdPoint: {fileID: 0}
+      holdRadius: 3
+      holdDuration: 6
+      holdDecayRate: 1
+      showHoldMarker: 0
+  - name: Wave 4
+    startDelay: 0.6
+    spawnInterval: 0.2
+    shuffleSpawnPoints: 1
+    groups:
+    - prefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
+      count: 24
+      spawnIntervalOverride: -1
+    eliteTrigger:
+      enabled: 1
+      triggerOnRemaining: 5
+      triggerDelay: 0.7
+      spawnInterval: 0.24
+      eliteGroups:
+      - prefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
+        count: 4
+        spawnIntervalOverride: -1
+    events:
+    - name: Protect Target
+      eventType: 3
+      enabled: 1
+      triggerDelay: 0.4
+      triggerOnRemaining: -1
+      duration: 6
+      spawnInterval: 0.4
+      spawnRadius: 4
+      useReinforcementPoints: 0
+      groups:
+      - prefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
+        count: 4
+        spawnIntervalOverride: -1
+      holdPoint: {fileID: 0}
+      holdRadius: 6
+      holdDuration: 8
+      holdDecayRate: 1
+      showHoldMarker: 1
+      defenseTarget: {fileID: 0}
+      defenseTargetPrefab: {fileID: 0}
+      defenseTargetHealth: 300
+      spawnDefenseTarget: 1
+      failOnTargetDestroyed: 1
+      assignTargetToSpawnedEnemies: 1
 --- !u!1 &2800000110
 GameObject:
   m_ObjectHideFlags: 0
@@ -5372,7 +5525,7 @@ MonoBehaviour:
     m_Bits: 0
   facePlayerOnSpawn: 1
   usePooling: 1
-  waveCompleteDelay: 1
+  waveCompleteDelay: 0.6
   waves:
   - name: Wave 1
     startDelay: 0.5
@@ -5408,6 +5561,111 @@ MonoBehaviour:
       - prefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
         count: 3
         spawnIntervalOverride: -1
+  - name: Wave 3
+    startDelay: 0.6
+    spawnInterval: 0.22
+    shuffleSpawnPoints: 1
+    groups:
+    - prefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
+      count: 24
+      spawnIntervalOverride: -1
+    eliteTrigger:
+      enabled: 1
+      triggerOnRemaining: 6
+      triggerDelay: 0.7
+      spawnInterval: 0.26
+      eliteGroups:
+      - prefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
+        count: 4
+        spawnIntervalOverride: -1
+    events:
+    - name: Chase
+      eventType: 1
+      enabled: 1
+      triggerDelay: 0.2
+      triggerOnRemaining: -1
+      duration: 12
+      spawnInterval: 1.1
+      spawnRadius: 8
+      useReinforcementPoints: 0
+      groups:
+      - prefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
+        count: 2
+        spawnIntervalOverride: -1
+      holdPoint: {fileID: 0}
+      holdRadius: 3
+      holdDuration: 6
+      holdDecayRate: 1
+      showHoldMarker: 0
+  - name: Wave 4
+    startDelay: 0.6
+    spawnInterval: 0.2
+    shuffleSpawnPoints: 1
+    groups:
+    - prefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
+      count: 30
+      spawnIntervalOverride: -1
+    eliteTrigger:
+      enabled: 1
+      triggerOnRemaining: 7
+      triggerDelay: 0.8
+      spawnInterval: 0.24
+      eliteGroups:
+      - prefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
+        count: 5
+        spawnIntervalOverride: -1
+    events:
+    - name: Hold Point
+      eventType: 2
+      enabled: 1
+      triggerDelay: 0.4
+      triggerOnRemaining: -1
+      duration: 6
+      spawnInterval: 0.4
+      spawnRadius: 4
+      useReinforcementPoints: 0
+      groups: []
+      holdPoint: {fileID: 0}
+      holdRadius: 6
+      holdDuration: 10
+      holdDecayRate: 1
+      showHoldMarker: 1
+  - name: Wave 5
+    startDelay: 0.7
+    spawnInterval: 0.18
+    shuffleSpawnPoints: 1
+    groups:
+    - prefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
+      count: 36
+      spawnIntervalOverride: -1
+    eliteTrigger:
+      enabled: 1
+      triggerOnRemaining: 8
+      triggerDelay: 0.8
+      spawnInterval: 0.22
+      eliteGroups:
+      - prefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
+        count: 6
+        spawnIntervalOverride: -1
+    events:
+    - name: Reinforcement
+      eventType: 0
+      enabled: 1
+      triggerDelay: 0.6
+      triggerOnRemaining: 6
+      duration: 6
+      spawnInterval: 0.3
+      spawnRadius: 5
+      useReinforcementPoints: 1
+      groups:
+      - prefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
+        count: 6
+        spawnIntervalOverride: -1
+      holdPoint: {fileID: 0}
+      holdRadius: 3
+      holdDuration: 6
+      holdDecayRate: 1
+      showHoldMarker: 0
 --- !u!1 &2800000210
 GameObject:
   m_ObjectHideFlags: 0
@@ -5611,11 +5869,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2b19e34f1e742f5a98d1234b6c78d90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  levelData: {fileID: 11400000, guid: 4f5061728394a5b6c7d8e901a2b3c4d5, type: 2}
+  chapterData: {fileID: 11400000, guid: b4e5f6a7c8d9e0f1a2b3c4d5e6f7a8b9, type: 2}
   mainMenuSceneName: MainMenu
   levelId: 1
   menuKey: 27
   levelTitle: Sample Level
   showOverlay: 1
+  showLevelIntro: 1
+  introDuration: 3
+  flowUI: {fileID: 0}
+  comboRewards: {fileID: 0}
+  runtimeConfigurator: {fileID: 0}
+  questDatabase: {fileID: 11400000, guid: c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0, type: 2}
+  progressionMilestones: {fileID: 11400000, guid: d0c1b2a3f4e5d6c7b8a9f0e1d2c3b4a5, type: 2}
+  longTermProgression: {fileID: 0}
+  economyConfig: {fileID: 11400000, guid: e1f2a3b4c5d6e7f8091a2b3c4d5e6f70, type: 2}
+  useTimer: 0
+  levelTime: 0
   ensureLightingOnStart: 1
   fallbackLightIntensity: 1
 --- !u!1 &3000000000

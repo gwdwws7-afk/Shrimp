@@ -24,12 +24,14 @@ namespace ThirdPersonController
             }
 
             LoadProgress();
+            ApplyEconomyOverrides();
         }
 
         private void OnEnable()
         {
             GameEvents.OnEnemyKilled += HandleEnemyKilled;
             GameEvents.OnLevelCompleted += HandleLevelCompleted;
+            ApplyEconomyOverrides();
         }
 
         private void OnDisable()
@@ -51,7 +53,7 @@ namespace ThirdPersonController
             while (killsSinceLastPoint >= killsPerPoint)
             {
                 killsSinceLastPoint -= killsPerPoint;
-                GrantTalentPoints(pointsPerMilestone, "Talent point earned!");
+                GrantTalentPoints(pointsPerMilestone, "获得天赋点!");
             }
 
             SaveProgress();
@@ -64,7 +66,7 @@ namespace ThirdPersonController
                 return;
             }
 
-            GrantTalentPoints(pointsPerStageClear, "Stage clear bonus!");
+            GrantTalentPoints(pointsPerStageClear, "关卡奖励天赋点!");
             SaveProgress();
         }
 
@@ -109,6 +111,19 @@ namespace ThirdPersonController
 
             SaveManager.Instance.CurrentData.killsSinceLastTalentPoint = killsSinceLastPoint;
             SaveManager.Instance.CurrentData.talentPoints = talentTree != null ? talentTree.availablePoints : 0;
+        }
+
+        private void ApplyEconomyOverrides()
+        {
+            EconomyConfig config = EconomyService.Config;
+            if (config == null)
+            {
+                return;
+            }
+
+            killsPerPoint = config.killsPerTalentPoint;
+            pointsPerMilestone = config.pointsPerKillMilestone;
+            pointsPerStageClear = config.pointsPerStageClear;
         }
     }
 }

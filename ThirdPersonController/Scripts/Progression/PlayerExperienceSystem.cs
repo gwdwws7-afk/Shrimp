@@ -92,7 +92,8 @@ namespace ThirdPersonController
                 return;
             }
 
-            GrantExperience(expReward);
+            int adjusted = EconomyService.AdjustEnemyExp(expReward, type);
+            GrantExperience(adjusted);
         }
 
         private int GetExpToNextLevel(int currentLevel)

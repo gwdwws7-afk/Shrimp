@@ -42,6 +42,13 @@ namespace ThirdPersonController
         public bool lockMovementDuringAttack = true;
         public bool lockRotationDuringAttack = false;
 
+        [Header("Impact Tuning")]
+        public float heavyDamageMultiplier = 1.15f;
+        public float heavyKnockbackMultiplier = 1.45f;
+        public float heavyRangeMultiplier = 1.1f;
+        public float heavyRadiusMultiplier = 1.1f;
+        public float heavyHitStopMultiplier = 1.2f;
+
         [Header("Combo Settings")]
         public int maxComboCount = 999;              // 最大999连击
         public float comboResetTime = 1.1f;
@@ -114,6 +121,8 @@ namespace ThirdPersonController
         private bool attackBuffered;
         private float attackBufferTimer;
         private AttackInputType bufferedAttackType = AttackInputType.Light;
+        private AttackInputType currentStepInputType = AttackInputType.Light;
+        private AttackInputType queuedStepInputType = AttackInputType.Light;
         private bool queuedNextAttack;
         private int queuedStepIndex = -1;
         private Coroutine attackRoutine;
@@ -430,7 +439,7 @@ namespace ThirdPersonController
                 int nextStepIndex = GetNextStepIndex(inputType);
                 if (nextStepIndex >= 0)
                 {
-                    QueueNextAttack(nextStepIndex);
+                    QueueNextAttack(nextStepIndex, inputType);
                     ConsumeBufferedAttack(inputType);
                 }
             }
@@ -497,10 +506,11 @@ namespace ThirdPersonController
             return true;
         }
 
-        private void QueueNextAttack(int stepIndex)
+        private void QueueNextAttack(int stepIndex, AttackInputType inputType)
         {
             queuedNextAttack = true;
             queuedStepIndex = stepIndex;
+            queuedStepInputType = inputType;
         }
 
         private void PerformAttack(AttackInputType inputType)
@@ -511,10 +521,10 @@ namespace ThirdPersonController
                 return;
             }
 
-            StartAttackStep(nextStepIndex);
+            StartAttackStep(nextStepIndex, inputType);
         }
 
-        private void StartAttackStep(int stepIndex)
+        private void StartAttackStep(int stepIndex, AttackInputType inputType)
         {
             AttackStep step = GetStepDefinition(stepIndex);
             if (step == null)
@@ -559,6 +569,7 @@ namespace ThirdPersonController
             canAttack = false;
             currentStepIndex = stepIndex;
             currentStep = step;
+            currentStepInputType = inputType;
             currentStepStartTime = Time.time;
             float additionalHitDelay = GetMaxAdditionalHitDelay(step);
             currentStepEndTime = currentStepStartTime + step.hitDelay + additionalHitDelay + step.recoveryTime;
@@ -628,7 +639,7 @@ namespace ThirdPersonController
 
             if (queuedNextAttack && queuedStepIndex >= 0)
             {
-                StartAttackStep(queuedStepIndex);
+                StartAttackStep(queuedStepIndex, queuedStepInputType);
                 return;
             }
 
@@ -639,6 +650,7 @@ namespace ThirdPersonController
             currentStep = null;
             queuedNextAttack = false;
             queuedStepIndex = -1;
+            queuedStepInputType = AttackInputType.Light;
 
             if (actionController != null)
             {
@@ -1092,6 +1104,13 @@ namespace ThirdPersonController
             }
             float hitRadius = step != null && step.radius > 0f ? step.radius : attackRadius;
 
+            bool isHeavyImpact = currentStepInputType == AttackInputType.Heavy;
+            if (isHeavyImpact)
+            {
+                range *= heavyRangeMultiplier;
+                hitRadius *= heavyRadiusMultiplier;
+            }
+
             // Find all enemies in range
             HitQuery.OverlapCone(attackCenter, attackForward, range, angle, hitRadius, enemyLayers, hitEnemies, 0);
             
@@ -1110,6 +1129,10 @@ namespace ThirdPersonController
             }
             float stepMultiplier = step != null ? step.damageMultiplier : 1f;
             int finalDamage = Mathf.RoundToInt(baseDamage * stepMultiplier * damageMultiplier * damageCurveMultiplier);
+            if (isHeavyImpact)
+            {
+                finalDamage = Mathf.RoundToInt(finalDamage * heavyDamageMultiplier);
+            }
             float knockback = step != null ? step.knockback : attackKnockback;
             if (statsController != null)
             {
@@ -1120,6 +1143,16 @@ namespace ThirdPersonController
                 knockback *= damageCurveProfile.GetKnockbackMultiplier(baseDamage);
             }
             knockback *= GetKnockbackMultiplier();
+            if (isHeavyImpact)
+            {
+                knockback *= heavyKnockbackMultiplier;
+            }
+
+            float appliedHitStop = hitStopDuration;
+            if (isHeavyImpact)
+            {
+                appliedHitStop *= heavyHitStopMultiplier;
+            }
 
             float perTargetCooldown = step != null ? Mathf.Max(0f, step.perTargetHitCooldown) : 0f;
             float now = Time.time;
@@ -1164,7 +1197,7 @@ namespace ThirdPersonController
                         hasHitPoint = true,
                         isCritical = false,
                         showDamageText = true,
-                        hitStopDuration = hitStopDuration
+                        hitStopDuration = appliedHitStop
                     };
 
                     if (DamageService.ApplyDamage(context, hitCollider))

@@ -33,6 +33,9 @@ namespace ThirdPersonController
         public List<string> unlockedTalentNodes = new List<string>();
         public List<string> ownedPearlIds = new List<string>();
         public List<string> equippedPearlIds = new List<string>();
+        public int credits = 0;
+        public List<ConsumableStack> consumables = new List<ConsumableStack>();
+        public List<string> quickConsumableSlots = new List<string>();
         
         // 章节进度
         public int currentChapter = 1;
@@ -62,6 +65,14 @@ namespace ThirdPersonController
         public int longestCombo = 0;
         public int bossesDefeated = 0;
         public int pearlsCollected = 0;
+
+        // 长期成长
+        public int unlockedPearlSlots = 3;
+        public int maxPearlRarityUnlocked = 1;
+        public float pearlDropRateMultiplier = 1f;
+        public int totalLevelsCompleted = 0;
+        public List<string> claimedProgressionMilestones = new List<string>();
+        public string activeProgressionRoute = "Offense";
         
         // 解锁
         public bool hardModeUnlocked = false;
@@ -425,6 +436,8 @@ namespace ThirdPersonController
                 Debug.Log($"天赋点: {CurrentData.talentPoints}");
                 Debug.Log($"已解锁天赋: {CurrentData.unlockedTalentNodes?.Count ?? 0}");
                 Debug.Log($"珍珠数量: {CurrentData.ownedPearlIds?.Count ?? 0}");
+                Debug.Log($"深渊币余额: {CurrentData.credits}");
+                Debug.Log($"消耗品数量: {CurrentData.consumables?.Count ?? 0}");
                 Debug.Log($"游戏时长: {CurrentData.totalPlayTime:F1}秒");
                 Debug.Log($"最后保存: {CurrentData.saveTime}");
             }
@@ -450,6 +463,36 @@ namespace ThirdPersonController
             if (CurrentData.equippedPearlIds == null)
             {
                 CurrentData.equippedPearlIds = new List<string>();
+            }
+
+            if (CurrentData.completedLevels == null)
+            {
+                CurrentData.completedLevels = new List<int>();
+            }
+
+            if (CurrentData.consumables == null)
+            {
+                CurrentData.consumables = new List<ConsumableStack>();
+            }
+
+            if (CurrentData.quickConsumableSlots == null)
+            {
+                CurrentData.quickConsumableSlots = new List<string>();
+            }
+
+            while (CurrentData.quickConsumableSlots.Count < 3)
+            {
+                CurrentData.quickConsumableSlots.Add(string.Empty);
+            }
+
+            if (CurrentData.claimedProgressionMilestones == null)
+            {
+                CurrentData.claimedProgressionMilestones = new List<string>();
+            }
+
+            if (string.IsNullOrEmpty(CurrentData.activeProgressionRoute))
+            {
+                CurrentData.activeProgressionRoute = "Offense";
             }
         }
         

@@ -46,6 +46,9 @@ namespace ThirdPersonController
         
         [Header("Quests")]
         public List<QuestConfig> quests = new List<QuestConfig>();
+
+        [Header("Stronghold Overrides")]
+        public List<StrongholdOverride> strongholdOverrides = new List<StrongholdOverride>();
         
         [Header("Unlocks")]
         public string nextLevelId = "";
@@ -55,9 +58,23 @@ namespace ThirdPersonController
         [Header("Rewards")]
         public int baseExp = 100;
         public int basePearls = 1;
+        public int baseCredits = 0;
+        public float levelRewardMultiplier = 1f;
+        public float questRewardMultiplier = 1f;
+        public float dropChanceMultiplier = 1f;
         
         [Header("Scene")]
         public string sceneName = "";
+
+        [Header("Boss")]
+        public bool overrideBossSettings = false;
+        public string bossName = "Boss";
+        public BossPrototypeType bossPrototype = BossPrototypeType.Eel;
+        public int bossMaxHealth = 3000;
+        public int bossBaseDamage = 25;
+        public float bossKnockback = 6f;
+        public float bossScaleMultiplier = 2.2f;
+        public Vector3 bossSpawnOffset = Vector3.zero;
         
         public string GetId()
         {
@@ -67,6 +84,44 @@ namespace ThirdPersonController
             }
             return name;
         }
+    }
+
+    [System.Serializable]
+    public class StrongholdOverride
+    {
+        public string strongholdId = "";
+        public List<StrongholdWaveOverride> waves = new List<StrongholdWaveOverride>();
+    }
+
+    [System.Serializable]
+    public class StrongholdWaveOverride
+    {
+        public int waveIndex = 0;
+        public bool replaceEvents = true;
+        public List<WaveEventOverride> events = new List<WaveEventOverride>();
+    }
+
+    [System.Serializable]
+    public class WaveEventOverride
+    {
+        public string name = "";
+        public WaveEventType eventType = WaveEventType.Reinforcement;
+        public float triggerDelay = 0.4f;
+        public int triggerOnRemaining = -1;
+        public float duration = 0f;
+        public float spawnInterval = 0f;
+        public float spawnRadius = 0f;
+        public bool useReinforcementPoints = true;
+        public int spawnCount = 0;
+        public EnemyArchetype archetypeOverride;
+        public float holdRadius = 0f;
+        public float holdDuration = 0f;
+        public float holdDecayRate = 1f;
+        public bool showHoldMarker = true;
+        public bool spawnDefenseTarget = true;
+        public int defenseTargetHealth = 0;
+        public bool failOnTargetDestroyed = true;
+        public bool assignTargetToSpawnedEnemies = true;
     }
 
     [System.Serializable]

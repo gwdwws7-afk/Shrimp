@@ -77,6 +77,10 @@ namespace ThirdPersonController
             if (input == null) return;
 
             Vector2 lookInput = input.LookInput;
+            if (!IsFinite(lookInput.x) || !IsFinite(lookInput.y))
+            {
+                lookInput = Vector2.zero;
+            }
             
             // Update target rotation based on mouse input
             targetYaw += lookInput.x * mouseSensitivity;
@@ -95,19 +99,50 @@ namespace ThirdPersonController
 
         private void CalculateRotation()
         {
+            if (!IsFinite(targetYaw))
+            {
+                targetYaw = currentYaw;
+            }
+
+            if (!IsFinite(targetPitch))
+            {
+                targetPitch = currentPitch;
+            }
+
             // Smoothly interpolate to target rotation
             currentYaw = Mathf.SmoothDamp(currentYaw, targetYaw, ref yawVelocity, rotationSmoothTime);
             currentPitch = Mathf.SmoothDamp(currentPitch, targetPitch, ref pitchVelocity, rotationSmoothTime);
+
+            if (!IsFinite(currentYaw))
+            {
+                currentYaw = targetYaw;
+            }
+
+            if (!IsFinite(currentPitch))
+            {
+                currentPitch = targetPitch;
+            }
         }
 
         private void HandleCollision()
         {
+            if (!IsFinite(currentDistance))
+            {
+                currentDistance = defaultDistance;
+            }
+
+            if (!IsFinite(targetDistance))
+            {
+                targetDistance = defaultDistance;
+            }
+
             Vector3 targetPosition = target.position + offset;
             Vector3 desiredCameraPos = CalculateCameraPosition(targetPosition, currentDistance);
 
             // Check for collision
             RaycastHit hit;
-            Vector3 directionToCamera = (desiredCameraPos - targetPosition).normalized;
+            Vector3 directionVector = desiredCameraPos - targetPosition;
+            Vector3 directionToCamera = directionVector.sqrMagnitude > 0.0001f ? directionVector.normalized : Vector3.back;
             float distanceToTarget = Vector3.Distance(targetPosition, desiredCameraPos);
 
             if (Physics.SphereCast(targetPosition, collisionRadius, directionToCamera, out hit, 
@@ -139,9 +174,32 @@ namespace ThirdPersonController
         private Vector3 CalculateCameraPosition(Vector3 targetPos, float distance)
         {
             // Calculate camera position based on rotation and distance
-            Quaternion rotation = Quaternion.Euler(currentPitch, currentYaw, 0);
-            Vector3 negDistance = new Vector3(0, 0, -distance);
+            float safePitch = SanitizeAngle(currentPitch, 0f);
+            float safeYaw = SanitizeAngle(currentYaw, 0f);
+            float safeDistance = SanitizeDistance(distance);
+            Quaternion rotation = Quaternion.Euler(safePitch, safeYaw, 0f);
+            Vector3 negDistance = new Vector3(0, 0, -safeDistance);
             return targetPos + rotation * negDistance;
+        }
+
+        private float SanitizeAngle(float value, float fallback)
+        {
+            return IsFinite(value) ? value : fallback;
+        }
+
+        private float SanitizeDistance(float value)
+        {
+            if (!IsFinite(value))
+            {
+                value = defaultDistance;
+            }
+
+            return Mathf.Clamp(value, minDistance, maxDistance);
+        }
+
+        private bool IsFinite(float value)
+        {
+            return !(float.IsNaN(value) || float.IsInfinity(value));
         }
 
         public void SetTarget(Transform newTarget)

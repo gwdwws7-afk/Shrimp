@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac23d8a3dc3f4367841764df13547cf6, type: 3}
+  m_Name: EnemyArchetype_Elite
+  m_EditorClassIdentifier: 
+  archetypeId: elite
+  displayName: 深渊精英
+  enemyType: 3
+  maxHealth: 220
+  hitStunDuration: 0.22
+  defense: 1
+  expReward: 8
+  dropChance: 0.4
+  detectionRange: 18
+  attackRange: 2.2
+  fieldOfView: 140
+  patrolSpeed: 2.4
+  chaseSpeed: 4.6
+  rotationSpeed: 7
+  stoppingDistance: 1.5
+  attackCooldown: 1.4
+  attackDamage: 16
+  attackKnockback: 3.6
+  attackWindup: 0.35
+  attackActiveTime: 0.12
+  attackRecovery: 0.45
+  attackHitRadius: 1.2
+  attackHitAngle: 130
+  canDodge: 1
+  dodgeChance: 0.2
+  canBlock: 1
+  blockChance: 0.15
+  canCharge: 0
+  chargeSpeed: 9
+  chargeWindup: 0.45
+  canFlee: 0
+  fleeHealthThreshold: 0.2
+  useCrowdCoordinator: 1
+  ringStandoffDistance: 2.6
+  overrideAgentSettings: 1
+  agentSpeed: 3.8
+  agentAcceleration: 8
+  agentAngularSpeed: 380
+  agentStoppingDistance: 1.4
+  agentRadius: 0.45
+  agentHeight: 1.85
+  overrideHitReaction: 1
+  knockbackThreshold: 2.2
+  knockdownThreshold: 6.5
+  flinchDuration: 0.2
+  knockbackDuration: 0.26
+  knockbackDistance: 1.1
+  knockdownDuration: 0.35
+  knockdownDistance: 2.4
+  knockdownRecoverTime: 0.6

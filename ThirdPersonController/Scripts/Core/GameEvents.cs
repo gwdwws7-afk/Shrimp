@@ -151,6 +151,14 @@ namespace ThirdPersonController
         // 珍珠收集
         public static event Action<string> OnPearlCollected;
         public static void PearlCollected(string pearlId) => OnPearlCollected?.Invoke(pearlId);
+
+        // 目标点/地点
+        public static event Action<string> OnLocationReached;
+        public static void LocationReached(string locationId) => OnLocationReached?.Invoke(locationId);
+
+        // 防守目标
+        public static event Action<string> OnDefenseTargetDestroyed;
+        public static void DefenseTargetDestroyed(string targetId) => OnDefenseTargetDestroyed?.Invoke(targetId);
         
         #endregion
     }

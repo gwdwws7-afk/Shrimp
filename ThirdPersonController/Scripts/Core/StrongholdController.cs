@@ -28,6 +28,7 @@ namespace ThirdPersonController
         public GameObject prefab;
         public int count = 5;
         public float spawnIntervalOverride = -1f;
+        public EnemyArchetype archetypeOverride;
     }
 
     [System.Serializable]
@@ -40,6 +41,47 @@ namespace ThirdPersonController
         public List<WaveSpawnGroup> eliteGroups = new List<WaveSpawnGroup>();
     }
 
+    public enum WaveEventType
+    {
+        Reinforcement,
+        Chase,
+        HoldPoint,
+        ProtectTarget
+    }
+
+    [System.Serializable]
+    public class WaveEvent
+    {
+        public string name = "Event";
+        public WaveEventType eventType = WaveEventType.Reinforcement;
+        public bool enabled = true;
+        public float triggerDelay = 0f;
+        public int triggerOnRemaining = -1;
+
+        [Header("Spawn")]
+        public float duration = 6f;
+        public float spawnInterval = 0.45f;
+        public float spawnRadius = 5f;
+        public bool useReinforcementPoints = true;
+        public List<WaveSpawnGroup> groups = new List<WaveSpawnGroup>();
+
+        [Header("Hold Point")]
+        public Transform holdPoint;
+        public float holdRadius = 3f;
+        public float holdDuration = 6f;
+        public float holdDecayRate = 1f;
+        public bool showHoldMarker = true;
+
+        [Header("Defense Target")]
+        public DefenseTarget defenseTarget;
+        public GameObject defenseTargetPrefab;
+        public int defenseTargetHealth = 200;
+        public bool spawnDefenseTarget = true;
+        public bool failOnTargetDestroyed = true;
+        public bool assignTargetToSpawnedEnemies = true;
+        public string defenseTargetId = "";
+    }
+
     [System.Serializable]
     public class StrongholdWave
     {
@@ -49,6 +91,9 @@ namespace ThirdPersonController
         public bool shuffleSpawnPoints = true;
         public List<WaveSpawnGroup> groups = new List<WaveSpawnGroup>();
         public WaveEliteTrigger eliteTrigger = new WaveEliteTrigger();
+
+        [Header("Events")]
+        public List<WaveEvent> events = new List<WaveEvent>();
         
         [Header("Objectives")]
         public WaveObjective objective = new WaveObjective();
@@ -59,6 +104,7 @@ namespace ThirdPersonController
     public class StrongholdController : MonoBehaviour
     {
         [Header("Activation")]
+        public string strongholdId = "";
         public bool activeOnStart = true;
         public bool startOnPlayerEnter = true;
         public string playerTag = "Player";
@@ -67,6 +113,7 @@ namespace ThirdPersonController
         [Header("Spawn")]
         public Transform center;
         public List<Transform> spawnPoints = new List<Transform>();
+        public List<Transform> reinforcementPoints = new List<Transform>();
         public float spawnRadius = 6f;
         public float spawnHeight = 0.5f;
         public float spawnPointJitter = 0.4f;
@@ -77,6 +124,10 @@ namespace ThirdPersonController
 
         [Header("Wave Timing")]
         public float waveCompleteDelay = 1f;
+
+        [Header("Spawn Director")]
+        public bool autoFindDirector = true;
+        public WaveSpawnDirector spawnDirector;
 
         [Header("Waves")]
         public List<StrongholdWave> waves = new List<StrongholdWave>();
@@ -92,6 +143,7 @@ namespace ThirdPersonController
         public event System.Action<StrongholdController, int> OnWaveStarted;
         public event System.Action<StrongholdController, int> OnWaveCompleted;
         public event System.Action<StrongholdController> OnStrongholdCompleted;
+        public event System.Action<StrongholdController> OnStrongholdFailed;
 
         private class WaveRuntime
         {
@@ -100,6 +152,7 @@ namespace ThirdPersonController
             public bool spawnComplete;
             public bool eliteTriggered;
             public bool eliteSpawnPending;
+            public List<EventRuntime> eventRuntimes = new List<EventRuntime>();
 
             public void Reset()
             {
@@ -108,14 +161,27 @@ namespace ThirdPersonController
                 spawnComplete = false;
                 eliteTriggered = false;
                 eliteSpawnPending = false;
+                eventRuntimes.Clear();
             }
+        }
+
+        private class EventRuntime
+        {
+            public bool triggered;
+            public bool completed;
+            public GameObject holdMarker;
+            public float holdProgress;
+            public DefenseTarget defenseTarget;
         }
 
         private readonly List<WaveRuntime> runtimes = new List<WaveRuntime>();
         private Transform player;
         private Coroutine strongholdRoutine;
         private int spawnPointCursor = 0;
+        private int reinforcementPointCursor = 0;
         private int currentWaveIndex = -1;
+
+        private static WaveSpawnDirector sharedDirector;
 
         private bool isActive;
         private bool isRunning;
@@ -126,6 +192,7 @@ namespace ThirdPersonController
         public bool IsCompleted => isCompleted;
         public int CurrentWaveIndex => currentWaveIndex;
         public int TotalWaves => waves != null ? waves.Count : 0;
+        public string StrongholdId => string.IsNullOrEmpty(strongholdId) ? name : strongholdId;
 
         private void Awake()
         {
@@ -152,6 +219,8 @@ namespace ThirdPersonController
                     player = playerObject.transform;
                 }
             }
+
+            ResolveSpawnDirector();
         }
 
         private void Start()
@@ -217,8 +286,36 @@ namespace ThirdPersonController
                 strongholdRoutine = null;
             }
 
+            CleanupAllWaveEvents();
+
             isRunning = false;
             currentWaveIndex = -1;
+        }
+
+        public void FailStronghold(string reason)
+        {
+            if (!isRunning || isCompleted)
+            {
+                return;
+            }
+
+            if (strongholdRoutine != null)
+            {
+                StopCoroutine(strongholdRoutine);
+                strongholdRoutine = null;
+            }
+
+            CleanupAllWaveEvents();
+            isRunning = false;
+            currentWaveIndex = -1;
+            SetActive(false);
+            if (!string.IsNullOrEmpty(reason))
+            {
+                GameEvents.ShowMessage(reason, 2f);
+            }
+
+            OnStrongholdFailed?.Invoke(this);
+            GameEvents.GameOver(false);
         }
 
         public void NotifyEnemyDestroyed(int waveIndex, bool isElite)
@@ -248,9 +345,39 @@ namespace ThirdPersonController
             runtimes.Clear();
             for (int i = 0; i < waves.Count; i++)
             {
-                runtimes.Add(new WaveRuntime());
+                WaveRuntime runtime = new WaveRuntime();
+                StrongholdWave wave = waves[i];
+                if (wave != null && wave.events != null && wave.events.Count > 0)
+                {
+                    for (int e = 0; e < wave.events.Count; e++)
+                    {
+                        runtime.eventRuntimes.Add(new EventRuntime());
+                    }
+                }
+                runtimes.Add(runtime);
             }
             currentWaveIndex = -1;
+        }
+
+        private void InitializeEventRuntime(int waveIndex)
+        {
+            if (waveIndex < 0 || waveIndex >= waves.Count || waveIndex >= runtimes.Count)
+            {
+                return;
+            }
+
+            StrongholdWave wave = waves[waveIndex];
+            WaveRuntime runtime = runtimes[waveIndex];
+            runtime.eventRuntimes.Clear();
+            if (wave == null || wave.events == null || wave.events.Count == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < wave.events.Count; i++)
+            {
+                runtime.eventRuntimes.Add(new EventRuntime());
+            }
         }
 
         private IEnumerator StrongholdRoutine()
@@ -263,6 +390,7 @@ namespace ThirdPersonController
 
                 yield return new WaitUntil(() => IsWaveComplete(i));
                 OnWaveCompleted?.Invoke(this, i);
+                CleanupWaveEvents(i);
 
                 if (waveCompleteDelay > 0f)
                 {
@@ -273,6 +401,7 @@ namespace ThirdPersonController
             isRunning = false;
             isCompleted = true;
             currentWaveIndex = -1;
+            CleanupAllWaveEvents();
             OnStrongholdCompleted?.Invoke(this);
         }
 
@@ -328,7 +457,9 @@ namespace ThirdPersonController
                     {
                         continue;
                     }
-                    total += Mathf.Max(0, group.count);
+                    int baseCount = Mathf.Max(0, group.count);
+                    int adjusted = AdjustSpawnCount(wave, group, waveIndex, false, baseCount);
+                    total += Mathf.Max(0, adjusted);
                 }
             }
 
@@ -341,7 +472,9 @@ namespace ThirdPersonController
                     {
                         continue;
                     }
-                    total += Mathf.Max(0, group.count);
+                    int baseCount = Mathf.Max(0, group.count);
+                    int adjusted = AdjustSpawnCount(wave, group, waveIndex, true, baseCount);
+                    total += Mathf.Max(0, adjusted);
                 }
             }
 
@@ -358,11 +491,14 @@ namespace ThirdPersonController
             StrongholdWave wave = waves[waveIndex];
             WaveRuntime runtime = runtimes[waveIndex];
             runtime.Reset();
+            InitializeEventRuntime(waveIndex);
 
             if (wave.startDelay > 0f)
             {
                 yield return new WaitForSeconds(wave.startDelay);
             }
+
+            StartWaveEvents(waveIndex);
 
             for (int g = 0; g < wave.groups.Count; g++)
             {
@@ -372,10 +508,12 @@ namespace ThirdPersonController
                     continue;
                 }
 
-                float interval = group.spawnIntervalOverride > 0f ? group.spawnIntervalOverride : wave.spawnInterval;
-                for (int i = 0; i < group.count; i++)
+                int spawnCount = AdjustSpawnCount(wave, group, waveIndex, false, group.count);
+                float baseInterval = group.spawnIntervalOverride > 0f ? group.spawnIntervalOverride : wave.spawnInterval;
+                float interval = AdjustSpawnInterval(wave, group, waveIndex, false, baseInterval);
+                for (int i = 0; i < spawnCount; i++)
                 {
-                    SpawnEnemy(group.prefab, waveIndex, false);
+                    SpawnEnemy(group.prefab, waveIndex, false, group.archetypeOverride);
                     runtime.baseAlive++;
                     runtime.totalAlive++;
 
@@ -388,6 +526,284 @@ namespace ThirdPersonController
 
             runtime.spawnComplete = true;
             CheckEliteTrigger(waveIndex);
+        }
+
+        private void StartWaveEvents(int waveIndex)
+        {
+            if (waveIndex < 0 || waveIndex >= waves.Count || waveIndex >= runtimes.Count)
+            {
+                return;
+            }
+
+            StrongholdWave wave = waves[waveIndex];
+            if (wave == null || wave.events == null || wave.events.Count == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < wave.events.Count; i++)
+            {
+                WaveEvent waveEvent = wave.events[i];
+                if (waveEvent == null || !waveEvent.enabled)
+                {
+                    continue;
+                }
+
+                switch (waveEvent.eventType)
+                {
+                    case WaveEventType.Reinforcement:
+                        StartCoroutine(ReinforcementEventRoutine(waveIndex, i));
+                        break;
+                    case WaveEventType.Chase:
+                        StartCoroutine(ChaseEventRoutine(waveIndex, i));
+                        break;
+                    case WaveEventType.HoldPoint:
+                        StartCoroutine(HoldPointEventRoutine(waveIndex, i));
+                        break;
+                    case WaveEventType.ProtectTarget:
+                        StartCoroutine(ProtectTargetEventRoutine(waveIndex, i));
+                        break;
+                }
+            }
+        }
+
+        private IEnumerator ReinforcementEventRoutine(int waveIndex, int eventIndex)
+        {
+            StrongholdWave wave = waves[waveIndex];
+            WaveRuntime runtime = runtimes[waveIndex];
+            WaveEvent waveEvent = wave.events[eventIndex];
+            EventRuntime eventRuntime = runtime.eventRuntimes[eventIndex];
+
+            if (waveEvent.triggerDelay > 0f)
+            {
+                yield return new WaitForSeconds(waveEvent.triggerDelay);
+            }
+
+            if (waveEvent.triggerOnRemaining >= 0)
+            {
+                yield return new WaitUntil(() => runtime.spawnComplete && runtime.baseAlive <= waveEvent.triggerOnRemaining);
+            }
+
+            if (!IsWaveActive(waveIndex))
+            {
+                yield break;
+            }
+
+            eventRuntime.triggered = true;
+            if (waveEvent.groups != null)
+            {
+                float interval = waveEvent.spawnInterval > 0f ? waveEvent.spawnInterval : wave.spawnInterval;
+                for (int g = 0; g < waveEvent.groups.Count; g++)
+                {
+                    WaveSpawnGroup group = waveEvent.groups[g];
+                    if (group == null || group.prefab == null || group.count <= 0)
+                    {
+                        continue;
+                    }
+
+                    int spawnCount = AdjustSpawnCount(wave, group, waveIndex, false, group.count);
+                    float baseInterval = group.spawnIntervalOverride > 0f ? group.spawnIntervalOverride : interval;
+                    float groupInterval = AdjustSpawnInterval(wave, group, waveIndex, false, baseInterval);
+                    for (int i = 0; i < spawnCount; i++)
+                    {
+                        SpawnEnemyAtPosition(group.prefab, waveIndex, false, GetReinforcementPosition(wave, waveEvent), null, group.archetypeOverride);
+                        runtime.baseAlive++;
+                        runtime.totalAlive++;
+
+                        if (groupInterval > 0f)
+                        {
+                            yield return new WaitForSeconds(groupInterval);
+                        }
+                    }
+                }
+            }
+
+            eventRuntime.completed = true;
+        }
+
+        private IEnumerator ChaseEventRoutine(int waveIndex, int eventIndex)
+        {
+            StrongholdWave wave = waves[waveIndex];
+            WaveRuntime runtime = runtimes[waveIndex];
+            WaveEvent waveEvent = wave.events[eventIndex];
+            EventRuntime eventRuntime = runtime.eventRuntimes[eventIndex];
+
+            if (waveEvent.triggerDelay > 0f)
+            {
+                yield return new WaitForSeconds(waveEvent.triggerDelay);
+            }
+
+            eventRuntime.triggered = true;
+            float duration = Mathf.Max(0.1f, waveEvent.duration);
+            float interval = Mathf.Max(0.05f, waveEvent.spawnInterval);
+            float timer = 0f;
+
+            while (timer < duration && IsWaveActive(waveIndex))
+            {
+                if (waveEvent.groups != null)
+                {
+                    for (int g = 0; g < waveEvent.groups.Count; g++)
+                    {
+                        WaveSpawnGroup group = waveEvent.groups[g];
+                        if (group == null || group.prefab == null || group.count <= 0)
+                        {
+                            continue;
+                        }
+
+                        int spawnCount = AdjustSpawnCount(wave, group, waveIndex, false, group.count);
+                        for (int i = 0; i < spawnCount; i++)
+                        {
+                            SpawnEnemyAtPosition(group.prefab, waveIndex, false, GetChaseSpawnPosition(waveEvent), null, group.archetypeOverride);
+                            runtime.baseAlive++;
+                            runtime.totalAlive++;
+                        }
+                    }
+                }
+
+                yield return new WaitForSeconds(interval);
+                timer += interval;
+            }
+
+            eventRuntime.completed = true;
+        }
+
+        private IEnumerator HoldPointEventRoutine(int waveIndex, int eventIndex)
+        {
+            StrongholdWave wave = waves[waveIndex];
+            WaveRuntime runtime = runtimes[waveIndex];
+            WaveEvent waveEvent = wave.events[eventIndex];
+            EventRuntime eventRuntime = runtime.eventRuntimes[eventIndex];
+
+            if (waveEvent.triggerDelay > 0f)
+            {
+                yield return new WaitForSeconds(waveEvent.triggerDelay);
+            }
+
+            eventRuntime.triggered = true;
+            Vector3 holdCenter = waveEvent.holdPoint != null
+                ? waveEvent.holdPoint.position
+                : (center != null ? center.position : transform.position);
+
+            if (waveEvent.showHoldMarker)
+            {
+                eventRuntime.holdMarker = CreateHoldMarker(holdCenter, waveEvent.holdRadius);
+            }
+
+            while (eventRuntime.holdProgress < waveEvent.holdDuration && IsWaveActive(waveIndex))
+            {
+                float delta = Time.deltaTime;
+                if (player != null)
+                {
+                    float distance = Vector3.Distance(player.position, holdCenter);
+                    if (distance <= waveEvent.holdRadius)
+                    {
+                        eventRuntime.holdProgress += delta;
+                    }
+                    else if (waveEvent.holdDecayRate > 0f)
+                    {
+                        eventRuntime.holdProgress = Mathf.Max(0f, eventRuntime.holdProgress - waveEvent.holdDecayRate * delta);
+                    }
+                }
+
+                yield return null;
+            }
+
+            if (eventRuntime.holdMarker != null)
+            {
+                Destroy(eventRuntime.holdMarker);
+                eventRuntime.holdMarker = null;
+            }
+
+            eventRuntime.completed = true;
+        }
+
+        private IEnumerator ProtectTargetEventRoutine(int waveIndex, int eventIndex)
+        {
+            StrongholdWave wave = waves[waveIndex];
+            WaveRuntime runtime = runtimes[waveIndex];
+            WaveEvent waveEvent = wave.events[eventIndex];
+            EventRuntime eventRuntime = runtime.eventRuntimes[eventIndex];
+
+            if (waveEvent.triggerDelay > 0f)
+            {
+                yield return new WaitForSeconds(waveEvent.triggerDelay);
+            }
+
+            if (!IsWaveActive(waveIndex))
+            {
+                yield break;
+            }
+
+            eventRuntime.triggered = true;
+            DefenseTarget target = ResolveDefenseTarget(waveIndex, waveEvent, eventRuntime);
+            if (target == null)
+            {
+                eventRuntime.completed = true;
+                yield break;
+            }
+
+            if (waveEvent.failOnTargetDestroyed)
+            {
+                target.OnDestroyed += HandleDefenseTargetDestroyed;
+            }
+
+            if (waveEvent.groups != null && waveEvent.groups.Count > 0)
+            {
+                float interval = waveEvent.spawnInterval > 0f ? waveEvent.spawnInterval : wave.spawnInterval;
+                for (int g = 0; g < waveEvent.groups.Count; g++)
+                {
+                    WaveSpawnGroup group = waveEvent.groups[g];
+                    if (group == null || group.prefab == null || group.count <= 0)
+                    {
+                        continue;
+                    }
+
+                    int spawnCount = AdjustSpawnCount(wave, group, waveIndex, false, group.count);
+                    float baseInterval = group.spawnIntervalOverride > 0f ? group.spawnIntervalOverride : interval;
+                    float groupInterval = AdjustSpawnInterval(wave, group, waveIndex, false, baseInterval);
+                    for (int i = 0; i < spawnCount; i++)
+                    {
+                        SpawnEnemyAtPosition(group.prefab, waveIndex, false, GetReinforcementPosition(wave, waveEvent),
+                            waveEvent.assignTargetToSpawnedEnemies ? target.transform : null, group.archetypeOverride);
+                        runtime.baseAlive++;
+                        runtime.totalAlive++;
+
+                        if (groupInterval > 0f)
+                        {
+                            yield return new WaitForSeconds(groupInterval);
+                        }
+                    }
+                }
+            }
+
+            float surviveDuration = waveEvent.holdDuration > 0f ? waveEvent.holdDuration : waveEvent.duration;
+            if (surviveDuration <= 0f)
+            {
+                surviveDuration = 6f;
+            }
+
+            float timer = 0f;
+            while (timer < surviveDuration && IsWaveActive(waveIndex))
+            {
+                if (target.IsDestroyed)
+                {
+                    if (waveEvent.failOnTargetDestroyed)
+                    {
+                        FailStronghold("Defense target destroyed!");
+                    }
+                    break;
+                }
+
+                timer += Time.deltaTime;
+                yield return null;
+            }
+
+            if (waveEvent.failOnTargetDestroyed)
+            {
+                target.OnDestroyed -= HandleDefenseTargetDestroyed;
+            }
+
+            eventRuntime.completed = true;
         }
 
         private void CheckEliteTrigger(int waveIndex)
@@ -405,7 +821,13 @@ namespace ThirdPersonController
                 return;
             }
 
-            if (runtime.baseAlive <= wave.eliteTrigger.triggerOnRemaining)
+            int triggerRemaining = wave.eliteTrigger.triggerOnRemaining;
+            if (spawnDirector != null)
+            {
+                triggerRemaining = spawnDirector.AdjustEliteTriggerRemaining(this, wave, waveIndex, triggerRemaining);
+            }
+
+            if (runtime.baseAlive <= triggerRemaining)
             {
                 runtime.eliteTriggered = true;
                 if (wave.eliteTrigger.eliteGroups == null || wave.eliteTrigger.eliteGroups.Count == 0)
@@ -442,10 +864,12 @@ namespace ThirdPersonController
                     continue;
                 }
 
-                float groupInterval = group.spawnIntervalOverride > 0f ? group.spawnIntervalOverride : interval;
-                for (int i = 0; i < group.count; i++)
+                int spawnCount = AdjustSpawnCount(wave, group, waveIndex, true, group.count);
+                float baseInterval = group.spawnIntervalOverride > 0f ? group.spawnIntervalOverride : interval;
+                float groupInterval = AdjustSpawnInterval(wave, group, waveIndex, true, baseInterval);
+                for (int i = 0; i < spawnCount; i++)
                 {
-                    SpawnEnemy(group.prefab, waveIndex, true);
+                    SpawnEnemy(group.prefab, waveIndex, true, group.archetypeOverride);
                     runtime.totalAlive++;
 
                     if (groupInterval > 0f)
@@ -466,10 +890,97 @@ namespace ThirdPersonController
             }
 
             WaveRuntime runtime = runtimes[waveIndex];
-            return runtime.spawnComplete && runtime.totalAlive <= 0 && !runtime.eliteSpawnPending;
+            return runtime.spawnComplete
+                && runtime.totalAlive <= 0
+                && !runtime.eliteSpawnPending
+                && AreWaveEventsComplete(waveIndex);
         }
 
-        private void SpawnEnemy(GameObject prefab, int waveIndex, bool isElite)
+        private bool AreWaveEventsComplete(int waveIndex)
+        {
+            if (waveIndex < 0 || waveIndex >= runtimes.Count || waveIndex >= waves.Count)
+            {
+                return true;
+            }
+
+            StrongholdWave wave = waves[waveIndex];
+            WaveRuntime runtime = runtimes[waveIndex];
+            if (wave == null || wave.events == null || wave.events.Count == 0)
+            {
+                return true;
+            }
+
+            for (int i = 0; i < wave.events.Count; i++)
+            {
+                WaveEvent waveEvent = wave.events[i];
+                if (waveEvent == null || !waveEvent.enabled)
+                {
+                    continue;
+                }
+
+                if (i >= runtime.eventRuntimes.Count)
+                {
+                    return false;
+                }
+
+                if (!runtime.eventRuntimes[i].completed)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void CleanupWaveEvents(int waveIndex)
+        {
+            if (waveIndex < 0 || waveIndex >= runtimes.Count)
+            {
+                return;
+            }
+
+            WaveRuntime runtime = runtimes[waveIndex];
+            if (runtime.eventRuntimes == null)
+            {
+                return;
+            }
+
+            StrongholdWave wave = waveIndex >= 0 && waveIndex < waves.Count ? waves[waveIndex] : null;
+
+            for (int i = 0; i < runtime.eventRuntimes.Count; i++)
+            {
+                EventRuntime eventRuntime = runtime.eventRuntimes[i];
+                if (eventRuntime != null && eventRuntime.holdMarker != null)
+                {
+                    Destroy(eventRuntime.holdMarker);
+                    eventRuntime.holdMarker = null;
+                }
+
+                if (eventRuntime != null && eventRuntime.defenseTarget != null)
+                {
+                    eventRuntime.defenseTarget.OnDestroyed -= HandleDefenseTargetDestroyed;
+                    if (wave != null && wave.events != null && i < wave.events.Count)
+                    {
+                        WaveEvent waveEvent = wave.events[i];
+                        if (waveEvent != null && waveEvent.spawnDefenseTarget && waveEvent.defenseTarget == null)
+                        {
+                            Destroy(eventRuntime.defenseTarget.gameObject);
+                        }
+                    }
+                    eventRuntime.defenseTarget = null;
+                }
+            }
+        }
+
+        private void CleanupAllWaveEvents()
+        {
+            for (int i = 0; i < runtimes.Count; i++)
+            {
+                CleanupWaveEvents(i);
+            }
+        }
+
+        private void SpawnEnemy(GameObject prefab, int waveIndex, bool isElite, EnemyArchetype archetypeOverride)
         {
             if (prefab == null)
             {
@@ -477,6 +988,15 @@ namespace ThirdPersonController
             }
 
             Vector3 spawnPosition = GetSpawnPosition(waves[waveIndex]);
+            SpawnEnemyAtPosition(prefab, waveIndex, isElite, spawnPosition, null, archetypeOverride);
+        }
+
+        private void SpawnEnemyAtPosition(GameObject prefab, int waveIndex, bool isElite, Vector3 spawnPosition, Transform targetOverride, EnemyArchetype archetypeOverride)
+        {
+            if (prefab == null)
+            {
+                return;
+            }
             Quaternion rotation = Quaternion.identity;
             if (facePlayerOnSpawn && player != null)
             {
@@ -497,6 +1017,183 @@ namespace ThirdPersonController
                 member = enemy.AddComponent<EnemyWaveMember>();
             }
             member.Initialize(this, waveIndex, isElite);
+
+            if (archetypeOverride != null)
+            {
+                EnemyArchetypeConfigurator configurator = enemy.GetComponent<EnemyArchetypeConfigurator>();
+                if (configurator == null)
+                {
+                    configurator = enemy.AddComponent<EnemyArchetypeConfigurator>();
+                }
+                configurator.ApplyArchetype(archetypeOverride);
+            }
+
+            if (targetOverride != null)
+            {
+                EnemyAI ai = enemy.GetComponent<EnemyAI>();
+                if (ai != null)
+                {
+                    ai.SetOverrideTarget(targetOverride, true);
+                }
+            }
+        }
+
+        private bool IsWaveActive(int waveIndex)
+        {
+            return isRunning && currentWaveIndex == waveIndex;
+        }
+
+        private DefenseTarget ResolveDefenseTarget(int waveIndex, WaveEvent waveEvent, EventRuntime runtime)
+        {
+            if (waveEvent.defenseTarget != null)
+            {
+                DefenseTarget existing = waveEvent.defenseTarget;
+                if (!string.IsNullOrEmpty(waveEvent.defenseTargetId))
+                {
+                    existing.defenseTargetId = waveEvent.defenseTargetId;
+                }
+                existing.ResetHealth(waveEvent.defenseTargetHealth);
+                runtime.defenseTarget = existing;
+                return existing;
+            }
+
+            if (!waveEvent.spawnDefenseTarget)
+            {
+                return null;
+            }
+
+            Vector3 position = waveEvent.holdPoint != null
+                ? waveEvent.holdPoint.position
+                : (center != null ? center.position : transform.position);
+
+            DefenseTarget target = null;
+            if (waveEvent.defenseTargetPrefab != null)
+            {
+                GameObject instance = Instantiate(waveEvent.defenseTargetPrefab, position, Quaternion.identity);
+                target = instance.GetComponent<DefenseTarget>();
+                if (target == null)
+                {
+                    target = instance.AddComponent<DefenseTarget>();
+                }
+            }
+            else
+            {
+                GameObject instance = CreateDefenseTargetPrimitive(position, waveEvent.holdRadius);
+                target = instance.GetComponent<DefenseTarget>();
+            }
+
+            if (target != null)
+            {
+                if (!string.IsNullOrEmpty(waveEvent.defenseTargetId))
+                {
+                    target.defenseTargetId = waveEvent.defenseTargetId;
+                }
+                else
+                {
+                    target.defenseTargetId = $"{StrongholdId}_W{waveIndex + 1}_{waveEvent.name}";
+                }
+                target.ResetHealth(waveEvent.defenseTargetHealth);
+                runtime.defenseTarget = target;
+            }
+
+            return target;
+        }
+
+        private GameObject CreateDefenseTargetPrimitive(Vector3 position, float radius)
+        {
+            GameObject target = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            target.name = "DefenseTarget";
+            target.transform.position = position;
+            target.transform.localScale = new Vector3(1.2f, 1.4f, 1.2f);
+
+            Rigidbody rb = target.AddComponent<Rigidbody>();
+            rb.isKinematic = true;
+            rb.useGravity = false;
+
+            DefenseTarget defenseTarget = target.AddComponent<DefenseTarget>();
+            defenseTarget.maxHealth = 200;
+            defenseTarget.currentHealth = 200;
+
+            Renderer renderer = target.GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                renderer.material.color = new Color(1f, 0.35f, 0.25f, 0.9f);
+            }
+
+            if (radius > 0f)
+            {
+                GameObject ring = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                ring.name = "DefenseTarget_Ring";
+                ring.transform.SetParent(target.transform, false);
+                ring.transform.localPosition = Vector3.zero;
+                ring.transform.localScale = new Vector3(radius * 1.6f, 0.05f, radius * 1.6f);
+                Collider ringCollider = ring.GetComponent<Collider>();
+                if (ringCollider != null)
+                {
+                    Destroy(ringCollider);
+                }
+                Renderer ringRenderer = ring.GetComponent<Renderer>();
+                if (ringRenderer != null)
+                {
+                    ringRenderer.material.color = new Color(1f, 0.2f, 0.2f, 0.25f);
+                }
+            }
+
+            return target;
+        }
+
+        private void HandleDefenseTargetDestroyed(DefenseTarget target)
+        {
+            if (target != null)
+            {
+                target.OnDestroyed -= HandleDefenseTargetDestroyed;
+            }
+
+            if (isRunning)
+            {
+                FailStronghold("Defense target destroyed!");
+            }
+        }
+
+        private void ResolveSpawnDirector()
+        {
+            if (!autoFindDirector || spawnDirector != null)
+            {
+                return;
+            }
+
+            if (sharedDirector == null)
+            {
+                sharedDirector = FindObjectOfType<WaveSpawnDirector>();
+            }
+
+            if (sharedDirector == null)
+            {
+                GameObject directorObject = new GameObject("WaveSpawnDirector");
+                sharedDirector = directorObject.AddComponent<IntensityWaveDirector>();
+            }
+
+            spawnDirector = sharedDirector;
+        }
+
+        private int AdjustSpawnCount(StrongholdWave wave, WaveSpawnGroup group, int waveIndex, bool isElite, int baseCount)
+        {
+            if (spawnDirector == null)
+            {
+                return baseCount;
+            }
+
+            return spawnDirector.AdjustSpawnCount(this, wave, group, waveIndex, isElite, baseCount);
+        }
+
+        private float AdjustSpawnInterval(StrongholdWave wave, WaveSpawnGroup group, int waveIndex, bool isElite, float baseInterval)
+        {
+            if (spawnDirector == null)
+            {
+                return baseInterval;
+            }
+
+            return spawnDirector.AdjustSpawnInterval(this, wave, group, waveIndex, isElite, baseInterval);
         }
 
         private Vector3 GetSpawnPosition(StrongholdWave wave)
@@ -532,6 +1229,105 @@ namespace ThirdPersonController
             }
 
             return basePosition;
+        }
+
+        private Vector3 GetReinforcementPosition(StrongholdWave wave, WaveEvent waveEvent)
+        {
+            Vector3 basePosition = center != null ? center.position : transform.position;
+            if (waveEvent.useReinforcementPoints && reinforcementPoints != null && reinforcementPoints.Count > 0)
+            {
+                Transform point = SelectReinforcementPoint(wave);
+                if (point != null)
+                {
+                    basePosition = point.position;
+                }
+            }
+            else if (spawnPoints != null && spawnPoints.Count > 0)
+            {
+                Transform point = SelectSpawnPoint(wave);
+                if (point != null)
+                {
+                    basePosition = point.position;
+                }
+            }
+            else
+            {
+                Vector2 circle = Random.insideUnitCircle * spawnRadius;
+                basePosition += new Vector3(circle.x, 0f, circle.y);
+            }
+
+            basePosition = ApplySpawnOffset(basePosition);
+            return basePosition;
+        }
+
+        private Vector3 GetChaseSpawnPosition(WaveEvent waveEvent)
+        {
+            Vector3 basePosition = player != null ? player.position : (center != null ? center.position : transform.position);
+            float radius = Mathf.Max(1f, waveEvent.spawnRadius);
+            Vector2 circle = Random.insideUnitCircle.normalized * radius;
+            basePosition += new Vector3(circle.x, 0f, circle.y);
+            basePosition = ApplySpawnOffset(basePosition);
+            return basePosition;
+        }
+
+        private Vector3 ApplySpawnOffset(Vector3 basePosition)
+        {
+            basePosition.y += spawnHeight;
+            if (spawnPointJitter > 0f)
+            {
+                Vector2 jitter = Random.insideUnitCircle * spawnPointJitter;
+                basePosition += new Vector3(jitter.x, 0f, jitter.y);
+            }
+
+            if (useGroundSnap)
+            {
+                if (Physics.Raycast(basePosition + Vector3.up * 5f, Vector3.down, out RaycastHit hit, 20f, groundLayer))
+                {
+                    basePosition.y = hit.point.y + spawnHeight;
+                }
+            }
+
+            return basePosition;
+        }
+
+        private Transform SelectReinforcementPoint(StrongholdWave wave)
+        {
+            if (reinforcementPoints == null || reinforcementPoints.Count == 0)
+            {
+                return null;
+            }
+
+            if (wave != null && wave.shuffleSpawnPoints)
+            {
+                int index = Random.Range(0, reinforcementPoints.Count);
+                return reinforcementPoints[index];
+            }
+
+            Transform point = reinforcementPoints[reinforcementPointCursor % reinforcementPoints.Count];
+            reinforcementPointCursor++;
+            return point;
+        }
+
+        private GameObject CreateHoldMarker(Vector3 position, float radius)
+        {
+            GameObject marker = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            marker.name = "HoldPoint";
+            marker.transform.position = position;
+            marker.transform.localScale = new Vector3(radius * 2f, 0.15f, radius * 2f);
+
+            Collider collider = marker.GetComponent<Collider>();
+            if (collider != null)
+            {
+                Destroy(collider);
+            }
+
+            Renderer renderer = marker.GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                renderer.material.color = new Color(0.2f, 0.7f, 1f, 0.3f);
+            }
+
+            return marker;
         }
 
         private Transform SelectSpawnPoint(StrongholdWave wave)

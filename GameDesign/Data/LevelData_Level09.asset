@@ -1,0 +1,133 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51e0ad04fe93c66468de895afdeca490, type: 3}
+  m_Name: LevelData_Level09
+  m_EditorClassIdentifier: 
+  levelId: LEVEL_09
+  levelName: 静潮圣所
+  description: 破坏静潮圣所镜像共振，锁定引潮者真身。
+  chapterId: 1
+  difficulty: 1
+  recommendedLevel: 9
+  recommendedPower: 280
+  levelType: 0
+  timeLimit: 0
+  scoreTarget: 0
+  strongholds:
+  - strongholdId: Stronghold_01
+    required: 1
+    order: 0
+  - strongholdId: Stronghold_02
+    required: 1
+    order: 1
+  quests:
+  - questId: l09_sanctum_disrupt
+    required: 1
+    order: 0
+  - questId: l09_combo_70
+    required: 0
+    order: 1
+  strongholdOverrides:
+  - strongholdId: Stronghold_01
+    waves:
+    - waveIndex: 0
+      replaceEvents: 1
+      events:
+      - name: Reinforcement
+        eventType: 0
+        triggerOnRemaining: 6
+        spawnCount: 6
+        archetypeOverride: {fileID: 11400000, guid: 928b955f2e00431381d3312948f53fcb, type: 2}
+    - waveIndex: 1
+      replaceEvents: 1
+      events:
+      - name: Chase
+        eventType: 1
+        duration: 12
+        spawnCount: 2
+        archetypeOverride: {fileID: 11400000, guid: a059d58600154f13bd410369ea8cf924, type: 2}
+    - waveIndex: 2
+      replaceEvents: 1
+      events:
+      - name: Hold Point
+        eventType: 2
+        holdDuration: 12
+        holdRadius: 6
+        archetypeOverride: {fileID: 11400000, guid: a06db0f69c764af7bdd821d48c1bfa54, type: 2}
+    - waveIndex: 3
+      replaceEvents: 1
+      events:
+      - name: Protect Target
+        eventType: 3
+        defenseTargetHealth: 400
+        spawnCount: 7
+        archetypeOverride: {fileID: 11400000, guid: 928b955f2e00431381d3312948f53fcb, type: 2}
+  - strongholdId: Stronghold_02
+    waves:
+    - waveIndex: 0
+      replaceEvents: 1
+      events:
+      - name: Chase
+        eventType: 1
+        duration: 12
+        spawnCount: 2
+        archetypeOverride: {fileID: 11400000, guid: a059d58600154f13bd410369ea8cf924, type: 2}
+    - waveIndex: 1
+      replaceEvents: 1
+      events:
+      - name: Reinforcement
+        eventType: 0
+        triggerOnRemaining: 7
+        spawnCount: 7
+        archetypeOverride: {fileID: 11400000, guid: 928b955f2e00431381d3312948f53fcb, type: 2}
+    - waveIndex: 2
+      replaceEvents: 1
+      events:
+      - name: Chase
+        eventType: 1
+        duration: 14
+        spawnCount: 2
+        archetypeOverride: {fileID: 11400000, guid: a059d58600154f13bd410369ea8cf924, type: 2}
+    - waveIndex: 3
+      replaceEvents: 1
+      events:
+      - name: Hold Point
+        eventType: 2
+        holdDuration: 14
+        holdRadius: 6
+        archetypeOverride: {fileID: 11400000, guid: a06db0f69c764af7bdd821d48c1bfa54, type: 2}
+    - waveIndex: 4
+      replaceEvents: 1
+      events:
+      - name: Protect Target
+        eventType: 3
+        defenseTargetHealth: 420
+        spawnCount: 8
+        archetypeOverride: {fileID: 11400000, guid: 928b955f2e00431381d3312948f53fcb, type: 2}
+  nextLevelId: LEVEL_10
+  starsRequired: 1
+  unlockCost: 0
+  baseExp: 600
+  basePearls: 3
+  baseCredits: 130
+  levelRewardMultiplier: 1.26
+  questRewardMultiplier: 1.18
+  dropChanceMultiplier: 1.15
+  sceneName: Level_09_StillTideSanctum
+  overrideBossSettings: 1
+  bossName: Boss_MirrorTidemancer
+  bossPrototype: 1
+  bossMaxHealth: 4800
+  bossBaseDamage: 38
+  bossKnockback: 7.5
+  bossScaleMultiplier: 2.35
+  bossSpawnOffset: {x: 0, y: 0, z: 0}

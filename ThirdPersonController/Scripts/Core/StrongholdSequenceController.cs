@@ -13,7 +13,12 @@ namespace ThirdPersonController
         public bool triggerVictoryOnFinish = true;
         public int levelId = 1;
 
+        [Header("Boss Gate")]
+        public bool deferCompletionUntilBoss = false;
+        public BossSpawnPoint bossSpawnPoint;
+
         private int currentIndex = -1;
+        private bool waitingForBoss;
 
         public StrongholdController ActiveStronghold
         {
@@ -30,16 +35,7 @@ namespace ThirdPersonController
 
         private void Awake()
         {
-            for (int i = 0; i < strongholds.Count; i++)
-            {
-                if (strongholds[i] == null)
-                {
-                    continue;
-                }
-
-                strongholds[i].SetActive(false);
-                strongholds[i].OnStrongholdCompleted += HandleStrongholdCompleted;
-            }
+            BindStrongholds(true);
         }
 
         private void Start()
@@ -52,14 +48,43 @@ namespace ThirdPersonController
 
         private void OnDestroy()
         {
+            BindStrongholds(false);
+            UnbindBoss();
+        }
+
+        public void ConfigureStrongholds(List<StrongholdController> newStrongholds)
+        {
+            BindStrongholds(false);
+            strongholds = newStrongholds ?? new List<StrongholdController>();
+            currentIndex = -1;
+            BindStrongholds(true);
+        }
+
+        private void BindStrongholds(bool bind)
+        {
+            if (strongholds == null)
+            {
+                strongholds = new List<StrongholdController>();
+                return;
+            }
+
             for (int i = 0; i < strongholds.Count; i++)
             {
-                if (strongholds[i] == null)
+                StrongholdController stronghold = strongholds[i];
+                if (stronghold == null)
                 {
                     continue;
                 }
 
-                strongholds[i].OnStrongholdCompleted -= HandleStrongholdCompleted;
+                if (bind)
+                {
+                    stronghold.SetActive(false);
+                    stronghold.OnStrongholdCompleted += HandleStrongholdCompleted;
+                }
+                else
+                {
+                    stronghold.OnStrongholdCompleted -= HandleStrongholdCompleted;
+                }
             }
         }
 
@@ -84,6 +109,50 @@ namespace ThirdPersonController
         }
 
         private void HandleSequenceCompleted()
+        {
+            if (deferCompletionUntilBoss && bossSpawnPoint != null)
+            {
+                if (bossSpawnPoint.IsDefeated)
+                {
+                    CompleteLevel();
+                    return;
+                }
+
+                StartBossGate();
+                return;
+            }
+
+            CompleteLevel();
+        }
+
+        private void StartBossGate()
+        {
+            if (waitingForBoss)
+            {
+                return;
+            }
+
+            waitingForBoss = true;
+            bossSpawnPoint.OnBossDefeated += HandleBossDefeated;
+            bossSpawnPoint.SpawnBoss();
+        }
+
+        private void HandleBossDefeated(BossSpawnPoint spawnPoint)
+        {
+            UnbindBoss();
+            CompleteLevel();
+        }
+
+        private void UnbindBoss()
+        {
+            if (bossSpawnPoint != null)
+            {
+                bossSpawnPoint.OnBossDefeated -= HandleBossDefeated;
+            }
+            waitingForBoss = false;
+        }
+
+        private void CompleteLevel()
         {
             if (triggerLevelCompleteOnFinish)
             {

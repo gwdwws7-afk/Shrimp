@@ -39,6 +39,14 @@ namespace ThirdPersonController
         public float spawnHeightOffset = 0.35f;
         public float scatterRadius = 0.45f;
 
+        [Header("Progression Caps")]
+        public bool useProgressionCaps = true;
+        public PearlRarity maxRarityCap = PearlRarity.Epic;
+        public float dropChanceMultiplier = 1f;
+        public float economyDropMultiplier = 1f;
+        public float levelDropMultiplier = 1f;
+        public int levelDifficulty = 1;
+
         private void Awake()
         {
             if (inventory == null)
@@ -70,6 +78,11 @@ namespace ThirdPersonController
             }
 
             float actualDropChance = dropChance;
+            float difficultyMultiplier = EconomyService.GetDropChanceMultiplier(levelDifficulty);
+            actualDropChance *= Mathf.Max(0f, dropChanceMultiplier)
+                * Mathf.Max(0f, economyDropMultiplier)
+                * Mathf.Max(0f, levelDropMultiplier)
+                * Mathf.Max(0f, difficultyMultiplier);
             
             if (useEnemyConfig)
             {
@@ -79,14 +92,17 @@ namespace ThirdPersonController
                     return;
                 }
                 
-                actualDropChance = config.dropChance;
+                actualDropChance = config.dropChance * Mathf.Max(0f, dropChanceMultiplier)
+                    * Mathf.Max(0f, economyDropMultiplier)
+                    * Mathf.Max(0f, levelDropMultiplier)
+                    * Mathf.Max(0f, difficultyMultiplier);
                 
                 if (Random.value > actualDropChance)
                 {
                     return;
                 }
                 
-                PearlItem pearl = PickPearlByRarity(config.minRarity, config.maxRarity, config.legendaryBonus);
+                PearlItem pearl = PickPearlByRarity(config.minRarity, ClampRarity(config.maxRarity), config.legendaryBonus);
                 if (pearl != null)
                 {
                     SpawnPickup(pearl, position);
@@ -134,6 +150,10 @@ namespace ThirdPersonController
 
         private PearlItem PickPearlByRarity(PearlRarity min, PearlRarity max, float legendaryBonus)
         {
+            if (useProgressionCaps)
+            {
+                max = ClampRarity(max);
+            }
             if (pearlDatabase == null || pearlDatabase.pearls == null)
             {
                 return PickRandomPearl();
@@ -214,6 +234,7 @@ namespace ThirdPersonController
                 {
                     inventory.AddPearl(pearl);
                 }
+                GameEvents.PearlCollected(pearl.GetId());
                 GameEvents.ShowMessage($"Pearl acquired: {pearl.pearlName}", 2f);
                 return;
             }
@@ -254,6 +275,10 @@ namespace ThirdPersonController
             {
                 if (dropTable[i] != null && dropTable[i].pearl != null)
                 {
+                    if (useProgressionCaps && dropTable[i].pearl.rarity > maxRarityCap)
+                    {
+                        continue;
+                    }
                     totalWeight += Mathf.Max(0f, dropTable[i].weight);
                 }
             }
@@ -273,6 +298,11 @@ namespace ThirdPersonController
                     continue;
                 }
 
+                if (useProgressionCaps && entry.pearl.rarity > maxRarityCap)
+                {
+                    continue;
+                }
+
                 current += Mathf.Max(0f, entry.weight);
                 if (roll <= current)
                 {
@@ -281,6 +311,39 @@ namespace ThirdPersonController
             }
 
             return null;
+        }
+
+        public void ApplyProgressionCaps(PearlRarity maxRarity, float dropMultiplier)
+        {
+            maxRarityCap = maxRarity;
+            dropChanceMultiplier = Mathf.Max(0.1f, dropMultiplier);
+        }
+
+        public void ApplyEconomyMultiplier(float dropMultiplier)
+        {
+            economyDropMultiplier = Mathf.Max(0.1f, dropMultiplier);
+        }
+
+        public void ApplyLevelContext(LevelData levelData)
+        {
+            if (levelData == null)
+            {
+                return;
+            }
+
+            levelDropMultiplier = Mathf.Max(0f, levelData.dropChanceMultiplier);
+            levelDifficulty = Mathf.Max(0, (int)levelData.difficulty);
+        }
+
+        private PearlRarity ClampRarity(PearlRarity rarity)
+        {
+            if (!useProgressionCaps)
+            {
+                return rarity;
+            }
+
+            int capped = Mathf.Min((int)rarity, (int)maxRarityCap);
+            return (PearlRarity)capped;
         }
     }
 }

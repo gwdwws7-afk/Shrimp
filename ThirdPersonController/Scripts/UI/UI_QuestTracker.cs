@@ -28,6 +28,11 @@ namespace ThirdPersonController
         
         private void OnEnable()
         {
+            if (questSystem == null)
+            {
+                questSystem = FindObjectOfType<QuestSystem>();
+            }
+
             if (questSystem != null)
             {
                 questSystem.OnQuestStarted += HandleQuestStarted;
@@ -99,10 +104,11 @@ namespace ThirdPersonController
             TextMeshProUGUI descText = itemTransform.Find("QuestDesc")?.GetComponent<TextMeshProUGUI>();
             Slider progressBar = itemTransform.Find("ProgressBar")?.GetComponent<Slider>();
             TextMeshProUGUI progressText = itemTransform.Find("ProgressText")?.GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI rewardText = itemTransform.Find("RewardText")?.GetComponent<TextMeshProUGUI>();
             
             if (nameText != null)
             {
-                nameText.text = quest.data.questName;
+                nameText.text = GetQuestDisplayName(quest);
             }
             
             if (descText != null)
@@ -117,27 +123,84 @@ namespace ThirdPersonController
             
             if (progressText != null)
             {
-                progressText.text = $"{quest.currentProgress}/{quest.data.targetCount}";
+                progressText.text = GetQuestProgressText(quest);
             }
+
+            if (rewardText != null && questSystem != null)
+            {
+                rewardText.text = questSystem.GetRewardPreview(quest);
+            }
+        }
+
+        private string GetQuestDisplayName(QuestProgress quest)
+        {
+            if (quest == null || quest.data == null)
+            {
+                return string.Empty;
+            }
+
+            if (quest.HasStages)
+            {
+                int stageCount = quest.data.stages != null ? quest.data.stages.Count : 0;
+                return $"{quest.data.questName} ({quest.stageIndex + 1}/{stageCount})";
+            }
+
+            return quest.data.questName;
         }
         
         private string GetQuestTypeText(QuestProgress quest)
         {
-            switch (quest.data.questType)
+            if (quest.CurrentStage != null && !string.IsNullOrEmpty(quest.CurrentStage.description))
+            {
+                return quest.CurrentStage.description;
+            }
+
+            switch (quest.CurrentType)
             {
                 case QuestType.Kill:
-                    return $"Kill {quest.data.targetCount} enemies";
+                    return $"Kill {quest.CurrentTargetCount} enemies";
                 case QuestType.KillEnemyType:
-                    return $"Kill {quest.data.targetCount} {quest.data.targetEnemyType}";
+                    return $"Kill {quest.CurrentTargetCount} {quest.CurrentTargetEnemyType}";
                 case QuestType.Survive:
-                    return $"Survive {quest.data.targetTime} seconds";
+                    return $"Survive {quest.CurrentTargetTime} seconds";
+                case QuestType.Protect:
+                    return $"Protect target for {quest.CurrentTargetTime} seconds";
                 case QuestType.CompleteWave:
-                    return $"Complete {quest.data.targetCount} waves";
+                    return $"Complete {quest.CurrentTargetCount} waves";
                 case QuestType.CompleteStronghold:
                     return "Clear the stronghold";
+                case QuestType.Collect:
+                    return $"Collect {quest.CurrentTargetCount} items";
+                case QuestType.Reach:
+                    return "Reach the marked location";
+                case QuestType.Combo:
+                    return $"Reach {quest.CurrentTargetCount} combo";
                 default:
                     return quest.data.description;
             }
+        }
+
+        private string GetQuestProgressText(QuestProgress quest)
+        {
+            if (quest == null)
+            {
+                return string.Empty;
+            }
+
+            if (quest.CurrentType == QuestType.Survive || quest.CurrentType == QuestType.Protect)
+            {
+                int current = Mathf.FloorToInt(quest.stageElapsedTime);
+                int target = Mathf.CeilToInt(quest.CurrentTargetTime);
+                return $"{current}/{target}s";
+            }
+
+            int targetCount = quest.CurrentTargetCount;
+            if (targetCount <= 0)
+            {
+                targetCount = quest.currentProgress;
+            }
+
+            return $"{quest.currentProgress}/{targetCount}";
         }
         
         private void ClearQuestItems()

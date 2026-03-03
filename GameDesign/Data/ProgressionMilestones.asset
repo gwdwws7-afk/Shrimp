@@ -1,0 +1,123 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f1e2d3c4b5a69788796a5b4c3d2e1f0, type: 3}
+  m_Name: ProgressionMilestones
+  m_EditorClassIdentifier: 
+  milestones:
+  - id: offense_kills_150
+    title: 血潮 I
+    description: 累计击杀 150，解锁进攻成长路径。
+    route: 0
+    requiredTotalKills: 150
+    requiredPearlsCollected: 0
+    requiredLevelsCompleted: 0
+    requiredLongestCombo: 0
+    grantTalentPoints: 1
+    grantPearlSlots: 1
+    unlockMaxRarity: 1
+    dropRateMultiplier: 1.05
+  - id: offense_kills_450
+    title: 血潮 II
+    description: 累计击杀 450，解锁稀有级掉落。
+    route: 0
+    requiredTotalKills: 450
+    requiredPearlsCollected: 0
+    requiredLevelsCompleted: 0
+    requiredLongestCombo: 0
+    grantTalentPoints: 2
+    grantPearlSlots: 1
+    unlockMaxRarity: 2
+    dropRateMultiplier: 1.1
+  - id: offense_kills_900
+    title: 血潮 III
+    description: 累计击杀 900，解锁史诗级掉落。
+    route: 0
+    requiredTotalKills: 900
+    requiredPearlsCollected: 0
+    requiredLevelsCompleted: 0
+    requiredLongestCombo: 0
+    grantTalentPoints: 3
+    grantPearlSlots: 0
+    unlockMaxRarity: 3
+    dropRateMultiplier: 1.15
+  - id: control_combo_30
+    title: 控潮 I
+    description: 达成 30 连击，解锁控场成长路径。
+    route: 1
+    requiredTotalKills: 0
+    requiredPearlsCollected: 0
+    requiredLevelsCompleted: 0
+    requiredLongestCombo: 30
+    grantTalentPoints: 1
+    grantPearlSlots: 1
+    unlockMaxRarity: 1
+    dropRateMultiplier: 1.05
+  - id: control_combo_70
+    title: 控潮 II
+    description: 达成 70 连击，解锁稀有级掉落。
+    route: 1
+    requiredTotalKills: 0
+    requiredPearlsCollected: 0
+    requiredLevelsCompleted: 0
+    requiredLongestCombo: 70
+    grantTalentPoints: 2
+    grantPearlSlots: 1
+    unlockMaxRarity: 2
+    dropRateMultiplier: 1.1
+  - id: control_combo_110
+    title: 控潮 III
+    description: 达成 110 连击，解锁史诗级掉落。
+    route: 1
+    requiredTotalKills: 0
+    requiredPearlsCollected: 0
+    requiredLevelsCompleted: 0
+    requiredLongestCombo: 110
+    grantTalentPoints: 3
+    grantPearlSlots: 0
+    unlockMaxRarity: 3
+    dropRateMultiplier: 1.15
+  - id: survival_levels_2
+    title: 耐潜 I
+    description: 通关 2 关，解锁生存成长路径。
+    route: 2
+    requiredTotalKills: 0
+    requiredPearlsCollected: 0
+    requiredLevelsCompleted: 2
+    requiredLongestCombo: 0
+    grantTalentPoints: 1
+    grantPearlSlots: 1
+    unlockMaxRarity: 1
+    dropRateMultiplier: 1.05
+  - id: survival_levels_5
+    title: 耐潜 II
+    description: 通关 5 关，解锁稀有级掉落。
+    route: 2
+    requiredTotalKills: 0
+    requiredPearlsCollected: 0
+    requiredLevelsCompleted: 5
+    requiredLongestCombo: 0
+    grantTalentPoints: 2
+    grantPearlSlots: 1
+    unlockMaxRarity: 2
+    dropRateMultiplier: 1.1
+  - id: survival_levels_9
+    title: 耐潜 III
+    description: 通关 9 关，解锁史诗级掉落。
+    route: 2
+    requiredTotalKills: 0
+    requiredPearlsCollected: 0
+    requiredLevelsCompleted: 9
+    requiredLongestCombo: 0
+    grantTalentPoints: 3
+    grantPearlSlots: 0
+    unlockMaxRarity: 3
+    dropRateMultiplier: 1.15

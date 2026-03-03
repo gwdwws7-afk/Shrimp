@@ -14,314 +14,482 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodes:
   - id: offense_1
-    title: Deep Strikes
+    title: 深渊利刃
     branch: 0
     cost: 1
     prerequisites: []
-    modifiers: []
+    modifiers:
+    - stat: 0
+      type: 1
+      value: 0.06
   - id: offense_2
-    title: Riptide Pressure
+    title: 裂潮锋芒
     branch: 0
     cost: 1
     prerequisites:
     - offense_1
-    modifiers: []
+    modifiers:
+    - stat: 0
+      type: 1
+      value: 0.08
   - id: offense_3
-    title: Wide Sweep
+    title: 扩展斩域
     branch: 0
     cost: 1
     prerequisites:
     - offense_2
-    modifiers: []
-  - id: offense_4
-    title: Spellwake
+    modifiers:
+    - stat: 1
+      type: 1
+      value: 0.08
+  - id: combo_2
+    title: 连击段数 II
     branch: 0
     cost: 1
     prerequisites:
     - offense_3
     modifiers: []
+  - id: offense_4
+    title: 暴击锐化
+    branch: 0
+    cost: 1
+    prerequisites:
+    - combo_2
+    modifiers:
+    - stat: 5
+      type: 1
+      value: 0.05
   - id: offense_5
-    title: Titanic Force
+    title: 破浪重击
     branch: 0
     cost: 1
     prerequisites:
     - offense_4
-    modifiers: []
-  - id: offense_6
-    title: Critical Edge
+    modifiers:
+    - stat: 3
+      type: 1
+      value: 0.12
+  - id: combo_3
+    title: 连击段数 III
     branch: 0
     cost: 1
     prerequisites:
     - offense_5
     modifiers: []
+  - id: offense_6
+    title: 宽角横扫
+    branch: 0
+    cost: 1
+    prerequisites:
+    - combo_3
+    modifiers:
+    - stat: 2
+      type: 1
+      value: 0.12
   - id: offense_7
-    title: Deadly Blow
+    title: Boss猎杀
     branch: 0
     cost: 1
     prerequisites:
     - offense_6
-    modifiers: []
+    modifiers:
+    - stat: 24
+      type: 1
+      value: 0.1
   - id: offense_8
-    title: Armor Breaker
+    title: 连击增幅
     branch: 0
     cost: 1
     prerequisites:
     - offense_7
-    modifiers: []
+    modifiers:
+    - stat: 25
+      type: 1
+      value: 0.12
   - id: offense_9
-    title: Rapid Fury
+    title: 疾速连斩
     branch: 0
     cost: 1
     prerequisites:
     - offense_8
-    modifiers: []
+    modifiers:
+    - stat: 4
+      type: 1
+      value: 0.08
   - id: offense_10
-    title: Combo Master
+    title: 致命爆伤
     branch: 0
     cost: 1
     prerequisites:
     - offense_9
-    modifiers: []
-  - id: offense_11
-    title: Boss Slayer
+    modifiers:
+    - stat: 6
+      type: 1
+      value: 0.2
+  - id: musou_unlock
+    title: 无双解放
     branch: 0
     cost: 1
     prerequisites:
     - offense_10
-    modifiers: []
+    modifiers:
+    - stat: 17
+      type: 1
+      value: 0.1
+  - id: offense_11
+    title: 技能强化
+    branch: 0
+    cost: 1
+    prerequisites:
+    - musou_unlock
+    modifiers:
+    - stat: 18
+      type: 1
+      value: 0.1
   - id: offense_12
-    title: Ultimate CD
+    title: 冷却压缩
     branch: 0
     cost: 1
     prerequisites:
     - offense_11
-    modifiers: []
+    modifiers:
+    - stat: 19
+      type: 1
+      value: -0.08
   - id: offense_13
-    title: Vampiric Strike
+    title: 狂暴延展
     branch: 0
     cost: 1
     prerequisites:
     - offense_12
-    modifiers: []
+    modifiers:
+    - stat: 26
+      type: 1
+      value: 0.2
   - id: offense_14
-    title: Berserk Extend
+    title: 吸血斩击
     branch: 0
     cost: 1
     prerequisites:
     - offense_13
-    modifiers: []
+    modifiers:
+    - stat: 23
+      type: 0
+      value: 0.03
   - id: offense_15
-    title: Lightning Chain
+    title: 终极浪潮
     branch: 0
     cost: 1
     prerequisites:
     - offense_14
-    modifiers: []
+    modifiers:
+    - stat: 0
+      type: 1
+      value: 0.12
+    - stat: 5
+      type: 1
+      value: 0.03
   - id: control_1
-    title: Arc Mastery
+    title: 潮汐律动
     branch: 1
     cost: 1
     prerequisites: []
-    modifiers: []
+    modifiers:
+    - stat: 20
+      type: 1
+      value: 0.08
   - id: control_2
-    title: Shock Impact
+    title: 震荡掌控
     branch: 1
     cost: 1
     prerequisites:
     - control_1
-    modifiers: []
+    modifiers:
+    - stat: 21
+      type: 1
+      value: 0.12
   - id: control_3
-    title: Surge Focus
+    title: 冷却节奏
     branch: 1
     cost: 1
     prerequisites:
     - control_2
-    modifiers: []
+    modifiers:
+    - stat: 19
+      type: 1
+      value: -0.06
   - id: control_4
-    title: Cycle Pulse
+    title: 聚能引潮
     branch: 1
     cost: 1
     prerequisites:
     - control_3
-    modifiers: []
+    modifiers:
+    - stat: 17
+      type: 1
+      value: 0.12
   - id: control_5
-    title: Expanded Reach
+    title: 波域扩散
     branch: 1
     cost: 1
     prerequisites:
     - control_4
-    modifiers: []
+    modifiers:
+    - stat: 1
+      type: 1
+      value: 0.06
   - id: control_6
-    title: Air Superiority
+    title: 空域支配
     branch: 1
     cost: 1
     prerequisites:
     - control_5
-    modifiers: []
+    modifiers:
+    - stat: 2
+      type: 1
+      value: 0.08
   - id: control_7
-    title: Knockout Master
+    title: 重击压制
     branch: 1
     cost: 1
     prerequisites:
     - control_6
-    modifiers: []
+    modifiers:
+    - stat: 3
+      type: 1
+      value: 0.12
   - id: control_8
-    title: Crowd Control
+    title: 连锁扰动
     branch: 1
     cost: 1
     prerequisites:
     - control_7
-    modifiers: []
+    modifiers:
+    - stat: 18
+      type: 1
+      value: 0.08
   - id: control_9
-    title: Chain Reaction
+    title: 潮流位移
     branch: 1
     cost: 1
     prerequisites:
     - control_8
-    modifiers: []
+    modifiers:
+    - stat: 13
+      type: 1
+      value: 0.06
   - id: control_10
-    title: Storm Caller
+    title: 体力优化
     branch: 1
     cost: 1
     prerequisites:
     - control_9
-    modifiers: []
+    modifiers:
+    - stat: 22
+      type: 1
+      value: -0.1
   - id: control_11
-    title: Elemental Fury
+    title: 抗性稳定
     branch: 1
     cost: 1
     prerequisites:
     - control_10
-    modifiers: []
+    modifiers:
+    - stat: 28
+      type: 0
+      value: 0.12
   - id: control_12
-    title: Concentration
+    title: 防护回路
     branch: 1
     cost: 1
     prerequisites:
     - control_11
-    modifiers: []
+    modifiers:
+    - stat: 10
+      type: 0
+      value: 0.05
   - id: control_13
-    title: Power Surge
+    title: 精确打击
     branch: 1
     cost: 1
     prerequisites:
     - control_12
-    modifiers: []
+    modifiers:
+    - stat: 5
+      type: 1
+      value: 0.03
   - id: control_14
-    title: Whirlwind Master
+    title: 风暴掌控
     branch: 1
     cost: 1
     prerequisites:
     - control_13
-    modifiers: []
+    modifiers:
+    - stat: 20
+      type: 1
+      value: 0.12
   - id: control_15
-    title: True Form
+    title: 控制极意
     branch: 1
     cost: 1
     prerequisites:
     - control_14
-    modifiers: []
+    modifiers:
+    - stat: 19
+      type: 1
+      value: -0.1
+    - stat: 17
+      type: 1
+      value: 0.1
   - id: survival_1
-    title: Abyss Shell
+    title: 深渊外壳
     branch: 2
     cost: 1
     prerequisites: []
-    modifiers: []
+    modifiers:
+    - stat: 7
+      type: 1
+      value: 0.1
   - id: survival_2
-    title: Deep Reserves
+    title: 深潜储备
     branch: 2
     cost: 1
     prerequisites:
     - survival_1
-    modifiers: []
+    modifiers:
+    - stat: 8
+      type: 1
+      value: 0.12
   - id: survival_3
-    title: Tidal Footwork
+    title: 潮汐步法
     branch: 2
     cost: 1
     prerequisites:
     - survival_2
-    modifiers: []
+    modifiers:
+    - stat: 15
+      type: 1
+      value: 0.12
   - id: survival_4
-    title: Breath Economy
+    title: 呼吸经济
     branch: 2
     cost: 1
     prerequisites:
     - survival_3
-    modifiers: []
+    modifiers:
+    - stat: 12
+      type: 0
+      value: 1.0
   - id: survival_5
-    title: Swift Recovery
+    title: 快速复原
     branch: 2
     cost: 1
     prerequisites:
     - survival_4
-    modifiers: []
+    modifiers:
+    - stat: 10
+      type: 0
+      value: 0.05
   - id: survival_6
-    title: Damage Shield
+    title: 伤害护盾
     branch: 2
     cost: 1
     prerequisites:
     - survival_5
-    modifiers: []
+    modifiers:
+    - stat: 9
+      type: 0
+      value: 2.0
   - id: survival_7
-    title: Second Wind
+    title: 二次风息
     branch: 2
     cost: 1
     prerequisites:
     - survival_6
-    modifiers: []
+    modifiers:
+    - stat: 30
+      type: 0
+      value: 1.0
   - id: survival_8
-    title: Potion Boost
+    title: 药效增幅
     branch: 2
     cost: 1
     prerequisites:
     - survival_7
-    modifiers: []
+    modifiers:
+    - stat: 27
+      type: 1
+      value: 0.15
   - id: survival_9
-    title: Status Immune
+    title: 抗性强化
     branch: 2
     cost: 1
     prerequisites:
     - survival_8
-    modifiers: []
+    modifiers:
+    - stat: 28
+      type: 0
+      value: 0.15
   - id: survival_10
-    title: Leech Attack
+    title: 汲取反击
     branch: 2
     cost: 1
     prerequisites:
     - survival_9
-    modifiers: []
+    modifiers:
+    - stat: 23
+      type: 0
+      value: 0.02
   - id: survival_11
-    title: Iron Will
+    title: 钢铁意志
     branch: 2
     cost: 1
     prerequisites:
     - survival_10
-    modifiers: []
+    modifiers:
+    - stat: 10
+      type: 0
+      value: 0.08
   - id: survival_12
-    title: Last Stand
+    title: 背水一战
     branch: 2
     cost: 1
     prerequisites:
     - survival_11
-    modifiers: []
+    modifiers:
+    - stat: 7
+      type: 1
+      value: 0.15
   - id: survival_13
-    title: Extra Life
+    title: 额外生命
     branch: 2
     cost: 1
     prerequisites:
     - survival_12
-    modifiers: []
+    modifiers:
+    - stat: 29
+      type: 0
+      value: 1.0
   - id: survival_14
-    title: Damage Barrier
+    title: 坚壁屏障
     branch: 2
     cost: 1
     prerequisites:
     - survival_13
-    modifiers: []
+    modifiers:
+    - stat: 9
+      type: 0
+      value: 4.0
   - id: survival_15
-    title: Phoenix Rebirth
+    title: 涅槃再生
     branch: 2
     cost: 1
     prerequisites:
     - survival_14
-    modifiers: []
+    modifiers:
+    - stat: 12
+      type: 0
+      value: 2.0
+    - stat: 10
+      type: 0
+      value: 0.05

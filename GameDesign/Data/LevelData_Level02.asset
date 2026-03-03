@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51e0ad04fe93c66468de895afdeca490, type: 3}
+  m_Name: LevelData_Level02
+  m_EditorClassIdentifier: 
+  levelId: LEVEL_02
+  levelName: 失事研究站
+  description: 夺回失事研究站供能系统，回收黑匣与研究日志。
+  chapterId: 1
+  difficulty: 1
+  recommendedLevel: 2
+  recommendedPower: 140
+  levelType: 0
+  timeLimit: 0
+  scoreTarget: 0
+  strongholds:
+  - strongholdId: Stronghold_01
+    required: 1
+    order: 0
+  - strongholdId: Stronghold_02
+    required: 1
+    order: 1
+  quests:
+  - questId: l02_blackbox_recovery
+    required: 1
+    order: 0
+  - questId: l02_salvage_sweep
+    required: 0
+    order: 1
+  nextLevelId: LEVEL_03
+  starsRequired: 1
+  unlockCost: 0
+  baseExp: 380
+  basePearls: 2
+  baseCredits: 60
+  levelRewardMultiplier: 1.0
+  questRewardMultiplier: 0.95
+  dropChanceMultiplier: 0.95
+  sceneName: Level_02_WreckedStation

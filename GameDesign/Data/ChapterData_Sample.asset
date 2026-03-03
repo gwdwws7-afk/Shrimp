@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df92c7d8db217194a902f35fee8f1044, type: 3}
+  m_Name: ChapterData_Sample
+  m_EditorClassIdentifier:
+  chapterId: CH1
+  chapterName: Chapter 1
+  description: First strike into the abyss.
+  chapterNumber: 1
+  previousChapterId:
+  nextChapterId: CH2
+  levels:
+  - {fileID: 11400000, guid: 3e4f5061728394a5b6c7d8e901a2b3c4, type: 2}
+  - {fileID: 11400000, guid: 4f5061728394a5b6c7d8e901a2b3c4d5, type: 2}
+  - {fileID: 11400000, guid: 5f60718293a4b5c6d7e8f901a2b3c4d6, type: 2}
+  - {fileID: 11400000, guid: 6f708192a3b4c5d6e7f8091a2b3c4d70, type: 2}
+  - {fileID: 11400000, guid: 7f8091a2b3c4d5e6f708192a3b4c5d80, type: 2}
+  - {fileID: 11400000, guid: 8f901a2b3c4d5e6f708192a3b4c5d9e0, type: 2}
+  - {fileID: 11400000, guid: 9a1b2c3d4e5f60718293a4b5c6d7e8f0, type: 2}
+  - {fileID: 11400000, guid: a1b2c3d4e5f60718293a4b5c6d7e8f10, type: 2}
+  - {fileID: 11400000, guid: b2c3d4e5f60718293a4b5c6d7e8f1020, type: 2}
+  - {fileID: 11400000, guid: c3d4e5f60718293a4b5c6d7e8f102930, type: 2}
+  bossLevel: {fileID: 0}
+  unlockCost: 0
+  requiredPlayerLevel: 1
+  chapterCompleteBonus: 500
+  chapterCompletePearls: 5
+  themeName: Abyss
+  themeColor: {r: 0.2, g: 0.3, b: 0.5, a: 1}

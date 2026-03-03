@@ -76,8 +76,13 @@ namespace ThirdPersonController
         private NavMeshAgent agent;
         private EnemyHealth health;
         private Transform player;
+        private Transform overrideTarget;
+        private DefenseTarget overrideDefenseTarget;
+        private bool preferOverrideTarget = true;
+        private Transform currentTarget;
         
         public Transform Player => player;
+        public Transform CurrentTarget => GetCurrentTarget();
         private EnemyCrowdCoordinator crowdCoordinator;
         private bool isSuppressed = false;
         private bool isStunned = false;
@@ -157,6 +162,36 @@ namespace ThirdPersonController
                 player = playerObj.transform;
         }
 
+        public void SetOverrideTarget(Transform target, bool preferOverride)
+        {
+            overrideTarget = target;
+            preferOverrideTarget = preferOverride;
+            overrideDefenseTarget = overrideTarget != null ? overrideTarget.GetComponent<DefenseTarget>() : null;
+        }
+
+        public void ClearOverrideTarget()
+        {
+            overrideTarget = null;
+            overrideDefenseTarget = null;
+        }
+
+        private Transform GetCurrentTarget()
+        {
+            if (preferOverrideTarget && overrideTarget != null)
+            {
+                if (overrideDefenseTarget != null && overrideDefenseTarget.IsDestroyed)
+                {
+                    ClearOverrideTarget();
+                }
+                else
+                {
+                    return overrideTarget;
+                }
+            }
+
+            return player;
+        }
+
         private void Update()
         {
             if (health.IsDead) return;
@@ -170,9 +205,15 @@ namespace ThirdPersonController
 
             if (isSuppressed) return;
 
-            if (player == null)
+            currentTarget = GetCurrentTarget();
+            if (currentTarget == null)
             {
                 FindPlayer();
+                currentTarget = GetCurrentTarget();
+                if (currentTarget == null)
+                {
+                    return;
+                }
                 return;
             }
 
@@ -190,12 +231,12 @@ namespace ThirdPersonController
                 return;
             }
 
-            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-            float interval = GetUpdateInterval(distanceToPlayer);
+            float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
+            float interval = GetUpdateInterval(distanceToTarget);
             float jitter = aiUpdateJitter > 0f ? Random.Range(-aiUpdateJitter, aiUpdateJitter) : 0f;
             nextDecisionTime = Time.time + Mathf.Max(0.02f, interval + jitter);
 
-            DetectPlayer();
+            DetectTarget();
             UpdateState();
             ExecuteState();
         }
@@ -246,24 +287,30 @@ namespace ThirdPersonController
                 attackCooldownTimer -= Time.deltaTime;
         }
 
-        private void DetectPlayer()
+        private void DetectTarget()
         {
-            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-
-            if (distanceToPlayer > detectionRange)
+            if (currentTarget == null)
             {
                 isChasing = false;
                 return;
             }
 
-            Vector3 directionToPlayer = (player.position - transform.position).normalized;
-            float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+            float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
 
-            if (angleToPlayer <= fieldOfView * 0.5f)
+            if (distanceToTarget > detectionRange)
+            {
+                isChasing = false;
+                return;
+            }
+
+            Vector3 directionToTarget = (currentTarget.position - transform.position).normalized;
+            float angleToTarget = Vector3.Angle(transform.forward, directionToTarget);
+
+            if (angleToTarget <= fieldOfView * 0.5f)
             {
                 // Check if player is visible (not behind wall)
-                if (!Physics.Raycast(transform.position + Vector3.up, directionToPlayer,
-                    distanceToPlayer, obstructionLayer))
+                if (!Physics.Raycast(transform.position + Vector3.up, directionToTarget,
+                    distanceToTarget, obstructionLayer))
                 {
                     isChasing = true;
                     return;
@@ -275,16 +322,22 @@ namespace ThirdPersonController
 
         private void UpdateState()
         {
-            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+            if (currentTarget == null)
+            {
+                currentState = State.Patrol;
+                return;
+            }
 
-            if (!isChasing || distanceToPlayer > attackRange)
+            float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
+
+            if (!isChasing || distanceToTarget > attackRange)
             {
                 ReleaseAttackToken();
             }
 
             if (isChasing)
             {
-                if (distanceToPlayer <= attackRange)
+                if (distanceToTarget <= attackRange)
                 {
                     if (TryAcquireAttackToken())
                     {
@@ -365,14 +418,19 @@ namespace ThirdPersonController
         {
             agent.isStopped = false;
             agent.speed = chaseSpeed;
-            agent.SetDestination(player.position);
+            if (currentTarget == null)
+            {
+                return;
+            }
+
+            agent.SetDestination(currentTarget.position);
 
             // Rotate towards player
-            Vector3 directionToPlayer = (player.position - transform.position).normalized;
-            directionToPlayer.y = 0;
-            if (directionToPlayer.magnitude > 0.1f)
+            Vector3 directionToTarget = (currentTarget.position - transform.position).normalized;
+            directionToTarget.y = 0;
+            if (directionToTarget.magnitude > 0.1f)
             {
-                Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
+                Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 
                     rotationSpeed * Time.deltaTime);
             }
@@ -389,13 +447,16 @@ namespace ThirdPersonController
             agent.isStopped = true;
 
             // Rotate to face player
-            Vector3 directionToPlayer = (player.position - transform.position).normalized;
-            directionToPlayer.y = 0;
-            if (directionToPlayer.magnitude > 0.1f)
+            if (currentTarget != null)
             {
-                Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 
-                    rotationSpeed * Time.deltaTime);
+                Vector3 directionToTarget = (currentTarget.position - transform.position).normalized;
+                directionToTarget.y = 0;
+                if (directionToTarget.magnitude > 0.1f)
+                {
+                    Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 
+                        rotationSpeed * Time.deltaTime);
+                }
             }
 
             if (!isAttacking && attackCooldownTimer <= 0f)
@@ -415,7 +476,12 @@ namespace ThirdPersonController
             agent.isStopped = false;
             agent.speed = chaseSpeed * 0.85f;
 
-            Vector3 targetPosition = player.position - transform.forward * ringStandoffDistance;
+            if (currentTarget == null)
+            {
+                return;
+            }
+
+            Vector3 targetPosition = currentTarget.position - transform.forward * ringStandoffDistance;
             if (crowdCoordinator != null)
             {
                 targetPosition = crowdCoordinator.GetRingPosition(this);
@@ -474,19 +540,29 @@ namespace ThirdPersonController
 
         private void PerformAttackHit()
         {
-            Transform origin = attackOrigin != null ? attackOrigin : transform;
-            Vector3 directionToPlayer = (player.position - origin.position).normalized;
-            directionToPlayer.y = 0;
-
-            float distanceToPlayer = Vector3.Distance(origin.position, player.position);
-            float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
-
-            if (distanceToPlayer <= attackHitRadius && angleToPlayer <= attackHitAngle * 0.5f)
+            if (currentTarget == null)
             {
-                PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
-                if (playerHealth != null)
+                return;
+            }
+
+            Transform origin = attackOrigin != null ? attackOrigin : transform;
+            Vector3 directionToTarget = (currentTarget.position - origin.position).normalized;
+            directionToTarget.y = 0;
+
+            float distanceToTarget = Vector3.Distance(origin.position, currentTarget.position);
+            float angleToTarget = Vector3.Angle(transform.forward, directionToTarget);
+
+            if (distanceToTarget <= attackHitRadius && angleToTarget <= attackHitAngle * 0.5f)
+            {
+                if (currentTarget.TryGetComponent<PlayerHealth>(out PlayerHealth playerHealth))
                 {
                     playerHealth.TakeDamage(attackDamage, transform.position, attackKnockback);
+                    return;
+                }
+
+                if (currentTarget.TryGetComponent<DefenseTarget>(out DefenseTarget defenseTarget))
+                {
+                    defenseTarget.TakeDamage(attackDamage, transform.position, attackKnockback);
                 }
             }
         }
@@ -502,7 +578,8 @@ namespace ThirdPersonController
 
             if (player != null)
             {
-                float distance = Vector3.Distance(transform.position, player.position);
+                Transform target = currentTarget != null ? currentTarget : player;
+                float distance = target != null ? Vector3.Distance(transform.position, target.position) : 0f;
                 if (distance >= farUpdateDistance)
                 {
                     nextAnimationTime = Time.time + Mathf.Max(0.02f, farAnimationUpdateInterval);

@@ -28,6 +28,7 @@ namespace ThirdPersonController
         public float damageShakeStrength = 10f;
         
         private BossController boss;
+        private BossCombatTemplate bossTemplate;
         private EnemyHealth bossHealth;
         private int maxHealth;
         private int currentHealth;
@@ -57,6 +58,13 @@ namespace ThirdPersonController
             if (bosses.Length > 0)
             {
                 SetupBoss(bosses[0]);
+                return;
+            }
+
+            BossCombatTemplate[] templates = FindObjectsOfType<BossCombatTemplate>();
+            if (templates.Length > 0)
+            {
+                SetupBoss(templates[0]);
             }
         }
         
@@ -65,6 +73,7 @@ namespace ThirdPersonController
             UnsubscribeFromBoss();
             
             boss = newBoss;
+            bossTemplate = null;
             
             if (boss == null) return;
             
@@ -89,12 +98,50 @@ namespace ThirdPersonController
             Show();
             UpdateHealthBar();
         }
+
+        public void SetupBoss(BossCombatTemplate newBoss)
+        {
+            UnsubscribeFromBoss();
+
+            boss = null;
+            bossTemplate = newBoss;
+
+            if (bossTemplate == null)
+            {
+                return;
+            }
+
+            bossHealth = bossTemplate.GetComponent<EnemyHealth>();
+            if (bossHealth != null)
+            {
+                bossHealth.OnDamageTaken += HandleDamageTaken;
+                bossHealth.OnDeath += HandleDeath;
+            }
+
+            bossTemplate.OnPhaseChanged += HandleTemplatePhaseChanged;
+
+            maxHealth = bossHealth != null ? bossHealth.MaxHealth : 0;
+            currentHealth = maxHealth;
+
+            if (bossNameText != null)
+            {
+                bossNameText.text = bossTemplate.name;
+            }
+
+            Show();
+            UpdateHealthBar();
+        }
         
         private void UnsubscribeFromBoss()
         {
             if (boss != null)
             {
                 boss.OnPhaseChanged -= HandlePhaseChanged;
+            }
+
+            if (bossTemplate != null)
+            {
+                bossTemplate.OnPhaseChanged -= HandleTemplatePhaseChanged;
             }
             
             if (bossHealth != null)
@@ -141,6 +188,30 @@ namespace ThirdPersonController
                 healthFillImage.DOColor(phaseColor, 0.5f);
             }
             
+            if (bossNameText != null)
+            {
+                bossNameText.DOColor(phaseColor, 0.5f);
+            }
+        }
+
+        private void HandleTemplatePhaseChanged(BossCombatPhase phase)
+        {
+            Color phaseColor = phase1Color;
+            switch (phase)
+            {
+                case BossCombatPhase.Phase1:
+                    phaseColor = phase1Color;
+                    break;
+                case BossCombatPhase.Phase2:
+                    phaseColor = phase2Color;
+                    break;
+            }
+
+            if (healthFillImage != null)
+            {
+                healthFillImage.DOColor(phaseColor, 0.5f);
+            }
+
             if (bossNameText != null)
             {
                 bossNameText.DOColor(phaseColor, 0.5f);

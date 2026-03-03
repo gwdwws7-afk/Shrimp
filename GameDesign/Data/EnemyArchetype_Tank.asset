@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac23d8a3dc3f4367841764df13547cf6, type: 3}
+  m_Name: EnemyArchetype_Tank
+  m_EditorClassIdentifier: 
+  archetypeId: tank
+  displayName: 深渊重装
+  enemyType: 2
+  maxHealth: 160
+  hitStunDuration: 0.28
+  defense: 3
+  expReward: 5
+  dropChance: 0.32
+  detectionRange: 12
+  attackRange: 2.4
+  fieldOfView: 110
+  patrolSpeed: 1.8
+  chaseSpeed: 3.0
+  rotationSpeed: 4.5
+  stoppingDistance: 1.8
+  attackCooldown: 2.2
+  attackDamage: 14
+  attackKnockback: 4.5
+  attackWindup: 0.55
+  attackActiveTime: 0.14
+  attackRecovery: 0.6
+  attackHitRadius: 1.3
+  attackHitAngle: 120
+  canDodge: 0
+  dodgeChance: 0.02
+  canBlock: 1
+  blockChance: 0.2
+  canCharge: 0
+  chargeSpeed: 7
+  chargeWindup: 0.6
+  canFlee: 0
+  fleeHealthThreshold: 0.2
+  useCrowdCoordinator: 1
+  ringStandoffDistance: 3
+  overrideAgentSettings: 1
+  agentSpeed: 2.8
+  agentAcceleration: 6
+  agentAngularSpeed: 320
+  agentStoppingDistance: 1.8
+  agentRadius: 0.5
+  agentHeight: 2
+  overrideHitReaction: 1
+  knockbackThreshold: 2.8
+  knockdownThreshold: 7.2
+  flinchDuration: 0.25
+  knockbackDuration: 0.3
+  knockbackDistance: 0.9
+  knockdownDuration: 0.4
+  knockdownDistance: 2.0
+  knockdownRecoverTime: 0.7

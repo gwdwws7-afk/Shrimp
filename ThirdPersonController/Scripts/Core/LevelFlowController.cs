@@ -20,9 +20,20 @@ namespace ThirdPersonController
         public string levelTitle = "Sample Level";
         public bool showOverlay = true;
 
-        [Header("Level Intro")]
+        [Header("Level Prep")]
         public bool showLevelIntro = true;
         public float introDuration = 3f;
+
+        [Header("Flow UI")]
+        public LevelFlowUIController flowUI;
+
+        [Header("Systems")]
+        public ComboMomentumRewardSystem comboRewards;
+        public LevelRuntimeConfigurator runtimeConfigurator;
+        public QuestDatabase questDatabase;
+        public ProgressionMilestoneData progressionMilestones;
+        public LongTermProgressionSystem longTermProgression;
+        public EconomyConfig economyConfig;
         
         [Header("Timer")]
         public bool useTimer = false;
@@ -38,25 +49,55 @@ namespace ThirdPersonController
         private float currentLevelTime;
         private bool levelStarted;
         private bool levelEnded;
+        private bool levelCompleted;
+
+        private void Awake()
+        {
+            ApplyLevelSelection();
+            InitializeRuntimeConfigurator();
+            EnsureLongTermProgression();
+        }
+
+        private void OnEnable()
+        {
+            GameEvents.OnGameOver += HandleGameOver;
+            GameEvents.OnPlayerDeath += HandlePlayerDeath;
+            GameEvents.OnLevelCompleted += HandleLevelCompleted;
+        }
+
+        private void OnDisable()
+        {
+            GameEvents.OnGameOver -= HandleGameOver;
+            GameEvents.OnPlayerDeath -= HandlePlayerDeath;
+            GameEvents.OnLevelCompleted -= HandleLevelCompleted;
+        }
 
         private void Start()
         {
             ApplyLevelData();
-            
-            GameEvents.LevelStarted(levelId);
-            if (SaveManager.Instance != null && SaveManager.Instance.CurrentData != null)
+            if (runtimeConfigurator != null)
             {
-                SaveManager.Instance.CurrentData.currentLevel = levelId;
+                runtimeConfigurator.Apply();
             }
 
             if (ensureLightingOnStart)
             {
                 EnsureLighting();
             }
-            
+
+            InitializeFlowUI();
+            EnsureMomentumRewards();
+
             if (showLevelIntro)
             {
-                StartCoroutine(LevelIntroRoutine());
+                if (flowUI != null)
+                {
+                    flowUI.ShowPrep(this);
+                }
+                else
+                {
+                    StartCoroutine(LevelIntroRoutine());
+                }
             }
             else
             {
@@ -68,7 +109,16 @@ namespace ThirdPersonController
         {
             if (levelData != null)
             {
-                levelId = levelData.chapterId * 100 + int.Parse(levelData.levelId.Replace("LEVEL_", ""));
+                int parsedLevel = 0;
+                if (!string.IsNullOrEmpty(levelData.levelId) && levelData.levelId.StartsWith("LEVEL_"))
+                {
+                    int.TryParse(levelData.levelId.Replace("LEVEL_", string.Empty), out parsedLevel);
+                }
+
+                if (levelData.chapterId > 0 && parsedLevel > 0)
+                {
+                    levelId = levelData.chapterId * 100 + parsedLevel;
+                }
                 levelTitle = levelData.levelName;
                 useTimer = levelData.timeLimit > 0;
                 levelTime = levelData.timeLimit;
@@ -90,6 +140,12 @@ namespace ThirdPersonController
         {
             levelStarted = true;
             currentLevelTime = 0f;
+
+            GameEvents.LevelStarted(levelId);
+            if (SaveManager.Instance != null && SaveManager.Instance.CurrentData != null)
+            {
+                SaveManager.Instance.CurrentData.currentLevel = levelId;
+            }
         }
 
         private void Update()
@@ -114,7 +170,7 @@ namespace ThirdPersonController
         {
             levelEnded = true;
             GameEvents.ShowMessage("Time's Up!", 3f);
-            ExitToMenu();
+            GameEvents.GameOver(false);
         }
 
         private void OnGUI()
@@ -188,7 +244,7 @@ namespace ThirdPersonController
         {
             menuOpen = false;
             Time.timeScale = 1f;
-            GameEvents.LevelCompleted(levelId);
+            
             if (SaveManager.Instance != null)
             {
                 SaveManager.Instance.SaveGame();
@@ -196,9 +252,58 @@ namespace ThirdPersonController
             SceneManager.LoadScene(mainMenuSceneName);
         }
 
+        public void BeginFromPrep()
+        {
+            StartLevel();
+        }
+
+        public void RetryLevel()
+        {
+            menuOpen = false;
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
+        public void ExitToMenu(bool markComplete)
+        {
+            if (markComplete && !levelCompleted)
+            {
+                GameEvents.LevelCompleted(levelId);
+                levelCompleted = true;
+            }
+            ExitToMenu();
+        }
+
+        public bool IsLevelStarted => levelStarted;
+        public bool IsLevelEnded => levelEnded;
+
         private void OnDestroy()
         {
             Time.timeScale = 1f;
+        }
+
+        private void HandleGameOver(bool isVictory)
+        {
+            if (levelStarted)
+            {
+                levelEnded = true;
+            }
+        }
+
+        private void HandlePlayerDeath()
+        {
+            if (levelStarted)
+            {
+                levelEnded = true;
+            }
+        }
+
+        private void HandleLevelCompleted(int completedLevelId)
+        {
+            if (completedLevelId == levelId)
+            {
+                levelCompleted = true;
+            }
         }
 
         private void SetupStyles()
@@ -215,6 +320,87 @@ namespace ThirdPersonController
                 fontSize = 16,
                 fixedHeight = 40f
             };
+        }
+
+        private void InitializeFlowUI()
+        {
+            if (flowUI == null)
+            {
+                flowUI = FindObjectOfType<LevelFlowUIController>();
+            }
+
+            if (flowUI == null)
+            {
+                GameObject uiObject = new GameObject("LevelFlowUI");
+                flowUI = uiObject.AddComponent<LevelFlowUIController>();
+            }
+
+            flowUI.levelFlow = this;
+        }
+
+        private void InitializeRuntimeConfigurator()
+        {
+            if (runtimeConfigurator == null)
+            {
+                runtimeConfigurator = FindObjectOfType<LevelRuntimeConfigurator>();
+            }
+
+            if (runtimeConfigurator == null)
+            {
+                runtimeConfigurator = gameObject.AddComponent<LevelRuntimeConfigurator>();
+                runtimeConfigurator.autoApplyOnAwake = false;
+            }
+
+            runtimeConfigurator.levelFlow = this;
+            runtimeConfigurator.levelData = levelData;
+            runtimeConfigurator.chapterData = chapterData;
+            runtimeConfigurator.questDatabase = questDatabase;
+            runtimeConfigurator.economyConfig = economyConfig;
+            runtimeConfigurator.Apply();
+        }
+
+        private void ApplyLevelSelection()
+        {
+            if (!LevelSelectionContext.HasSelection)
+            {
+                return;
+            }
+
+            levelData = LevelSelectionContext.SelectedLevelData;
+            if (LevelSelectionContext.SelectedChapterData != null)
+            {
+                chapterData = LevelSelectionContext.SelectedChapterData;
+            }
+        }
+
+        private void EnsureLongTermProgression()
+        {
+            if (longTermProgression == null)
+            {
+                longTermProgression = FindObjectOfType<LongTermProgressionSystem>();
+            }
+
+            if (longTermProgression == null)
+            {
+                GameObject progressionObject = new GameObject("LongTermProgression");
+                longTermProgression = progressionObject.AddComponent<LongTermProgressionSystem>();
+            }
+
+            longTermProgression.milestoneData = progressionMilestones;
+        }
+
+        private void EnsureMomentumRewards()
+        {
+            if (comboRewards == null)
+            {
+                comboRewards = FindObjectOfType<ComboMomentumRewardSystem>();
+            }
+
+            if (comboRewards == null)
+            {
+                GameObject rewardsObject = new GameObject("ComboMomentumRewards");
+                comboRewards = rewardsObject.AddComponent<ComboMomentumRewardSystem>();
+            }
         }
 
         private void EnsureLighting()
