@@ -80,6 +80,11 @@ namespace ThirdPersonController
                 health.expReward = archetype.expReward;
                 health.enemyType = archetype.enemyType;
                 health.dropChance = archetype.dropChance;
+                health.resistPhysical = archetype.resistPhysical;
+                health.resistHeat = archetype.resistHeat;
+                health.resistElectric = archetype.resistElectric;
+                health.resistToxin = archetype.resistToxin;
+                health.resistCorrosion = archetype.resistCorrosion;
             }
 
             if (applyAI && ai != null)

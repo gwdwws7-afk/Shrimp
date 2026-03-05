@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: PRL_Poseidon
   pearlName: Poseidon
-  description: The god of the sea grants ultimate power.
+  description: The god of the sea grants electric power for attacks and skills.
   rarity: 4
   pearlType: 3
   icon: {fileID: 0}
@@ -22,15 +22,21 @@ MonoBehaviour:
   - stat: 0
     type: 1
     value: 0.1
-  - stat: 11
+  - stat: 18
     type: 1
     value: 0.1
-  - stat: 13
+  - stat: 24
     type: 1
     value: 0.1
-  - stat: 12
+  - stat: 17
     type: 1
     value: 0.1
+  - stat: 32
+    type: 0
+    value: 1
+  - stat: 36
+    type: 0
+    value: 1
   maxEnhanceLevel: 5
   enhanceBonusPerLevel: [0.02, 0.04, 0.06, 0.08, 0.1]
   scrapValue: 20

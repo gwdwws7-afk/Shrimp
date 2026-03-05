@@ -19,7 +19,7 @@ MonoBehaviour:
   pearlType: 2
   icon: {fileID: 0}
   modifiers:
-  - stat: 12
+  - stat: 8
     type: 1
     value: 0.05
   maxEnhanceLevel: 5

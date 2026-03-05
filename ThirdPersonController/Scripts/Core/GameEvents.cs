@@ -69,6 +69,11 @@ namespace ThirdPersonController
         public static event Action<EnemyType, Vector3, int> OnEnemyKilled;
         public static void EnemyKilled(EnemyType type, Vector3 position, int expReward) 
             => OnEnemyKilled?.Invoke(type, position, expReward);
+
+        // 击杀敌人（详细）
+        public static event Action<EnemyType, Vector3, int, DamageSourceType, bool> OnEnemyKilledDetailed;
+        public static void EnemyKilledDetailed(EnemyType type, Vector3 position, int expReward, DamageSourceType sourceType, bool isHeavyAttack)
+            => OnEnemyKilledDetailed?.Invoke(type, position, expReward, sourceType, isHeavyAttack);
         
         #endregion
 
@@ -117,10 +122,23 @@ namespace ThirdPersonController
         // 波次完成
         public static event Action<StrongholdController, int> OnWaveCompleted;
         public static void WaveCompleted(StrongholdController stronghold, int waveIndex) => OnWaveCompleted?.Invoke(stronghold, waveIndex);
+
+        // 波次开始
+        public static event Action<StrongholdController, int> OnWaveStarted;
+        public static void WaveStarted(StrongholdController stronghold, int waveIndex) => OnWaveStarted?.Invoke(stronghold, waveIndex);
         
         // 据点完成
         public static event Action<StrongholdController> OnStrongholdCompleted;
         public static void StrongholdCompleted(StrongholdController stronghold) => OnStrongholdCompleted?.Invoke(stronghold);
+
+        // 据点开始
+        public static event Action<StrongholdController> OnStrongholdStarted;
+        public static void StrongholdStarted(StrongholdController stronghold) => OnStrongholdStarted?.Invoke(stronghold);
+
+        // 波次事件完成
+        public static event Action<StrongholdController, int, WaveEventType> OnWaveEventCompleted;
+        public static void WaveEventCompleted(StrongholdController stronghold, int waveIndex, WaveEventType eventType)
+            => OnWaveEventCompleted?.Invoke(stronghold, waveIndex, eventType);
         
         #endregion
 
@@ -159,6 +177,23 @@ namespace ThirdPersonController
         // 防守目标
         public static event Action<string> OnDefenseTargetDestroyed;
         public static void DefenseTargetDestroyed(string targetId) => OnDefenseTargetDestroyed?.Invoke(targetId);
+
+        // Boss破防窗口
+        public static event Action OnBossBreakWindowStart;
+        public static void BossBreakWindowStart() => OnBossBreakWindowStart?.Invoke();
+
+        // Boss击败
+        public static event Action<BossSpawnPoint> OnBossDefeated;
+        public static void BossDefeated(BossSpawnPoint boss) => OnBossDefeated?.Invoke(boss);
+
+        // 天赋解锁
+        public static event Action<string, int> OnTalentUnlocked;
+        public static void TalentUnlocked(string nodeId, int cost) => OnTalentUnlocked?.Invoke(nodeId, cost);
+
+        // 里程碑解锁
+        public static event Action<string, ProgressionRoute> OnProgressionMilestoneClaimed;
+        public static void ProgressionMilestoneClaimed(string milestoneId, ProgressionRoute route)
+            => OnProgressionMilestoneClaimed?.Invoke(milestoneId, route);
         
         #endregion
     }

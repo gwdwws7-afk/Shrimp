@@ -15,50 +15,55 @@ MonoBehaviour:
   archetypeId: tank
   displayName: 深渊重装
   enemyType: 2
-  maxHealth: 160
-  hitStunDuration: 0.28
-  defense: 3
-  expReward: 5
-  dropChance: 0.32
+  maxHealth: 200
+  hitStunDuration: 0.18
+  defense: 5
+  expReward: 6
+  dropChance: 0.35
+  resistPhysical: 0.2
+  resistHeat: 0
+  resistElectric: 0.1
+  resistToxin: 0.2
+  resistCorrosion: -0.2
   detectionRange: 12
-  attackRange: 2.4
-  fieldOfView: 110
-  patrolSpeed: 1.8
-  chaseSpeed: 3.0
-  rotationSpeed: 4.5
-  stoppingDistance: 1.8
-  attackCooldown: 2.2
-  attackDamage: 14
-  attackKnockback: 4.5
-  attackWindup: 0.55
-  attackActiveTime: 0.14
-  attackRecovery: 0.6
-  attackHitRadius: 1.3
-  attackHitAngle: 120
+  attackRange: 2.6
+  fieldOfView: 100
+  patrolSpeed: 1.6
+  chaseSpeed: 2.6
+  rotationSpeed: 4
+  stoppingDistance: 2
+  attackCooldown: 2.4
+  attackDamage: 18
+  attackKnockback: 5.2
+  attackWindup: 0.65
+  attackActiveTime: 0.15
+  attackRecovery: 0.7
+  attackHitRadius: 1.35
+  attackHitAngle: 125
   canDodge: 0
   dodgeChance: 0.02
   canBlock: 1
-  blockChance: 0.2
+  blockChance: 0.25
   canCharge: 0
   chargeSpeed: 7
-  chargeWindup: 0.6
+  chargeWindup: 0.65
   canFlee: 0
   fleeHealthThreshold: 0.2
   useCrowdCoordinator: 1
-  ringStandoffDistance: 3
+  ringStandoffDistance: 3.4
   overrideAgentSettings: 1
-  agentSpeed: 2.8
-  agentAcceleration: 6
-  agentAngularSpeed: 320
-  agentStoppingDistance: 1.8
-  agentRadius: 0.5
-  agentHeight: 2
+  agentSpeed: 2.4
+  agentAcceleration: 5
+  agentAngularSpeed: 300
+  agentStoppingDistance: 2
+  agentRadius: 0.55
+  agentHeight: 2.1
   overrideHitReaction: 1
-  knockbackThreshold: 2.8
-  knockdownThreshold: 7.2
-  flinchDuration: 0.25
-  knockbackDuration: 0.3
-  knockbackDistance: 0.9
-  knockdownDuration: 0.4
-  knockdownDistance: 2.0
-  knockdownRecoverTime: 0.7
+  knockbackThreshold: 3.4
+  knockdownThreshold: 8.5
+  flinchDuration: 0.2
+  knockbackDuration: 0.32
+  knockbackDistance: 0.7
+  knockdownDuration: 0.45
+  knockdownDistance: 1.6
+  knockdownRecoverTime: 0.8

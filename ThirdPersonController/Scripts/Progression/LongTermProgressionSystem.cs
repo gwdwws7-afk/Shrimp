@@ -277,6 +277,7 @@ namespace ThirdPersonController
         private void ApplyMilestone(ProgressionMilestone milestone, GameData data)
         {
             data.claimedProgressionMilestones.Add(milestone.id);
+            GameEvents.ProgressionMilestoneClaimed(milestone.id, milestone.route);
 
             if (milestone.grantTalentPoints > 0 && talentTree != null)
             {

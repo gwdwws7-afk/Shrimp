@@ -14,16 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: PRL_DeepShield
   pearlName: Deep Shield
-  description: Shield from the deep ocean depths.
+  description: Shield from the deep ocean depths with steady mitigation.
   rarity: 1
   pearlType: 1
   icon: {fileID: 0}
   modifiers:
-  - stat: 14
+  - stat: 9
     type: 0
     value: 10
-  - stat: 11
-    type: 1
+  - stat: 10
+    type: 0
     value: 0.05
   maxEnhanceLevel: 5
   enhanceBonusPerLevel: [0.02, 0.04, 0.06, 0.08, 0.1]

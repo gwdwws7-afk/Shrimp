@@ -16,6 +16,7 @@ MonoBehaviour:
   pearlName: Trench Fury
   description: Strikes hit harder and stagger more enemies.
   rarity: 2
+  pearlType: 0
   icon: {fileID: 0}
   modifiers:
   - stat: 0

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: PRL_Leviathan
   pearlName: Leviathan
-  description: The legendary power of the sea beast. Ultimate attack power.
+  description: The legendary power of the sea beast. Ultimate heat-infused attack.
   rarity: 4
   pearlType: 0
   icon: {fileID: 0}
@@ -28,6 +28,9 @@ MonoBehaviour:
   - stat: 6
     type: 1
     value: 0.1
+  - stat: 31
+    type: 0
+    value: 1
   maxEnhanceLevel: 5
   enhanceBonusPerLevel: [0.02, 0.04, 0.06, 0.08, 0.1]
   scrapValue: 20

@@ -23,8 +23,9 @@ namespace ThirdPersonController
         public bool enableLifeRegen = true;
         public float lifeRegenPerSecond = 5f;
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (category == SkillCategory.None)
             {
                 category = SkillCategory.Burst;

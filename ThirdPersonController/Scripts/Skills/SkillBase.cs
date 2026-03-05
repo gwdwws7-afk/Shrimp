@@ -43,6 +43,13 @@ namespace ThirdPersonController
         public float range = 5f;
         public float effectDuration = 2f;
 
+        [Header("伤害类型")]
+        public DamageElementType elementType = DamageElementType.Physical;
+        public DamageCategory damageCategory = DamageCategory.Skill;
+        public float breakValue = 0f;
+        public float breakValueMultiplier = 1f;
+        public float impactScale = 0.35f;
+
         [Header("动作控制")]
         public float castDuration = 0.5f;
         public bool lockMovement = true;
@@ -91,6 +98,14 @@ namespace ThirdPersonController
 
         [System.NonSerialized]
         protected SkillTimelineController timelineController;
+
+        protected virtual void OnEnable()
+        {
+            if (impactScale <= 0f)
+            {
+                impactScale = GetDefaultImpactScale();
+            }
+        }
         
         /// <summary>
         /// 执行技能
@@ -467,10 +482,59 @@ namespace ThirdPersonController
             PlayerStatsController stats = GetStatsController(caster);
             if (stats == null)
             {
-                return baseKnockback;
+                return baseKnockback * GetImpactScale();
             }
 
-            return stats.ApplySkillKnockback(baseKnockback);
+            float value = stats.ApplySkillKnockback(baseKnockback);
+            value *= GetImpactScale();
+            return value;
+        }
+
+        protected float GetImpactScale()
+        {
+            float scale = impactScale > 0f ? impactScale : GetDefaultImpactScale();
+            return Mathf.Max(0.1f, scale);
+        }
+
+        protected float GetDefaultImpactScale()
+        {
+            if (damageCategory == DamageCategory.Ultimate)
+            {
+                return 0.6f;
+            }
+
+            switch (category)
+            {
+                case SkillCategory.Burst:
+                    return 0.45f;
+                case SkillCategory.CrowdControl:
+                    return 0.4f;
+                case SkillCategory.Mobility:
+                    return 0.25f;
+                case SkillCategory.Gather:
+                    return 0.3f;
+                default:
+                    return 0.35f;
+            }
+        }
+
+        protected float GetModifiedBreakValue(Transform caster, float fallbackValue)
+        {
+            float value = breakValue > 0f ? breakValue : fallbackValue;
+            value *= Mathf.Max(0f, breakValueMultiplier);
+            return Mathf.Max(0f, value);
+        }
+
+        protected DamageElementType ResolveSkillElement(Transform caster)
+        {
+            PlayerStatsController stats = GetStatsController(caster);
+            if (stats == null)
+            {
+                return elementType;
+            }
+
+            DamageElementType overrideType = stats.GetSkillElementType();
+            return overrideType != DamageElementType.Physical ? overrideType : elementType;
         }
 
         protected float GetModifiedStaminaCost(Transform caster)

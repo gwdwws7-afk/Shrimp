@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: PRL_AbyssLord
   pearlName: Abyss Lord
-  description: The power of the abyss lord. Ultimate treasure.
+  description: The power of the abyss lord. Corrosive force for attacks and skills.
   rarity: 4
   pearlType: 3
   icon: {fileID: 0}
@@ -31,6 +31,12 @@ MonoBehaviour:
   - stat: 21
     type: 1
     value: 0.1
+  - stat: 34
+    type: 0
+    value: 1
+  - stat: 38
+    type: 0
+    value: 1
   maxEnhanceLevel: 5
   enhanceBonusPerLevel: [0.02, 0.04, 0.06, 0.08, 0.1]
   scrapValue: 50

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: PRL_PhantomTide
   pearlName: Phantom Tide
-  description: Ethereal tide increases movement speed.
+  description: Ethereal tide increases movement speed and taints skills.
   rarity: 2
   pearlType: 2
   icon: {fileID: 0}
@@ -22,6 +22,12 @@ MonoBehaviour:
   - stat: 13
     type: 1
     value: 0.1
+  - stat: 15
+    type: 0
+    value: 0.1
+  - stat: 37
+    type: 0
+    value: 1
   maxEnhanceLevel: 5
   enhanceBonusPerLevel: [0.02, 0.04, 0.06, 0.08, 0.1]
   scrapValue: 5

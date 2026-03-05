@@ -128,9 +128,9 @@ perf: 性能优化
 ### 文件命名规范
 ```
 脚本: PlayerCombat.cs, EnemyAI.cs
-预制体: ENM_Grunt_01.prefab
-材质: MAT_Enemy_Grunt_01.mat
-贴图: TEX_Enemy_Grunt_01_Albedo.png
+预制体: ENM_DeepseaFish_01.prefab / ENM_Angler_01.prefab / ENM_Squid_01.prefab
+材质: Material_1.mat (按角色目录)
+贴图: Meshy_AI_texture_0.png (按角色目录)
 动画: ANM_Player_Attack_01.anim
 ```
 

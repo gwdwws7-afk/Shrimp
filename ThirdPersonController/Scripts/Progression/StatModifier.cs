@@ -46,7 +46,17 @@ namespace ThirdPersonController
         PotionEffect,
         StatusResistance,
         ExtraLife,
-        SecondWind
+        SecondWind,
+
+        // 元素倾向（用于攻击/技能元素）
+        AttackElementHeat,
+        AttackElementElectric,
+        AttackElementToxin,
+        AttackElementCorrosion,
+        SkillElementHeat,
+        SkillElementElectric,
+        SkillElementToxin,
+        SkillElementCorrosion
     }
 
     public enum ModifierType

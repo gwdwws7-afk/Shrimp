@@ -14,6 +14,15 @@ namespace ThirdPersonController
         public TextMeshProUGUI bossNameText;
         public TextMeshProUGUI healthText;
         public CanvasGroup canvasGroup;
+
+        [Header("Weakness")]
+        public Image weaknessIcon;
+        public Sprite physicalWeaknessSprite;
+        public Sprite heatWeaknessSprite;
+        public Sprite electricWeaknessSprite;
+        public Sprite toxinWeaknessSprite;
+        public Sprite corrosionWeaknessSprite;
+        public bool hideWeaknessIfNone = true;
         
         [Header("Settings")]
         public bool showOnStart = false;
@@ -94,6 +103,8 @@ namespace ThirdPersonController
             {
                 bossNameText.text = boss.name;
             }
+
+            UpdateWeaknessIcon();
             
             Show();
             UpdateHealthBar();
@@ -127,6 +138,8 @@ namespace ThirdPersonController
             {
                 bossNameText.text = bossTemplate.name;
             }
+
+            UpdateWeaknessIcon();
 
             Show();
             UpdateHealthBar();
@@ -229,6 +242,122 @@ namespace ThirdPersonController
             if (healthText != null)
             {
                 healthText.text = $"{currentHealth} / {maxHealth}";
+            }
+        }
+
+        private void UpdateWeaknessIcon()
+        {
+            if (weaknessIcon == null)
+            {
+                return;
+            }
+
+            DamageElementType element = DamageElementType.Physical;
+            if (bossTemplate != null)
+            {
+                element = bossTemplate.GetWeakElementType(bossHealth);
+            }
+            else if (boss != null)
+            {
+                if (boss.hasWeakness && !string.IsNullOrEmpty(boss.weaknessElement))
+                {
+                    element = ParseWeaknessElement(boss.weaknessElement);
+                }
+                else
+                {
+                    element = ResolveWeaknessFromHealth(bossHealth);
+                }
+            }
+            else
+            {
+                element = ResolveWeaknessFromHealth(bossHealth);
+            }
+
+            Sprite sprite = GetWeaknessSprite(element);
+            if (sprite == null && hideWeaknessIfNone)
+            {
+                weaknessIcon.enabled = false;
+                return;
+            }
+
+            weaknessIcon.enabled = true;
+            weaknessIcon.sprite = sprite;
+        }
+
+        private DamageElementType ResolveWeaknessFromHealth(EnemyHealth health)
+        {
+            if (health == null)
+            {
+                return DamageElementType.Physical;
+            }
+
+            float min = health.resistPhysical;
+            DamageElementType selected = DamageElementType.Physical;
+            if (health.resistHeat < min)
+            {
+                min = health.resistHeat;
+                selected = DamageElementType.Heat;
+            }
+            if (health.resistElectric < min)
+            {
+                min = health.resistElectric;
+                selected = DamageElementType.Electric;
+            }
+            if (health.resistToxin < min)
+            {
+                min = health.resistToxin;
+                selected = DamageElementType.Toxin;
+            }
+            if (health.resistCorrosion < min)
+            {
+                selected = DamageElementType.Corrosion;
+            }
+
+            return selected;
+        }
+
+        private DamageElementType ParseWeaknessElement(string raw)
+        {
+            if (string.IsNullOrEmpty(raw))
+            {
+                return DamageElementType.Physical;
+            }
+
+            string value = raw.Trim().ToLowerInvariant();
+            switch (value)
+            {
+                case "heat":
+                case "fire":
+                    return DamageElementType.Heat;
+                case "electric":
+                case "electricity":
+                case "lightning":
+                    return DamageElementType.Electric;
+                case "toxin":
+                case "poison":
+                    return DamageElementType.Toxin;
+                case "corrosion":
+                case "acid":
+                    return DamageElementType.Corrosion;
+                default:
+                    return DamageElementType.Physical;
+            }
+        }
+
+        private Sprite GetWeaknessSprite(DamageElementType element)
+        {
+            switch (element)
+            {
+                case DamageElementType.Heat:
+                    return heatWeaknessSprite;
+                case DamageElementType.Electric:
+                    return electricWeaknessSprite;
+                case DamageElementType.Toxin:
+                    return toxinWeaknessSprite;
+                case DamageElementType.Corrosion:
+                    return corrosionWeaknessSprite;
+                default:
+                    return physicalWeaknessSprite;
             }
         }
         

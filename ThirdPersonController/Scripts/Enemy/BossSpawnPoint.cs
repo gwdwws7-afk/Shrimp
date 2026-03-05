@@ -128,6 +128,7 @@ namespace ThirdPersonController
 
             isDefeated = true;
             OnBossDefeated?.Invoke(this);
+            GameEvents.BossDefeated(this);
         }
 
         private void AttachPrototype(GameObject bossObject)

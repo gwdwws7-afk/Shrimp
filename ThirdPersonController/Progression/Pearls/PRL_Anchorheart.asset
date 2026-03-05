@@ -16,11 +16,12 @@ MonoBehaviour:
   pearlName: Anchorheart
   description: Tougher frame with deeper stamina reserves.
   rarity: 1
+  pearlType: 1
   icon: {fileID: 0}
   modifiers:
-  - stat: 4
-    type: 1
-    value: 0.15
-  - stat: 5
+  - stat: 7
+    type: 0
+    value: 15
+  - stat: 8
     type: 1
     value: 0.1

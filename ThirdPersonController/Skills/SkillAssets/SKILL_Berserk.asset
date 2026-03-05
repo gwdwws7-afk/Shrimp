@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c5659947833a004e80593419195454a, type: 3}
+  m_Name: SKILL_Berserk
+  m_EditorClassIdentifier: 
+  skillName: Berserk
+  description: Enter a berserk state to boost combat stats.
+  icon: {fileID: 0}
+  keyBinding: 0
+  category: 2
+  cooldown: 10
+  staminaCost: 20
+  damage: 50
+  range: 5
+  effectDuration: 2
+  castDuration: 0.5
+  lockMovement: 1
+  lockRotation: 1
+  interruptible: 0
+  invincibilityTiming: 0
+  invincibilityDuration: 0
+  damageReduction: 0
+  damageReductionDuration: 0
+  damageReductionTiming: 0
+  endsOnRecovery: 1
+  useAnimationEvents: 1
+  impactDelay: 0.16
+  recoveryDelay: 0.25
+  impactShakeDuration: 0.12
+  impactShakeStrength: 0.18
+  useCategoryTint: 1
+  castTint: {r: 1, g: 1, b: 1, a: 1}
+  impactTint: {r: 1, g: 1, b: 1, a: 1}
+  fallbackCastSize: 0.35
+  fallbackImpactSize: 0.6
+  effectPrefab: {fileID: 0}
+  castEffectPrefab: {fileID: 0}
+  impactEffectPrefab: {fileID: 0}
+  castSound: {fileID: 0}
+  hitSound: {fileID: 0}
+  impactSound: {fileID: 0}
+  elementType: 0
+  damageCategory: 2
+  breakValue: 0
+  breakValueMultiplier: 1
+  impactScale: 0.45
+  duration: 8
+  attackSpeedMultiplier: 1.5
+  moveSpeedMultiplier: 1.3
+  damageMultiplier: 1.3
+  berserkDamageReduction: 0.3
+  enableLifeRegen: 1
+  lifeRegenPerSecond: 5
+*** Add File: C:\test\Shrimp\Assets\ThirdPersonController\Skills\SkillAssets\SKILL_Berserk.asset.meta
+fileFormatVersion: 2
+guid: d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

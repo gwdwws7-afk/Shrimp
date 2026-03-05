@@ -14,13 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: PRL_Hellbrand
   pearlName: Hellbrand
-  description: Skill strikes burn harder with an added edge.
+  description: Skill strikes burn harder with a heat-infused edge.
   rarity: 2
+  pearlType: 0
   icon: {fileID: 0}
   modifiers:
-  - stat: 8
+  - stat: 18
     type: 1
     value: 0.12
   - stat: 0
     type: 1
     value: 0.05
+  - stat: 35
+    type: 0
+    value: 1

@@ -14,13 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: PRL_Galeweave
   pearlName: Galeweave
-  description: Skills reach farther while steps feel lighter.
+  description: Skills reach farther while steps feel lighter with electric flow.
   rarity: 1
+  pearlType: 2
   icon: {fileID: 0}
   modifiers:
-  - stat: 10
+  - stat: 20
     type: 1
     value: 0.15
-  - stat: 6
+  - stat: 13
     type: 1
     value: 0.06
+  - stat: 36
+    type: 0
+    value: 1

@@ -57,7 +57,7 @@
 | **关卡数据** | LevelData/ChapterData/QuestDatabase | ✅ 完成 |
 | **任务系统** | 分段目标/失败条件/引导链/奖励预览 | ✅ 完成 |
 | **UI框架** | 战前准备/战后结算/经验条/波次UI | ✅ 完成 |
-| **敌人Prefab** | ENM_DeepseaFish_01(普通怪) / ENM_Angler_01(突击) / ENM_Squid_01(重装) / ENM_Starman_01(Boss占位) | ✅ 可用 |
+| **敌人Prefab** | ENM_DeepseaFish_01(普通怪) / ENM_Angler_01(突击, AnglerFish模型) / ENM_Squid_01(重装, Squid模型) / ENM_Starman_01(Boss占位) | ✅ 可用 |
 | **大规模敌人** | Mono对象池 + DOTS/Flow Field 原型 | ⚠️ 原型 |
 
 ### 2.2 缺失模块 ❌
@@ -71,6 +71,29 @@
 | 手柄完整适配 | P0 | 1周 |
 | 双语本地化(简中/英文) | P1 | 1周 |
 | 性能目标(100-150敌人@60fps) | P0 | 持续优化 |
+
+### 2.3 模块完成度（细颗粒）
+
+| 模块 | 子项 | 完成度 | 备注 |
+|------|------|--------|------|
+| 核心控制 | 移动/相机/基础战斗 | ✅ 完成 | 第三人称控制器已落地 |
+| 战斗系统 | 伤害管线/连击/重击 | ✅ 完成 | 伤害来源标记已补齐 |
+| 技能系统 | QWER/终极技能 | ✅ 完成 | 技能命中与伤害链已接通 |
+| 敌人AI | 追击/攻击/反应 | ⚠️ 部分完成 | 逻辑齐全，数值调优中 |
+| 敌人类型 | Grunt/Rusher/Tank/Elite | ⚠️ 部分完成 | Archetype已落地，精英差异化待补 |
+| Boss系统 | 出场/模板/破防/Phase | ⚠️ 部分完成 | 机制模板完成，内容与动画缺失 |
+| 据点/波次 | 波次/事件/结算 | ✅ 完成 | 事件类型齐全 |
+| 关卡与流程 | 10关场景/LevelData | ✅ 完成 | 已建立关卡结构 |
+| 任务系统 | 主线/支线/奖励 | ✅ 完成 | 任务链已落地 |
+| 经济/成长 | 深渊币/商店/消耗品 | ✅ 完成 | 经济闭环已接通 |
+| UI框架 | 进度/结算/面板 | ⚠️ 部分完成 | 逻辑完成，UI美术未接入 |
+| Steam功能 | 成就/Stats/云存档 | ⚠️ 部分完成 | 代码完成，需Steamworks与后台配置 |
+| 本地存档 | 保存/加载/设置 | ✅ 完成 | 本地存档已可用 |
+| 多语言 | 简中/英文 | ❌ 未开始 | 需要文案表与本地化系统 |
+| 手柄支持 | 按键映射/提示 | ❌ 未开始 | 需要Input方案扩展 |
+| 音效/特效 | SFX/VFX/BGM | ❌ 未开始 | 仅有挂点，缺资产 |
+| 性能优化 | 大规模敌人 | ⚠️ 原型 | DOTS/Flow Field 仍在原型 |
+| 美术资产 | 角色/关卡/特效 | ⚠️ 部分完成 | 小怪与少量环境已就绪 |
 
 ---
 
@@ -207,12 +230,86 @@
 
 | 类型 | 每波数量 | HP | 攻击力 | AI复杂度 | 特殊能力 |
 |------|----------|----|--------|----------|----------|
-| **杂兵(Grunt)** | 30-50 | 30 | 5 | ⭐ | 无 |
-| **突击兵(Rusher)** | 10-15 | 50 | 10 | ⭐⭐ | 高速冲锋 |
-| **重装兵(Tank)** | 5-8 | 150 | 15 | ⭐⭐ | 高防御,缓慢 |
-| **精英(Elite)** | 3-5 | 300 | 25 | ⭐⭐⭐ | 闪避攻击 |
+| **杂兵(Grunt)** | 30-50 | 60 | 9 | ⭐ | 无 |
+| **突击兵(Rusher)** | 10-15 | 40 | 10 | ⭐⭐ | 高速冲锋/闪避 |
+| **重装兵(Tank)** | 5-8 | 200 | 18 | ⭐⭐ | 高防御/抗性/重击 |
+| **精英(Elite)** | 3-5 | 260 | 18 | ⭐⭐⭐ | 冲锋/闪避/格挡 |
 | **变异体(Mutant)** | 1-2 | 800 | 40 | ⭐⭐⭐⭐ | 范围技能 |
 | **Boss** | 1 | 5000+ | 50+ | ⭐⭐⭐⭐⭐ | 阶段机制 |
+
+#### Archetype 数值表（现行）
+
+| Archetype | HP | DEF | 攻击 | 攻击CD | 追击速度 | 破防阈值(击退/击倒) | 闪避/格挡/冲锋 |
+|-----------|----|-----|------|--------|----------|---------------------|----------------|
+| **Grunt** | 60 | 0 | 9 | 1.55 | 4.2 | 2 / 6 | 无/无/无 |
+| **Rusher** | 40 | 0 | 10 | 1.1 | 5.6 | 1.6 / 5 | 有/无/有 |
+| **Tank** | 200 | 5 | 18 | 2.4 | 2.6 | 3.4 / 8.5 | 无/有/无 |
+| **Elite** | 260 | 2 | 18 | 1.2 | 5.0 | 2.6 / 7.2 | 有/有/有 |
+
+#### 元素抗性表（默认）
+
+**规则**: 抗性范围 `-1.0 ~ +1.0`，最终伤害倍率 = `1 - 抗性`。
+
+| Archetype | Physical | Heat | Electric | Toxin | Corrosion |
+|-----------|----------|------|----------|-------|-----------|
+| **Grunt** | 0 | -0.05 | 0 | 0 | 0 |
+| **Rusher** | 0 | 0 | -0.1 | 0.1 | 0 |
+| **Tank** | 0.2 | 0 | 0.1 | 0.2 | -0.2 |
+| **Elite** | 0.1 | 0.1 | 0.1 | 0.05 | 0.05 |
+
+#### 珍珠元素配置（现行）
+
+| 珍珠 | 攻击元素 | 技能元素 |
+|------|----------|----------|
+| PRL_CrimsonStrike | Heat | - |
+| PRL_AbyssalMight | Corrosion | - |
+| PRL_OceanRage | Electric | - |
+| PRL_TrenchFury | - | - |
+| PRL_SerratedFin | Toxin | - |
+| PRL_HunterInstinct | - | - |
+| PRL_VampiricFang | Toxin | - |
+| PRL_Leviathan | Heat | - |
+| PRL_AbyssLord | Corrosion | Corrosion |
+| PRL_Hellbrand | - | Heat |
+| PRL_Stormcoil | - | Electric |
+| PRL_GlowingTide | - | Electric |
+| PRL_Galeweave | - | Electric |
+| PRL_TidalSurge | - | Heat |
+| PRL_FlowCurrent | - | - |
+| PRL_Nautilus | - | - |
+| PRL_PhantomTide | - | Toxin |
+| PRL_AbyssalRegen | - | - |
+| PRL_Carapace | - | - |
+| PRL_DeepShield | - | - |
+| PRL_Bioluminescent | - | - |
+| PRL_Kraken | - | - |
+| PRL_Poseidon | Electric | Electric |
+| PRL_Anchorheart | - | - |
+
+#### 技能 impactScale 调优（现行）
+
+**定义**: impactScale 为技能击退/硬直缩放（与敌人击退阈值统一标尺）。
+
+**推荐范围**: `0.2 ~ 0.6`
+
+| 分类 | 默认值 | 说明 |
+|------|--------|------|
+| Burst | 0.45 | 强输出/范围技能 |
+| CrowdControl | 0.4 | 控场/眩晕/击退 |
+| Mobility | 0.25 | 位移类伤害 |
+| Gather | 0.3 | 聚怪/牵引 |
+| Ultimate | 0.6 | 终极技能 |
+
+**技能当前配置**
+
+| 技能 | 分类 | impactScale |
+|------|------|-------------|
+| Whirlwind | Burst | 0.45 |
+| Shockwave | CrowdControl | 0.4 |
+| DashAttack | Mobility | 0.25 |
+| Berserk | Burst | 0.45 |
+| Pull | Gather | 0.3 |
+| Ultimate | Ultimate | 0.6 |
 
 #### 群体AI技术方案
 
@@ -368,7 +465,7 @@
 
 **当前敌人配置**:
 - 普通怪: `ENM_DeepseaFish_01`（DeepseaFish 模型 + EnemyAI）
-- 变体: `ENM_Angler_01`（Rusher Archetype）/ `ENM_Squid_01`（Tank Archetype）
+- 变体: `ENM_Angler_01`（AnglerFish 模型 + Rusher Archetype）/ `ENM_Squid_01`（Squid 模型 + Tank Archetype）
 - Boss: `ENM_Starman_01`（Boss 脚本模板挂载）
 
 ### 7.2 单关卡流程
@@ -939,12 +1036,151 @@ AI计算:
 - Game_XXX.cs (游戏管理)
 
 资源命名:
-- ENM_Grunt_01_Model (敌人模型)
+- ENM_DeepseaFish_01_Model (敌人模型)
 - FX_Attack_Slash_01 (特效)
 - UI_Bar_Health (UI元素)
 ```
 
-### D. 成就列表草案（Steam）
+#### C1 资源命名与目录结构建议（Audio/VFX 分包）
+
+```
+Assets/
+  Audio/
+    SFX/
+      Combat/
+        SFX_Hit_Light_01.wav
+        SFX_Hit_Heavy_01.wav
+      Skills/
+        SFX_Skill_Whirlwind_Loop.wav
+        SFX_Skill_Shockwave.wav
+      Enemies/
+        SFX_Angler_Charge.wav
+        SFX_Squid_Slam.wav
+      UI/
+        SFX_UI_Click.wav
+    BGM/
+      BGM_L01.wav
+      BGM_L02.wav
+  VFX/
+    Combat/
+      VFX_Hit_Light.prefab
+      VFX_Hit_Heavy.prefab
+    Skills/
+      VFX_Whirlwind.prefab
+      VFX_Shockwave_Ring.prefab
+    Enemies/
+      VFX_Boss_Break.prefab
+      VFX_Enemy_Death.prefab
+    Events/
+      VFX_Spawn.prefab
+      VFX_Defense_Shield.prefab
+```
+
+#### C2 导入设置规范（压缩/采样率/通道）
+
+**音频（SFX）**
+- 采样率: 44.1kHz（短促 UI/SFX 可 22.05kHz）
+- 声道: Mono（3D SFX 优先），UI 可 Stereo
+- 压缩: Vorbis/ADPCM（二选一，短促用 ADPCM，长音用 Vorbis）
+- Load Type: Decompress On Load（短促）/ Compressed In Memory（长音）
+
+**音频（BGM）**
+- 采样率: 44.1kHz
+- 声道: Stereo
+- 压缩: Vorbis
+- Load Type: Streaming
+
+**VFX（Prefab）**
+- 纹理: 压缩格式按平台默认（移动优先 ASTC/ETC2，PC 默认即可）
+- 粒子: GPU 粒子优先，限制发射速率与生命周期
+- 贴图通道: 避免未使用的 Alpha 通道浪费
+
+#### C3 命名校验清单
+
+- 前缀必须正确: `SFX_` / `BGM_` / `VFX_` / `ENM_` / `UI_`
+- 类别必须明确: `SFX_Skill_*` / `VFX_Enemy_*` / `BGM_L0X`
+- 编号规范: 两位数起（`_01`, `_02`）
+- 禁止空格与中文文件名
+- 同一类资产保持命名风格一致
+
+### D. 音效/特效素材清单（全范围）
+
+#### D1 全局与系统（通用）
+
+| 类别 | 触发/场景 | 资源类型 | 优先级 | 建议命名 |
+|------|----------|----------|--------|----------|
+| 全局 | 轻攻击命中 | SFX | 高 | SFX_Hit_Light_* |
+| 全局 | 重攻击命中 | SFX | 高 | SFX_Hit_Heavy_* |
+| 全局 | 击退/击倒命中 | SFX | 中 | SFX_Hit_Knock_* |
+| 全局 | 受击血花/火花 | VFX | 高 | VFX_Hit_Light |
+| 全局 | 重击冲击波 | VFX | 高 | VFX_Hit_Heavy |
+| 全局 | 击倒烟尘/碎屑 | VFX | 中 | VFX_Knockdown |
+| 全局 | 敌人死亡 | SFX | 高 | SFX_Enemy_Death_* |
+| 全局 | 敌人死亡爆裂/溃散 | VFX | 高 | VFX_Enemy_Death |
+| 全局 | 连击提示 | SFX | 中 | SFX_Combo_Tier* |
+| 全局 | 狂暴开启 | SFX/VFX | 高 | SFX_Berserk_Start, VFX_Berserk_Aura |
+| 全局 | 脚步/移动 | SFX | 中 | SFX_Footstep_* |
+| UI | 打开/关闭面板 | SFX | 中 | SFX_UI_Open/Close |
+| UI | 按钮点击/确认 | SFX | 中 | SFX_UI_Click/Confirm |
+| UI | 失败/警告 | SFX | 中 | SFX_UI_Error |
+| 经济 | 购买成功/失败 | SFX | 中 | SFX_Shop_Buy/Fail |
+| 经济 | 深渊币获得 | SFX/VFX | 中 | SFX_Currency_Get, VFX_Currency_Spark |
+| 珍珠 | 拾取 | SFX/VFX | 高 | SFX_Pearl_Pickup, VFX_Pearl_Pickup |
+| 任务 | 任务完成 | SFX/VFX | 中 | SFX_Quest_Complete, VFX_Quest_Complete |
+| 里程碑 | 解锁里程碑 | SFX/VFX | 中 | SFX_Milestone, VFX_Milestone |
+
+#### D2 关卡（10 关）
+
+| 关卡 | 场景主题 | 资源类型 | 优先级 | 建议命名 |
+|------|----------|----------|--------|----------|
+| L01 海沟裂隙 | 环境氛围、低频水压、碎石 | SFX/BGM | 高 | BGM_L01, SFX_L01_Ambient_* |
+| L01 海沟裂隙 | 据点开启/完成、Boss出场 | SFX/VFX | 高 | SFX_Stronghold_Start/End, VFX_Boss_Entry |
+| L02 残骸站 | 金属吱嘎/电火花 | SFX/VFX/BGM | 高 | BGM_L02, SFX_L02_Ambient_*, VFX_Spark |
+| L03 热泉 | 气泡喷口/热浪 | SFX/VFX/BGM | 高 | BGM_L03, VFX_Vent |
+| L04 珊瑚林 | 低语/珊瑚摆动 | SFX/BGM | 中 | BGM_L04, SFX_L04_Ambient_* |
+| L05 沉城 | 结构崩落/回声 | SFX/VFX/BGM | 中 | BGM_L05, VFX_Dust |
+| L06 黑潮管线 | 管线泄漏/蒸汽 | SFX/VFX/BGM | 高 | BGM_L06, VFX_Steam |
+| L07 深渊机库 | 机械低鸣/警示灯 | SFX/VFX/BGM | 中 | BGM_L07, VFX_LightSweep |
+| L08 熔融裂谷 | 熔岩翻涌/热爆 | SFX/VFX/BGM | 高 | BGM_L08, VFX_Ember |
+| L09 静潮圣所 | 心跳低频/神秘音色 | SFX/BGM | 中 | BGM_L09, SFX_L09_Ambient_* |
+| L10 巢核 | 脉冲/生物共鸣 | SFX/VFX/BGM | 高 | BGM_L10, VFX_Pulse |
+
+#### D3 敌人（普通怪/变体/Boss）
+
+| 敌人 | 动作/事件 | 资源类型 | 优先级 | 建议命名 |
+|------|-----------|----------|--------|----------|
+| DeepseaFish | 发现玩家/嘶鸣 | SFX | 中 | SFX_DeepseaFish_Aggro |
+| DeepseaFish | 轻攻击/命中/死亡 | SFX/VFX | 高 | SFX_DeepseaFish_Attack, VFX_Hit_Light |
+| Angler | 冲锋起手/冲刺 | SFX/VFX | 高 | SFX_Angler_Charge, VFX_Charge_Trail |
+| Angler | 命中/击倒/死亡 | SFX/VFX | 高 | SFX_Angler_Hit, VFX_Hit_Heavy |
+| Squid | 踏地/重击 | SFX/VFX | 高 | SFX_Squid_Slam, VFX_Slam_Ring |
+| Squid | 格挡/硬直 | SFX/VFX | 中 | SFX_Squid_Block, VFX_Block_Spark |
+| Boss | 出场/Phase2/破防 | SFX/VFX | 高 | SFX_Boss_Intro/Phase2/Break, VFX_Boss_Break |
+| Boss | 技能1/2/3/4 | SFX/VFX | 高 | SFX_Boss_Skill_* |
+| Boss | 败北/死亡 | SFX/VFX | 高 | SFX_Boss_Death, VFX_Boss_Death |
+
+#### D4 技能（玩家）
+
+| 技能 | 时机 | 资源类型 | 优先级 | 建议命名 |
+|------|------|----------|--------|----------|
+| 普攻连段 | 挥击/命中 | SFX/VFX | 高 | SFX_Attack_Swing_*, VFX_Trail |
+| 重击 | 蓄力/命中 | SFX/VFX | 高 | SFX_Heavy_Charge, VFX_Heavy_Impact |
+| Whirlwind | 施放/持续/命中 | SFX/VFX | 高 | SFX_Skill_Whirlwind_Loop, VFX_Whirlwind |
+| Shockwave | 施放/冲击/命中 | SFX/VFX | 高 | SFX_Skill_Shockwave, VFX_Shockwave_Ring |
+| Ultimate | 施放/爆发/命中 | SFX/VFX | 高 | SFX_Skill_Ultimate, VFX_Ultimate_Burst |
+| DashAttack | 冲刺/命中 | SFX/VFX | 中 | SFX_Skill_Dash, VFX_Dash_Trail |
+| Pull | 拉拽/落地伤害 | SFX/VFX | 中 | SFX_Skill_Pull, VFX_Pull_Impact |
+
+#### D5 据点事件/任务
+
+| 事件 | 触发 | 资源类型 | 优先级 | 建议命名 |
+|------|------|----------|--------|----------|
+| Reinforcement | 援军刷新 | SFX/VFX | 中 | SFX_Event_Reinforce, VFX_Spawn |
+| Chase | 追击开始/结束 | SFX/VFX | 中 | SFX_Event_Chase, VFX_SpeedLines |
+| HoldPoint | 据点占领推进 | SFX/VFX | 中 | SFX_Event_Hold, VFX_Hold_Area |
+| ProtectTarget | 防守目标 | SFX/VFX | 中 | SFX_Event_Defense, VFX_Defense_Shield |
+
+### E. 成就列表草案（Steam）
 
 **主线/进度**
 1. Into the Trench - Complete Level 1
@@ -968,6 +1204,189 @@ AI计算:
 17. Heavy Hand - Defeat 50 enemies with heavy attacks
 18. Skill Mastery - Defeat 100 enemies using skills
 19. Shock and Awe - Stun 50 enemies
+
+### F. 最终美术资产需求清单（需求版）
+
+#### F1 角色/敌人模型与材质
+
+| 类别 | 数量 | 需求说明 |
+|------|------|----------|
+| 玩家角色 | 1 | 本体+武器/特效挂点+可替换配件 |
+| 普通怪（Grunt/DeepseaFish） | 1 | 基础小怪模型+材质 |
+| 突击怪（Rusher/Angler） | 1 | 冲锋外形差异 |
+| 重装怪（Tank/Squid） | 1 | 体积更大、护甲感 |
+| 精英怪（Elite） | 1 | 复用基础模型，需独立外观/配色 |
+| 变体小怪 | 2–4 | 远程/自爆/控制型（建议新增） |
+
+#### F2 Boss（每关独立）
+
+| 关卡 | Boss主题 | 资产需求 |
+|------|----------|----------|
+| L01 | 巨鳗型 | 长体型+电击/咬击形态 |
+| L02 | 机甲守卫 | 机械装甲+能量束构件 |
+| L03 | 热泉喷涌 | 喷吐/地裂结构 |
+| L04 | 珊瑚触手 | 触手/孢子 |
+| L05 | 沉城重装 | 厚重/坍塌感 |
+| L06 | 毒腐蚀体 | 毒囊/腐蚀喷口 |
+| L07 | 深渊机库 | 机械臂/旋刃 |
+| L08 | 熔融爆裂 | 熔岩核心/裂解 |
+| L09 | 圣所回响 | 符文/音波结构 |
+| L10 | 巢核生物 | 脉冲器官/触须 |
+
+#### F3 环境通用模块（全关卡共用）
+
+| 类别 | 数量建议 | 需求说明 |
+|------|----------|----------|
+| 地面/墙体/平台 | 12–20 | 模块化拼接 |
+| 立柱/栏杆/梯台 | 8–12 | 结构变化 |
+| 岩石/碎片/残骸 | 15–25 | 视觉密度 |
+| 门/闸/通道 | 4–6 | 入口与封锁 |
+| 管线/电缆/机壳 | 10–15 | 工业感 |
+| Decal/标识 | 10–20 | 编号/危险/发光符号 |
+
+#### F4 关卡专属套件（10关）
+
+| 关卡 | 专属模型需求（示例） |
+|------|----------------------|
+| L01 | 裂隙岩壁、断裂地层、碎石簇 |
+| L02 | 舱体残骸、断裂梁、控制台 |
+| L03 | 热泉喷口、蒸汽井、地热裂缝 |
+| L04 | 珊瑚群、发光植被、藤蔓 |
+| L05 | 沉城建筑立面、破窗、瓦砾 |
+| L06 | 管道阀门、泄漏口、腐蚀地面 |
+| L07 | 机库吊臂、轨道平台、警示灯 |
+| L08 | 熔岩流、裂谷桥、岩浆池 |
+| L09 | 圣所柱、符文祭坛、浮雕 |
+| L10 | 生物巢体、肉质通道、脉冲器官 |
+
+#### F5 交互/道具/机关
+
+| 类别 | 需求说明 |
+|------|----------|
+| 据点核心/占点装置 | 占点标记+范围地面材质 |
+| 防守目标 | 可受击/可破坏模型 |
+| 补给箱/拾取物 | 珍珠/消耗品/深渊币 |
+| 机关 | 可破坏物、封锁门/开门机关 |
+
+#### F6 UI/2D 资产
+
+| 类别 | 需求说明 |
+|------|----------|
+| HUD | 血条/能量/连击/技能冷却 |
+| 关卡流程 | 关卡标题卡/进度条 |
+| 经济与商店 | 深渊币图标/消耗品图标 |
+| 成就/天赋 | 天赋节点图标/路线徽章 |
+| Boss UI | Boss头像/阶段标识 |
+| 地图/面板 | 菜单框架、按钮、提示条 |
+
+#### F7 VFX（视觉特效）
+
+| 分类 | 需求说明 |
+|------|----------|
+| 通用战斗 | 受击/重击/击倒/死亡 |
+| 技能 | 5个技能专属特效 |
+| Boss | 破防/Phase2/大招 |
+| 环境 | 蒸汽/火花/熔岩/泡沫/发光 |
+| 据点事件 | 占点范围/追击/援军刷怪 |
+
+#### F8 动画需求（制作清单）
+
+| 角色 | 需求说明 |
+|------|----------|
+| 玩家 | 待机/走/跑/冲刺/跳/落地/翻滚/连击3段/重击/5技能/受击/击倒/起身/死亡/复活 |
+| 小怪通用 | 待机/巡逻/追击/攻击/受击/击退/击倒/死亡 |
+| Rusher | 冲锋蓄力/冲锋/撞击恢复 |
+| Tank | 格挡/蓄力重击/硬直 |
+| Elite | 闪避/强力攻击 |
+| Boss | 出场/咆哮/移动/Phase2/破防/技能3–4/死亡 |
+
+#### F9 品牌与商店素材（上线需要）
+
+| 类别 | 需求说明 |
+|------|----------|
+| Logo | 正式 Logo（PNG/矢量） |
+| Steam商店图 | Capsule/Library/Hero/Logo |
+| 宣传图 | 关键视觉/截图模板 |
+
+### G. 需求清单 vs 现有资源匹配表
+
+#### G1 角色/敌人模型与材质
+
+| 需求项 | 状态 | 已有资源/备注 |
+|--------|------|---------------|
+| 玩家角色模型 | 未完成 | 未发现玩家角色模型 |
+| 普通怪（DeepseaFish） | 已完成 | Assets/fbx/Characters/DeepseaFish/Meshy_AI_biped |
+| 突击怪（Angler） | 已完成 | Assets/fbx/Characters/AnglerFish/Meshy_AI_biped |
+| 重装怪（Squid） | 已完成 | Assets/fbx/Characters/Squid/Meshy_AI_biped |
+| 精英怪外观差异 | 未完成 | 可复用但未见差异化材质/模型 |
+| 变体小怪 2–4 | 已有但未接入 | SeaUrchin / HermitCrab / MantisShrimp 模型存在 |
+
+#### G2 Boss（10关独立）
+
+| 需求项 | 状态 | 已有资源/备注 |
+|--------|------|---------------|
+| L01–L10 Boss 模型 | 未完成 | 仅有占位 ENM_Starman_01 |
+
+#### G3 环境通用模块
+
+| 需求项 | 状态 | 已有资源/备注 |
+|--------|------|---------------|
+| 地面/墙体/平台（12–20） | 部分完成 | 深层异种巢穴、地面模块 FBX |
+| 立柱/栏杆/梯台（8–12） | 未完成 | 未发现 |
+| 岩石/碎片/残骸（15–25） | 未完成 | 未发现 |
+| 门/闸/通道（4–6） | 未完成 | 未发现 |
+| 管线/电缆/机壳（10–15） | 未完成 | 未发现 |
+| Decal/标识（10–20） | 未完成 | 未发现 |
+
+#### G4 关卡专属套件（10关）
+
+| 需求项 | 状态 | 已有资源/备注 |
+|--------|------|---------------|
+| L01–L10 专属套件 | 未完成 | 未发现关卡专属模型 |
+
+#### G5 交互/道具/机关
+
+| 需求项 | 状态 | 已有资源/备注 |
+|--------|------|---------------|
+| 据点核心/占点装置 | 未完成 | 未发现 |
+| 防守目标 | 未完成 | 未发现 |
+| 补给箱/拾取物 | 部分完成 | Assets/Prefabs/Pickups/PearlPickup.prefab |
+| 机关/可破坏物 | 未完成 | 未发现 |
+
+#### G6 UI/2D 资产
+
+| 需求项 | 状态 | 已有资源/备注 |
+|--------|------|---------------|
+| HUD/图标/按钮/面板 | 未完成 | 未发现独立 UI 美术资产 |
+| Boss UI/阶段图标 | 未完成 | 未发现 |
+| 商店/货币图标 | 未完成 | 未发现 |
+
+#### G7 VFX（视觉特效）
+
+| 需求项 | 状态 | 已有资源/备注 |
+|--------|------|---------------|
+| 通用战斗VFX | 未完成 | 无 VFX 资源 |
+| 技能VFX | 未完成 | 无 VFX 资源 |
+| Boss VFX | 未完成 | 无 VFX 资源 |
+| 环境VFX | 未完成 | 无 VFX 资源 |
+| 据点事件VFX | 未完成 | 无 VFX 资源 |
+
+#### G8 动画需求（制作清单）
+
+| 需求项 | 状态 | 已有资源/备注 |
+|--------|------|---------------|
+| 玩家完整战斗/移动动画 | 未完成 | 未发现玩家专用动画集合 |
+| 小怪通用动画链 | 部分完成 | 仅有零散 FBX 动作 |
+| Rusher/Tank/Elite 专属 | 未完成 | 未见完整链路 |
+| Boss 动画（出场/Phase/技能） | 未完成 | 未见 |
+
+#### G9 品牌与商店素材
+
+| 需求项 | 状态 | 已有资源/备注 |
+|--------|------|---------------|
+| Logo | 未完成 | 未发现 |
+| Steam 商店图 | 未完成 | 未发现 |
+| 宣传图 | 未完成 | 未发现 |
 20. No Mercy - Clear a stronghold without taking damage
 
 **探索/事件**

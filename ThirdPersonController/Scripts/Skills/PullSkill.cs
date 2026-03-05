@@ -22,8 +22,9 @@ namespace ThirdPersonController
 
         private readonly List<Collider> hitTargets = new List<Collider>();
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (category == SkillCategory.None)
             {
                 category = SkillCategory.Gather;
@@ -132,13 +133,17 @@ namespace ThirdPersonController
                         source = caster,
                         sourceType = DamageSourceType.PlayerSkill,
                         damage = adjustedDamage,
+                        elementType = ResolveSkillElement(caster),
+                        category = damageCategory,
                         knockback = adjustedKnockback,
+                        breakValue = GetModifiedBreakValue(caster, adjustedKnockback),
                         damageOrigin = caster.position,
                         hitPoint = enemy.transform.position,
                         hasHitPoint = true,
                         isCritical = false,
                         showDamageText = true,
-                        hitStopDuration = 0f
+                        hitStopDuration = 0f,
+                        isHeavyAttack = false
                     };
 
                     Collider targetCollider = health.GetComponent<Collider>();

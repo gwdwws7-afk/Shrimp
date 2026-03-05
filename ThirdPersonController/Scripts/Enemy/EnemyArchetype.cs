@@ -17,6 +17,18 @@ namespace ThirdPersonController
         public int expReward = 2;
         public float dropChance = 0.25f;
 
+        [Header("Resistances")]
+        [Range(-1f, 1f)]
+        public float resistPhysical = 0f;
+        [Range(-1f, 1f)]
+        public float resistHeat = 0f;
+        [Range(-1f, 1f)]
+        public float resistElectric = 0f;
+        [Range(-1f, 1f)]
+        public float resistToxin = 0f;
+        [Range(-1f, 1f)]
+        public float resistCorrosion = 0f;
+
         [Header("Detection")]
         public float detectionRange = 15f;
         public float attackRange = 2f;

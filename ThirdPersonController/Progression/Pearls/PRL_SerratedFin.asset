@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: PRL_SerratedFin
   pearlName: Serrated Fin
-  description: Sharp fin increases critical rate.
+  description: Sharp fin increases critical rate and adds toxic bites.
   rarity: 0
   pearlType: 0
   icon: {fileID: 0}
@@ -22,6 +22,9 @@ MonoBehaviour:
   - stat: 5
     type: 0
     value: 0.03
+  - stat: 33
+    type: 0
+    value: 1
   maxEnhanceLevel: 5
   enhanceBonusPerLevel: [0.01, 0.02, 0.03, 0.04, 0.05]
   scrapValue: 1

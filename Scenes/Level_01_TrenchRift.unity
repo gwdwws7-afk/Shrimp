@@ -5149,7 +5149,7 @@ MonoBehaviour:
     spawnInterval: 0.25
     shuffleSpawnPoints: 1
     groups:
-    - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+    - prefab: {fileID: 100000, guid: f1c2c9f4a8f54c5b8f9a12d347c2e5ab, type: 3}
       count: 8
       spawnIntervalOverride: -1
     eliteTrigger:
@@ -5172,7 +5172,7 @@ MonoBehaviour:
       spawnRadius: 4
       useReinforcementPoints: 1
       groups:
-      - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+      - prefab: {fileID: 100000, guid: f1c2c9f4a8f54c5b8f9a12d347c2e5ab, type: 3}
         count: 3
         spawnIntervalOverride: -1
       holdPoint: {fileID: 0}
@@ -5218,7 +5218,7 @@ MonoBehaviour:
     spawnInterval: 0.2
     shuffleSpawnPoints: 1
     groups:
-    - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+    - prefab: {fileID: 100000, guid: 6d7e5a3b91b64d8d8d3e4b2a7f9c1e02, type: 3}
       count: 12
       spawnIntervalOverride: -1
     eliteTrigger:
@@ -5241,7 +5241,7 @@ MonoBehaviour:
       spawnRadius: 4
       useReinforcementPoints: 1
       groups:
-      - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+      - prefab: {fileID: 100000, guid: f1c2c9f4a8f54c5b8f9a12d347c2e5ab, type: 3}
         count: 4
         spawnIntervalOverride: -1
       holdPoint: {fileID: 0}
@@ -5492,7 +5492,7 @@ MonoBehaviour:
     spawnInterval: 0.24
     shuffleSpawnPoints: 1
     groups:
-    - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+    - prefab: {fileID: 100000, guid: f1c2c9f4a8f54c5b8f9a12d347c2e5ab, type: 3}
       count: 10
       spawnIntervalOverride: -1
     eliteTrigger:
@@ -5532,7 +5532,7 @@ MonoBehaviour:
       spawnRadius: 6
       useReinforcementPoints: 0
       groups:
-      - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+      - prefab: {fileID: 100000, guid: f1c2c9f4a8f54c5b8f9a12d347c2e5ab, type: 3}
         count: 2
         spawnIntervalOverride: -1
       holdPoint: {fileID: 0}
@@ -5545,7 +5545,7 @@ MonoBehaviour:
     spawnInterval: 0.2
     shuffleSpawnPoints: 1
     groups:
-    - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+    - prefab: {fileID: 100000, guid: 6d7e5a3b91b64d8d8d3e4b2a7f9c1e02, type: 3}
       count: 14
       spawnIntervalOverride: -1
     eliteTrigger:

@@ -49,6 +49,9 @@ namespace ThirdPersonController
         public bool enableBreakWindow = true;
         public float breakWindowDuration = 4f;
         public float breakCooldown = 12f;
+        public float breakWindowDamageMultiplier = 1.6f;
+        public bool forceKnockdownDuringBreak = true;
+        public bool allowHeavyKnockdownOutsideBreak = false;
         public float staggerMax = 100f;
         public float staggerPerDamage = 1f;
         public string breakTrigger = "Break";
@@ -56,6 +59,11 @@ namespace ThirdPersonController
         [Header("Weak Point")]
         public Transform weakPoint;
         public float weakPointDamageMultiplier = 2f;
+        public float weakPointRadius = 0.75f;
+
+        [Header("Weakness")]
+        public bool useResistanceWeakness = true;
+        public DamageElementType weakElementType = DamageElementType.Physical;
 
         [Header("Debug")]
         public bool debugMessages = false;
@@ -74,6 +82,9 @@ namespace ThirdPersonController
         private float breakTimer;
         private float staggerCurrent;
         private PlayerHealth cachedPlayer;
+        private bool suppressNextDamageStagger;
+
+        public bool IsBreakWindowActive => breakWindowActive;
 
         protected virtual void Awake()
         {
@@ -167,7 +178,34 @@ namespace ThirdPersonController
                 return;
             }
 
-            staggerCurrent = Mathf.Min(staggerMax, staggerCurrent + damage * Mathf.Max(0f, staggerPerDamage));
+            if (suppressNextDamageStagger)
+            {
+                suppressNextDamageStagger = false;
+                return;
+            }
+
+            ApplyBreakValue(damage * Mathf.Max(0f, staggerPerDamage));
+        }
+
+        public void RegisterBreakValue(float breakValue)
+        {
+            if (!enableBreakWindow || breakWindowActive || breakValue <= 0f)
+            {
+                return;
+            }
+
+            if (breakCooldownTimer > 0f)
+            {
+                return;
+            }
+
+            suppressNextDamageStagger = true;
+            ApplyBreakValue(breakValue);
+        }
+
+        private void ApplyBreakValue(float value)
+        {
+            staggerCurrent = Mathf.Min(staggerMax, staggerCurrent + value);
             if (staggerCurrent >= staggerMax)
             {
                 TriggerBreakWindow();
@@ -192,6 +230,7 @@ namespace ThirdPersonController
             }
 
             OnBreakWindowStart?.Invoke();
+            GameEvents.BossBreakWindowStart();
             if (debugMessages)
             {
                 GameEvents.ShowMessage("Break Window", 2f);
@@ -268,6 +307,58 @@ namespace ThirdPersonController
             }
 
             return available[available.Count - 1];
+        }
+
+        public bool IsWeakPointHit(Vector3 hitPoint)
+        {
+            if (weakPoint == null)
+            {
+                return false;
+            }
+
+            float radius = Mathf.Max(0.05f, weakPointRadius);
+            return Vector3.Distance(weakPoint.position, hitPoint) <= radius;
+        }
+
+        public DamageElementType GetWeakElementType(EnemyHealth health)
+        {
+            if (!useResistanceWeakness)
+            {
+                return weakElementType;
+            }
+
+            if (health == null)
+            {
+                return weakElementType;
+            }
+
+            float min = health.resistPhysical;
+            DamageElementType selected = DamageElementType.Physical;
+
+            if (health.resistHeat < min)
+            {
+                min = health.resistHeat;
+                selected = DamageElementType.Heat;
+            }
+
+            if (health.resistElectric < min)
+            {
+                min = health.resistElectric;
+                selected = DamageElementType.Electric;
+            }
+
+            if (health.resistToxin < min)
+            {
+                min = health.resistToxin;
+                selected = DamageElementType.Toxin;
+            }
+
+            if (health.resistCorrosion < min)
+            {
+                selected = DamageElementType.Corrosion;
+            }
+
+            return selected;
         }
 
         protected virtual IEnumerator ExecuteSkill(BossSkillDefinition skill)

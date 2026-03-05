@@ -20,14 +20,19 @@ MonoBehaviour:
   defense: 0
   expReward: 2
   dropChance: 0.25
-  detectionRange: 14
+  resistPhysical: 0
+  resistHeat: -0.05
+  resistElectric: 0
+  resistToxin: 0
+  resistCorrosion: 0
+  detectionRange: 15
   attackRange: 2
-  fieldOfView: 120
+  fieldOfView: 125
   patrolSpeed: 2.2
   chaseSpeed: 4.2
   rotationSpeed: 6
   stoppingDistance: 1.5
-  attackCooldown: 1.6
+  attackCooldown: 1.55
   attackDamage: 9
   attackKnockback: 2.6
   attackWindup: 0.4

@@ -15,50 +15,55 @@ MonoBehaviour:
   archetypeId: elite
   displayName: 深渊精英
   enemyType: 3
-  maxHealth: 220
-  hitStunDuration: 0.22
-  defense: 1
-  expReward: 8
-  dropChance: 0.4
-  detectionRange: 18
-  attackRange: 2.2
-  fieldOfView: 140
-  patrolSpeed: 2.4
-  chaseSpeed: 4.6
-  rotationSpeed: 7
-  stoppingDistance: 1.5
-  attackCooldown: 1.4
-  attackDamage: 16
-  attackKnockback: 3.6
-  attackWindup: 0.35
-  attackActiveTime: 0.12
-  attackRecovery: 0.45
-  attackHitRadius: 1.2
-  attackHitAngle: 130
+  maxHealth: 260
+  hitStunDuration: 0.18
+  defense: 2
+  expReward: 10
+  dropChance: 0.45
+  resistPhysical: 0.1
+  resistHeat: 0.1
+  resistElectric: 0.1
+  resistToxin: 0.05
+  resistCorrosion: 0.05
+  detectionRange: 20
+  attackRange: 2.4
+  fieldOfView: 150
+  patrolSpeed: 2.6
+  chaseSpeed: 5
+  rotationSpeed: 7.5
+  stoppingDistance: 1.4
+  attackCooldown: 1.2
+  attackDamage: 18
+  attackKnockback: 4
+  attackWindup: 0.3
+  attackActiveTime: 0.13
+  attackRecovery: 0.4
+  attackHitRadius: 1.25
+  attackHitAngle: 140
   canDodge: 1
-  dodgeChance: 0.2
+  dodgeChance: 0.25
   canBlock: 1
-  blockChance: 0.15
-  canCharge: 0
-  chargeSpeed: 9
-  chargeWindup: 0.45
+  blockChance: 0.2
+  canCharge: 1
+  chargeSpeed: 11
+  chargeWindup: 0.4
   canFlee: 0
   fleeHealthThreshold: 0.2
   useCrowdCoordinator: 1
-  ringStandoffDistance: 2.6
+  ringStandoffDistance: 2.3
   overrideAgentSettings: 1
-  agentSpeed: 3.8
-  agentAcceleration: 8
-  agentAngularSpeed: 380
-  agentStoppingDistance: 1.4
-  agentRadius: 0.45
-  agentHeight: 1.85
+  agentSpeed: 4.2
+  agentAcceleration: 9
+  agentAngularSpeed: 400
+  agentStoppingDistance: 1.3
+  agentRadius: 0.46
+  agentHeight: 1.9
   overrideHitReaction: 1
-  knockbackThreshold: 2.2
-  knockdownThreshold: 6.5
-  flinchDuration: 0.2
-  knockbackDuration: 0.26
-  knockbackDistance: 1.1
-  knockdownDuration: 0.35
-  knockdownDistance: 2.4
-  knockdownRecoverTime: 0.6
+  knockbackThreshold: 2.6
+  knockdownThreshold: 7.2
+  flinchDuration: 0.18
+  knockbackDuration: 0.23
+  knockbackDistance: 1
+  knockdownDuration: 0.33
+  knockdownDistance: 2.2
+  knockdownRecoverTime: 0.55

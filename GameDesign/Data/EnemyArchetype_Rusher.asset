@@ -15,50 +15,55 @@ MonoBehaviour:
   archetypeId: rusher
   displayName: 深渊突击
   enemyType: 1
-  maxHealth: 45
-  hitStunDuration: 0.2
+  maxHealth: 40
+  hitStunDuration: 0.18
   defense: 0
   expReward: 3
-  dropChance: 0.28
-  detectionRange: 16
-  attackRange: 1.8
-  fieldOfView: 140
-  patrolSpeed: 2.6
-  chaseSpeed: 5.2
-  rotationSpeed: 7
-  stoppingDistance: 1.2
-  attackCooldown: 1.2
-  attackDamage: 9
-  attackKnockback: 2.4
-  attackWindup: 0.3
+  dropChance: 0.3
+  resistPhysical: 0
+  resistHeat: 0
+  resistElectric: -0.1
+  resistToxin: 0.1
+  resistCorrosion: 0
+  detectionRange: 18
+  attackRange: 1.7
+  fieldOfView: 150
+  patrolSpeed: 2.8
+  chaseSpeed: 5.6
+  rotationSpeed: 8
+  stoppingDistance: 1.1
+  attackCooldown: 1.1
+  attackDamage: 10
+  attackKnockback: 2.2
+  attackWindup: 0.25
   attackActiveTime: 0.1
-  attackRecovery: 0.4
-  attackHitRadius: 1
-  attackHitAngle: 110
+  attackRecovery: 0.35
+  attackHitRadius: 0.95
+  attackHitAngle: 115
   canDodge: 1
-  dodgeChance: 0.15
+  dodgeChance: 0.2
   canBlock: 0
   blockChance: 0.05
   canCharge: 1
-  chargeSpeed: 9.5
-  chargeWindup: 0.4
+  chargeSpeed: 10.5
+  chargeWindup: 0.35
   canFlee: 0
   fleeHealthThreshold: 0.2
   useCrowdCoordinator: 1
-  ringStandoffDistance: 2
+  ringStandoffDistance: 1.8
   overrideAgentSettings: 1
-  agentSpeed: 4.6
-  agentAcceleration: 10
-  agentAngularSpeed: 420
-  agentStoppingDistance: 1.2
-  agentRadius: 0.35
-  agentHeight: 1.7
+  agentSpeed: 5
+  agentAcceleration: 12
+  agentAngularSpeed: 440
+  agentStoppingDistance: 1.1
+  agentRadius: 0.34
+  agentHeight: 1.65
   overrideHitReaction: 1
-  knockbackThreshold: 1.8
-  knockdownThreshold: 5.4
-  flinchDuration: 0.18
-  knockbackDuration: 0.22
-  knockbackDistance: 1.1
-  knockdownDuration: 0.3
-  knockdownDistance: 2.2
-  knockdownRecoverTime: 0.55
+  knockbackThreshold: 1.6
+  knockdownThreshold: 5
+  flinchDuration: 0.16
+  knockbackDuration: 0.2
+  knockbackDistance: 1.2
+  knockdownDuration: 0.28
+  knockdownDistance: 2.3
+  knockdownRecoverTime: 0.5

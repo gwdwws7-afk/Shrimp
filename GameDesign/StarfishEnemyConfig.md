@@ -113,7 +113,7 @@ Emission (Optional):
 **海星人 (Starfish Man)**
 ```yaml
 Type: Grunt (杂兵)
-HP: 40 (比标准50低，因为海星人较脆弱)
+HP: 40 (比标准60低，因为海星人较脆弱)
 Damage: 8
 Speed: 3 (较慢)
 Attack Range: 1.5

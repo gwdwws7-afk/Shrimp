@@ -271,6 +271,7 @@ namespace ThirdPersonController
             isRunning = true;
             strongholdRoutine = StartCoroutine(StrongholdRoutine());
             OnStrongholdStarted?.Invoke(this);
+            GameEvents.StrongholdStarted(this);
         }
 
         public void CancelStronghold()
@@ -386,10 +387,12 @@ namespace ThirdPersonController
             {
                 currentWaveIndex = i;
                 OnWaveStarted?.Invoke(this, i);
+                GameEvents.WaveStarted(this, i);
                 yield return StartCoroutine(SpawnWaveRoutine(i));
 
                 yield return new WaitUntil(() => IsWaveComplete(i));
                 OnWaveCompleted?.Invoke(this, i);
+                GameEvents.WaveCompleted(this, i);
                 CleanupWaveEvents(i);
 
                 if (waveCompleteDelay > 0f)
@@ -403,6 +406,7 @@ namespace ThirdPersonController
             currentWaveIndex = -1;
             CleanupAllWaveEvents();
             OnStrongholdCompleted?.Invoke(this);
+            GameEvents.StrongholdCompleted(this);
         }
 
         public bool TryGetWaveStatus(out int waveIndex, out int totalWaves, out int remaining, out int plannedTotal)
@@ -619,6 +623,7 @@ namespace ThirdPersonController
             }
 
             eventRuntime.completed = true;
+            GameEvents.WaveEventCompleted(this, waveIndex, waveEvent.eventType);
         }
 
         private IEnumerator ChaseEventRoutine(int waveIndex, int eventIndex)
@@ -665,6 +670,7 @@ namespace ThirdPersonController
             }
 
             eventRuntime.completed = true;
+            GameEvents.WaveEventCompleted(this, waveIndex, waveEvent.eventType);
         }
 
         private IEnumerator HoldPointEventRoutine(int waveIndex, int eventIndex)
@@ -715,6 +721,7 @@ namespace ThirdPersonController
             }
 
             eventRuntime.completed = true;
+            GameEvents.WaveEventCompleted(this, waveIndex, waveEvent.eventType);
         }
 
         private IEnumerator ProtectTargetEventRoutine(int waveIndex, int eventIndex)
@@ -804,6 +811,7 @@ namespace ThirdPersonController
             }
 
             eventRuntime.completed = true;
+            GameEvents.WaveEventCompleted(this, waveIndex, waveEvent.eventType);
         }
 
         private void CheckEliteTrigger(int waveIndex)

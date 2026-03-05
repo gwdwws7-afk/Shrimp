@@ -300,7 +300,7 @@ public struct EnemyData : IComponentData
     public float attackRange;
     public float attackCooldown;
     public float attackTimer;
-    public int enemyType; // 0=Grunt, 1=Elite, etc.
+    public int enemyType; // 0=Grunt, 1=Rusher, 2=Tank, 3=Elite, 4=Mutant, 5=Boss
     public bool isDead;
 }
 

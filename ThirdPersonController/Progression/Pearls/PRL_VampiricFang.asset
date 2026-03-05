@@ -14,14 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: PRL_VampiricFang
   pearlName: Vampiric Fang
-  description: Drains life from enemies on hit.
+  description: Drains life from enemies on hit with toxic strikes.
   rarity: 2
   pearlType: 0
   icon: {fileID: 0}
   modifiers:
-  - stat: 21
-    type: 1
+  - stat: 23
+    type: 0
     value: 0.05
+  - stat: 33
+    type: 0
+    value: 1
   maxEnhanceLevel: 5
   enhanceBonusPerLevel: [0.01, 0.02, 0.03, 0.04, 0.05]
   scrapValue: 5

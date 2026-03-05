@@ -14,13 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: PRL_Stormcoil
   pearlName: Stormcoil
-  description: Tightens cooldown loops and feeds musou.
+  description: Tightens cooldown loops, feeds musou, and charges skills with electricity.
   rarity: 2
+  pearlType: 2
   icon: {fileID: 0}
   modifiers:
-  - stat: 9
+  - stat: 19
     type: 1
     value: -0.12
-  - stat: 7
+  - stat: 17
     type: 1
     value: 0.1
+  - stat: 36
+    type: 0
+    value: 1

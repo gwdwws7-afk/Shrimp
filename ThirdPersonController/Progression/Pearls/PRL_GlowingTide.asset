@@ -14,13 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: PRL_GlowingTide
   pearlName: Glowing Tide
-  description: Expands your reach and fuels musou faster.
+  description: Expands your reach, fuels musou faster, and sparks skills.
   rarity: 1
+  pearlType: 2
   icon: {fileID: 0}
   modifiers:
   - stat: 1
     type: 1
     value: 0.15
-  - stat: 7
+  - stat: 17
     type: 1
     value: 0.2
+  - stat: 36
+    type: 0
+    value: 1

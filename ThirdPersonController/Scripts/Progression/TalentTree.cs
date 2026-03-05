@@ -104,6 +104,7 @@ namespace ThirdPersonController
             unlockedNodes.Add(nodeId);
             NotifyChanged();
             OnTalentUnlocked?.Invoke(nodeId);
+            GameEvents.TalentUnlocked(nodeId, node.cost);
             GameEvents.ShowMessage($"天赋已解锁: {node.title}", 2f);
             return true;
         }

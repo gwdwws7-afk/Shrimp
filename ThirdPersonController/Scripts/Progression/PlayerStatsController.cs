@@ -226,6 +226,22 @@ namespace ThirdPersonController
             return Mathf.Max(0f, ApplyModifiers(baseKnockback, StatType.SkillKnockback));
         }
 
+        public DamageElementType GetAttackElementType()
+        {
+            return ResolveElementType(StatType.AttackElementHeat,
+                StatType.AttackElementElectric,
+                StatType.AttackElementToxin,
+                StatType.AttackElementCorrosion);
+        }
+
+        public DamageElementType GetSkillElementType()
+        {
+            return ResolveElementType(StatType.SkillElementHeat,
+                StatType.SkillElementElectric,
+                StatType.SkillElementToxin,
+                StatType.SkillElementCorrosion);
+        }
+
         public float ApplySkillStaminaCost(float baseCost)
         {
             return Mathf.Max(0f, ApplyModifiers(baseCost, StatType.SkillStaminaCost));
@@ -312,6 +328,37 @@ namespace ThirdPersonController
             float value = baseValue + flat;
             value *= 1f + percent;
             return value;
+        }
+
+        private DamageElementType ResolveElementType(StatType heatStat, StatType electricStat, StatType toxinStat, StatType corrosionStat)
+        {
+            float heat = ApplyModifiers(0f, heatStat);
+            float electric = ApplyModifiers(0f, electricStat);
+            float toxin = ApplyModifiers(0f, toxinStat);
+            float corrosion = ApplyModifiers(0f, corrosionStat);
+
+            float max = Mathf.Max(heat, electric, toxin, corrosion);
+            if (max <= 0f)
+            {
+                return DamageElementType.Physical;
+            }
+
+            if (Mathf.Approximately(max, heat))
+            {
+                return DamageElementType.Heat;
+            }
+
+            if (Mathf.Approximately(max, electric))
+            {
+                return DamageElementType.Electric;
+            }
+
+            if (Mathf.Approximately(max, toxin))
+            {
+                return DamageElementType.Toxin;
+            }
+
+            return DamageElementType.Corrosion;
         }
     }
 }

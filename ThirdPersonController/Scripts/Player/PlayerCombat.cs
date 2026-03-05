@@ -48,6 +48,9 @@ namespace ThirdPersonController
         public float heavyRangeMultiplier = 1.1f;
         public float heavyRadiusMultiplier = 1.1f;
         public float heavyHitStopMultiplier = 1.2f;
+        public float lightImpactScale = 0.3f;
+        public float heavyImpactScale = 0.35f;
+        public float berserkImpactMultiplier = 2f;
 
         [Header("Combo Settings")]
         public int maxComboCount = 999;              // 最大999连击
@@ -1185,19 +1188,33 @@ namespace ThirdPersonController
                 EnemyHealth enemyHealth = hitCollider.GetComponent<EnemyHealth>();
                 if (enemyHealth != null)
                 {
-                    float appliedKnockback = berserkInvincible && isBerserk ? knockback * 2f : knockback;
+                    float impactScale = isHeavyImpact ? heavyImpactScale : lightImpactScale;
+                    float appliedKnockback = knockback * impactScale;
+                    if (berserkInvincible && isBerserk)
+                    {
+                        appliedKnockback *= berserkImpactMultiplier;
+                    }
+                    DamageElementType elementType = DamageElementType.Physical;
+                    if (statsController != null)
+                    {
+                        elementType = statsController.GetAttackElementType();
+                    }
                     DamageContext context = new DamageContext
                     {
                         source = transform,
                         sourceType = DamageSourceType.PlayerAttack,
                         damage = finalDamage,
+                        elementType = elementType,
+                        category = isHeavyImpact ? DamageCategory.Heavy : DamageCategory.Light,
                         knockback = appliedKnockback,
+                        breakValue = appliedKnockback,
                         damageOrigin = transform.position,
                         hitPoint = hitCollider.bounds.center,
                         hasHitPoint = true,
                         isCritical = false,
                         showDamageText = true,
-                        hitStopDuration = appliedHitStop
+                        hitStopDuration = appliedHitStop,
+                        isHeavyAttack = isHeavyImpact
                     };
 
                     if (DamageService.ApplyDamage(context, hitCollider))

@@ -111,6 +111,9 @@ namespace ThirdPersonController
         // 存档文件路径
         private string SavePath => Application.persistentDataPath + "/savegame.dat";
         private string SettingsPath => Application.persistentDataPath + "/settings.dat";
+
+        public string SaveFilePath => SavePath;
+        public string SettingsFilePath => SettingsPath;
         
         // 当前游戏数据
         public GameData CurrentData { get; private set; }

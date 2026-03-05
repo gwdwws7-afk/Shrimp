@@ -58,7 +58,12 @@ namespace ThirdPersonController
 
         public EnemyHitReactionType ApplyHit(Vector3 damageSource, float knockbackForce)
         {
-            EnemyHitReactionType reactionType = GetReactionType(knockbackForce);
+            return ApplyHit(damageSource, knockbackForce, null);
+        }
+
+        public EnemyHitReactionType ApplyHit(Vector3 damageSource, float knockbackForce, EnemyHitReactionType? forcedReaction)
+        {
+            EnemyHitReactionType reactionType = forcedReaction ?? GetReactionType(knockbackForce);
             lastReactionType = reactionType;
 
             if (reactionRoutine != null)
