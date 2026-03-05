@@ -10,6 +10,12 @@ namespace ThirdPersonController
     {
         [Header("技能槽位")]
         public SkillBase[] skills = new SkillBase[6]; // Q/W/E/R/T/F
+
+        [Header("自动加载")]
+        public bool autoLoadFromResources = true;
+        public SkillLoadoutConfig loadoutConfig;
+        public string defaultLoadoutResourcePath = "Skills/DefaultSkillLoadout";
+        public string resourcesFolder = "Skills";
         
         [Header("按键绑定")]
         public KeyCode[] skillKeys = new KeyCode[6] 
@@ -54,6 +60,11 @@ namespace ThirdPersonController
 
             if (timelineController == null)
                 timelineController = GetComponent<SkillTimelineController>();
+
+            if (autoLoadFromResources)
+            {
+                AutoLoadSkills();
+            }
         }
 
         private void OnEnable()
@@ -89,6 +100,55 @@ namespace ThirdPersonController
             
             // 处理输入
             HandleInput();
+        }
+
+        private void AutoLoadSkills()
+        {
+            if (skills == null || skills.Length == 0)
+            {
+                skills = new SkillBase[6];
+            }
+
+            SkillLoadoutConfig config = loadoutConfig;
+            if (config == null && !string.IsNullOrEmpty(defaultLoadoutResourcePath))
+            {
+                config = Resources.Load<SkillLoadoutConfig>(defaultLoadoutResourcePath);
+            }
+
+            string folder = config != null && !string.IsNullOrEmpty(config.resourcesFolder)
+                ? config.resourcesFolder
+                : resourcesFolder;
+            string[] names = config != null ? config.skillResourceNames : null;
+
+            for (int i = 0; i < skills.Length; i++)
+            {
+                if (skills[i] != null)
+                {
+                    continue;
+                }
+
+                string resourceName = names != null && names.Length > i
+                    ? names[i]
+                    : string.Empty;
+
+                if (string.IsNullOrEmpty(resourceName))
+                {
+                    continue;
+                }
+
+                string path = string.IsNullOrEmpty(folder)
+                    ? resourceName
+                    : $"{folder}/{resourceName}";
+                SkillBase loaded = Resources.Load<SkillBase>(path);
+                if (loaded != null)
+                {
+                    skills[i] = loaded;
+                }
+                else
+                {
+                    Debug.LogWarning($"[SkillManager] Missing skill asset at Resources/{path}");
+                }
+            }
         }
         
         /// <summary>

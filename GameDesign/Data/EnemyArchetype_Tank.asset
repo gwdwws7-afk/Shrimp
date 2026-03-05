@@ -29,9 +29,9 @@ MonoBehaviour:
   attackRange: 2.6
   fieldOfView: 100
   patrolSpeed: 1.6
-  chaseSpeed: 2.6
-  rotationSpeed: 4
-  stoppingDistance: 2
+  chaseSpeed: 2.4
+  rotationSpeed: 3.8
+  stoppingDistance: 2.2
   attackCooldown: 2.4
   attackDamage: 18
   attackKnockback: 5.2
@@ -43,14 +43,14 @@ MonoBehaviour:
   canDodge: 0
   dodgeChance: 0.02
   canBlock: 1
-  blockChance: 0.25
+  blockChance: 0.35
   canCharge: 0
   chargeSpeed: 7
   chargeWindup: 0.65
   canFlee: 0
   fleeHealthThreshold: 0.2
   useCrowdCoordinator: 1
-  ringStandoffDistance: 3.4
+  ringStandoffDistance: 3.6
   overrideAgentSettings: 1
   agentSpeed: 2.4
   agentAcceleration: 5

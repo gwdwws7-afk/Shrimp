@@ -9,17 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96cd7184044a46842aed85a8e9e9b789, type: 3}
-  m_Name: SKILL_Ultimate
+  m_Script: {fileID: 11500000, guid: 1da1873d1cf92f748811d5187c7d73fd, type: 3}
+  m_Name: SKILL_Pull
   m_EditorClassIdentifier: 
-  skillName: Ultimate Judgment
-  description: Massive damage to all enemies in range.
+  skillName: Pull
+  description: Pull nearby enemies and slam them on landing.
   icon: {fileID: 0}
   keyBinding: 0
-  category: 2
-  cooldown: 25
-  staminaCost: 40
-  damage: 80
+  category: 4
+  cooldown: 10
+  staminaCost: 20
+  damage: 50
   range: 5
   effectDuration: 2
   castDuration: 0.5
@@ -33,10 +33,10 @@ MonoBehaviour:
   damageReductionTiming: 0
   endsOnRecovery: 1
   useAnimationEvents: 1
-  impactDelay: 0.26
-  recoveryDelay: 0.38
-  impactShakeDuration: 0.18
-  impactShakeStrength: 0.3
+  impactDelay: 0.24
+  recoveryDelay: 0.32
+  impactShakeDuration: 0.12
+  impactShakeStrength: 0.22
   useCategoryTint: 1
   castTint: {r: 1, g: 1, b: 1, a: 1}
   impactTint: {r: 1, g: 1, b: 1, a: 1}
@@ -49,19 +49,19 @@ MonoBehaviour:
   hitSound: {fileID: 0}
   impactSound: {fileID: 0}
   elementType: 0
-  damageCategory: 3
+  damageCategory: 2
   breakValue: 0
   breakValueMultiplier: 1
-  impactScale: 0.6
-  effectRadius: 20
-  stunDuration: 3
-  knockbackForce: 15
-  refreshCooldownsOnKill: 1
-  slowMotionDuration: 1
-  slowMotionScale: 0.3
-*** Add File: C:\test\Shrimp\Assets\ThirdPersonController\Skills\SkillAssets\SKILL_Ultimate.asset.meta
+  impactScale: 0.3
+  pullRadius: 10
+  pullForce: 15
+  liftHeight: 3
+  floatDuration: 1.5
+  landingDamage: 40
+  landingKnockback: 8
+*** Add File: C:\test\Shrimp\Assets\ThirdPersonController\Skills\SkillAssets\SKILL_Pull.asset.meta
 fileFormatVersion: 2
-guid: f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1
+guid: e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 11400000
