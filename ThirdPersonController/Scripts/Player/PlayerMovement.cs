@@ -45,6 +45,9 @@ namespace ThirdPersonController
         public float speedDampTime = 0.12f;
         public float speedStopThreshold = 0.15f;
 
+        [Header("Status Effects")]
+        public float minSlowMultiplier = 0.2f;
+
         private Rigidbody rb;
         private PlayerInputHandler input;
         private CapsuleCollider capsuleCollider;
@@ -67,6 +70,8 @@ namespace ThirdPersonController
         private Vector3 currentVelocity;
         private float targetSpeed;
         private float currentHeight;
+        private float externalSpeedMultiplier = 1f;
+        private float externalSpeedTimer = 0f;
 
         public bool IsGrounded => isGrounded;
         public bool IsSprinting => isSprinting;
@@ -108,6 +113,7 @@ namespace ThirdPersonController
             CheckGround();
             HandleJumpBuffer();
             UpdateAnimations();
+            UpdateExternalSpeed();
         }
 
         private void FixedUpdate()
@@ -164,11 +170,12 @@ namespace ThirdPersonController
                 return;
             }
 
+            float effectiveSpeed = targetSpeed * externalSpeedMultiplier;
             if (moveDirection.magnitude > 0.1f)
             {
                 // 平滑加速
                 currentVelocity = Vector3.MoveTowards(currentVelocity, 
-                    moveDirection * targetSpeed, acceleration * Time.fixedDeltaTime);
+                    moveDirection * effectiveSpeed, acceleration * Time.fixedDeltaTime);
 
                 // 旋转朝向移动方向
                 if (actionController == null || !actionController.IsRotationLocked)
@@ -187,6 +194,30 @@ namespace ThirdPersonController
 
             // 应用速度（保持Y轴速度）
             rb.velocity = new Vector3(currentVelocity.x, rb.velocity.y, currentVelocity.z);
+        }
+
+        private void UpdateExternalSpeed()
+        {
+            if (externalSpeedTimer > 0f)
+            {
+                externalSpeedTimer -= Time.deltaTime;
+                if (externalSpeedTimer <= 0f)
+                {
+                    externalSpeedMultiplier = 1f;
+                }
+            }
+        }
+
+        public void ApplyMoveSlow(float multiplier, float duration)
+        {
+            if (duration <= 0f)
+            {
+                return;
+            }
+
+            float clamped = Mathf.Clamp(multiplier, minSlowMultiplier, 1f);
+            externalSpeedMultiplier = Mathf.Min(externalSpeedMultiplier, clamped);
+            externalSpeedTimer = Mathf.Max(externalSpeedTimer, duration);
         }
 
         private void HandleJumpBuffer()

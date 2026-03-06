@@ -25,6 +25,9 @@ namespace ThirdPersonController
         [Header("状态")]
         public bool isExhausted = false;           // 是否力竭
         public float exhaustionDuration = 2f;      // 力竭持续时间
+
+        [Header("力竭恢复")]
+        public bool allowRecoveryWhileExhausted = true;
         
         // 事件
         public System.Action<float, float> OnStaminaChanged;
@@ -161,7 +164,12 @@ namespace ThirdPersonController
         /// </summary>
         public void RecoverStamina(float amount)
         {
-            if (isExhausted) return;  // 力竭状态不能恢复
+            if (isExhausted && !allowRecoveryWhileExhausted) return;
+
+            if (isExhausted)
+            {
+                ClearExhaustion();
+            }
             
             float oldStamina = currentStamina;
             currentStamina += amount;
@@ -178,7 +186,12 @@ namespace ThirdPersonController
         /// </summary>
         public void RecoverAllStamina()
         {
-            if (isExhausted) return;
+            if (isExhausted && !allowRecoveryWhileExhausted) return;
+
+            if (isExhausted)
+            {
+                ClearExhaustion();
+            }
             
             currentStamina = maxStamina;
             NotifyStaminaChanged();
@@ -207,6 +220,14 @@ namespace ThirdPersonController
         {
             OnStaminaChanged?.Invoke(currentStamina, maxStamina);
             GameEvents.StaminaChanged(currentStamina, maxStamina);
+        }
+
+        private void ClearExhaustion()
+        {
+            isExhausted = false;
+            exhaustionTimer = 0f;
+            canRecover = true;
+            OnExhaustionEnd?.Invoke();
         }
         
         #region 便捷方法

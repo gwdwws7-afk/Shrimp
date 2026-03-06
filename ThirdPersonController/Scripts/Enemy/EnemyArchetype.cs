@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ThirdPersonController
@@ -49,6 +50,10 @@ namespace ThirdPersonController
         public float attackRecovery = 0.45f;
         public float attackHitRadius = 1.1f;
         public float attackHitAngle = 120f;
+
+        [Header("Attack Patterns")]
+        public bool useAttackPatterns = false;
+        public List<EnemyAttackPattern> attackPatterns = new List<EnemyAttackPattern>();
 
         [Header("Advanced AI")]
         public bool canDodge = false;

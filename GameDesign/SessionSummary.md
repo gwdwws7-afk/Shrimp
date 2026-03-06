@@ -1,6 +1,6 @@
 # 深渊猎手项目 - 会话总结报告
 
-更新日期: 2026-02-28
+更新日期: 2026-03-06
 工作目录: C:\test\Shrimp\Assets
 
 ---
@@ -17,6 +17,7 @@
 ### 成长与掉落
 - 经验等级系统（PlayerExperienceSystem）
 - 珍珠掉落实体 + 拾取（PearlPickup + PearlDropManager）
+- 消耗品/深渊币掉落表接入（关卡倍率生效，直接入包/入账）
 - 新增珍珠与天赋节点，技能数值可被天赋/珍珠修正
 
 ### 据点与关卡事件
@@ -25,6 +26,11 @@
 - 据点序列完成 → 关卡完成事件联动
 - 事件型波次：援军/追击/占点/保护目标
 - 防守目标可被攻击且失败触发 GameOver
+- 变体敌人 ENM prefab 接入波次（远程/控制/自爆）
+
+### AI 与性能
+- AI 决策节奏节流（基于附近敌人数动态放慢）
+- 攻击令牌动态上限与冷却占位优化
 
 ### DOTS/Flow Field
 - DOTS 基础包接入（Entities/Entities.Graphics）
@@ -54,6 +60,12 @@
 - `Assets/ThirdPersonController/Scripts/Combat/HitQuery.cs`
 - `Assets/ThirdPersonController/Scripts/Progression/PlayerExperienceSystem.cs`
 - `Assets/ThirdPersonController/Scripts/Progression/PearlPickup.cs`
+- `Assets/ThirdPersonController/Scripts/Progression/PearlDropManager.cs`
+- `Assets/ThirdPersonController/Scripts/Progression/ConsumableUseSystem.cs`
+- `Assets/ThirdPersonController/Scripts/Progression/ConsumableCatalog.cs`
+- `Assets/ThirdPersonController/Scripts/Combat/StaminaSystem.cs`
+- `Assets/ThirdPersonController/Scripts/Enemy/EnemyAI.cs`
+- `Assets/ThirdPersonController/Scripts/Enemy/EnemyCrowdCoordinator.cs`
 - `Assets/ThirdPersonController/Scripts/Core/StrongholdRewardSystem.cs`
 - `Assets/ThirdPersonController/Scripts/UI/UI_StrongholdWavePanel.cs`
 - `Assets/ThirdPersonController/Scripts/UI/UI_ExperienceBar.cs`
@@ -84,7 +96,7 @@
 | 据点与波次推进 | ✅ 可用 |
 | UI 框架 | ✅ 可用（可自动生成） |
 | Boss/任务/章节数据 | ⚠️ 有代码，需场景接线 |
-| 大规模敌人优化 | ⏳ 规划中 |
+| 大规模敌人优化 | ⏳ 进行中（AI 节流已接入） |
 
 ---
 

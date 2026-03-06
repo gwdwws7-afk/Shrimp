@@ -1,6 +1,6 @@
 # 深渊猎手：开发任务清单
 
-更新: 2026-02-28
+更新: 2026-03-06
 当前阶段: Steam正式版内容闭环
 
 ---
@@ -18,6 +18,9 @@
 - [x] DOTS 基础包接入（Entities/Entities.Graphics）
 - [x] Flow Field 原型（Grid/Build/Move 系统）
 - [x] DOTS 敌人 Authoring/Pool 框架
+- [x] 掉落表接入（珍珠/消耗品/深渊币 + 关卡倍率）
+- [x] AI 节流与攻击令牌策略优化
+- [x] 消耗品使用冷却与数值平衡调整
 
 ---
 

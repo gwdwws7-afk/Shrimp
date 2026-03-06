@@ -8,13 +8,40 @@ namespace ThirdPersonController
     {
         public string patternId = "";
         public string patternName = "Attack";
+        public int priority = 0;
+        public float weight = 1f;
         public int damage = 10;
         public float range = 2f;
+        public float minRange = 0f;
         public float cooldown = 2f;
         public float windup = 0.3f;
         public float knockback = 5f;
         public bool isRanged = false;
         public GameObject projectilePrefab;
+        public float projectileSpeed = 12f;
+        public float projectileLifetime = 4f;
+        public int projectilesPerShot = 1;
+        public float spreadAngle = 0f;
+        public bool useRandomSpread = false;
+        public float spreadJitter = 0f;
+        public bool usePredictiveAim = false;
+        public float predictionFactor = 1f;
+        public float maxPredictionTime = 1f;
+
+        [Header("Status Effects")]
+        public bool applySlow = false;
+        public float slowMultiplier = 0.6f;
+        public float slowDuration = 2f;
+        public bool applyDamageReduction = false;
+        public float damageReduction = 0.2f;
+        public float damageReductionDuration = 2f;
+
+        [Header("Suicide")]
+        public bool isSuicide = false;
+        public float explosionRadius = 3f;
+        public int explosionDamage = 25;
+        public float explosionKnockback = 5f;
+        public float selfDestructDelay = 0f;
     }
 
     [System.Serializable]

@@ -14,9 +14,23 @@ namespace ThirdPersonController
         public float ringRadius = 2.6f;
         public float ringJitter = 0.4f;
 
+        [Header("Attack Token Scaling")]
+        public bool scaleAttackersWithNearby = true;
+        public int maxActiveAttackersCap = 8;
+        public int attackersPerNearbyEnemy = 6;
+
+        [Header("Crowd Sampling")]
+        public float nearbyCountRadius = 12f;
+        public float nearbyCountInterval = 0.5f;
+
         private readonly HashSet<EnemyAI> activeAttackers = new HashSet<EnemyAI>();
         private readonly Dictionary<EnemyAI, int> slotMap = new Dictionary<EnemyAI, int>();
+        private readonly List<EnemyAI> registeredEnemies = new List<EnemyAI>();
         private int nextSlotIndex = 0;
+        private int nearbyEnemyCount = 0;
+        private float nextCountTime = 0f;
+
+        public int NearbyEnemyCount => nearbyEnemyCount;
 
         private void Awake()
         {
@@ -30,6 +44,11 @@ namespace ThirdPersonController
             }
         }
 
+        private void Update()
+        {
+            UpdateNearbyCount();
+        }
+
         public void Register(EnemyAI enemy)
         {
             if (enemy == null)
@@ -40,6 +59,11 @@ namespace ThirdPersonController
             if (!slotMap.ContainsKey(enemy))
             {
                 slotMap[enemy] = GetNextSlot();
+            }
+
+            if (!registeredEnemies.Contains(enemy))
+            {
+                registeredEnemies.Add(enemy);
             }
         }
 
@@ -52,6 +76,7 @@ namespace ThirdPersonController
 
             activeAttackers.Remove(enemy);
             slotMap.Remove(enemy);
+            registeredEnemies.Remove(enemy);
         }
 
         public bool RequestAttackToken(EnemyAI enemy)
@@ -66,7 +91,8 @@ namespace ThirdPersonController
                 return true;
             }
 
-            if (activeAttackers.Count >= maxActiveAttackers)
+            int effectiveMax = GetEffectiveMaxAttackers();
+            if (activeAttackers.Count >= effectiveMax)
             {
                 return false;
             }
@@ -105,6 +131,70 @@ namespace ThirdPersonController
             Vector3 offset = rotation * Vector3.forward * ringRadius;
 
             return player.position + offset;
+        }
+
+        private void UpdateNearbyCount()
+        {
+            if (nearbyCountInterval <= 0f)
+            {
+                return;
+            }
+
+            if (Time.time < nextCountTime)
+            {
+                return;
+            }
+
+            nextCountTime = Time.time + Mathf.Max(0.05f, nearbyCountInterval);
+
+            if (player == null)
+            {
+                nearbyEnemyCount = 0;
+                return;
+            }
+
+            float radiusSqr = nearbyCountRadius * nearbyCountRadius;
+            int count = 0;
+            for (int i = registeredEnemies.Count - 1; i >= 0; i--)
+            {
+                EnemyAI enemy = registeredEnemies[i];
+                if (enemy == null)
+                {
+                    registeredEnemies.RemoveAt(i);
+                    continue;
+                }
+
+                if (!enemy.isActiveAndEnabled)
+                {
+                    continue;
+                }
+
+                Vector3 diff = enemy.transform.position - player.position;
+                if (diff.sqrMagnitude <= radiusSqr)
+                {
+                    count++;
+                }
+            }
+
+            nearbyEnemyCount = count;
+        }
+
+        private int GetEffectiveMaxAttackers()
+        {
+            if (!scaleAttackersWithNearby)
+            {
+                return Mathf.Max(1, maxActiveAttackers);
+            }
+
+            int cap = maxActiveAttackersCap > 0 ? maxActiveAttackersCap : maxActiveAttackers;
+            int baseMax = Mathf.Max(1, maxActiveAttackers);
+            int extra = 0;
+            if (attackersPerNearbyEnemy > 0 && nearbyEnemyCount > 0)
+            {
+                extra = nearbyEnemyCount / attackersPerNearbyEnemy;
+            }
+
+            return Mathf.Clamp(baseMax + extra, baseMax, Mathf.Max(baseMax, cap));
         }
 
         private int GetNextSlot()

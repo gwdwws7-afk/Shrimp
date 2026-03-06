@@ -7,9 +7,11 @@ namespace ThirdPersonController
         public ConsumableInventory inventory;
         public ConsumableCatalog catalog;
         public bool showMessages = true;
+        public float useCooldown = 1.5f;
 
         private PlayerHealth playerHealth;
         private StaminaSystem staminaSystem;
+        private float nextUseTime = 0f;
 
         private void Awake()
         {
@@ -37,6 +39,15 @@ namespace ThirdPersonController
                 return false;
             }
 
+            if (useCooldown > 0f && Time.time < nextUseTime)
+            {
+                if (showMessages)
+                {
+                    GameEvents.ShowMessage("消耗品冷却中", 1f);
+                }
+                return false;
+            }
+
             ConsumableDefinition item = catalog != null ? catalog.GetById(itemId) : null;
             if (item == null)
             {
@@ -49,6 +60,10 @@ namespace ThirdPersonController
             }
 
             ApplyEffect(item);
+            if (useCooldown > 0f)
+            {
+                nextUseTime = Time.time + useCooldown;
+            }
             return true;
         }
 

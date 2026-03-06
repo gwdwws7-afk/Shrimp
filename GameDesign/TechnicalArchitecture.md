@@ -389,6 +389,29 @@ public class EnemyPool : MonoBehaviour
 }
 ```
 
+#### 3.4 Mono 实现（当前运行时）
+
+```
+EnemyAI (Mono)
+├── 决策节奏：near/far interval + jitter
+├── 拥挤度节流：基于 EnemyCrowdCoordinator 近距离人数放慢决策
+├── 攻击令牌：动态上限（基础 + 拥挤度/比例），冷却中不占用
+└── 状态：追击/绕圈/攻击/眩晕等
+
+EnemyCrowdCoordinator
+├── 攻击令牌分配/回收
+├── 环形站位槽位
+└── 近距离敌人数采样（用于节流/令牌扩展）
+
+EnemyHealth
+└── OnDeath → GameEvents.OnEnemyKilled
+
+PearlDropManager
+├── 珍珠掉落（敌人类型配置/稀有度上限）
+├── 消耗品掉落（掉落表 → 直接入包）
+└── 深渊币掉落（掉落表 → 直接入账）
+```
+
 #### 3.4 LOD AI系统
 
 ```csharp

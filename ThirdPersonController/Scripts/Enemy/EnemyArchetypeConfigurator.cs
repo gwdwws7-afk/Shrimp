@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -106,6 +107,8 @@ namespace ThirdPersonController
                 ai.attackRecovery = archetype.attackRecovery;
                 ai.attackHitRadius = archetype.attackHitRadius;
                 ai.attackHitAngle = archetype.attackHitAngle;
+                ai.useAttackPatterns = archetype.useAttackPatterns;
+                ai.attackPatterns = new List<EnemyAttackPattern>(archetype.attackPatterns);
 
                 ai.canDodge = archetype.canDodge;
                 ai.dodgeChance = archetype.dodgeChance;

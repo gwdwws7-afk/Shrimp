@@ -13,6 +13,35 @@ namespace ThirdPersonController
     }
 
     [System.Serializable]
+    public class ConsumableDropEntry
+    {
+        public string itemId = "";
+        [Range(0f, 1f)]
+        public float weight = 1f;
+        public int minCount = 1;
+        public int maxCount = 1;
+        public EnemyType[] restrictedToEnemyTypes;
+    }
+
+    [System.Serializable]
+    public class CreditDropEntry
+    {
+        public int minCredits = 4;
+        public int maxCredits = 8;
+        [Range(0f, 1f)]
+        public float weight = 1f;
+        public EnemyType[] restrictedToEnemyTypes;
+    }
+
+    [System.Serializable]
+    public class EnemyDropChanceConfig
+    {
+        public EnemyType enemyType;
+        [Range(0f, 1f)]
+        public float dropChance = 0.2f;
+    }
+
+    [System.Serializable]
     public class EnemyDropConfig
     {
         public EnemyType enemyType;
@@ -34,6 +63,30 @@ namespace ThirdPersonController
         [Header("Enemy-specific Drops")]
         public bool useEnemyConfig = true;
         public List<EnemyDropConfig> enemyDropConfigs = new List<EnemyDropConfig>();
+
+        [Header("Consumable Drops")]
+        public bool enableConsumableDrops = true;
+        public bool useConsumableConfig = false;
+        public ConsumableInventory consumableInventory;
+        public ConsumableCatalog consumableCatalog;
+        [Range(0f, 1f)]
+        public float consumableDropChance = 0.12f;
+        public float consumableDropMultiplier = 1f;
+        public bool autoPopulateConsumableTable = true;
+        public List<ConsumableDropEntry> consumableDropTable = new List<ConsumableDropEntry>();
+        public List<EnemyDropChanceConfig> consumableDropConfigs = new List<EnemyDropChanceConfig>();
+
+        [Header("Credit Drops")]
+        public bool enableCreditDrops = true;
+        public bool useCreditConfig = false;
+        public CurrencyWallet wallet;
+        [Range(0f, 1f)]
+        public float creditDropChance = 0.35f;
+        public float creditDropMultiplier = 1f;
+        public float creditAmountMultiplier = 1f;
+        public bool autoPopulateCreditTable = true;
+        public List<CreditDropEntry> creditDropTable = new List<CreditDropEntry>();
+        public List<EnemyDropChanceConfig> creditDropConfigs = new List<EnemyDropChanceConfig>();
 
         [Header("Pickup Spawn")]
         public float spawnHeightOffset = 0.35f;
@@ -58,6 +111,22 @@ namespace ThirdPersonController
             {
                 pearlDatabase = Resources.Load<PearlDatabase>("PearlDatabase");
             }
+
+            if (consumableInventory == null)
+            {
+                consumableInventory = ConsumableInventory.EnsureInstance();
+            }
+
+            if (consumableCatalog == null)
+            {
+                consumableCatalog = Resources.Load<ConsumableCatalog>("ConsumableCatalog")
+                    ?? ConsumableCatalog.CreateDefault();
+            }
+
+            if (wallet == null)
+            {
+                wallet = CurrencyWallet.EnsureInstance();
+            }
         }
 
         private void OnEnable()
@@ -72,62 +141,53 @@ namespace ThirdPersonController
 
         private void HandleEnemyKilled(EnemyType type, Vector3 position, int expReward)
         {
-            if (inventory == null)
-            {
-                return;
-            }
-
-            float actualDropChance = dropChance;
             float difficultyMultiplier = EconomyService.GetDropChanceMultiplier(levelDifficulty);
-            actualDropChance *= Mathf.Max(0f, dropChanceMultiplier)
-                * Mathf.Max(0f, economyDropMultiplier)
-                * Mathf.Max(0f, levelDropMultiplier)
-                * Mathf.Max(0f, difficultyMultiplier);
-            
-            if (useEnemyConfig)
+            if (inventory != null)
             {
-                EnemyDropConfig config = GetEnemyConfig(type);
-                if (config == null)
-                {
-                    return;
-                }
-                
-                actualDropChance = config.dropChance * Mathf.Max(0f, dropChanceMultiplier)
+                float actualDropChance = dropChance;
+                actualDropChance *= Mathf.Max(0f, dropChanceMultiplier)
                     * Mathf.Max(0f, economyDropMultiplier)
                     * Mathf.Max(0f, levelDropMultiplier)
                     * Mathf.Max(0f, difficultyMultiplier);
-                
-                if (Random.value > actualDropChance)
+
+                if (useEnemyConfig)
                 {
-                    return;
+                    EnemyDropConfig config = GetEnemyConfig(type);
+                    if (config != null)
+                    {
+                        actualDropChance = config.dropChance * Mathf.Max(0f, dropChanceMultiplier)
+                            * Mathf.Max(0f, economyDropMultiplier)
+                            * Mathf.Max(0f, levelDropMultiplier)
+                            * Mathf.Max(0f, difficultyMultiplier);
+
+                        if (Random.value <= actualDropChance)
+                        {
+                            PearlItem pearl = PickPearlByRarity(config.minRarity, ClampRarity(config.maxRarity), config.legendaryBonus);
+                            if (pearl != null)
+                            {
+                                SpawnPickup(pearl, position);
+                            }
+                        }
+                    }
                 }
-                
-                PearlItem pearl = PickPearlByRarity(config.minRarity, ClampRarity(config.maxRarity), config.legendaryBonus);
-                if (pearl != null)
+                else
                 {
-                    SpawnPickup(pearl, position);
+                    if (dropTable != null && dropTable.Count > 0)
+                    {
+                        if (Random.value <= actualDropChance)
+                        {
+                            PearlItem pearl = PickRandomPearl();
+                            if (pearl != null)
+                            {
+                                SpawnPickup(pearl, position);
+                            }
+                        }
+                    }
                 }
             }
-            else
-            {
-                if (dropTable == null || dropTable.Count == 0)
-                {
-                    return;
-                }
 
-                if (Random.value > actualDropChance)
-                {
-                    return;
-                }
-
-                PearlItem pearl = PickRandomPearl();
-                if (pearl == null)
-                {
-                    return;
-                }
-
-                SpawnPickup(pearl, position);
-            }
+            TryDropConsumable(type, position, difficultyMultiplier);
+            TryDropCredits(type, position, difficultyMultiplier);
         }
 
         private EnemyDropConfig GetEnemyConfig(EnemyType type)
@@ -145,6 +205,24 @@ namespace ThirdPersonController
                 }
             }
             
+            return null;
+        }
+
+        private EnemyDropChanceConfig GetChanceConfig(List<EnemyDropChanceConfig> configs, EnemyType type)
+        {
+            if (configs == null)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < configs.Count; i++)
+            {
+                if (configs[i] != null && configs[i].enemyType == type)
+                {
+                    return configs[i];
+                }
+            }
+
             return null;
         }
 
@@ -248,6 +326,125 @@ namespace ThirdPersonController
             pickup.Initialize(pearl, inventory);
         }
 
+        private void TryDropConsumable(EnemyType type, Vector3 position, float difficultyMultiplier)
+        {
+            if (!enableConsumableDrops)
+            {
+                return;
+            }
+
+            if (consumableInventory == null)
+            {
+                consumableInventory = ConsumableInventory.EnsureInstance();
+            }
+
+            if (consumableCatalog == null)
+            {
+                consumableCatalog = Resources.Load<ConsumableCatalog>("ConsumableCatalog")
+                    ?? ConsumableCatalog.CreateDefault();
+            }
+
+            EnsureConsumableTable();
+
+            float chance = consumableDropChance;
+            if (useConsumableConfig)
+            {
+                EnemyDropChanceConfig config = GetChanceConfig(consumableDropConfigs, type);
+                if (config == null)
+                {
+                    return;
+                }
+                chance = config.dropChance;
+            }
+
+            float multiplier = Mathf.Max(0f, consumableDropMultiplier)
+                * Mathf.Max(0f, levelDropMultiplier)
+                * Mathf.Max(0f, difficultyMultiplier);
+            chance *= multiplier;
+
+            if (Random.value > chance)
+            {
+                return;
+            }
+
+            ConsumableDropEntry entry = PickConsumableEntry(type);
+            if (entry == null)
+            {
+                return;
+            }
+
+            int minCount = Mathf.Max(1, entry.minCount);
+            int maxCount = Mathf.Max(minCount, entry.maxCount);
+            int count = Random.Range(minCount, maxCount + 1);
+            if (count <= 0)
+            {
+                return;
+            }
+
+            if (consumableInventory.Add(entry.itemId, count))
+            {
+                ConsumableDefinition item = consumableCatalog != null ? consumableCatalog.GetById(entry.itemId) : null;
+                string label = item != null ? item.displayName : entry.itemId;
+                GameEvents.ShowMessage($"+{count} {label}", 1.4f);
+            }
+        }
+
+        private void TryDropCredits(EnemyType type, Vector3 position, float difficultyMultiplier)
+        {
+            if (!enableCreditDrops)
+            {
+                return;
+            }
+
+            if (wallet == null)
+            {
+                wallet = CurrencyWallet.EnsureInstance();
+            }
+
+            EnsureCreditTable();
+
+            float chance = creditDropChance;
+            if (useCreditConfig)
+            {
+                EnemyDropChanceConfig config = GetChanceConfig(creditDropConfigs, type);
+                if (config == null)
+                {
+                    return;
+                }
+                chance = config.dropChance;
+            }
+
+            float multiplier = Mathf.Max(0f, creditDropMultiplier)
+                * Mathf.Max(0f, levelDropMultiplier)
+                * Mathf.Max(0f, difficultyMultiplier);
+            chance *= multiplier;
+
+            if (Random.value > chance)
+            {
+                return;
+            }
+
+            CreditDropEntry entry = PickCreditEntry(type);
+            if (entry == null)
+            {
+                return;
+            }
+
+            int minCredits = Mathf.Max(0, entry.minCredits);
+            int maxCredits = Mathf.Max(minCredits, entry.maxCredits);
+            int amount = Random.Range(minCredits, maxCredits + 1);
+            amount = Mathf.Max(0, Mathf.RoundToInt(amount * Mathf.Max(0f, creditAmountMultiplier)));
+            if (amount <= 0)
+            {
+                return;
+            }
+
+            if (wallet != null)
+            {
+                wallet.AddCredits(amount);
+            }
+        }
+
         private GameObject CreateRuntimePickup(Vector3 position)
         {
             GameObject pickupObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -311,6 +508,201 @@ namespace ThirdPersonController
             }
 
             return null;
+        }
+
+        private void EnsureConsumableTable()
+        {
+            if (!autoPopulateConsumableTable)
+            {
+                return;
+            }
+
+            if (consumableDropTable != null && consumableDropTable.Count > 0)
+            {
+                return;
+            }
+
+            if (consumableCatalog == null || consumableCatalog.items == null)
+            {
+                return;
+            }
+
+            consumableDropTable = new List<ConsumableDropEntry>();
+            for (int i = 0; i < consumableCatalog.items.Count; i++)
+            {
+                ConsumableDefinition item = consumableCatalog.items[i];
+                if (item == null || string.IsNullOrEmpty(item.id))
+                {
+                    continue;
+                }
+
+                consumableDropTable.Add(new ConsumableDropEntry
+                {
+                    itemId = item.id,
+                    weight = 1f,
+                    minCount = 1,
+                    maxCount = 1
+                });
+            }
+        }
+
+        private void EnsureCreditTable()
+        {
+            if (!autoPopulateCreditTable)
+            {
+                return;
+            }
+
+            if (creditDropTable != null && creditDropTable.Count > 0)
+            {
+                return;
+            }
+
+            creditDropTable = new List<CreditDropEntry>
+            {
+                new CreditDropEntry
+                {
+                    minCredits = 4,
+                    maxCredits = 8,
+                    weight = 1f
+                }
+            };
+        }
+
+        private ConsumableDropEntry PickConsumableEntry(EnemyType type)
+        {
+            if (consumableDropTable == null || consumableDropTable.Count == 0)
+            {
+                return null;
+            }
+
+            float totalWeight = 0f;
+            for (int i = 0; i < consumableDropTable.Count; i++)
+            {
+                ConsumableDropEntry entry = consumableDropTable[i];
+                if (entry == null || string.IsNullOrEmpty(entry.itemId))
+                {
+                    continue;
+                }
+
+                if (!IsDropAllowedForType(entry.restrictedToEnemyTypes, type))
+                {
+                    continue;
+                }
+
+                if (consumableCatalog != null && consumableCatalog.GetById(entry.itemId) == null)
+                {
+                    continue;
+                }
+
+                totalWeight += Mathf.Max(0f, entry.weight);
+            }
+
+            if (totalWeight <= 0f)
+            {
+                return null;
+            }
+
+            float roll = Random.value * totalWeight;
+            float current = 0f;
+            for (int i = 0; i < consumableDropTable.Count; i++)
+            {
+                ConsumableDropEntry entry = consumableDropTable[i];
+                if (entry == null || string.IsNullOrEmpty(entry.itemId))
+                {
+                    continue;
+                }
+
+                if (!IsDropAllowedForType(entry.restrictedToEnemyTypes, type))
+                {
+                    continue;
+                }
+
+                if (consumableCatalog != null && consumableCatalog.GetById(entry.itemId) == null)
+                {
+                    continue;
+                }
+
+                current += Mathf.Max(0f, entry.weight);
+                if (roll <= current)
+                {
+                    return entry;
+                }
+            }
+
+            return null;
+        }
+
+        private CreditDropEntry PickCreditEntry(EnemyType type)
+        {
+            if (creditDropTable == null || creditDropTable.Count == 0)
+            {
+                return null;
+            }
+
+            float totalWeight = 0f;
+            for (int i = 0; i < creditDropTable.Count; i++)
+            {
+                CreditDropEntry entry = creditDropTable[i];
+                if (entry == null)
+                {
+                    continue;
+                }
+
+                if (!IsDropAllowedForType(entry.restrictedToEnemyTypes, type))
+                {
+                    continue;
+                }
+
+                totalWeight += Mathf.Max(0f, entry.weight);
+            }
+
+            if (totalWeight <= 0f)
+            {
+                return null;
+            }
+
+            float roll = Random.value * totalWeight;
+            float current = 0f;
+            for (int i = 0; i < creditDropTable.Count; i++)
+            {
+                CreditDropEntry entry = creditDropTable[i];
+                if (entry == null)
+                {
+                    continue;
+                }
+
+                if (!IsDropAllowedForType(entry.restrictedToEnemyTypes, type))
+                {
+                    continue;
+                }
+
+                current += Mathf.Max(0f, entry.weight);
+                if (roll <= current)
+                {
+                    return entry;
+                }
+            }
+
+            return null;
+        }
+
+        private bool IsDropAllowedForType(EnemyType[] restrictions, EnemyType type)
+        {
+            if (restrictions == null || restrictions.Length == 0)
+            {
+                return true;
+            }
+
+            for (int i = 0; i < restrictions.Length; i++)
+            {
+                if (restrictions[i] == type)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public void ApplyProgressionCaps(PearlRarity maxRarity, float dropMultiplier)

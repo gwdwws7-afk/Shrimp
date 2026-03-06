@@ -61,7 +61,7 @@ namespace ThirdPersonController
                     displayName = "Medkit",
                     description = "Restore 40 HP.",
                     effectType = ConsumableEffectType.HealFlat,
-                    amount = 40f,
+                    amount = 35f,
                     price = 60,
                     maxStack = 20
                 },
@@ -71,7 +71,7 @@ namespace ThirdPersonController
                     displayName = "Stamina Gel",
                     description = "Restore 40 stamina.",
                     effectType = ConsumableEffectType.RestoreStaminaFlat,
-                    amount = 40f,
+                    amount = 35f,
                     price = 50,
                     maxStack = 20
                 },
@@ -81,8 +81,8 @@ namespace ThirdPersonController
                     displayName = "Aegis Shell",
                     description = "Reduce damage by 30% for 6 seconds.",
                     effectType = ConsumableEffectType.DamageReduction,
-                    amount = 0.3f,
-                    duration = 6f,
+                    amount = 0.25f,
+                    duration = 5f,
                     price = 90,
                     maxStack = 10
                 }

@@ -63,6 +63,7 @@ namespace ThirdPersonController
         [Header("Attack Patterns")]
         public bool useAttackPatterns = false;
         public List<string> availablePatterns = new List<string>();
+        public List<EnemyAttackPattern> attackPatterns = new List<EnemyAttackPattern>();
         
         [Header("Performance")]
         public float aiUpdateInterval = 0.08f;
@@ -72,6 +73,13 @@ namespace ThirdPersonController
         public float nearUpdateDistance = 8f;
         public float farUpdateDistance = 18f;
         public float farAnimationUpdateInterval = 0.2f;
+
+        [Header("Crowd Scaling")]
+        public bool scaleDecisionIntervalWithCrowd = true;
+        public int crowdSlowdownStart = 12;
+        public int crowdSlowdownFull = 40;
+        public float maxCrowdUpdateMultiplier = 2f;
+        public float maxDecisionInterval = 0.25f;
 
         private NavMeshAgent agent;
         private EnemyHealth health;
@@ -109,6 +117,9 @@ namespace ThirdPersonController
         private Vector3 chargeTarget;
         private float chargeTimer = 0f;
 
+        private EnemyAttackPattern currentPattern;
+        private readonly List<EnemyAttackPattern> patternBuffer = new List<EnemyAttackPattern>();
+
         private void Awake()
         {
             agent = GetComponent<NavMeshAgent>();
@@ -127,6 +138,16 @@ namespace ThirdPersonController
                 {
                     crowdCoordinator.Register(this);
                 }
+            }
+
+            if (nextDecisionTime <= Time.time)
+            {
+                nextDecisionTime = Time.time + Random.Range(0f, Mathf.Max(0.02f, aiUpdateInterval));
+            }
+
+            if (nextAnimationTime <= Time.time)
+            {
+                nextAnimationTime = Time.time + Random.Range(0f, Mathf.Max(0.02f, farAnimationUpdateInterval));
             }
         }
 
@@ -233,6 +254,11 @@ namespace ThirdPersonController
 
             float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
             float interval = GetUpdateInterval(distanceToTarget);
+            interval = ApplyCrowdScaling(interval);
+            if (maxDecisionInterval > 0f)
+            {
+                interval = Mathf.Min(interval, maxDecisionInterval);
+            }
             float jitter = aiUpdateJitter > 0f ? Random.Range(-aiUpdateJitter, aiUpdateJitter) : 0f;
             nextDecisionTime = Time.time + Mathf.Max(0.02f, interval + jitter);
 
@@ -279,6 +305,24 @@ namespace ThirdPersonController
 
             float t = Mathf.InverseLerp(nearUpdateDistance, farUpdateDistance, distanceToPlayer);
             return Mathf.Lerp(nearUpdateInterval, farUpdateInterval, t);
+        }
+
+        private float ApplyCrowdScaling(float interval)
+        {
+            if (!scaleDecisionIntervalWithCrowd || crowdCoordinator == null)
+            {
+                return interval;
+            }
+
+            int crowdCount = crowdCoordinator.NearbyEnemyCount;
+            if (crowdCount <= crowdSlowdownStart)
+            {
+                return interval;
+            }
+
+            float t = Mathf.InverseLerp(crowdSlowdownStart, crowdSlowdownFull, crowdCount);
+            float multiplier = Mathf.Lerp(1f, maxCrowdUpdateMultiplier, t);
+            return interval * multiplier;
         }
 
         private void HandleCooldowns()
@@ -330,16 +374,23 @@ namespace ThirdPersonController
 
             float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
 
-            if (!isChasing || distanceToTarget > attackRange)
+            float desiredAttackRange = GetDecisionAttackRange();
+            if (!isChasing || distanceToTarget > desiredAttackRange)
+            {
+                ReleaseAttackToken();
+            }
+
+            bool readyToAttack = attackCooldownTimer <= 0f;
+            if (!readyToAttack)
             {
                 ReleaseAttackToken();
             }
 
             if (isChasing)
             {
-                if (distanceToTarget <= attackRange)
+                if (distanceToTarget <= desiredAttackRange)
                 {
-                    if (TryAcquireAttackToken())
+                    if (readyToAttack && TryAcquireAttackToken())
                     {
                         currentState = State.Attack;
                     }
@@ -459,10 +510,17 @@ namespace ThirdPersonController
                 }
             }
 
+            if (!isAttacking && attackCooldownTimer > 0f)
+            {
+                ReleaseAttackToken();
+                currentState = State.Circle;
+                return;
+            }
+
             if (!isAttacking && attackCooldownTimer <= 0f)
             {
                 StartAttackSequence();
-                attackCooldownTimer = attackCooldown;
+                attackCooldownTimer = GetAttackCooldown();
             }
 
             if (isAttacking)
@@ -492,9 +550,10 @@ namespace ThirdPersonController
 
         private void StartAttackSequence()
         {
+            currentPattern = SelectPattern();
             isAttacking = true;
             attackHitApplied = false;
-            attackPhaseTimer = attackWindup + attackActiveTime + attackRecovery;
+            attackPhaseTimer = GetAttackWindup() + attackActiveTime + GetAttackRecovery();
 
             if (animator != null && animator.runtimeAnimatorController != null)
             {
@@ -513,8 +572,9 @@ namespace ThirdPersonController
             float previous = attackPhaseTimer;
             attackPhaseTimer -= Time.deltaTime;
 
-            float activeStart = attackRecovery + attackActiveTime;
-            float activeEnd = attackRecovery;
+            float recovery = GetAttackRecovery();
+            float activeStart = recovery + attackActiveTime;
+            float activeEnd = recovery;
 
             bool enteredActive = previous > activeStart && attackPhaseTimer <= activeStart;
             bool inActive = attackPhaseTimer <= activeStart && attackPhaseTimer >= activeEnd;
@@ -552,19 +612,401 @@ namespace ThirdPersonController
             float distanceToTarget = Vector3.Distance(origin.position, currentTarget.position);
             float angleToTarget = Vector3.Angle(transform.forward, directionToTarget);
 
-            if (distanceToTarget <= attackHitRadius && angleToTarget <= attackHitAngle * 0.5f)
+            float hitRadius = GetAttackHitRadius();
+            float hitAngle = GetAttackHitAngle();
+            if (distanceToTarget <= hitRadius && angleToTarget <= hitAngle * 0.5f)
             {
+                if (currentPattern != null && currentPattern.isRanged)
+                {
+                    FireProjectile(directionToTarget);
+                    return;
+                }
+
+                if (currentPattern != null && currentPattern.isSuicide)
+                {
+                    StartSuicideAttack();
+                    return;
+                }
+
+                int damage = GetAttackDamage();
+                float knockback = GetAttackKnockback();
+
                 if (currentTarget.TryGetComponent<PlayerHealth>(out PlayerHealth playerHealth))
                 {
-                    playerHealth.TakeDamage(attackDamage, transform.position, attackKnockback);
+                    playerHealth.TakeDamage(damage, transform.position, knockback);
+                    ApplyStatusToPlayer(playerHealth, currentPattern);
                     return;
                 }
 
                 if (currentTarget.TryGetComponent<DefenseTarget>(out DefenseTarget defenseTarget))
                 {
-                    defenseTarget.TakeDamage(attackDamage, transform.position, attackKnockback);
+                    defenseTarget.TakeDamage(damage, transform.position, knockback);
                 }
             }
+        }
+
+        private void FireProjectile(Vector3 directionToTarget)
+        {
+            if (currentPattern == null)
+            {
+                return;
+            }
+
+            if (currentPattern.projectilePrefab == null)
+            {
+                ApplyDirectHit(GetAttackDamage(), GetAttackKnockback());
+                return;
+            }
+
+            Transform origin = attackOrigin != null ? attackOrigin : transform;
+            Vector3 baseDirection = GetAimDirection(origin.position, directionToTarget);
+            int shots = Mathf.Max(1, currentPattern.projectilesPerShot);
+            float spread = Mathf.Max(0f, currentPattern.spreadAngle);
+            float startAngle = shots > 1 ? -spread * 0.5f : 0f;
+            float step = shots > 1 ? spread / (shots - 1) : 0f;
+
+            for (int i = 0; i < shots; i++)
+            {
+                float angle = currentPattern.useRandomSpread
+                    ? Random.Range(-spread * 0.5f, spread * 0.5f)
+                    : startAngle + step * i;
+                angle += Random.Range(-currentPattern.spreadJitter, currentPattern.spreadJitter);
+                Vector3 direction = Quaternion.AngleAxis(angle, Vector3.up) * baseDirection;
+                SpawnProjectile(origin, direction);
+            }
+        }
+
+        private void SpawnProjectile(Transform origin, Vector3 direction)
+        {
+            GameObject projectileObj = Instantiate(currentPattern.projectilePrefab, origin.position, Quaternion.LookRotation(direction));
+            EnemyProjectile projectile = projectileObj.GetComponent<EnemyProjectile>();
+            if (projectile != null)
+            {
+                projectile.damage = GetAttackDamage();
+                projectile.knockback = GetAttackKnockback();
+                projectile.speed = currentPattern.projectileSpeed;
+                projectile.lifetime = currentPattern.projectileLifetime;
+                projectile.applySlow = currentPattern.applySlow;
+                projectile.slowMultiplier = currentPattern.slowMultiplier;
+                projectile.slowDuration = currentPattern.slowDuration;
+                projectile.applyDamageReduction = currentPattern.applyDamageReduction;
+                projectile.damageReduction = currentPattern.damageReduction;
+                projectile.damageReductionDuration = currentPattern.damageReductionDuration;
+                projectile.Launch(direction, transform);
+                return;
+            }
+
+            Rigidbody body = projectileObj.GetComponent<Rigidbody>();
+            if (body != null)
+            {
+                body.velocity = direction.normalized * currentPattern.projectileSpeed;
+            }
+        }
+
+        private Vector3 GetAimDirection(Vector3 origin, Vector3 fallbackDirection)
+        {
+            if (currentTarget == null)
+            {
+                return fallbackDirection.sqrMagnitude > 0.01f ? fallbackDirection : transform.forward;
+            }
+
+            Vector3 targetPosition = currentTarget.position;
+            Vector3 direction = (targetPosition - origin).normalized;
+
+            if (!currentPattern.usePredictiveAim || currentPattern.projectileSpeed <= 0f)
+            {
+                return direction.sqrMagnitude > 0.01f ? direction : fallbackDirection;
+            }
+
+            Vector3 velocity = GetTargetVelocity();
+            float distance = Vector3.Distance(origin, targetPosition);
+            float time = Mathf.Min(currentPattern.maxPredictionTime, distance / currentPattern.projectileSpeed);
+            Vector3 predicted = targetPosition + velocity * time * currentPattern.predictionFactor;
+            Vector3 predictedDir = (predicted - origin).normalized;
+            return predictedDir.sqrMagnitude > 0.01f ? predictedDir : direction;
+        }
+
+        private Vector3 GetTargetVelocity()
+        {
+            if (currentTarget == null)
+            {
+                return Vector3.zero;
+            }
+
+            if (currentTarget.TryGetComponent<Rigidbody>(out Rigidbody body))
+            {
+                return body.velocity;
+            }
+
+            if (currentTarget.TryGetComponent<PlayerMovement>(out PlayerMovement movement))
+            {
+                return movement.MoveDirection * movement.CurrentSpeed;
+            }
+
+            return Vector3.zero;
+        }
+
+        private void ApplyDirectHit(int damage, float knockback)
+        {
+            if (currentTarget == null)
+            {
+                return;
+            }
+
+            if (currentTarget.TryGetComponent<PlayerHealth>(out PlayerHealth playerHealth))
+            {
+                playerHealth.TakeDamage(damage, transform.position, knockback);
+                ApplyStatusToPlayer(playerHealth, currentPattern);
+                return;
+            }
+
+            if (currentTarget.TryGetComponent<DefenseTarget>(out DefenseTarget defenseTarget))
+            {
+                defenseTarget.TakeDamage(damage, transform.position, knockback);
+            }
+        }
+
+        private Coroutine suicideRoutine;
+
+        private void StartSuicideAttack()
+        {
+            if (suicideRoutine != null)
+            {
+                return;
+            }
+
+            float delay = currentPattern != null ? Mathf.Max(0f, currentPattern.selfDestructDelay) : 0f;
+            suicideRoutine = StartCoroutine(SuicideRoutine(delay));
+        }
+
+        private System.Collections.IEnumerator SuicideRoutine(float delay)
+        {
+            if (delay > 0f)
+            {
+                yield return new WaitForSeconds(delay);
+            }
+
+            Explode();
+            suicideRoutine = null;
+        }
+
+        private void Explode()
+        {
+            if (currentPattern == null)
+            {
+                return;
+            }
+
+            float radius = Mathf.Max(0.5f, currentPattern.explosionRadius);
+            Collider[] hits = Physics.OverlapSphere(transform.position, radius);
+            for (int i = 0; i < hits.Length; i++)
+            {
+                Collider hit = hits[i];
+                if (hit == null || hit.transform == transform)
+                {
+                    continue;
+                }
+
+                if (hit.TryGetComponent<PlayerHealth>(out PlayerHealth playerHealth))
+                {
+                    playerHealth.TakeDamage(currentPattern.explosionDamage, transform.position, currentPattern.explosionKnockback);
+                    ApplyStatusToPlayer(playerHealth, currentPattern);
+                }
+                else if (hit.TryGetComponent<DefenseTarget>(out DefenseTarget defenseTarget))
+                {
+                    defenseTarget.TakeDamage(currentPattern.explosionDamage, transform.position, currentPattern.explosionKnockback);
+                }
+            }
+
+            if (health != null && !health.IsDead)
+            {
+                health.TakeDamage(health.CurrentHealth + 999, transform.position, 0f);
+            }
+        }
+
+        private void ApplyStatusToPlayer(PlayerHealth playerHealth, EnemyAttackPattern pattern)
+        {
+            if (playerHealth == null || pattern == null)
+            {
+                return;
+            }
+
+            if (pattern.applyDamageReduction)
+            {
+                playerHealth.ApplyDamageReduction(pattern.damageReduction, pattern.damageReductionDuration);
+            }
+
+            if (pattern.applySlow && currentTarget != null)
+            {
+                if (currentTarget.TryGetComponent<PlayerMovement>(out PlayerMovement movement))
+                {
+                    movement.ApplyMoveSlow(pattern.slowMultiplier, pattern.slowDuration);
+                }
+                else if (currentTarget.parent != null
+                    && currentTarget.parent.TryGetComponent<PlayerMovement>(out PlayerMovement parentMovement))
+                {
+                    parentMovement.ApplyMoveSlow(pattern.slowMultiplier, pattern.slowDuration);
+                }
+            }
+        }
+
+        private float GetDecisionAttackRange()
+        {
+            if (!useAttackPatterns || attackPatterns == null || attackPatterns.Count == 0)
+            {
+                return attackRange;
+            }
+
+            float maxRange = attackRange;
+            for (int i = 0; i < attackPatterns.Count; i++)
+            {
+                EnemyAttackPattern pattern = attackPatterns[i];
+                if (!IsPatternAvailable(pattern))
+                {
+                    continue;
+                }
+
+                maxRange = Mathf.Max(maxRange, pattern.range);
+            }
+
+            return maxRange;
+        }
+
+        private EnemyAttackPattern SelectPattern()
+        {
+            if (!useAttackPatterns || attackPatterns == null || attackPatterns.Count == 0)
+            {
+                return null;
+            }
+
+            patternBuffer.Clear();
+            int highestPriority = int.MinValue;
+            for (int i = 0; i < attackPatterns.Count; i++)
+            {
+                EnemyAttackPattern pattern = attackPatterns[i];
+                if (!IsPatternAvailable(pattern))
+                {
+                    continue;
+                }
+
+                if (currentTarget != null)
+                {
+                    float distance = Vector3.Distance(transform.position, currentTarget.position);
+                    if (pattern.range > 0f && distance > pattern.range)
+                    {
+                        continue;
+                    }
+
+                    if (pattern.minRange > 0f && distance < pattern.minRange)
+                    {
+                        continue;
+                    }
+                }
+
+                if (pattern.priority > highestPriority)
+                {
+                    highestPriority = pattern.priority;
+                    patternBuffer.Clear();
+                    patternBuffer.Add(pattern);
+                }
+                else if (pattern.priority == highestPriority)
+                {
+                    patternBuffer.Add(pattern);
+                }
+            }
+
+            if (patternBuffer.Count == 0)
+            {
+                return null;
+            }
+
+            return PickWeighted(patternBuffer);
+        }
+
+        private EnemyAttackPattern PickWeighted(List<EnemyAttackPattern> patterns)
+        {
+            if (patterns == null || patterns.Count == 0)
+            {
+                return null;
+            }
+
+            float total = 0f;
+            for (int i = 0; i < patterns.Count; i++)
+            {
+                total += Mathf.Max(0.01f, patterns[i].weight);
+            }
+
+            float roll = Random.value * total;
+            for (int i = 0; i < patterns.Count; i++)
+            {
+                roll -= Mathf.Max(0.01f, patterns[i].weight);
+                if (roll <= 0f)
+                {
+                    return patterns[i];
+                }
+            }
+
+            return patterns[patterns.Count - 1];
+        }
+
+        private bool IsPatternAvailable(EnemyAttackPattern pattern)
+        {
+            if (pattern == null)
+            {
+                return false;
+            }
+
+            if (availablePatterns == null || availablePatterns.Count == 0)
+            {
+                return true;
+            }
+
+            if (string.IsNullOrEmpty(pattern.patternId))
+            {
+                return true;
+            }
+
+            return availablePatterns.Contains(pattern.patternId);
+        }
+
+        private int GetAttackDamage()
+        {
+            return currentPattern != null ? currentPattern.damage : attackDamage;
+        }
+
+        private float GetAttackCooldown()
+        {
+            return currentPattern != null ? currentPattern.cooldown : attackCooldown;
+        }
+
+        private float GetAttackWindup()
+        {
+            return currentPattern != null ? currentPattern.windup : attackWindup;
+        }
+
+        private float GetAttackRecovery()
+        {
+            return attackRecovery;
+        }
+
+        private float GetAttackKnockback()
+        {
+            return currentPattern != null ? currentPattern.knockback : attackKnockback;
+        }
+
+        private float GetAttackHitRadius()
+        {
+            return currentPattern != null ? Mathf.Max(attackHitRadius, currentPattern.range) : attackHitRadius;
+        }
+
+        private float GetAttackHitAngle()
+        {
+            if (currentPattern != null && currentPattern.isRanged)
+            {
+                return 360f;
+            }
+
+            return attackHitAngle;
         }
 
         private void UpdateAnimations()
@@ -701,8 +1143,8 @@ namespace ThirdPersonController
             waitTimer = 0f;
             attackCooldownTimer = 0f;
             currentState = State.Patrol;
-            nextDecisionTime = 0f;
-            nextAnimationTime = 0f;
+            nextDecisionTime = Time.time + Random.Range(0f, Mathf.Max(0.02f, aiUpdateInterval));
+            nextAnimationTime = Time.time + Random.Range(0f, Mathf.Max(0.02f, farAnimationUpdateInterval));
         }
 
         private void OnDrawGizmosSelected()
@@ -713,7 +1155,7 @@ namespace ThirdPersonController
 
             // Attack range
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position, attackRange);
+            Gizmos.DrawWireSphere(transform.position, GetDecisionAttackRange());
 
             // Field of view
             Vector3 leftBoundary = Quaternion.Euler(0, -fieldOfView * 0.5f, 0) * transform.forward;

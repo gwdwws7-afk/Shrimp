@@ -5208,6 +5208,9 @@ MonoBehaviour:
     - prefab: {fileID: 100000, guid: f1c2c9f4a8f54c5b8f9a12d347c2e5ab, type: 3}
       count: 12
       spawnIntervalOverride: -1
+    - prefab: {fileID: 100000, guid: 4f8a2c7e1b9d5f0a3c6e8d2f1a4b7c9e, type: 3}
+      count: 2
+      spawnIntervalOverride: -1
     eliteTrigger:
       enabled: 1
       triggerOnRemaining: 3
@@ -5244,6 +5247,9 @@ MonoBehaviour:
     - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
       count: 18
       spawnIntervalOverride: -1
+    - prefab: {fileID: 100000, guid: 9d6c5b4a3e2f1d0c8b7a6f5e4d3c2b1a, type: 3}
+      count: 2
+      spawnIntervalOverride: -1
     eliteTrigger:
       enabled: 1
       triggerOnRemaining: 4
@@ -5279,6 +5285,9 @@ MonoBehaviour:
     groups:
     - prefab: {fileID: 100000, guid: 6d7e5a3b91b64d8d8d3e4b2a7f9c1e02, type: 3}
       count: 24
+      spawnIntervalOverride: -1
+    - prefab: {fileID: 100000, guid: 2a7f1d5c9b3e4f6a8c0d1e2f3a4b5c6d, type: 3}
+      count: 2
       spawnIntervalOverride: -1
     eliteTrigger:
       enabled: 1
@@ -5554,6 +5563,9 @@ MonoBehaviour:
     - prefab: {fileID: 100000, guid: f1c2c9f4a8f54c5b8f9a12d347c2e5ab, type: 3}
       count: 18
       spawnIntervalOverride: -1
+    - prefab: {fileID: 100000, guid: 4f8a2c7e1b9d5f0a3c6e8d2f1a4b7c9e, type: 3}
+      count: 2
+      spawnIntervalOverride: -1
     eliteTrigger:
       enabled: 1
       triggerOnRemaining: 5
@@ -5570,6 +5582,9 @@ MonoBehaviour:
     groups:
     - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
       count: 24
+      spawnIntervalOverride: -1
+    - prefab: {fileID: 100000, guid: 9d6c5b4a3e2f1d0c8b7a6f5e4d3c2b1a, type: 3}
+      count: 2
       spawnIntervalOverride: -1
     eliteTrigger:
       enabled: 1
@@ -5606,6 +5621,9 @@ MonoBehaviour:
     groups:
     - prefab: {fileID: 100000, guid: 6d7e5a3b91b64d8d8d3e4b2a7f9c1e02, type: 3}
       count: 30
+      spawnIntervalOverride: -1
+    - prefab: {fileID: 100000, guid: 2a7f1d5c9b3e4f6a8c0d1e2f3a4b5c6d, type: 3}
+      count: 2
       spawnIntervalOverride: -1
     eliteTrigger:
       enabled: 1

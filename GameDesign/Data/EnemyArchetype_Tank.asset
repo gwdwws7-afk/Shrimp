@@ -40,6 +40,72 @@ MonoBehaviour:
   attackRecovery: 0.7
   attackHitRadius: 1.35
   attackHitAngle: 125
+  useAttackPatterns: 1
+  attackPatterns:
+  - patternId: tank_slam
+    patternName: Slam
+    priority: 0
+    weight: 0.4
+    damage: 20
+    range: 2.6
+    minRange: 1.6
+    cooldown: 2.6
+    windup: 0.7
+    knockback: 6
+    isRanged: 0
+    projectilePrefab: {fileID: 0}
+    projectileSpeed: 12
+    projectileLifetime: 4
+    projectilesPerShot: 1
+    spreadAngle: 0
+    useRandomSpread: 0
+    spreadJitter: 0
+    usePredictiveAim: 0
+    predictionFactor: 1
+    maxPredictionTime: 1
+    applySlow: 0
+    slowMultiplier: 0.6
+    slowDuration: 2
+    applyDamageReduction: 0
+    damageReduction: 0.2
+    damageReductionDuration: 2
+    isSuicide: 0
+    explosionRadius: 3
+    explosionDamage: 25
+    explosionKnockback: 5
+    selfDestructDelay: 0
+  - patternId: tank_bash
+    patternName: Bash
+    priority: 0
+    weight: 0.6
+    damage: 16
+    range: 2
+    minRange: 0
+    cooldown: 2.2
+    windup: 0.55
+    knockback: 4.8
+    isRanged: 0
+    projectilePrefab: {fileID: 0}
+    projectileSpeed: 12
+    projectileLifetime: 4
+    projectilesPerShot: 1
+    spreadAngle: 0
+    useRandomSpread: 0
+    spreadJitter: 0
+    usePredictiveAim: 0
+    predictionFactor: 1
+    maxPredictionTime: 1
+    applySlow: 0
+    slowMultiplier: 0.6
+    slowDuration: 2
+    applyDamageReduction: 0
+    damageReduction: 0.2
+    damageReductionDuration: 2
+    isSuicide: 0
+    explosionRadius: 3
+    explosionDamage: 25
+    explosionKnockback: 5
+    selfDestructDelay: 0
   canDodge: 0
   dodgeChance: 0.02
   canBlock: 1

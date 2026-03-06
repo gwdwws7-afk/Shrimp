@@ -40,6 +40,40 @@ MonoBehaviour:
   attackRecovery: 0.5
   attackHitRadius: 1.1
   attackHitAngle: 120
+  useAttackPatterns: 1
+  attackPatterns:
+  - patternId: grunt_swipe
+    patternName: Swipe
+    priority: 0
+    weight: 1
+    damage: 9
+    range: 2
+    minRange: 0
+    cooldown: 1.55
+    windup: 0.4
+    knockback: 2.6
+    isRanged: 0
+    projectilePrefab: {fileID: 0}
+    projectileSpeed: 12
+    projectileLifetime: 4
+    projectilesPerShot: 1
+    spreadAngle: 0
+    useRandomSpread: 0
+    spreadJitter: 0
+    usePredictiveAim: 0
+    predictionFactor: 1
+    maxPredictionTime: 1
+    applySlow: 0
+    slowMultiplier: 0.6
+    slowDuration: 2
+    applyDamageReduction: 0
+    damageReduction: 0.2
+    damageReductionDuration: 2
+    isSuicide: 0
+    explosionRadius: 3
+    explosionDamage: 25
+    explosionKnockback: 5
+    selfDestructDelay: 0
   canDodge: 0
   dodgeChance: 0.05
   canBlock: 0

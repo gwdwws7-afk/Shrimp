@@ -10,59 +10,59 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ac23d8a3dc3f4367841764df13547cf6, type: 3}
-  m_Name: EnemyArchetype_Rusher
+  m_Name: EnemyArchetype_Ranged
   m_EditorClassIdentifier: 
-  archetypeId: rusher
-  displayName: 深渊突击
-  enemyType: 1
-  maxHealth: 40
-  hitStunDuration: 0.18
+  archetypeId: ranged
+  displayName: 深渊远程
+  enemyType: 4
+  maxHealth: 85
+  hitStunDuration: 0.2
   defense: 0
-  expReward: 3
-  dropChance: 0.3
+  expReward: 4
+  dropChance: 0.32
   resistPhysical: 0
-  resistHeat: 0
-  resistElectric: -0.1
+  resistHeat: 0.05
+  resistElectric: -0.05
   resistToxin: 0.1
   resistCorrosion: 0
-  detectionRange: 18
-  attackRange: 1.7
+  detectionRange: 20
+  attackRange: 6
   fieldOfView: 150
-  patrolSpeed: 2.8
-  chaseSpeed: 5.8
-  rotationSpeed: 8
-  stoppingDistance: 0.95
-  attackCooldown: 1.1
+  patrolSpeed: 2.4
+  chaseSpeed: 4.6
+  rotationSpeed: 6.5
+  stoppingDistance: 2.4
+  attackCooldown: 1.6
   attackDamage: 10
-  attackKnockback: 2.2
-  attackWindup: 0.25
+  attackKnockback: 2
+  attackWindup: 0.35
   attackActiveTime: 0.1
-  attackRecovery: 0.35
-  attackHitRadius: 0.95
-  attackHitAngle: 115
+  attackRecovery: 0.5
+  attackHitRadius: 1
+  attackHitAngle: 120
   useAttackPatterns: 1
   attackPatterns:
-  - patternId: rusher_jab
-    patternName: Jab
-    priority: 0
-    weight: 0.65
-    damage: 9
-    range: 1.6
-    minRange: 0
-    cooldown: 0.9
-    windup: 0.2
-    knockback: 2
-    isRanged: 0
-    projectilePrefab: {fileID: 0}
+  - patternId: ranged_shot
+    patternName: Shot
+    priority: 1
+    weight: 0.7
+    damage: 10
+    range: 7
+    minRange: 3.5
+    cooldown: 1.7
+    windup: 0.45
+    knockback: 1.2
+    isRanged: 1
+    projectilePrefab: {fileID: 100000, guid: 0f1e2d3c4b5a69788796a5b4c3d2e1f0, type: 3}
     projectileSpeed: 12
     projectileLifetime: 4
-    projectilesPerShot: 1
-    spreadAngle: 0
-    useRandomSpread: 0
-    spreadJitter: 0
-    usePredictiveAim: 0
-    predictionFactor: 1
-    maxPredictionTime: 1
+    projectilesPerShot: 2
+    spreadAngle: 10
+    useRandomSpread: 1
+    spreadJitter: 3
+    usePredictiveAim: 1
+    predictionFactor: 0.9
+    maxPredictionTime: 1.2
     applySlow: 0
     slowMultiplier: 0.6
     slowDuration: 2
@@ -74,16 +74,16 @@ MonoBehaviour:
     explosionDamage: 25
     explosionKnockback: 5
     selfDestructDelay: 0
-  - patternId: rusher_lunge
-    patternName: Lunge
+  - patternId: ranged_bite
+    patternName: Bite
     priority: 0
-    weight: 0.35
-    damage: 12
-    range: 2.4
-    minRange: 1.2
-    cooldown: 1.4
-    windup: 0.35
-    knockback: 2.6
+    weight: 0.3
+    damage: 8
+    range: 1.8
+    minRange: 0
+    cooldown: 1.2
+    windup: 0.25
+    knockback: 1.8
     isRanged: 0
     projectilePrefab: {fileID: 0}
     projectileSpeed: 12
@@ -107,29 +107,29 @@ MonoBehaviour:
     explosionKnockback: 5
     selfDestructDelay: 0
   canDodge: 1
-  dodgeChance: 0.28
+  dodgeChance: 0.12
   canBlock: 0
-  blockChance: 0.05
-  canCharge: 1
-  chargeSpeed: 11
-  chargeWindup: 0.3
+  blockChance: 0
+  canCharge: 0
+  chargeSpeed: 9
+  chargeWindup: 0.5
   canFlee: 0
   fleeHealthThreshold: 0.2
   useCrowdCoordinator: 1
-  ringStandoffDistance: 1.6
+  ringStandoffDistance: 3.2
   overrideAgentSettings: 1
-  agentSpeed: 5
-  agentAcceleration: 12
-  agentAngularSpeed: 440
-  agentStoppingDistance: 1.1
-  agentRadius: 0.34
-  agentHeight: 1.65
+  agentSpeed: 3.8
+  agentAcceleration: 8
+  agentAngularSpeed: 360
+  agentStoppingDistance: 2.4
+  agentRadius: 0.4
+  agentHeight: 1.8
   overrideHitReaction: 1
-  knockbackThreshold: 1.6
-  knockdownThreshold: 5
-  flinchDuration: 0.16
-  knockbackDuration: 0.2
-  knockbackDistance: 1.2
-  knockdownDuration: 0.28
-  knockdownDistance: 2.3
-  knockdownRecoverTime: 0.5
+  knockbackThreshold: 2.2
+  knockdownThreshold: 6.2
+  flinchDuration: 0.2
+  knockbackDuration: 0.25
+  knockbackDistance: 1.1
+  knockdownDuration: 0.35
+  knockdownDistance: 2.1
+  knockdownRecoverTime: 0.6
