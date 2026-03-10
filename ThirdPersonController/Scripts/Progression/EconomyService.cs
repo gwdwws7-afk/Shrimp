@@ -44,7 +44,7 @@ namespace ThirdPersonController
 
         public static int AdjustQuestExp(int baseExp)
         {
-            return AdjustQuestExp(baseExp, QuestType.Kill, 1, 1, 1f);
+            return AdjustQuestExp(baseExp, QuestType.Kill, 1, 1, 1f, QuestRewardTier.Mainline, 0, string.Empty);
         }
 
         public static int AdjustLevelExp(int baseExp, int difficulty, float levelRewardMultiplier)
@@ -103,6 +103,16 @@ namespace ThirdPersonController
 
         public static int AdjustQuestExp(int baseExp, QuestType questType, int questDifficulty, int levelDifficulty, float rewardMultiplier)
         {
+            return AdjustQuestExp(baseExp, questType, questDifficulty, levelDifficulty, rewardMultiplier, QuestRewardTier.Mainline, 0, string.Empty);
+        }
+
+        public static int AdjustQuestExp(int baseExp, QuestType questType, int questDifficulty, int levelDifficulty, float rewardMultiplier, QuestRewardTier rewardTier)
+        {
+            return AdjustQuestExp(baseExp, questType, questDifficulty, levelDifficulty, rewardMultiplier, rewardTier, 0, string.Empty);
+        }
+
+        public static int AdjustQuestExp(int baseExp, QuestType questType, int questDifficulty, int levelDifficulty, float rewardMultiplier, QuestRewardTier rewardTier, int chapterId, string strongholdId)
+        {
             if (baseExp <= 0)
             {
                 return 0;
@@ -115,13 +125,33 @@ namespace ThirdPersonController
             }
 
             float typeMultiplier = GetQuestTypeMultiplier(questType, multiplier => multiplier.expMultiplier);
+            float tierMultiplier = GetQuestTierMultiplier(rewardTier, multiplier => multiplier.expMultiplier);
+            float chapterMultiplier = GetQuestChapterMultiplier(chapterId, multiplier => multiplier.expMultiplier);
+            float strongholdMultiplier = GetQuestStrongholdMultiplier(strongholdId, multiplier => multiplier.expMultiplier);
             float difficultyMultiplier = GetDifficultyMultiplier(Config.questExpDifficultyMultipliers, questDifficulty);
             float levelMultiplier = GetDifficultyMultiplier(Config.levelExpDifficultyMultipliers, levelDifficulty);
-            float multiplier = Mathf.Max(0f, Config.questExpMultiplier) * Mathf.Max(0f, typeMultiplier) * Mathf.Max(0f, difficultyMultiplier) * Mathf.Max(0f, levelMultiplier) * externalMultiplier;
+            float multiplier = Mathf.Max(0f, Config.questExpMultiplier)
+                * Mathf.Max(0f, typeMultiplier)
+                * Mathf.Max(0f, tierMultiplier)
+                * Mathf.Max(0f, chapterMultiplier)
+                * Mathf.Max(0f, strongholdMultiplier)
+                * Mathf.Max(0f, difficultyMultiplier)
+                * Mathf.Max(0f, levelMultiplier)
+                * externalMultiplier;
             return Mathf.Max(0, Mathf.RoundToInt(baseExp * multiplier));
         }
 
         public static int AdjustQuestPearls(int baseCount, QuestType questType, int questDifficulty, int levelDifficulty, float rewardMultiplier)
+        {
+            return AdjustQuestPearls(baseCount, questType, questDifficulty, levelDifficulty, rewardMultiplier, QuestRewardTier.Mainline, 0, string.Empty);
+        }
+
+        public static int AdjustQuestPearls(int baseCount, QuestType questType, int questDifficulty, int levelDifficulty, float rewardMultiplier, QuestRewardTier rewardTier)
+        {
+            return AdjustQuestPearls(baseCount, questType, questDifficulty, levelDifficulty, rewardMultiplier, rewardTier, 0, string.Empty);
+        }
+
+        public static int AdjustQuestPearls(int baseCount, QuestType questType, int questDifficulty, int levelDifficulty, float rewardMultiplier, QuestRewardTier rewardTier, int chapterId, string strongholdId)
         {
             if (baseCount <= 0)
             {
@@ -135,13 +165,33 @@ namespace ThirdPersonController
             }
 
             float typeMultiplier = GetQuestTypeMultiplier(questType, multiplier => multiplier.pearlMultiplier);
+            float tierMultiplier = GetQuestTierMultiplier(rewardTier, multiplier => multiplier.pearlMultiplier);
+            float chapterMultiplier = GetQuestChapterMultiplier(chapterId, multiplier => multiplier.pearlMultiplier);
+            float strongholdMultiplier = GetQuestStrongholdMultiplier(strongholdId, multiplier => multiplier.pearlMultiplier);
             float difficultyMultiplier = GetDifficultyMultiplier(Config.questPearlDifficultyMultipliers, questDifficulty);
             float levelMultiplier = GetDifficultyMultiplier(Config.levelPearlDifficultyMultipliers, levelDifficulty);
-            float multiplier = Mathf.Max(0f, Config.questPearlMultiplier) * Mathf.Max(0f, typeMultiplier) * Mathf.Max(0f, difficultyMultiplier) * Mathf.Max(0f, levelMultiplier) * externalMultiplier;
+            float multiplier = Mathf.Max(0f, Config.questPearlMultiplier)
+                * Mathf.Max(0f, typeMultiplier)
+                * Mathf.Max(0f, tierMultiplier)
+                * Mathf.Max(0f, chapterMultiplier)
+                * Mathf.Max(0f, strongholdMultiplier)
+                * Mathf.Max(0f, difficultyMultiplier)
+                * Mathf.Max(0f, levelMultiplier)
+                * externalMultiplier;
             return Mathf.Max(0, Mathf.RoundToInt(baseCount * multiplier));
         }
 
         public static int AdjustQuestCredits(int baseCredits, QuestType questType, int questDifficulty, int levelDifficulty, float rewardMultiplier)
+        {
+            return AdjustQuestCredits(baseCredits, questType, questDifficulty, levelDifficulty, rewardMultiplier, QuestRewardTier.Mainline, 0, string.Empty);
+        }
+
+        public static int AdjustQuestCredits(int baseCredits, QuestType questType, int questDifficulty, int levelDifficulty, float rewardMultiplier, QuestRewardTier rewardTier)
+        {
+            return AdjustQuestCredits(baseCredits, questType, questDifficulty, levelDifficulty, rewardMultiplier, rewardTier, 0, string.Empty);
+        }
+
+        public static int AdjustQuestCredits(int baseCredits, QuestType questType, int questDifficulty, int levelDifficulty, float rewardMultiplier, QuestRewardTier rewardTier, int chapterId, string strongholdId)
         {
             if (baseCredits <= 0)
             {
@@ -155,9 +205,19 @@ namespace ThirdPersonController
             }
 
             float typeMultiplier = GetQuestTypeMultiplier(questType, multiplier => multiplier.creditMultiplier);
+            float tierMultiplier = GetQuestTierMultiplier(rewardTier, multiplier => multiplier.creditMultiplier);
+            float chapterMultiplier = GetQuestChapterMultiplier(chapterId, multiplier => multiplier.creditMultiplier);
+            float strongholdMultiplier = GetQuestStrongholdMultiplier(strongholdId, multiplier => multiplier.creditMultiplier);
             float difficultyMultiplier = GetDifficultyMultiplier(Config.questCreditDifficultyMultipliers, questDifficulty);
             float levelMultiplier = GetDifficultyMultiplier(Config.levelCreditDifficultyMultipliers, levelDifficulty);
-            float multiplier = Mathf.Max(0f, Config.questCreditMultiplier) * Mathf.Max(0f, typeMultiplier) * Mathf.Max(0f, difficultyMultiplier) * Mathf.Max(0f, levelMultiplier) * externalMultiplier;
+            float multiplier = Mathf.Max(0f, Config.questCreditMultiplier)
+                * Mathf.Max(0f, typeMultiplier)
+                * Mathf.Max(0f, tierMultiplier)
+                * Mathf.Max(0f, chapterMultiplier)
+                * Mathf.Max(0f, strongholdMultiplier)
+                * Mathf.Max(0f, difficultyMultiplier)
+                * Mathf.Max(0f, levelMultiplier)
+                * externalMultiplier;
             return Mathf.Max(0, Mathf.RoundToInt(baseCredits * multiplier));
         }
 
@@ -232,6 +292,73 @@ namespace ThirdPersonController
             {
                 QuestTypeRewardMultiplier entry = Config.questTypeMultipliers[i];
                 if (entry != null && entry.questType == questType)
+                {
+                    return Mathf.Max(0f, selector(entry));
+                }
+            }
+
+            return 1f;
+        }
+
+        private static float GetQuestTierMultiplier(QuestRewardTier tier, System.Func<QuestTierRewardMultiplier, float> selector)
+        {
+            if (Config == null || Config.questTierMultipliers == null || selector == null)
+            {
+                return 1f;
+            }
+
+            for (int i = 0; i < Config.questTierMultipliers.Count; i++)
+            {
+                QuestTierRewardMultiplier entry = Config.questTierMultipliers[i];
+                if (entry != null && entry.tier == tier)
+                {
+                    return Mathf.Max(0f, selector(entry));
+                }
+            }
+
+            return 1f;
+        }
+
+        private static float GetQuestChapterMultiplier(int chapterId, System.Func<QuestChapterRewardMultiplier, float> selector)
+        {
+            if (Config == null || Config.questChapterMultipliers == null || selector == null)
+            {
+                return 1f;
+            }
+
+            if (chapterId <= 0)
+            {
+                return 1f;
+            }
+
+            for (int i = 0; i < Config.questChapterMultipliers.Count; i++)
+            {
+                QuestChapterRewardMultiplier entry = Config.questChapterMultipliers[i];
+                if (entry != null && entry.chapterId == chapterId)
+                {
+                    return Mathf.Max(0f, selector(entry));
+                }
+            }
+
+            return 1f;
+        }
+
+        private static float GetQuestStrongholdMultiplier(string strongholdId, System.Func<QuestStrongholdRewardMultiplier, float> selector)
+        {
+            if (Config == null || Config.questStrongholdMultipliers == null || selector == null)
+            {
+                return 1f;
+            }
+
+            if (string.IsNullOrEmpty(strongholdId))
+            {
+                return 1f;
+            }
+
+            for (int i = 0; i < Config.questStrongholdMultipliers.Count; i++)
+            {
+                QuestStrongholdRewardMultiplier entry = Config.questStrongholdMultipliers[i];
+                if (entry != null && entry.strongholdId == strongholdId)
                 {
                     return Mathf.Max(0f, selector(entry));
                 }

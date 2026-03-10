@@ -46,6 +46,15 @@ namespace ThirdPersonController
         [Header("Quest Type Multipliers")]
         public List<QuestTypeRewardMultiplier> questTypeMultipliers = new List<QuestTypeRewardMultiplier>();
 
+        [Header("Quest Tier Multipliers")]
+        public List<QuestTierRewardMultiplier> questTierMultipliers = new List<QuestTierRewardMultiplier>();
+
+        [Header("Quest Chapter Multipliers")]
+        public List<QuestChapterRewardMultiplier> questChapterMultipliers = new List<QuestChapterRewardMultiplier>();
+
+        [Header("Quest Stronghold Multipliers")]
+        public List<QuestStrongholdRewardMultiplier> questStrongholdMultipliers = new List<QuestStrongholdRewardMultiplier>();
+
         [Header("Shop Pricing")]
         public float shopPriceMultiplier = 1f;
     }
@@ -54,6 +63,33 @@ namespace ThirdPersonController
     public class QuestTypeRewardMultiplier
     {
         public QuestType questType = QuestType.Kill;
+        public float expMultiplier = 1f;
+        public float pearlMultiplier = 1f;
+        public float creditMultiplier = 1f;
+    }
+
+    [System.Serializable]
+    public class QuestTierRewardMultiplier
+    {
+        public QuestRewardTier tier = QuestRewardTier.Mainline;
+        public float expMultiplier = 1f;
+        public float pearlMultiplier = 1f;
+        public float creditMultiplier = 1f;
+    }
+
+    [System.Serializable]
+    public class QuestChapterRewardMultiplier
+    {
+        public int chapterId = 1;
+        public float expMultiplier = 1f;
+        public float pearlMultiplier = 1f;
+        public float creditMultiplier = 1f;
+    }
+
+    [System.Serializable]
+    public class QuestStrongholdRewardMultiplier
+    {
+        public string strongholdId = "";
         public float expMultiplier = 1f;
         public float pearlMultiplier = 1f;
         public float creditMultiplier = 1f;

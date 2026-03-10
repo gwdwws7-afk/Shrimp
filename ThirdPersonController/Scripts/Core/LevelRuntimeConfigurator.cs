@@ -595,6 +595,7 @@ namespace ThirdPersonController
                 {
                     questSystem.levelRewardMultiplier = levelData.questRewardMultiplier;
                     questSystem.levelDifficulty = Mathf.Max(0, (int)levelData.difficulty);
+                    questSystem.levelChapterId = Mathf.Max(1, levelData.chapterId);
                 }
             }
 

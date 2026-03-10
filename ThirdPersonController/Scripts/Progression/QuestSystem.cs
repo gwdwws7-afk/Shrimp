@@ -13,7 +13,17 @@ namespace ThirdPersonController
         Reach,
         Combo,
         CompleteWave,
-        CompleteStronghold
+        CompleteStronghold,
+        CompleteWaveEvent,
+        BossBreak,
+        BossDefeat
+    }
+
+    public enum QuestRewardTier
+    {
+        Mainline,
+        Side,
+        Challenge
     }
 
     public enum QuestStatus
@@ -48,6 +58,10 @@ namespace ThirdPersonController
         public EnemyType targetEnemyType = EnemyType.Grunt;
         public float targetTime = 60f;
         public string targetLocationId = "";
+        public string targetStrongholdId = "";
+        public string targetBossId = "";
+        public bool matchAnyWaveEventType = true;
+        public WaveEventType targetWaveEventType = WaveEventType.Reinforcement;
 
         [Header("Failure")]
         public bool useTimeLimit = false;
@@ -68,6 +82,10 @@ namespace ThirdPersonController
         public EnemyType targetEnemyType = EnemyType.Grunt;
         public float targetTime = 60f;
         public string targetLocationId = "";
+        public string targetStrongholdId = "";
+        public string targetBossId = "";
+        public bool matchAnyWaveEventType = true;
+        public WaveEventType targetWaveEventType = WaveEventType.Reinforcement;
 
         [Header("Stages")]
         public List<QuestStage> stages = new List<QuestStage>();
@@ -88,6 +106,9 @@ namespace ThirdPersonController
         [Header("Difficulty")]
         public int difficultyRating = 1;
         public bool isOptional = false;
+
+        [Header("Category")]
+        public QuestRewardTier rewardTier = QuestRewardTier.Mainline;
     }
 
     public class QuestProgress
@@ -100,6 +121,7 @@ namespace ThirdPersonController
         public bool isTimerActive = false;
         public int stageIndex = 0;
         public float stageElapsedTime = 0f;
+        public string lastStrongholdId = "";
         
         public QuestStage CurrentStage => data != null && data.stages != null && data.stages.Count > 0 && stageIndex < data.stages.Count
             ? data.stages[Mathf.Max(0, stageIndex)]
@@ -111,6 +133,11 @@ namespace ThirdPersonController
         public float CurrentTargetTime => CurrentStage != null ? CurrentStage.targetTime : (data != null ? data.targetTime : 0f);
         public EnemyType CurrentTargetEnemyType => CurrentStage != null ? CurrentStage.targetEnemyType : (data != null ? data.targetEnemyType : EnemyType.Grunt);
         public string CurrentTargetLocationId => CurrentStage != null ? CurrentStage.targetLocationId : (data != null ? data.targetLocationId : string.Empty);
+        public string CurrentTargetStrongholdId => CurrentStage != null ? CurrentStage.targetStrongholdId : (data != null ? data.targetStrongholdId : string.Empty);
+        public string CurrentTargetBossId => CurrentStage != null ? CurrentStage.targetBossId : (data != null ? data.targetBossId : string.Empty);
+        public bool MatchAnyWaveEventType => CurrentStage != null ? CurrentStage.matchAnyWaveEventType : (data != null ? data.matchAnyWaveEventType : true);
+        public WaveEventType CurrentTargetWaveEventType => CurrentStage != null ? CurrentStage.targetWaveEventType : (data != null ? data.targetWaveEventType : WaveEventType.Reinforcement);
+        public QuestRewardTier RewardTier => data != null ? data.rewardTier : QuestRewardTier.Mainline;
 
         public float ProgressPercent
         {
@@ -167,6 +194,7 @@ namespace ThirdPersonController
         public float pearlRewardMultiplier = 1f;
         public float levelRewardMultiplier = 1f;
         public int levelDifficulty = 1;
+        public int levelChapterId = 1;
         public CurrencyWallet wallet;
         
         [Header("State")]
@@ -217,6 +245,9 @@ namespace ThirdPersonController
             GameEvents.OnEnemyKilled += HandleEnemyKilled;
             GameEvents.OnWaveCompleted += HandleWaveCompleted;
             GameEvents.OnStrongholdCompleted += HandleStrongholdCompleted;
+            GameEvents.OnWaveEventCompleted += HandleWaveEventCompleted;
+            GameEvents.OnBossBreakWindowStart += HandleBossBreakWindowStart;
+            GameEvents.OnBossDefeated += HandleBossDefeated;
             GameEvents.OnComboCountChanged += HandleComboChanged;
             GameEvents.OnPearlCollected += HandlePearlCollected;
             GameEvents.OnLocationReached += HandleLocationReached;
@@ -230,6 +261,9 @@ namespace ThirdPersonController
             GameEvents.OnEnemyKilled -= HandleEnemyKilled;
             GameEvents.OnWaveCompleted -= HandleWaveCompleted;
             GameEvents.OnStrongholdCompleted -= HandleStrongholdCompleted;
+            GameEvents.OnWaveEventCompleted -= HandleWaveEventCompleted;
+            GameEvents.OnBossBreakWindowStart -= HandleBossBreakWindowStart;
+            GameEvents.OnBossDefeated -= HandleBossDefeated;
             GameEvents.OnComboCountChanged -= HandleComboChanged;
             GameEvents.OnPearlCollected -= HandlePearlCollected;
             GameEvents.OnLocationReached -= HandleLocationReached;
@@ -369,7 +403,16 @@ namespace ThirdPersonController
                 
                 if (quest.status == QuestStatus.InProgress && quest.CurrentType == QuestType.CompleteWave)
                 {
+                    if (!MatchesStronghold(quest, stronghold))
+                    {
+                        continue;
+                    }
+
                     quest.currentProgress++;
+                    if (stronghold != null)
+                    {
+                        quest.lastStrongholdId = stronghold.StrongholdId;
+                    }
                     OnQuestProgress?.Invoke(quest);
                     
                     if (quest.IsStageComplete)
@@ -388,13 +431,106 @@ namespace ThirdPersonController
                 
                 if (quest.status == QuestStatus.InProgress && quest.CurrentType == QuestType.CompleteStronghold)
                 {
+                    if (!MatchesStronghold(quest, stronghold))
+                    {
+                        continue;
+                    }
+
                     quest.currentProgress = quest.CurrentTargetCount;
+                    if (stronghold != null)
+                    {
+                        quest.lastStrongholdId = stronghold.StrongholdId;
+                    }
                     OnQuestProgress?.Invoke(quest);
                     
                     if (quest.IsStageComplete)
                     {
                         AdvanceStageOrComplete(quest);
                     }
+                }
+            }
+        }
+
+        private void HandleWaveEventCompleted(StrongholdController stronghold, int waveIndex, WaveEventType eventType)
+        {
+            for (int i = 0; i < activeQuests.Count; i++)
+            {
+                QuestProgress quest = activeQuests[i];
+                if (quest.status != QuestStatus.InProgress || quest.CurrentType != QuestType.CompleteWaveEvent)
+                {
+                    continue;
+                }
+
+                if (!MatchesStronghold(quest, stronghold))
+                {
+                    continue;
+                }
+
+                if (!quest.MatchAnyWaveEventType && quest.CurrentTargetWaveEventType != eventType)
+                {
+                    continue;
+                }
+
+                quest.currentProgress++;
+                if (stronghold != null)
+                {
+                    quest.lastStrongholdId = stronghold.StrongholdId;
+                }
+                OnQuestProgress?.Invoke(quest);
+
+                if (quest.IsStageComplete)
+                {
+                    AdvanceStageOrComplete(quest);
+                }
+            }
+        }
+
+        private void HandleBossBreakWindowStart()
+        {
+            for (int i = 0; i < activeQuests.Count; i++)
+            {
+                QuestProgress quest = activeQuests[i];
+                if (quest.status != QuestStatus.InProgress || quest.CurrentType != QuestType.BossBreak)
+                {
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(quest.CurrentTargetBossId) && !IsBossActive(quest.CurrentTargetBossId))
+                {
+                    continue;
+                }
+
+                quest.currentProgress++;
+                OnQuestProgress?.Invoke(quest);
+
+                if (quest.IsStageComplete)
+                {
+                    AdvanceStageOrComplete(quest);
+                }
+            }
+        }
+
+        private void HandleBossDefeated(BossSpawnPoint boss)
+        {
+            for (int i = 0; i < activeQuests.Count; i++)
+            {
+                QuestProgress quest = activeQuests[i];
+                if (quest.status != QuestStatus.InProgress || quest.CurrentType != QuestType.BossDefeat)
+                {
+                    continue;
+                }
+
+                if (!MatchesBoss(quest, boss))
+                {
+                    continue;
+                }
+
+                quest.currentProgress++;
+                OnQuestProgress?.Invoke(quest);
+
+                if (quest.IsStageComplete)
+                {
+                    AdvanceStageOrComplete(quest);
                 }
             }
         }
@@ -490,18 +626,37 @@ namespace ThirdPersonController
                     continue;
                 }
 
-                if (!quest.data.failOnDefenseTargetDestroyed && quest.CurrentType != QuestType.Protect)
+                bool isProtectStage = quest.CurrentType == QuestType.Protect
+                    || (quest.CurrentType == QuestType.CompleteWaveEvent
+                        && !quest.MatchAnyWaveEventType
+                        && quest.CurrentTargetWaveEventType == WaveEventType.ProtectTarget);
+
+                if (!quest.data.failOnDefenseTargetDestroyed || !isProtectStage)
                 {
                     continue;
                 }
 
-                if (!string.IsNullOrEmpty(quest.CurrentTargetLocationId) && quest.CurrentTargetLocationId != targetId)
-                {
-                    continue;
-                }
-
-                FailQuest(quest, "Defense target destroyed");
+            if (!string.IsNullOrEmpty(quest.CurrentTargetLocationId) && quest.CurrentTargetLocationId != targetId)
+            {
+                continue;
             }
+
+                if (!string.IsNullOrEmpty(quest.CurrentTargetStrongholdId))
+                {
+                    if (string.IsNullOrEmpty(targetId))
+                    {
+                        continue;
+                }
+
+                string strongholdId = quest.CurrentTargetStrongholdId;
+                if (targetId != strongholdId && !targetId.StartsWith(strongholdId + "_"))
+                {
+                    continue;
+                }
+            }
+
+            FailQuest(quest, "Defense target destroyed");
+        }
         }
 
         private void HandlePlayerDeath()
@@ -521,21 +676,22 @@ namespace ThirdPersonController
         {
             quest.status = QuestStatus.Completed;
 
+            string rewardStrongholdId = ResolveQuestStrongholdId(quest);
             float rewardMultiplier = Mathf.Max(0f, expRewardMultiplier) * Mathf.Max(0f, levelRewardMultiplier);
-            int expReward = EconomyService.AdjustQuestExp(quest.data.reward.exp, quest.data.questType, quest.data.difficultyRating, levelDifficulty, rewardMultiplier);
+            int expReward = EconomyService.AdjustQuestExp(quest.data.reward.exp, quest.data.questType, quest.data.difficultyRating, levelDifficulty, rewardMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
             if (experienceSystem != null && expReward > 0)
             {
                 experienceSystem.GrantExperience(expReward);
             }
 
             float pearlMultiplier = Mathf.Max(0f, pearlRewardMultiplier) * Mathf.Max(0f, levelRewardMultiplier);
-            int pearlReward = EconomyService.AdjustQuestPearls(quest.data.reward.pearls, quest.data.questType, quest.data.difficultyRating, levelDifficulty, pearlMultiplier);
+            int pearlReward = EconomyService.AdjustQuestPearls(quest.data.reward.pearls, quest.data.questType, quest.data.difficultyRating, levelDifficulty, pearlMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
             if (pearlReward > 0)
             {
                 GrantQuestPearls(pearlReward);
             }
 
-            int creditReward = EconomyService.AdjustQuestCredits(quest.data.reward.credits, quest.data.questType, quest.data.difficultyRating, levelDifficulty, levelRewardMultiplier);
+            int creditReward = EconomyService.AdjustQuestCredits(quest.data.reward.credits, quest.data.questType, quest.data.difficultyRating, levelDifficulty, levelRewardMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
             if (wallet != null && creditReward > 0)
             {
                 wallet.AddCredits(creditReward);
@@ -684,6 +840,78 @@ namespace ThirdPersonController
             GameEvents.ShowMessage($"Stage Complete: {stageTitle}", 2f);
         }
 
+        private bool MatchesStronghold(QuestProgress quest, StrongholdController stronghold)
+        {
+            string targetId = quest.CurrentTargetStrongholdId;
+            if (string.IsNullOrEmpty(targetId))
+            {
+                return true;
+            }
+
+            if (stronghold == null)
+            {
+                return false;
+            }
+
+            return stronghold.StrongholdId == targetId || stronghold.name == targetId;
+        }
+
+        private bool MatchesBoss(QuestProgress quest, BossSpawnPoint boss)
+        {
+            string targetId = quest.CurrentTargetBossId;
+            if (string.IsNullOrEmpty(targetId))
+            {
+                return true;
+            }
+
+            if (boss == null)
+            {
+                return false;
+            }
+
+            return boss.bossName == targetId || boss.name == targetId;
+        }
+
+        private string ResolveQuestStrongholdId(QuestProgress quest)
+        {
+            if (quest == null)
+            {
+                return string.Empty;
+            }
+
+            if (!string.IsNullOrEmpty(quest.CurrentTargetStrongholdId))
+            {
+                return quest.CurrentTargetStrongholdId;
+            }
+
+            return quest.lastStrongholdId ?? string.Empty;
+        }
+
+        private bool IsBossActive(string targetId)
+        {
+            BossSpawnPoint[] bosses = FindObjectsOfType<BossSpawnPoint>();
+            for (int i = 0; i < bosses.Length; i++)
+            {
+                BossSpawnPoint boss = bosses[i];
+                if (boss == null)
+                {
+                    continue;
+                }
+
+                if (boss.bossName != targetId && boss.name != targetId)
+                {
+                    continue;
+                }
+
+                if (boss.HasSpawned && !boss.IsDefeated)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private void StartNextQuests(List<string> nextQuestIds)
         {
             if (nextQuestIds == null || nextQuestIds.Count == 0)
@@ -769,11 +997,12 @@ namespace ThirdPersonController
                 return string.Empty;
             }
 
+            string rewardStrongholdId = ResolveQuestStrongholdId(quest);
             float rewardMultiplier = Mathf.Max(0f, expRewardMultiplier) * Mathf.Max(0f, levelRewardMultiplier);
             float pearlMultiplier = Mathf.Max(0f, pearlRewardMultiplier) * Mathf.Max(0f, levelRewardMultiplier);
-            int expReward = EconomyService.AdjustQuestExp(quest.data.reward.exp, quest.data.questType, quest.data.difficultyRating, levelDifficulty, rewardMultiplier);
-            int pearlReward = EconomyService.AdjustQuestPearls(quest.data.reward.pearls, quest.data.questType, quest.data.difficultyRating, levelDifficulty, pearlMultiplier);
-            int creditReward = EconomyService.AdjustQuestCredits(quest.data.reward.credits, quest.data.questType, quest.data.difficultyRating, levelDifficulty, levelRewardMultiplier);
+            int expReward = EconomyService.AdjustQuestExp(quest.data.reward.exp, quest.data.questType, quest.data.difficultyRating, levelDifficulty, rewardMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
+            int pearlReward = EconomyService.AdjustQuestPearls(quest.data.reward.pearls, quest.data.questType, quest.data.difficultyRating, levelDifficulty, pearlMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
+            int creditReward = EconomyService.AdjustQuestCredits(quest.data.reward.credits, quest.data.questType, quest.data.difficultyRating, levelDifficulty, levelRewardMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
 
             List<string> parts = new List<string>();
             if (expReward > 0)

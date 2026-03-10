@@ -605,9 +605,9 @@ namespace ThirdPersonController
                         continue;
                     }
 
-                    int spawnCount = AdjustSpawnCount(wave, group, waveIndex, false, group.count);
+                    int spawnCount = AdjustEventSpawnCount(wave, waveEvent, group, waveIndex, group.count);
                     float baseInterval = group.spawnIntervalOverride > 0f ? group.spawnIntervalOverride : interval;
-                    float groupInterval = AdjustSpawnInterval(wave, group, waveIndex, false, baseInterval);
+                    float groupInterval = AdjustEventSpawnInterval(wave, waveEvent, group, waveIndex, baseInterval);
                     for (int i = 0; i < spawnCount; i++)
                     {
                         SpawnEnemyAtPosition(group.prefab, waveIndex, false, GetReinforcementPosition(wave, waveEvent), null, group.archetypeOverride);
@@ -641,6 +641,7 @@ namespace ThirdPersonController
             eventRuntime.triggered = true;
             float duration = Mathf.Max(0.1f, waveEvent.duration);
             float interval = Mathf.Max(0.05f, waveEvent.spawnInterval);
+            interval = AdjustEventSpawnInterval(wave, waveEvent, null, waveIndex, interval);
             float timer = 0f;
 
             while (timer < duration && IsWaveActive(waveIndex))
@@ -655,7 +656,7 @@ namespace ThirdPersonController
                             continue;
                         }
 
-                        int spawnCount = AdjustSpawnCount(wave, group, waveIndex, false, group.count);
+                        int spawnCount = AdjustEventSpawnCount(wave, waveEvent, group, waveIndex, group.count);
                         for (int i = 0; i < spawnCount; i++)
                         {
                             SpawnEnemyAtPosition(group.prefab, waveIndex, false, GetChaseSpawnPosition(waveEvent), null, group.archetypeOverride);
@@ -765,9 +766,9 @@ namespace ThirdPersonController
                         continue;
                     }
 
-                    int spawnCount = AdjustSpawnCount(wave, group, waveIndex, false, group.count);
+                    int spawnCount = AdjustEventSpawnCount(wave, waveEvent, group, waveIndex, group.count);
                     float baseInterval = group.spawnIntervalOverride > 0f ? group.spawnIntervalOverride : interval;
-                    float groupInterval = AdjustSpawnInterval(wave, group, waveIndex, false, baseInterval);
+                    float groupInterval = AdjustEventSpawnInterval(wave, waveEvent, group, waveIndex, baseInterval);
                     for (int i = 0; i < spawnCount; i++)
                     {
                         SpawnEnemyAtPosition(group.prefab, waveIndex, false, GetReinforcementPosition(wave, waveEvent),
@@ -1194,6 +1195,16 @@ namespace ThirdPersonController
             return spawnDirector.AdjustSpawnCount(this, wave, group, waveIndex, isElite, baseCount);
         }
 
+        private int AdjustEventSpawnCount(StrongholdWave wave, WaveEvent waveEvent, WaveSpawnGroup group, int waveIndex, int baseCount)
+        {
+            if (spawnDirector == null)
+            {
+                return baseCount;
+            }
+
+            return spawnDirector.AdjustEventSpawnCount(this, wave, waveEvent, group, waveIndex, baseCount);
+        }
+
         private float AdjustSpawnInterval(StrongholdWave wave, WaveSpawnGroup group, int waveIndex, bool isElite, float baseInterval)
         {
             if (spawnDirector == null)
@@ -1202,6 +1213,16 @@ namespace ThirdPersonController
             }
 
             return spawnDirector.AdjustSpawnInterval(this, wave, group, waveIndex, isElite, baseInterval);
+        }
+
+        private float AdjustEventSpawnInterval(StrongholdWave wave, WaveEvent waveEvent, WaveSpawnGroup group, int waveIndex, float baseInterval)
+        {
+            if (spawnDirector == null)
+            {
+                return baseInterval;
+            }
+
+            return spawnDirector.AdjustEventSpawnInterval(this, wave, waveEvent, group, waveIndex, baseInterval);
         }
 
         private Vector3 GetSpawnPosition(StrongholdWave wave)

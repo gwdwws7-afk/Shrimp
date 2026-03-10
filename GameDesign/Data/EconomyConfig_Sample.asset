@@ -78,20 +78,115 @@ MonoBehaviour:
   - 1.1
   - 1.2
   questTypeMultipliers:
+  - questType: 0
+    expMultiplier: 0.95
+    pearlMultiplier: 0.9
+    creditMultiplier: 0.95
+  - questType: 1
+    expMultiplier: 1
+    pearlMultiplier: 0.95
+    creditMultiplier: 1
   - questType: 2
     expMultiplier: 1.05
-    pearlMultiplier: 1.05
-    creditMultiplier: 1.1
+    pearlMultiplier: 1
+    creditMultiplier: 1.05
   - questType: 3
     expMultiplier: 1.1
-    pearlMultiplier: 1.1
-    creditMultiplier: 1.2
+    pearlMultiplier: 1.05
+    creditMultiplier: 1.15
+  - questType: 4
+    expMultiplier: 0.95
+    pearlMultiplier: 0.9
+    creditMultiplier: 1
+  - questType: 5
+    expMultiplier: 0.9
+    pearlMultiplier: 0.9
+    creditMultiplier: 0.95
   - questType: 6
+    expMultiplier: 1.1
+    pearlMultiplier: 0.95
+    creditMultiplier: 1.15
+  - questType: 7
+    expMultiplier: 1.15
+    pearlMultiplier: 1.15
+    creditMultiplier: 1.2
+  - questType: 8
+    expMultiplier: 1.25
+    pearlMultiplier: 1.25
+    creditMultiplier: 1.35
+  - questType: 9
+    expMultiplier: 1.1
+    pearlMultiplier: 1.1
+    creditMultiplier: 1.15
+  - questType: 10
+    expMultiplier: 1.1
+    pearlMultiplier: 1
+    creditMultiplier: 1.1
+  - questType: 11
+    expMultiplier: 1.3
+    pearlMultiplier: 1.3
+    creditMultiplier: 1.4
+  questTierMultipliers:
+  - tier: 0
+    expMultiplier: 1.2
+    pearlMultiplier: 1.15
+    creditMultiplier: 1.2
+  - tier: 1
+    expMultiplier: 0.9
+    pearlMultiplier: 0.85
+    creditMultiplier: 0.9
+  - tier: 2
+    expMultiplier: 1.1
+    pearlMultiplier: 0.95
+    creditMultiplier: 1.1
+  questChapterMultipliers:
+  - chapterId: 1
+    expMultiplier: 1
+    pearlMultiplier: 1
+    creditMultiplier: 1
+  - chapterId: 2
     expMultiplier: 1.02
     pearlMultiplier: 1.02
-    creditMultiplier: 1.05
-  - questType: 7
+    creditMultiplier: 1.02
+  - chapterId: 3
+    expMultiplier: 1.04
+    pearlMultiplier: 1.04
+    creditMultiplier: 1.04
+  - chapterId: 4
+    expMultiplier: 1.06
+    pearlMultiplier: 1.06
+    creditMultiplier: 1.06
+  - chapterId: 5
+    expMultiplier: 1.08
+    pearlMultiplier: 1.08
+    creditMultiplier: 1.08
+  - chapterId: 6
+    expMultiplier: 1.1
+    pearlMultiplier: 1.1
+    creditMultiplier: 1.1
+  - chapterId: 7
+    expMultiplier: 1.12
+    pearlMultiplier: 1.12
+    creditMultiplier: 1.12
+  - chapterId: 8
+    expMultiplier: 1.14
+    pearlMultiplier: 1.14
+    creditMultiplier: 1.14
+  - chapterId: 9
+    expMultiplier: 1.16
+    pearlMultiplier: 1.16
+    creditMultiplier: 1.16
+  - chapterId: 10
+    expMultiplier: 1.18
+    pearlMultiplier: 1.18
+    creditMultiplier: 1.18
+  questStrongholdMultipliers:
+  - strongholdId: Stronghold_01
+    expMultiplier: 1
+    pearlMultiplier: 1
+    creditMultiplier: 1
+  - strongholdId: Stronghold_02
     expMultiplier: 1.05
     pearlMultiplier: 1.05
-    creditMultiplier: 1.1
+    creditMultiplier: 1.05
   shopPriceMultiplier: 1

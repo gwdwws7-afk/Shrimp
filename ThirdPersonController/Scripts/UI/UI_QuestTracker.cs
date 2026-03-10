@@ -169,6 +169,18 @@ namespace ThirdPersonController
                     return $"Complete {quest.CurrentTargetCount} waves";
                 case QuestType.CompleteStronghold:
                     return "Clear the stronghold";
+                case QuestType.CompleteWaveEvent:
+                    return quest.MatchAnyWaveEventType
+                        ? $"Complete {quest.CurrentTargetCount} wave events"
+                        : $"Complete {quest.CurrentTargetCount} {quest.CurrentTargetWaveEventType} events";
+                case QuestType.BossBreak:
+                    return string.IsNullOrEmpty(quest.CurrentTargetBossId)
+                        ? $"Trigger {quest.CurrentTargetCount} boss breaks"
+                        : $"Trigger {quest.CurrentTargetCount} boss breaks ({quest.CurrentTargetBossId})";
+                case QuestType.BossDefeat:
+                    return string.IsNullOrEmpty(quest.CurrentTargetBossId)
+                        ? "Defeat the boss"
+                        : $"Defeat {quest.CurrentTargetBossId}";
                 case QuestType.Collect:
                     return $"Collect {quest.CurrentTargetCount} items";
                 case QuestType.Reach:

@@ -19,6 +19,9 @@ namespace ThirdPersonController
 
         private int currentIndex = -1;
         private bool waitingForBoss;
+        private bool strongholdsCompleted;
+        private bool bossDefeated;
+        private bool levelCompleted;
 
         public StrongholdController ActiveStronghold
         {
@@ -36,6 +39,7 @@ namespace ThirdPersonController
         private void Awake()
         {
             BindStrongholds(true);
+            BindBoss(true);
         }
 
         private void Start()
@@ -49,7 +53,7 @@ namespace ThirdPersonController
         private void OnDestroy()
         {
             BindStrongholds(false);
-            UnbindBoss();
+            BindBoss(false);
         }
 
         public void ConfigureStrongholds(List<StrongholdController> newStrongholds)
@@ -110,9 +114,10 @@ namespace ThirdPersonController
 
         private void HandleSequenceCompleted()
         {
+            strongholdsCompleted = true;
             if (deferCompletionUntilBoss && bossSpawnPoint != null)
             {
-                if (bossSpawnPoint.IsDefeated)
+                if (bossDefeated || bossSpawnPoint.IsDefeated)
                 {
                     CompleteLevel();
                     return;
@@ -133,27 +138,45 @@ namespace ThirdPersonController
             }
 
             waitingForBoss = true;
-            bossSpawnPoint.OnBossDefeated += HandleBossDefeated;
             bossSpawnPoint.SpawnBoss();
         }
 
         private void HandleBossDefeated(BossSpawnPoint spawnPoint)
         {
-            UnbindBoss();
+            bossDefeated = true;
+            waitingForBoss = false;
+            if (deferCompletionUntilBoss && !strongholdsCompleted)
+            {
+                return;
+            }
+
             CompleteLevel();
         }
 
-        private void UnbindBoss()
+        private void BindBoss(bool bind)
         {
             if (bossSpawnPoint != null)
             {
-                bossSpawnPoint.OnBossDefeated -= HandleBossDefeated;
+                if (bind)
+                {
+                    bossSpawnPoint.OnBossDefeated += HandleBossDefeated;
+                    bossDefeated = bossSpawnPoint.IsDefeated;
+                }
+                else
+                {
+                    bossSpawnPoint.OnBossDefeated -= HandleBossDefeated;
+                }
             }
-            waitingForBoss = false;
         }
 
         private void CompleteLevel()
         {
+            if (levelCompleted)
+            {
+                return;
+            }
+
+            levelCompleted = true;
             if (triggerLevelCompleteOnFinish)
             {
                 GameEvents.LevelCompleted(levelId);

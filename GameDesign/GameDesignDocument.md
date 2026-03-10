@@ -316,6 +316,101 @@
 - 攻击令牌上限动态放宽（默认：`maxActiveAttackers` + 附近敌人/6，上限 8）
 - 处于攻击冷却的敌人不占用令牌，避免“空转”占位
 
+#### 波次配比与事件节奏（统一规则）
+
+- **配比曲线**：按波次 index 应用 archetype 权重（WaveArchetypeProfile）
+  - Wave1 偏基础、Wave2 引入远程、Wave3 引入控制、Wave4 引入自爆
+- **事件节奏**：按事件类型调整刷怪数量/间隔（WaveEventTuning）
+  - Reinforcement 更紧凑、Chase 更高压、HoldPoint 更留白、ProtectTarget 标准
+
+#### 无双爽感 Skill 落地（参数表/改动清单）
+
+**目标指标（爽感优先）**
+- KPM（击杀/分钟）：`90–150`
+- 连段平均持续时长：`20–35s`
+- 破防窗口频率：`15–25s`
+- 击飞频率：`2–4s`
+- 喘息时间：`5–8s`
+
+**参数配置表（当前默认值）**
+
+**全局强度（IntensityWaveDirector）**
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| targetKillsPerMinute | 120 | 强度目标 KPM |
+| intensityWindowSeconds | 20 | 统计窗口 |
+| minCountMultiplier | 0.85 | 低强度刷怪倍率 |
+| maxCountMultiplier | 2.1 | 高强度刷怪倍率 |
+| minIntervalMultiplier | 0.45 | 高强度间隔倍率 |
+| maxIntervalMultiplier | 1.2 | 低强度间隔倍率 |
+| waveRampPerWave | 0.12 | 每波加速 |
+| maxTotalCountMultiplier | 2.4 | 总量上限 |
+| comboForMaxBonus | 80 | 连击强化上限 |
+| comboIntensityBonus | 0.2 | 连击强度加成 |
+| musouIntensityBonus | 0.15 | 无双加成 |
+| eliteRemainingScaleAtLow | 1.2 | 低强度精英触发延后 |
+| eliteRemainingScaleAtHigh | 0.7 | 高强度精英提前 |
+
+**波次配比（WaveArchetypeProfile）**
+| WaveIndex | Grunt | Rusher | Tank | Elite | Ranged | Controller | Suicide |
+|-----------|-------|--------|------|-------|--------|------------|---------|
+| 0 | 1.15 | 0.95 | 0.85 | 0.9 | 0 | 0 | 0 |
+| 1 | 1 | 1 | 0.95 | 1 | 0.7 | 0.4 | 0 |
+| 2 | 0.95 | 0.95 | 1 | 1.05 | 0.8 | 0.7 | 0.5 |
+| 3+ | 0.9 | 0.9 | 1.05 | 1.1 | 0.85 | 0.85 | 0.75 |
+
+**事件节奏（WaveEventTuning）**
+| EventType | countMultiplier | intervalMultiplier | 说明 |
+|----------|-----------------|--------------------|------|
+| Reinforcement | 0.95 | 0.9 | 密度略高、节奏更紧凑 |
+| Chase | 0.85 | 0.8 | 高压短促 |
+| HoldPoint | 0.9 | 1.1 | 留白与位移空间 |
+| ProtectTarget | 1 | 1 | 标准节奏 |
+
+**改动清单（落地步骤）**
+- 使用 `IntensityWaveDirector` 作为全局 Spawn Director（自动创建或手动放置）
+- 确保敌人 prefab 均绑定 `EnemyArchetypeConfigurator`，按 archetypeId 参与配比
+- 事件刷怪走 `AdjustEventSpawnCount/Interval`（与普通波次分离调优）
+- 不逐关改数值，先用统一规则跑通，再做局部 override
+
+#### 无双游戏设计 Skill（完整系统与流程）
+
+**目标**：在高密度敌群中维持持续爽感，并确保关卡/经济/成长/UI形成稳定闭环。
+
+**系统总览（模块 + 目的）**
+- **战斗系统**：连段/击飞/破防/技能回转，保证爽感循环不断档。
+- **敌群与AI**：敌群配比/AI节流/攻击令牌，保证密度与性能稳定。
+- **关卡节奏**：据点→事件→精英→Boss Gate，构建高低起伏节奏。
+- **经济循环**：消耗品/深渊币/珍珠掉落与商店闭环。
+- **成长系统**：等级/天赋/珍珠/技能成长，强化中后期爽感。
+- **任务系统**：主线/支线/挑战的结构化目标与奖励权重。
+- **UI交互**：战斗信息可读、奖励反馈可视、操作引导不打断。
+
+**流程模板（从关卡到回路）**
+1) **进入关卡**：确认章节/难度/奖励倍率与Boss Gate条件
+2) **据点序列**：Stronghold_01（节奏建立）→ Stronghold_02（强度提升）
+3) **事件插入**：Reinforcement/Chase/HoldPoint/ProtectTarget 形成峰谷
+4) **Boss Gate**：据点完成后刷Boss，破防窗口触发爆发
+5) **结算回路**：关卡奖励 + 任务奖励 + 掉落回收 → 商店/天赋/珍珠配置
+
+**关卡设计要点**
+- 每关 2 个据点：第1据点建立节奏，第2据点拉升强度
+- 每据点 3–5 波次：Wave1稳态，Wave2–3引入变体，Wave4以上高压
+- Boss 出场延后：据点清完后触发，确保节奏完整
+
+**经济循环要点**
+- 掉落链：珍珠/消耗品/深渊币随关卡倍率与难度叠乘
+- 商店节奏：在关卡间隔/据点间喘息提供补给与策略调整
+
+**成长系统要点**
+- 等级与天赋：提供技能回转/连段容错/破防效率等爽感增益
+- 珍珠：绑定元素与技能倾向，形成中期build差异
+
+**UI交互要点**
+- HUD：连段/资源/破防窗口/弱点图标突出显示
+- 任务：仅显示关键目标，不遮挡战斗节奏
+- 奖励：结算时高亮“爽感提升项”（技能/珍珠/消耗品）
+
 #### 元素抗性表（默认）
 
 **规则**: 抗性范围 `-1.0 ~ +1.0`，最终伤害倍率 = `1 - 抗性`。
@@ -854,6 +949,21 @@ public class BossSkill
 - 珍珠掉率：基于敌人类型配置
 - 消耗品掉率：0.12，数量 1（可按道具配置最小/最大堆叠）
 - 深渊币掉率：0.35，掉落 4–8 深渊币
+
+#### 任务奖励权重（主线/支线/挑战）
+
+| 分类 | 代表任务类型 | 奖励倍率倾向（EXP/珍珠/深渊币） |
+|------|--------------|-------------------------------|
+| 主线 | CompleteStronghold / BossDefeat / CompleteWave | 1.15–1.3 / 1.15–1.3 / 1.2–1.4 |
+| 支线 | Kill / KillEnemyType / Collect / Reach | 0.9–1.0 / 0.9–1.0 / 0.95–1.0 |
+| 挑战 | Combo / BossBreak / Survive / Protect / CompleteWaveEvent | 1.05–1.15 / 0.95–1.1 / 1.05–1.15 |
+
+> 具体倍率以 `EconomyConfig.questTypeMultipliers` 为准，可按关卡与难度叠乘。
+
+- 任务分类字段：`QuestData.rewardTier`（Mainline/Side/Challenge）
+- 叠乘顺序：QuestType → RewardTier → Chapter → Stronghold → 难度倍率 → 关卡倍率
+- Chapter 曲线：`EconomyConfig.questChapterMultipliers`（按 `LevelData.chapterId`）
+- Stronghold 曲线：`EconomyConfig.questStrongholdMultipliers`（按 `QuestData.targetStrongholdId` 或事件上下文）
 
 ---
 

@@ -7,6 +7,10 @@
 | **GameDesignDocument.md** | 完整游戏策划案 | 游戏整体设计和规划 |
 | **TaskList.md** | 开发任务清单 | 每周具体任务和进度跟踪 |
 | **TechnicalArchitecture.md** | 技术架构文档 | 代码结构和技术实现细节 |
+| **MusouDesignSkill.md** | 无双设计技能包 | 爽感优先的系统与流程落地 |
+| **MusouSkill_ExecutionChecklist.md** | 无双执行清单 | 落地步骤与关键检查 |
+| **MusouSkill_Params.md** | 无双参数表 | 统一配比与节奏配置 |
+| **MusouSkill_QAValidation.md** | 无双QA验证 | 记录与调优模板 |
 
 ---
 

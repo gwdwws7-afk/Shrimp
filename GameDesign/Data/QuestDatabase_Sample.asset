@@ -55,6 +55,7 @@ MonoBehaviour:
       credits: 20
     difficultyRating: 1
     isOptional: 0
+    rewardTier: 1
   - questId: combo_40
     questName: Combo 40
     description: Reach a 40 hit combo.
@@ -99,6 +100,7 @@ MonoBehaviour:
       credits: 20
     difficultyRating: 2
     isOptional: 0
+    rewardTier: 1
   - questId: kill_80
     questName: Cull 80
     description: Defeat 80 enemies.
@@ -121,6 +123,7 @@ MonoBehaviour:
       credits: 20
     difficultyRating: 2
     isOptional: 0
+    rewardTier: 1
   - questId: kill_100
     questName: Cull 100
     description: Defeat 100 enemies.
@@ -143,6 +146,7 @@ MonoBehaviour:
       credits: 30
     difficultyRating: 3
     isOptional: 0
+    rewardTier: 1
   - questId: kill_120
     questName: Cull 120
     description: Defeat 120 enemies.
@@ -165,6 +169,7 @@ MonoBehaviour:
       credits: 30
     difficultyRating: 3
     isOptional: 0
+    rewardTier: 1
   - questId: survive_60
     questName: Hold 60
     description: Survive for 60 seconds.
@@ -187,6 +192,7 @@ MonoBehaviour:
       credits: 20
     difficultyRating: 2
     isOptional: 0
+    rewardTier: 2
   - questId: survive_90
     questName: Hold 90
     description: Survive for 90 seconds.
@@ -209,6 +215,7 @@ MonoBehaviour:
       credits: 30
     difficultyRating: 3
     isOptional: 0
+    rewardTier: 2
   - questId: survive_120
     questName: Hold 120
     description: Survive for 120 seconds.
@@ -231,6 +238,7 @@ MonoBehaviour:
       credits: 30
     difficultyRating: 3
     isOptional: 0
+    rewardTier: 2
   - questId: wave_2
     questName: Clear 2 Waves
     description: Complete 2 waves.
@@ -239,6 +247,10 @@ MonoBehaviour:
     targetEnemyType: 0
     targetTime: 0
     targetLocationId: 
+    targetStrongholdId: 
+    targetBossId: 
+    matchAnyWaveEventType: 1
+    targetWaveEventType: 0
     stages: []
     nextQuestIds: []
     autoStartNextQuests: 1
@@ -253,6 +265,7 @@ MonoBehaviour:
       credits: 20
     difficultyRating: 2
     isOptional: 0
+    rewardTier: 1
   - questId: wave_3
     questName: Clear 3 Waves
     description: Complete 3 waves.
@@ -261,6 +274,10 @@ MonoBehaviour:
     targetEnemyType: 0
     targetTime: 0
     targetLocationId: 
+    targetStrongholdId: 
+    targetBossId: 
+    matchAnyWaveEventType: 1
+    targetWaveEventType: 0
     stages: []
     nextQuestIds: []
     autoStartNextQuests: 1
@@ -275,6 +292,7 @@ MonoBehaviour:
       credits: 25
     difficultyRating: 2
     isOptional: 0
+    rewardTier: 1
   - questId: wave_4
     questName: Clear 4 Waves
     description: Complete 4 waves.
@@ -283,6 +301,10 @@ MonoBehaviour:
     targetEnemyType: 0
     targetTime: 0
     targetLocationId: 
+    targetStrongholdId: 
+    targetBossId: 
+    matchAnyWaveEventType: 1
+    targetWaveEventType: 0
     stages: []
     nextQuestIds: []
     autoStartNextQuests: 1
@@ -297,6 +319,7 @@ MonoBehaviour:
       credits: 30
     difficultyRating: 3
     isOptional: 0
+    rewardTier: 1
   - questId: wave_5
     questName: Clear 5 Waves
     description: Complete 5 waves.
@@ -305,6 +328,10 @@ MonoBehaviour:
     targetEnemyType: 0
     targetTime: 0
     targetLocationId: 
+    targetStrongholdId: 
+    targetBossId: 
+    matchAnyWaveEventType: 1
+    targetWaveEventType: 0
     stages: []
     nextQuestIds: []
     autoStartNextQuests: 1
@@ -319,6 +346,7 @@ MonoBehaviour:
       credits: 35
     difficultyRating: 3
     isOptional: 0
+    rewardTier: 1
   - questId: clear_stronghold
     questName: Clear Stronghold
     description: Clear the stronghold.
@@ -327,6 +355,10 @@ MonoBehaviour:
     targetEnemyType: 0
     targetTime: 0
     targetLocationId: 
+    targetStrongholdId: 
+    targetBossId: 
+    matchAnyWaveEventType: 1
+    targetWaveEventType: 0
     stages: []
     nextQuestIds: []
     autoStartNextQuests: 1
@@ -341,6 +373,7 @@ MonoBehaviour:
       credits: 40
     difficultyRating: 3
     isOptional: 0
+    rewardTier: 1
   - questId: combo_50
     questName: Combo 50
     description: Reach a 50 hit combo.
@@ -410,7 +443,7 @@ MonoBehaviour:
   - questId: l01_rift_beacons
     questName: Rift Beacon Protocol
     description: Secure the fissure and synchronize the beacon line.
-    questType: 0
+    questType: 8
     targetCount: 0
     targetEnemyType: 0
     targetTime: 0
@@ -429,11 +462,15 @@ MonoBehaviour:
     - stageId: l01_sync_beacons
       title: Sync the Beacons
       description: Hold the line while the beacon array stabilizes.
-      questType: 2
-      targetCount: 0
+      questType: 9
+      targetCount: 1
       targetEnemyType: 0
-      targetTime: 45
+      targetTime: 0
       targetLocationId: 
+      targetStrongholdId: Stronghold_01
+      targetBossId: 
+      matchAnyWaveEventType: 0
+      targetWaveEventType: 2
       useTimeLimit: 0
       timeLimit: 0
     - stageId: l01_purge_breach
@@ -450,7 +487,7 @@ MonoBehaviour:
     autoStartNextQuests: 1
     timeLimit: 0
     failOnPlayerDeath: 0
-    failOnGameOver: 0
+    failOnGameOver: 1
     failOnDefenseTargetDestroyed: 0
     reward:
       exp: 120
@@ -459,6 +496,7 @@ MonoBehaviour:
       credits: 60
     difficultyRating: 1
     isOptional: 0
+    rewardTier: 0
   - questId: l01_combo_30
     questName: Clean Cut
     description: Reach a 30 hit combo.
@@ -481,10 +519,11 @@ MonoBehaviour:
       credits: 20
     difficultyRating: 1
     isOptional: 1
+    rewardTier: 2
   - questId: l02_blackbox_recovery
     questName: Blackbox Recovery
     description: Recover the station blackbox and restore power.
-    questType: 0
+    questType: 8
     targetCount: 0
     targetEnemyType: 0
     targetTime: 0
@@ -503,11 +542,15 @@ MonoBehaviour:
     - stageId: l02_restore_power
       title: Restore Power
       description: Hold while the grid boots.
-      questType: 2
-      targetCount: 0
+      questType: 9
+      targetCount: 1
       targetEnemyType: 0
-      targetTime: 60
+      targetTime: 0
       targetLocationId: 
+      targetStrongholdId: Stronghold_01
+      targetBossId: 
+      matchAnyWaveEventType: 0
+      targetWaveEventType: 2
       useTimeLimit: 0
       timeLimit: 0
     - stageId: l02_secure_labs
@@ -518,13 +561,17 @@ MonoBehaviour:
       targetEnemyType: 0
       targetTime: 0
       targetLocationId: 
+      targetStrongholdId: Stronghold_02
+      targetBossId: 
+      matchAnyWaveEventType: 1
+      targetWaveEventType: 0
       useTimeLimit: 0
       timeLimit: 0
     nextQuestIds: []
     autoStartNextQuests: 1
     timeLimit: 0
     failOnPlayerDeath: 0
-    failOnGameOver: 0
+    failOnGameOver: 1
     failOnDefenseTargetDestroyed: 0
     reward:
       exp: 140
@@ -533,6 +580,7 @@ MonoBehaviour:
       credits: 80
     difficultyRating: 1
     isOptional: 0
+    rewardTier: 0
   - questId: l02_salvage_sweep
     questName: Salvage Sweep
     description: Eliminate remaining intruders in the station.
@@ -558,7 +606,7 @@ MonoBehaviour:
   - questId: l03_vent_stabilization
     questName: Vent Stabilization
     description: Stabilize the thermal vents and protect the coolant rig.
-    questType: 0
+    questType: 8
     targetCount: 0
     targetEnemyType: 0
     targetTime: 0
@@ -577,18 +625,22 @@ MonoBehaviour:
     - stageId: l03_protect_rig
       title: Protect the Rig
       description: Keep the coolant rig intact during calibration.
-      questType: 3
-      targetCount: 0
+      questType: 9
+      targetCount: 1
       targetEnemyType: 0
-      targetTime: 60
+      targetTime: 0
       targetLocationId: 
+      targetStrongholdId: Stronghold_01
+      targetBossId: 
+      matchAnyWaveEventType: 0
+      targetWaveEventType: 3
       useTimeLimit: 0
       timeLimit: 0
     nextQuestIds: []
     autoStartNextQuests: 1
     timeLimit: 0
     failOnPlayerDeath: 0
-    failOnGameOver: 0
+    failOnGameOver: 1
     failOnDefenseTargetDestroyed: 1
     reward:
       exp: 160
@@ -597,6 +649,7 @@ MonoBehaviour:
       credits: 90
     difficultyRating: 2
     isOptional: 0
+    rewardTier: 0
   - questId: l03_combo_50
     questName: Pressure Cut
     description: Reach a 50 hit combo.
@@ -622,7 +675,7 @@ MonoBehaviour:
   - questId: l04_coral_purge
     questName: Coral Purge
     description: Purge the infected coral and hold the bio-nodes.
-    questType: 0
+    questType: 8
     targetCount: 0
     targetEnemyType: 0
     targetTime: 0
@@ -641,18 +694,22 @@ MonoBehaviour:
     - stageId: l04_hold_nodes
       title: Hold the Nodes
       description: Keep the bio-nodes secure during cleansing.
-      questType: 3
-      targetCount: 0
+      questType: 9
+      targetCount: 1
       targetEnemyType: 0
-      targetTime: 75
+      targetTime: 0
       targetLocationId: 
+      targetStrongholdId: Stronghold_01
+      targetBossId: 
+      matchAnyWaveEventType: 0
+      targetWaveEventType: 3
       useTimeLimit: 0
       timeLimit: 0
     nextQuestIds: []
     autoStartNextQuests: 1
     timeLimit: 0
     failOnPlayerDeath: 0
-    failOnGameOver: 0
+    failOnGameOver: 1
     failOnDefenseTargetDestroyed: 1
     reward:
       exp: 170
@@ -661,6 +718,7 @@ MonoBehaviour:
       credits: 95
     difficultyRating: 2
     isOptional: 0
+    rewardTier: 0
   - questId: l04_combo_50
     questName: Coral Cutter
     description: Reach a 50 hit combo.
@@ -686,7 +744,7 @@ MonoBehaviour:
   - questId: l05_city_relay
     questName: City Relay Restart
     description: Restart the sunken city relay and open the transit gates.
-    questType: 0
+    questType: 8
     targetCount: 0
     targetEnemyType: 0
     targetTime: 0
@@ -705,11 +763,15 @@ MonoBehaviour:
     - stageId: l05_hold_relay
       title: Hold the Relay
       description: Keep the relay online during restart.
-      questType: 2
-      targetCount: 0
+      questType: 9
+      targetCount: 1
       targetEnemyType: 0
-      targetTime: 90
+      targetTime: 0
       targetLocationId: 
+      targetStrongholdId: Stronghold_01
+      targetBossId: 
+      matchAnyWaveEventType: 0
+      targetWaveEventType: 2
       useTimeLimit: 0
       timeLimit: 0
     - stageId: l05_open_gates
@@ -720,13 +782,17 @@ MonoBehaviour:
       targetEnemyType: 0
       targetTime: 0
       targetLocationId: 
+      targetStrongholdId: Stronghold_02
+      targetBossId: 
+      matchAnyWaveEventType: 1
+      targetWaveEventType: 0
       useTimeLimit: 0
       timeLimit: 0
     nextQuestIds: []
     autoStartNextQuests: 1
     timeLimit: 0
     failOnPlayerDeath: 0
-    failOnGameOver: 0
+    failOnGameOver: 1
     failOnDefenseTargetDestroyed: 0
     reward:
       exp: 200
@@ -735,6 +801,7 @@ MonoBehaviour:
       credits: 120
     difficultyRating: 3
     isOptional: 0
+    rewardTier: 0
   - questId: l05_combo_60
     questName: Floodbreaker
     description: Reach a 60 hit combo.
@@ -760,7 +827,7 @@ MonoBehaviour:
   - questId: l06_pipeline_shutdown
     questName: Pipeline Shutdown
     description: Shut down the black tide pipeline and hold the purge valves.
-    questType: 0
+    questType: 8
     targetCount: 0
     targetEnemyType: 0
     targetTime: 0
@@ -779,11 +846,15 @@ MonoBehaviour:
     - stageId: l06_hold_valves
       title: Hold the Valves
       description: Defend the purge valves during shutdown.
-      questType: 3
-      targetCount: 0
+      questType: 9
+      targetCount: 1
       targetEnemyType: 0
-      targetTime: 90
+      targetTime: 0
       targetLocationId: 
+      targetStrongholdId: Stronghold_01
+      targetBossId: 
+      matchAnyWaveEventType: 0
+      targetWaveEventType: 3
       useTimeLimit: 0
       timeLimit: 0
     - stageId: l06_flush_line
@@ -794,13 +865,17 @@ MonoBehaviour:
       targetEnemyType: 0
       targetTime: 0
       targetLocationId: 
+      targetStrongholdId: Stronghold_02
+      targetBossId: 
+      matchAnyWaveEventType: 1
+      targetWaveEventType: 0
       useTimeLimit: 0
       timeLimit: 0
     nextQuestIds: []
     autoStartNextQuests: 1
     timeLimit: 0
     failOnPlayerDeath: 0
-    failOnGameOver: 0
+    failOnGameOver: 1
     failOnDefenseTargetDestroyed: 1
     reward:
       exp: 220
@@ -809,6 +884,7 @@ MonoBehaviour:
       credits: 130
     difficultyRating: 3
     isOptional: 0
+    rewardTier: 0
   - questId: l06_combo_60
     questName: Linebreaker
     description: Reach a 60 hit combo.
@@ -834,7 +910,7 @@ MonoBehaviour:
   - questId: l07_hangar_lockdown
     questName: Hangar Lockdown
     description: Lock down the abyss hangar and break the assembly chain.
-    questType: 0
+    questType: 8
     targetCount: 0
     targetEnemyType: 0
     targetTime: 0
@@ -853,11 +929,15 @@ MonoBehaviour:
     - stageId: l07_hold_platform
       title: Hold the Lift
       description: Protect the lift platform during lockdown.
-      questType: 3
-      targetCount: 0
+      questType: 9
+      targetCount: 1
       targetEnemyType: 0
-      targetTime: 90
+      targetTime: 0
       targetLocationId: 
+      targetStrongholdId: Stronghold_01
+      targetBossId: 
+      matchAnyWaveEventType: 0
+      targetWaveEventType: 3
       useTimeLimit: 0
       timeLimit: 0
     - stageId: l07_break_chain
@@ -868,13 +948,17 @@ MonoBehaviour:
       targetEnemyType: 0
       targetTime: 0
       targetLocationId: 
+      targetStrongholdId: Stronghold_02
+      targetBossId: 
+      matchAnyWaveEventType: 1
+      targetWaveEventType: 0
       useTimeLimit: 0
       timeLimit: 0
     nextQuestIds: []
     autoStartNextQuests: 1
     timeLimit: 0
     failOnPlayerDeath: 0
-    failOnGameOver: 0
+    failOnGameOver: 1
     failOnDefenseTargetDestroyed: 1
     reward:
       exp: 240
@@ -883,6 +967,7 @@ MonoBehaviour:
       credits: 150
     difficultyRating: 4
     isOptional: 0
+    rewardTier: 0
   - questId: l07_combo_70
     questName: Chain Cutter
     description: Reach a 70 hit combo.
@@ -905,10 +990,11 @@ MonoBehaviour:
       credits: 50
     difficultyRating: 4
     isOptional: 1
+    rewardTier: 2
   - questId: l08_rift_cooling
     questName: Rift Cooling Protocol
     description: Stabilize the molten rift and prevent a thermal surge.
-    questType: 0
+    questType: 8
     targetCount: 0
     targetEnemyType: 0
     targetTime: 0
@@ -927,18 +1013,22 @@ MonoBehaviour:
     - stageId: l08_stabilize_core
       title: Stabilize the Core
       description: Hold while the coolant cycle completes.
-      questType: 2
-      targetCount: 0
+      questType: 9
+      targetCount: 1
       targetEnemyType: 0
-      targetTime: 120
+      targetTime: 0
       targetLocationId: 
+      targetStrongholdId: Stronghold_01
+      targetBossId: 
+      matchAnyWaveEventType: 0
+      targetWaveEventType: 2
       useTimeLimit: 0
       timeLimit: 0
     nextQuestIds: []
     autoStartNextQuests: 1
     timeLimit: 0
     failOnPlayerDeath: 0
-    failOnGameOver: 0
+    failOnGameOver: 1
     failOnDefenseTargetDestroyed: 0
     reward:
       exp: 260
@@ -947,6 +1037,7 @@ MonoBehaviour:
       credits: 160
     difficultyRating: 4
     isOptional: 0
+    rewardTier: 0
   - questId: l08_kill_120
     questName: Rift Sweep
     description: Defeat 120 enemies in the molten rift.
@@ -969,10 +1060,11 @@ MonoBehaviour:
       credits: 50
     difficultyRating: 4
     isOptional: 1
+    rewardTier: 1
   - questId: l09_sanctum_disrupt
     questName: Sanctum Disruption
     description: Break the mirror nodes and disrupt the resonance field.
-    questType: 0
+    questType: 8
     targetCount: 0
     targetEnemyType: 0
     targetTime: 0
@@ -991,18 +1083,22 @@ MonoBehaviour:
     - stageId: l09_disrupt_field
       title: Disrupt the Field
       description: Hold while the resonance collapses.
-      questType: 2
-      targetCount: 0
+      questType: 9
+      targetCount: 1
       targetEnemyType: 0
-      targetTime: 120
+      targetTime: 0
       targetLocationId: 
+      targetStrongholdId: Stronghold_01
+      targetBossId: 
+      matchAnyWaveEventType: 0
+      targetWaveEventType: 2
       useTimeLimit: 0
       timeLimit: 0
     nextQuestIds: []
     autoStartNextQuests: 1
     timeLimit: 0
     failOnPlayerDeath: 0
-    failOnGameOver: 0
+    failOnGameOver: 1
     failOnDefenseTargetDestroyed: 0
     reward:
       exp: 280
@@ -1011,6 +1107,7 @@ MonoBehaviour:
       credits: 170
     difficultyRating: 4
     isOptional: 0
+    rewardTier: 0
   - questId: l09_combo_70
     questName: Mirror Breaker
     description: Reach a 70 hit combo.
@@ -1033,10 +1130,11 @@ MonoBehaviour:
       credits: 50
     difficultyRating: 4
     isOptional: 1
+    rewardTier: 2
   - questId: l10_hive_core
     questName: Hive Core Breach
     description: Breach the mother nest and destroy the core.
-    questType: 0
+    questType: 8
     targetCount: 0
     targetEnemyType: 0
     targetTime: 0
@@ -1055,11 +1153,15 @@ MonoBehaviour:
     - stageId: l10_hold_breaker
       title: Hold the Breaker
       description: Protect the core breaker while it charges.
-      questType: 3
-      targetCount: 0
+      questType: 9
+      targetCount: 1
       targetEnemyType: 0
-      targetTime: 120
+      targetTime: 0
       targetLocationId: 
+      targetStrongholdId: Stronghold_01
+      targetBossId: 
+      matchAnyWaveEventType: 0
+      targetWaveEventType: 3
       useTimeLimit: 0
       timeLimit: 0
     - stageId: l10_final_waves
@@ -1070,13 +1172,17 @@ MonoBehaviour:
       targetEnemyType: 0
       targetTime: 0
       targetLocationId: 
+      targetStrongholdId: Stronghold_02
+      targetBossId: 
+      matchAnyWaveEventType: 1
+      targetWaveEventType: 0
       useTimeLimit: 0
       timeLimit: 0
     nextQuestIds: []
     autoStartNextQuests: 1
     timeLimit: 0
     failOnPlayerDeath: 0
-    failOnGameOver: 0
+    failOnGameOver: 1
     failOnDefenseTargetDestroyed: 1
     reward:
       exp: 320
@@ -1085,6 +1191,7 @@ MonoBehaviour:
       credits: 200
     difficultyRating: 5
     isOptional: 0
+    rewardTier: 0
   - questId: l10_combo_80
     questName: Abyss Breaker
     description: Reach an 80 hit combo.
@@ -1107,3 +1214,94 @@ MonoBehaviour:
       credits: 60
     difficultyRating: 5
     isOptional: 1
+    rewardTier: 2
+  - questId: wave_event_protect
+    questName: Shield the Target
+    description: Complete a protection wave event.
+    questType: 9
+    targetCount: 1
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    targetStrongholdId: Stronghold_01
+    targetBossId: 
+    matchAnyWaveEventType: 0
+    targetWaveEventType: 3
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 1
+    failOnGameOver: 1
+    failOnDefenseTargetDestroyed: 1
+    reward:
+      exp: 120
+      pearls: 1
+      itemIds: []
+      credits: 25
+    difficultyRating: 2
+    isOptional: 1
+    rewardTier: 2
+    rewardTier: 2
+    rewardTier: 2
+    rewardTier: 1
+    rewardTier: 2
+    rewardTier: 2
+  - questId: boss_break_l01
+    questName: Break the Rift Eel
+    description: Trigger a break window on 深渊裂口巨鳗.
+    questType: 10
+    targetCount: 1
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    targetStrongholdId: 
+    targetBossId: 深渊裂口巨鳗
+    matchAnyWaveEventType: 1
+    targetWaveEventType: 0
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 1
+    failOnGameOver: 1
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 140
+      pearls: 1
+      itemIds: []
+      credits: 40
+    difficultyRating: 2
+    isOptional: 1
+    rewardTier: 2
+  - questId: boss_defeat_l01
+    questName: Defeat the Rift Eel
+    description: Defeat 深渊裂口巨鳗.
+    questType: 11
+    targetCount: 1
+    targetEnemyType: 0
+    targetTime: 0
+    targetLocationId: 
+    targetStrongholdId: 
+    targetBossId: 深渊裂口巨鳗
+    matchAnyWaveEventType: 1
+    targetWaveEventType: 0
+    stages: []
+    nextQuestIds: []
+    autoStartNextQuests: 1
+    timeLimit: 0
+    failOnPlayerDeath: 1
+    failOnGameOver: 1
+    failOnDefenseTargetDestroyed: 0
+    reward:
+      exp: 220
+      pearls: 2
+      itemIds: []
+      credits: 80
+    difficultyRating: 3
+    isOptional: 1
+    rewardTier: 2
+    rewardTier: 2
+    rewardTier: 2
+    rewardTier: 2
+    rewardTier: 2

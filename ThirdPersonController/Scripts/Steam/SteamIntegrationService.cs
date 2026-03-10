@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-#if STEAMWORKS
+#if STEAMWORKS && STEAMWORKS_NET
 using Steamworks;
 #endif
 
@@ -54,7 +54,7 @@ namespace ThirdPersonController
         public void InitializeClient()
         {
             client?.Shutdown();
-#if STEAMWORKS
+#if STEAMWORKS && STEAMWORKS_NET
             client = new SteamworksClient(appId, enableSteam, logWhenUnavailable);
 #else
             client = new NullSteamClient(logWhenUnavailable);
@@ -146,7 +146,7 @@ namespace ThirdPersonController
         public long GetCloudFileTimestamp(string fileName) => 0L;
     }
 
-#if STEAMWORKS
+#if STEAMWORKS && STEAMWORKS_NET
     internal class SteamworksClient : ISteamClient
     {
         private readonly uint appId;
