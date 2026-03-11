@@ -5,7 +5,7 @@ namespace ThirdPersonController
     public static class Utilities
     {
         /// <summary>
-        /// 检查目标是否在扇形范围内
+        /// 执行 Is In Sector 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public static bool IsInSector(Vector3 origin, Vector3 direction, Vector3 targetPosition, 
             float maxDistance, float sectorAngle)
@@ -23,7 +23,7 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 平滑阻尼角度（支持超过360度）
+        /// 执行 Smooth Damp Angle 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public static float SmoothDampAngle(float current, float target, ref float currentVelocity, 
             float smoothTime)
@@ -34,7 +34,7 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 获取地面高度
+        /// 获取Ground Height，集中读取当前状态，减少外部耦合。
         /// </summary>
         public static bool GetGroundHeight(Vector3 position, out float height, float maxDistance = 100f, 
             LayerMask groundLayer = default)
@@ -51,7 +51,7 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 检查地面倾斜角度
+        /// 获取Slope Angle，集中读取当前状态，减少外部耦合。
         /// </summary>
         public static float GetSlopeAngle(Vector3 position, Vector3 direction, float checkDistance = 0.5f, 
             LayerMask groundLayer = default)
@@ -65,7 +65,7 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 计算贝塞尔曲线点
+        /// 获取Bezier Point，集中读取当前状态，减少外部耦合。
         /// </summary>
         public static Vector3 GetBezierPoint(Vector3 p0, Vector3 p1, Vector3 p2, float t)
         {
@@ -75,7 +75,7 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 限制向量在水平面
+        /// 执行 Flatten Vector 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public static Vector3 FlattenVector(Vector3 vector)
         {
@@ -84,7 +84,7 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 计算两个角度之间的最短差值
+        /// 执行 Angle Difference 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public static float AngleDifference(float angle1, float angle2)
         {
@@ -93,7 +93,7 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 将值映射到另一个范围
+        /// 执行 Map 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public static float Map(float value, float fromMin, float fromMax, float toMin, float toMax)
         {
@@ -101,7 +101,7 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 缓动函数 - 三次方缓出
+        /// 执行 Ease Out Cubic 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public static float EaseOutCubic(float t)
         {
@@ -109,7 +109,7 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 缓动函数 - 三次方缓入
+        /// 执行 Ease In Cubic 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public static float EaseInCubic(float t)
         {
@@ -117,7 +117,7 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 缓动函数 - 三次方缓入缓出
+        /// 执行 Ease In Out Cubic 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public static float EaseInOutCubic(float t)
         {
@@ -125,7 +125,7 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 缓动函数 - 弹簧效果
+        /// 执行 Elastic Out 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public static float ElasticOut(float t)
         {
@@ -137,7 +137,7 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 创建带颜色的Debug射线
+        /// 执行 Draw Debug Ray 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public static void DrawDebugRay(Vector3 origin, Vector3 direction, Color color, float duration = 0f)
         {
@@ -145,7 +145,7 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 格式化时间显示
+        /// 执行 Format Time 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public static string FormatTime(float seconds)
         {
@@ -156,7 +156,7 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 获取随机方向（水平面）
+        /// 获取Random Horizontal Direction，集中读取当前状态，减少外部耦合。
         /// </summary>
         public static Vector3 GetRandomHorizontalDirection()
         {
@@ -165,7 +165,7 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 检查目标是否在摄像机视野内
+        /// 执行 Is In Camera View 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public static bool IsInCameraView(Camera camera, Vector3 worldPosition)
         {

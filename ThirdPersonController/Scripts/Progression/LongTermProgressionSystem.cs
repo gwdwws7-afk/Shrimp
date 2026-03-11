@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace ThirdPersonController
@@ -268,10 +268,10 @@ namespace ThirdPersonController
 
             string remainingText = remainingParts.Count > 0
                 ? string.Join(" | ", remainingParts)
-                : "可解锁";
+                : "Unlockable";
 
-            string title = string.IsNullOrEmpty(next.title) ? "下个里程碑" : next.title;
-            return $"下个里程碑: {title}（{remainingText}）";
+            string title = string.IsNullOrEmpty(next.title) ? "Next Milestone" : next.title;
+            return $"Next milestone: {title} ({remainingText})";
         }
 
         private void ApplyMilestone(ProgressionMilestone milestone, GameData data)
@@ -313,7 +313,7 @@ namespace ThirdPersonController
             if (showMessages)
             {
                 string label = string.IsNullOrEmpty(milestone.title) ? "Milestone" : milestone.title;
-                GameEvents.ShowMessage($"里程碑解锁: {label}", 2f);
+                GameEvents.ShowMessage($"里程碑达成: {label}", 2f);
             }
 
             if (autoSaveOnMilestone)

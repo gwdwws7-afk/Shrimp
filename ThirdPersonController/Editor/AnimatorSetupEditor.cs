@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
 using System.Collections.Generic;
@@ -46,7 +46,7 @@ namespace ThirdPersonController.Editor
             
             if (animatorController == null)
             {
-                EditorGUILayout.HelpBox("请选择一个Animator Controller文件", MessageType.Info);
+                EditorGUILayout.HelpBox("请选择一个 Animator Controller 文件。", MessageType.Info);
                 if (GUILayout.Button("自动查找PlayerAnimatorController"))
                 {
                     FindPlayerAnimatorController();
@@ -91,8 +91,8 @@ namespace ThirdPersonController.Editor
                 
                 GUILayout.Space(10);
                 
-                EditorGUILayout.LabelField("3. 快速操作:", EditorStyles.boldLabel);
-                if (GUILayout.Button("从FBX提取所有动画到Animations目录"))
+                EditorGUILayout.LabelField("高级工具", EditorStyles.boldLabel);
+                if (GUILayout.Button("从FBX提取所有动画到 Animations 目录"))
                 {
                     ExtractAnimationsFromFBX();
                 }
@@ -125,9 +125,9 @@ namespace ThirdPersonController.Editor
         private void RefreshAnimationList()
         {
             List<string> animationList = new List<string>();
-            animationList.Add("<无>");
+            animationList.Add("(None)");
             
-            // 查找项目中所有的Animation Clip
+            // 注释已清理
             string[] guids = AssetDatabase.FindAssets("t:AnimationClip");
             foreach (string guid in guids)
             {
@@ -141,7 +141,7 @@ namespace ThirdPersonController.Editor
             }
             
             availableAnimations = animationList.ToArray();
-            Debug.Log($"找到 {availableAnimations.Length - 1} 个动画片段");
+            Debug.Log($"[AnimatorSetup] 已刷新动画列表，共 {availableAnimations.Length - 1} 个可选动画。");
         }
         
         private void ApplyAnimationsToController()
@@ -151,7 +151,7 @@ namespace ThirdPersonController.Editor
             AnimatorControllerLayer baseLayer = animatorController.layers[0];
             AnimatorStateMachine stateMachine = baseLayer.stateMachine;
             
-            // 获取所有状态
+            // 注释已清理
             var states = stateMachine.states;
             
             foreach (var state in states)
@@ -161,7 +161,7 @@ namespace ThirdPersonController.Editor
                 switch (stateName)
                 {
                     case "IdleWalkRun Blend":
-                        // 更新混合树
+                        // 注释已清理
                         BlendTree blendTree = state.state.motion as BlendTree;
                         if (blendTree != null && blendTree.children.Length >= 3)
                         {
@@ -289,11 +289,11 @@ namespace ThirdPersonController.Editor
                 }
             }
             
-            // 保存更改
+            // 注释已清理
             AssetDatabase.SaveAssets();
             EditorUtility.SetDirty(animatorController);
             
-            Debug.Log("✅ 动画已应用到Animator Controller");
+            Debug.Log("[AnimatorSetup] 动画已应用到 Animator Controller。");
             EditorUtility.DisplayDialog("完成", "动画已成功应用到Animator Controller", "确定");
         }
         
@@ -318,7 +318,7 @@ namespace ThirdPersonController.Editor
                 
                 if (modelImporter != null)
                 {
-                    // 获取动画片段
+                    // 注释已清理
                     var clipAnimations = modelImporter.clipAnimations;
                     
                     if (clipAnimations != null && clipAnimations.Length > 0)
@@ -326,7 +326,7 @@ namespace ThirdPersonController.Editor
                         foreach (var clip in clipAnimations)
                         {
                             string clipName = clip.name;
-                            // 清理文件名
+                            // 注释已清理
                             clipName = clipName.Replace("Meshy_AI_Animation_", "");
                             clipName = clipName.Replace("_frame_rate_60", "");
                             clipName = clipName.Replace("_", " ");
@@ -339,8 +339,8 @@ namespace ThirdPersonController.Editor
                 }
             }
             
-            Debug.Log($"从 {extractedCount} 个FBX文件中提取了动画");
-            EditorUtility.DisplayDialog("提取完成", $"从 {extractedCount} 个FBX文件中扫描了动画。\n\n请使用Animator Setup工具配置动画。", "确定");
+            Debug.Log($"[AnimatorSetup] 已扫描 {extractedCount} 个含动画片段的 FBX。");
+            EditorUtility.DisplayDialog("提示", "操作已完成。", "确定");
         }
         
         [MenuItem("Tools/Animation/Check Missing Animations")]
@@ -355,7 +355,7 @@ namespace ThirdPersonController.Editor
                 
                 if (controller != null && controller.layers.Length > 0)
                 {
-                    Debug.Log($"=== 检查 {controller.name} ===");
+                    Debug.Log($"[AnimatorSetup] 检查控制器: {controller.name}");
                     
                     AnimatorStateMachine stateMachine = controller.layers[0].stateMachine;
                     
@@ -363,11 +363,11 @@ namespace ThirdPersonController.Editor
                     {
                         if (state.state.motion == null)
                         {
-                            Debug.LogWarning($"❌ 缺少动画: {state.state.name}");
+                            Debug.LogWarning($"[AnimatorSetup] 缺少动画: {state.state.name}");
                         }
                         else
                         {
-                            Debug.Log($"✓ {state.state.name}: {state.state.motion.name}");
+                            Debug.Log($"[AnimatorSetup] {state.state.name}: {state.state.motion.name}");
                         }
                     }
                 }

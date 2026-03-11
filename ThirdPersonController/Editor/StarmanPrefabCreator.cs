@@ -1,12 +1,12 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using System.IO;
 
 namespace ThirdPersonController.Editor
 {
     /// <summary>
-    /// Starman 敌人预制体一键创建器
-    /// 自动配置材质、组件并创建 Prefab
+    /// 注释已清理
+    /// 注释已清理
     /// </summary>
     public class StarmanPrefabCreator : EditorWindow
     {
@@ -18,21 +18,21 @@ namespace ThirdPersonController.Editor
         
         private void OnGUI()
         {
-            GUILayout.Label("🦈 创建 Starman 敌人预制体", EditorStyles.boldLabel);
+            GUILayout.Label("信息");
             EditorGUILayout.Space();
             
             EditorGUILayout.HelpBox(
-                "此工具将自动：\n" +
-                "1. 从 fbx/Characters/starman 导入模型\n" +
+                "此工具将自动：\\n" +
+                "[OK] fbx/Characters/starman 导入模型\\n" +
                 "2. 创建并配置材质球\n" +
-                "3. 添加所有必需组件\n" +
+                "3. 娣诲姞鎵€鏈夊繀闇€缁勪欢\n" +
                 "4. 创建预制体到 Assets/Prefabs/Enemies/",
                 MessageType.Info);
             
             EditorGUILayout.Space();
             
             GUI.backgroundColor = Color.green;
-            if (GUILayout.Button("🚀 一键创建 Starman Prefab", GUILayout.Height(50)))
+            if (GUILayout.Button("[OK] Starman Prefab", GUILayout.Height(50)))
             {
                 CreateStarmanPrefab();
             }
@@ -43,17 +43,17 @@ namespace ThirdPersonController.Editor
         {
             string modelPath = "Assets/fbx/Characters/starman/Meshy_AI_biped/Meshy_AI_Animation_Walking_frame_rate_60.fbx";
             
-            // 检查模型是否存在
+            // 注释已清理
             GameObject modelAsset = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
             if (modelAsset == null)
             {
                 EditorUtility.DisplayDialog("错误", 
-                    "找不到模型文件！\n路径: " + modelPath + "\n\n请确认模型文件存在。", 
+                    "Model file not found.\nPath: " + modelPath + "\n\nPlease verify the model exists.",
                     "确定");
                 return;
             }
             
-            // 创建预制体目录
+            // 注释已清理
             string prefabFolder = "Assets/Prefabs/Enemies";
             if (!AssetDatabase.IsValidFolder("Assets/Prefabs"))
             {
@@ -64,68 +64,68 @@ namespace ThirdPersonController.Editor
                 AssetDatabase.CreateFolder("Assets/Prefabs", "Enemies");
             }
             
-            // 创建材质球
+            // 注释已清理
             Material material = CreateMaterial();
             
-            // 实例化模型
+            // 注释已清理
             GameObject instance = Instantiate(modelAsset);
             instance.name = "ENM_Starman_01";
             
-            // 配置材质
+            // 注释已清理
             ConfigureRenderer(instance, material);
             
-            // 添加组件
+            // 注释已清理
             AddComponents(instance);
             
-            // 设置层级
+            // 注释已清理
             instance.layer = LayerMask.NameToLayer("Enemy");
             
-            // 保存预制体
+            // 注释已清理
             string prefabPath = prefabFolder + "/ENM_Starman_01.prefab";
             
-            // 如果已存在则删除
+            // 注释已清理
             if (File.Exists(prefabPath))
             {
                 AssetDatabase.DeleteAsset(prefabPath);
             }
             
-            // 创建预制体
+            // 注释已清理
             GameObject prefab = PrefabUtility.SaveAsPrefabAsset(instance, prefabPath);
             
-            // 销毁场景实例
+            // 注释已清理
             DestroyImmediate(instance);
             
-            // 选中预制体
+            // 注释已清理
             Selection.activeObject = prefab;
             EditorGUIUtility.PingObject(prefab);
             
             EditorUtility.DisplayDialog("成功", 
-                $"✅ Starman 预制体创建成功！\n\n" +
-                $"位置: {prefabPath}\n\n" +
-                $"已配置:\n" +
-                $"- 材质球 (Standard Shader)\n" +
+                $"[OK] Starman 预制体创建成功！\\n\\n" +
+                $"位置: {prefabPath}\\n\\n" +
+                $"[OK] \\n" +
+                $"[OK] (Standard Shader)\\n" +
                 $"- Rigidbody\n" +
                 $"- CapsuleCollider\n" +
                 $"- NavMeshAgent\n" +
                 $"- EnemyAI\n" +
                 $"- EnemyHealth\n\n" +
-                $"现在可以将此预制体拖到场景中使用！",
+                $"You can now drag this prefab into the scene.",
                 "确定");
             
-            Debug.Log($"✅ Starman Prefab 创建完成: {prefabPath}");
+            Debug.Log($"[OK] Starman Prefab 创建完成: {prefabPath}");
         }
         
         private Material CreateMaterial()
         {
             string materialPath = "Assets/Prefabs/Enemies/MAT_Starman_01.mat";
             
-            // 加载或创建材质
+            // 注释已清理
             Material material = AssetDatabase.LoadAssetAtPath<Material>(materialPath);
             if (material == null)
             {
                 material = new Material(Shader.Find("Standard"));
                 
-                // 配置 Standard Shader
+                // 注释已清理
                 material.SetFloat("_Mode", 0); // Opaque
                 material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
                 material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
@@ -135,7 +135,7 @@ namespace ThirdPersonController.Editor
                 material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
                 material.renderQueue = -1;
                 
-                // 加载贴图
+                // 注释已清理
                 string texturePath = "Assets/fbx/Characters/starman/Meshy_AI_biped/";
                 
                 Texture2D albedo = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath + "Meshy_AI_texture_0.png");
@@ -161,15 +161,15 @@ namespace ThirdPersonController.Editor
                     material.EnableKeyword("_METALLICGLOSSMAP");
                 }
                 
-                // 设置参数
+                // 注释已清理
                 material.SetFloat("_Metallic", 0.3f);
                 material.SetFloat("_Glossiness", 0.4f);
                 
-                // 保存材质
+                // 注释已清理
                 AssetDatabase.CreateAsset(material, materialPath);
                 AssetDatabase.SaveAssets();
                 
-                Debug.Log($"✅ 材质创建完成: {materialPath}");
+                Debug.Log($"[OK] 材质创建完成: {materialPath}");
             }
             
             return material;
@@ -182,12 +182,12 @@ namespace ThirdPersonController.Editor
             {
                 renderer.material = material;
                 
-                // 设置阴影
+                // 注释已清理
                 renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
                 renderer.receiveShadows = true;
             }
             
-            // 如果没有 SkinnedMeshRenderer，尝试 MeshRenderer
+            // 注释已清理
             if (renderers.Length == 0)
             {
                 MeshRenderer[] meshRenderers = instance.GetComponentsInChildren<MeshRenderer>();
@@ -254,7 +254,7 @@ namespace ThirdPersonController.Editor
                 ai = instance.AddComponent<EnemyAI>();
             }
             
-            // 配置 AI 参数
+            // 注释已清理
             ai.detectionRange = 15f;
             ai.attackRange = 2f;
             ai.fieldOfView = 120f;
@@ -267,7 +267,7 @@ namespace ThirdPersonController.Editor
             ai.playerLayer = LayerMask.GetMask("Player");
             ai.obstructionLayer = LayerMask.GetMask("Default", "Ground");
             
-            // 设置 Animator
+            // 注释已清理
             Animator animator = instance.GetComponent<Animator>();
             if (animator == null)
             {

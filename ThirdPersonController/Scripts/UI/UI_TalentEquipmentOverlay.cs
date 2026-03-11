@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace ThirdPersonController
@@ -14,6 +14,7 @@ namespace ThirdPersonController
         public KeyCode toggleKey = KeyCode.T;
         public bool pauseGameWhenOpen = true;
         public bool allowToggle = true;
+        public PlayerInputHandler inputHandler;
 
         private bool isOpen;
         private int selectedSlot;
@@ -36,6 +37,11 @@ namespace ThirdPersonController
             {
                 equipment = FindObjectOfType<PearlEquipment>();
             }
+
+            if (inputHandler == null)
+            {
+                inputHandler = FindObjectOfType<PlayerInputHandler>();
+            }
         }
 
         private void Update()
@@ -45,7 +51,11 @@ namespace ThirdPersonController
                 return;
             }
 
-            if (Input.GetKeyDown(toggleKey))
+            bool togglePressed = inputHandler != null
+                ? inputHandler.WasUnifiedKeyPressedThisFrame(toggleKey)
+                : PlayerInputHandler.ReadUnifiedKeyDown(toggleKey);
+
+            if (togglePressed)
             {
                 Toggle();
             }
@@ -117,7 +127,7 @@ namespace ThirdPersonController
 
             if (equipment == null)
             {
-                GUILayout.Label("未找到装备组件.");
+                GUILayout.Label("未找到装备系统。");
                 GUILayout.EndVertical();
                 return;
             }
@@ -142,7 +152,7 @@ namespace ThirdPersonController
             }
 
             GUILayout.Space(10f);
-            GUILayout.Label($"背包（选择槽位 {selectedSlot + 1}）", SectionStyle());
+            GUILayout.Label("背包");
 
             inventoryScroll = GUILayout.BeginScrollView(inventoryScroll, GUILayout.Height(300));
             if (inventory == null || inventory.ownedPearls == null || inventory.ownedPearls.Count == 0)
@@ -176,7 +186,7 @@ namespace ThirdPersonController
         private void DrawTalentPanel()
         {
             GUILayout.BeginVertical();
-            GUILayout.Label("天赋树", SectionStyle());
+            GUILayout.Label("天赋");
 
             if (talentTree == null || talentTree.data == null)
             {
@@ -211,7 +221,7 @@ namespace ThirdPersonController
                 }
 
                 bool unlocked = talentTree.IsUnlocked(node.id);
-                string status = unlocked ? "已解锁" : "未解锁";
+                string status = unlocked ? "Unlocked" : "Locked";
                 GUILayout.BeginHorizontal();
                 GUILayout.Label($"{node.title} [{status}]", GUILayout.Width(240));
 

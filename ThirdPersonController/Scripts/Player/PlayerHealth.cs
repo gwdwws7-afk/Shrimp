@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 namespace ThirdPersonController
@@ -102,9 +102,8 @@ namespace ThirdPersonController
 
         public void ApplyMaxStamina(float newMaxStamina, bool keepPercent)
         {
-            // 这个方法在StaminaSystem中有独立实现，这里不需要
+            // Max stamina is handled by StaminaSystem.
         }
-
         public void TakeDamage(int damage, Vector3 damageSource, float knockbackForce = 0f)
         {
             if (isDead) return;
@@ -139,7 +138,7 @@ namespace ThirdPersonController
             currentHealth -= finalDamage;
             currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-            // 触发事件
+// 围绕 生命 执行该步骤，用于保证流程状态与后续分支一致。
             OnHealthChanged?.Invoke(currentHealth, maxHealth);
             GameEvents.PlayerDamaged(finalDamage, damageSource);
 
@@ -220,7 +219,7 @@ namespace ThirdPersonController
             currentHealth += amount;
             currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-            // 触发事件
+// 围绕 生命 执行该步骤，用于保证流程状态与后续分支一致。
             OnHealthChanged?.Invoke(currentHealth, maxHealth);
             GameEvents.PlayerHealed(amount);
         }
@@ -332,7 +331,7 @@ namespace ThirdPersonController
             if (combat != null)
                 combat.enabled = false;
 
-            // 触发事件
+// 围绕 OnDeath 执行该步骤，用于保证流程状态与后续分支一致。
             OnDeath?.Invoke();
             GameEvents.PlayerDeath();
         }
@@ -364,7 +363,7 @@ namespace ThirdPersonController
                 animator.Rebind();
             }
 
-            // 触发事件
+// 围绕 生命 执行该步骤，用于保证流程状态与后续分支一致。
             OnHealthChanged?.Invoke(currentHealth, maxHealth);
             GameEvents.PlayerRespawn();
         }

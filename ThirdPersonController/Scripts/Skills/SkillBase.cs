@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ThirdPersonController
 {
@@ -20,25 +20,25 @@ namespace ThirdPersonController
     }
 
     /// <summary>
-    /// 技能基类 - ScriptableObject
-    /// 所有技能都继承此类
+    /// 技能基类（ScriptableObject）。
+    /// 提供统一的释放、冷却、特效与防御节奏流程。
     /// </summary>
     public abstract class SkillBase : ScriptableObject
     {
         [Header("基础信息")]
-        public string skillName = "新技能";
-        public string description = "技能描述";
+        public string skillName = "Skill Name";
+        public string description = "Skill Description";
         public Sprite icon;
         public KeyCode keyBinding;
 
-        [Header("技能分类")]
+        [Header("设置")]
         public SkillCategory category = SkillCategory.None;
         
-        [Header("冷却与消耗")]
+        [Header("设置")]
         public float cooldown = 10f;
         public float staminaCost = 20f;
         
-        [Header("伤害与效果")]
+        [Header("设置")]
         public int damage = 50;
         public float range = 5f;
         public float effectDuration = 2f;
@@ -65,7 +65,7 @@ namespace ThirdPersonController
         public SkillDefenseTiming damageReductionTiming = SkillDefenseTiming.None;
         public bool endsOnRecovery = true;
 
-        [Header("节奏点")]
+        [Header("设置")]
         public bool useAnimationEvents = true;
         public float impactDelay = 0.15f;
         public float recoveryDelay = 0.2f;
@@ -87,7 +87,7 @@ namespace ThirdPersonController
         public AudioClip hitSound;
         public AudioClip impactSound;
         
-        // 运行时数据（不保存到ScriptableObject）
+        // 运行时状态（不参与资源配置序列化）
         [System.NonSerialized]
         public float cooldownTimer = 0f;
         [System.NonSerialized]
@@ -108,9 +108,9 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 执行技能
+        /// 执行技能主逻辑（由子类实现）。
         /// </summary>
-        /// <param name="caster">施法者（玩家）</param>
+        /// <param name="caster">施法者</param>
         /// <param name="targetPosition">目标位置</param>
         public abstract void Execute(Transform caster, Vector3 targetPosition);
 
@@ -131,18 +131,18 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 检查是否可以释放技能
+        /// 检查技能是否允许释放（冷却、耐力等）。
         /// </summary>
         public virtual bool CanExecute(Transform caster, StaminaSystem stamina)
         {
-            // 检查冷却
+            // 先检查冷却就绪状态
             if (!isReady) return false;
             
-            // 检查耐力
+            // 再检查耐力是否足够
             float cost = GetModifiedStaminaCost(caster);
             if (stamina != null && !stamina.HasEnoughStamina(cost))
             {
-                GameEvents.ShowMessage("耐力不足！", 1f);
+                GameEvents.ShowMessage("提示", 1f);
                 return false;
             }
             
@@ -150,7 +150,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 开始冷却
+        /// 启动技能冷却并广播事件。
         /// </summary>
         public virtual void StartCooldown(Transform caster)
         {
@@ -158,12 +158,12 @@ namespace ThirdPersonController
             cooldownTimer = cooldownDuration;
             isReady = false;
             
-            // 触发技能使用事件
+            // 通知 UI/系统进入冷却
             GameEvents.SkillUsed(skillName, cooldownDuration);
         }
         
         /// <summary>
-        /// 更新冷却（每帧调用）
+        /// 更新Cooldown，保持显示与运行数据一致。
         /// </summary>
         public virtual void UpdateCooldown(float deltaTime)
         {
@@ -175,14 +175,14 @@ namespace ThirdPersonController
                     cooldownTimer = 0;
                     isReady = true;
                     
-                    // 触发冷却完成事件
+                    // 冷却结束，触发就绪事件
                     GameEvents.SkillReady(skillName);
                 }
             }
         }
         
         /// <summary>
-        /// 获取冷却进度（0-1）
+        /// 获取冷却进度（0 = 就绪，1 = 刚进入冷却）。
         /// </summary>
         public float GetCooldownProgress()
         {
@@ -198,7 +198,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 播放特效
+        /// 生成通用技能特效（旧接口兼容）。
         /// </summary>
         protected void SpawnEffect(Vector3 position, Quaternion rotation)
         {
@@ -209,7 +209,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 播放音效
+        /// 播放技能音效（优先走 AudioManager）。
         /// </summary>
         protected void PlaySound(AudioClip clip, Vector3 position)
         {
@@ -397,7 +397,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 消耗耐力
+        /// 统一消耗耐力（含属性修正）。
         /// </summary>
         public bool ConsumeStamina(StaminaSystem stamina, Transform caster)
         {

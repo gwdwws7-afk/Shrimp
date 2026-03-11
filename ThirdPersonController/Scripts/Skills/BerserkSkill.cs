@@ -1,12 +1,13 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ThirdPersonController
 {
     /// <summary>
-    /// 技能4: 狂暴化 - 攻速移速大幅提升
-    /// 按键: R
+    /// BerserkSkill 模块的核心实现，负责统一管理关键运行流程与对外接口。
+    /// 提升输出并在持续期间提供周期回血。
     /// </summary>
     [CreateAssetMenu(fileName = "SKILL_Berserk", menuName = "Skills/Berserk")]
     public class BerserkSkill : SkillBase
@@ -22,6 +23,8 @@ namespace ThirdPersonController
         [Header("持续回血")]
         public bool enableLifeRegen = true;
         public float lifeRegenPerSecond = 5f;
+        [System.NonSerialized] private readonly Dictionary<int, Coroutine> activeCoroutines = new Dictionary<int, Coroutine>();
+        [System.NonSerialized] private readonly Dictionary<int, MonoBehaviour> activeRunners = new Dictionary<int, MonoBehaviour>();
 
         protected override void OnEnable()
         {
@@ -59,37 +62,39 @@ namespace ThirdPersonController
         {
             StartSkillTimeline(caster, caster.position, caster.rotation, () =>
             {
-                // 开始狂暴Coroutine
-                caster.GetComponent<MonoBehaviour>().StartCoroutine(
-                    BerserkCoroutine(caster));
+                MonoBehaviour runner = caster.GetComponent<MonoBehaviour>();
+                if (runner == null)
+                {
+                    return;
+                }
 
-                Debug.Log($"🔥 狂暴化启动！持续 {duration} 秒");
+                int casterId = caster.GetInstanceID();
+                StopActiveBerserk(caster, casterId);
+                Coroutine routine = runner.StartCoroutine(BerserkCoroutine(caster, casterId));
+                activeCoroutines[casterId] = routine;
+                activeRunners[casterId] = runner;
+
+                Debug.Log($"[Skill] Berserk started: duration={duration:0.##}s");
             });
         }
         
-        private IEnumerator BerserkCoroutine(Transform caster)
+        private IEnumerator BerserkCoroutine(Transform caster, int casterId)
         {
             PlayerCombat combat = caster.GetComponent<PlayerCombat>();
-            PlayerMovement movement = caster.GetComponent<PlayerMovement>();
             PlayerHealth health = caster.GetComponent<PlayerHealth>();
-            
-            // 保存原始值
-            float originalDamage = 0;
-            if (combat != null) originalDamage = combat.attackDamage;
-            
-            // 应用增益
+
             if (combat != null)
             {
-                combat.attackDamage = Mathf.RoundToInt(originalDamage * damageMultiplier);
+                combat.SetSkillDamageBuffMultiplier(damageMultiplier);
             }
             
-            // 特效循环
+// 狂暴持续计时，用于定义效果生效窗口。
             float elapsed = 0f;
             float regenTimer = 0f;
             
             while (elapsed < duration)
             {
-                // 持续回血
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
                 if (enableLifeRegen && health != null)
                 {
                     regenTimer += Time.deltaTime;
@@ -104,13 +109,36 @@ namespace ThirdPersonController
                 yield return null;
             }
             
-            // 恢复原始值
+            // 狂暴结束后恢复额外伤害倍率
             if (combat != null)
             {
-                combat.attackDamage = (int)originalDamage;
+                combat.ClearSkillDamageBuffMultiplier();
             }
+
+            activeCoroutines.Remove(casterId);
+            activeRunners.Remove(casterId);
             
-            Debug.Log("💨 狂暴化结束");
+            Debug.Log("[Skill] Berserk ended.");
+        }
+
+        private void StopActiveBerserk(Transform caster, int casterId)
+        {
+            if (activeCoroutines.TryGetValue(casterId, out Coroutine running))
+            {
+                if (activeRunners.TryGetValue(casterId, out MonoBehaviour runner) && runner != null)
+                {
+                    runner.StopCoroutine(running);
+                }
+            }
+
+            PlayerCombat combat = caster.GetComponent<PlayerCombat>();
+            if (combat != null)
+            {
+                combat.ClearSkillDamageBuffMultiplier();
+            }
+
+            activeCoroutines.Remove(casterId);
+            activeRunners.Remove(casterId);
         }
     }
 }

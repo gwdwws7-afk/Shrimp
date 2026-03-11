@@ -1,16 +1,16 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 namespace ThirdPersonController
 {
     /// <summary>
-    /// 技能6: 终极审判 - 全屏高伤害，击杀刷新小技能CD
-    /// 按键: F
+    /// UltimateSkill 模块的核心实现，负责统一管理关键运行流程与对外接口。
+    /// 对大范围敌人造成高额伤害，并可在击杀后刷新小技能冷却。
     /// </summary>
     [CreateAssetMenu(fileName = "SKILL_Ultimate", menuName = "Skills/Ultimate")]
     public class UltimateSkill : SkillBase
     {
-        [Header("终极技能设置")]
+        [Header("设置")]
         public float effectRadius = 20f;
         public float stunDuration = 3f;
         public float knockbackForce = 15f;
@@ -44,7 +44,7 @@ namespace ThirdPersonController
         
         public override void Execute(Transform caster, Vector3 targetPosition)
         {
-            // 触发动画
+// 触发终极技能动画，用于强化动作反馈并统一表现节奏。
             Animator animator = caster.GetComponent<Animator>();
             if (animator != null)
             {
@@ -53,7 +53,7 @@ namespace ThirdPersonController
 
             StartSkillTimeline(caster, caster.position, caster.rotation, () =>
             {
-                // 慢动作效果
+                // 进入慢动作表现，强调终结技反馈
                 if (slowMotionDuration > 0f)
                 {
                     activeRunner = caster.GetComponent<MonoBehaviour>();
@@ -72,7 +72,7 @@ namespace ThirdPersonController
                     }
                 }
 
-                // 执行全屏攻击
+                // 执行终极伤害与控制结算
                 ExecuteUltimate(caster);
             });
         }
@@ -117,7 +117,7 @@ namespace ThirdPersonController
         
         private void ExecuteUltimate(Transform caster)
         {
-            // 全屏范围检测
+            // 计算当前释放的修正参数
             float adjustedRadius = GetModifiedRange(caster, effectRadius);
             int adjustedDamage = GetModifiedDamage(caster, damage);
             float adjustedKnockback = GetModifiedKnockback(caster, knockbackForce);
@@ -169,7 +169,7 @@ namespace ThirdPersonController
                             killedEnemies.Add(enemyHealth);
                         }
 
-                        // 眩晕
+                        // 命中后追加眩晕控制
                         if (enemyAI != null)
                         {
                             enemyAI.ApplyStun(stunDuration);
@@ -178,20 +178,20 @@ namespace ThirdPersonController
                 }
             }
             
-            // 播放命中音效
+            // 命中后播放打击音效
             if (hitCount > 0 && hitSound != null)
             {
                 PlaySound(hitSound, caster.position);
             }
             
-            // 刷新小技能CD
+            // 满足条件时刷新小技能冷却
             if (refreshCooldownsOnKill && killedEnemies.Count > 0)
             {
                 RefreshSkillCooldowns(caster);
-                Debug.Log($"⚡ 终极审判击杀 {killedEnemies.Count} 个敌人，小技能CD已刷新！");
+                Debug.Log($"[Skill] Ultimate killed {killedEnemies.Count} enemies, refreshed minor cooldowns.");
             }
             
-            Debug.Log($"💥 终极审判命中 {hitCount} 个敌人！");
+            Debug.Log($"[Skill] Ultimate hit {hitCount} enemies.");
         }
         
         private void RefreshSkillCooldowns(Transform caster)
@@ -199,7 +199,7 @@ namespace ThirdPersonController
             SkillManager skillManager = caster.GetComponent<SkillManager>();
             if (skillManager != null)
             {
-                // 刷新QWER技能（不包括终极技能自己）
+                // 仅刷新 Q/W/E/R 四个小技能
                 for (int i = 0; i < 4 && i < skillManager.skills.Length; i++)
                 {
                     skillManager.RefreshSkill(i);

@@ -32,6 +32,7 @@ namespace ThirdPersonController
         private PlayerActionController actionController;
         private PlayerHealth playerHealth;
         private PlayerStatsController statsController;
+        private PlayerInputHandler inputHandler;
 
         private bool isActive;
         private bool isFatigued;
@@ -54,6 +55,7 @@ namespace ThirdPersonController
             actionController = GetComponent<PlayerActionController>();
             playerHealth = GetComponent<PlayerHealth>();
             statsController = GetComponent<PlayerStatsController>();
+            inputHandler = GetComponent<PlayerInputHandler>();
             ClampMusou();
         }
 
@@ -87,7 +89,11 @@ namespace ThirdPersonController
 
         private void HandleInput()
         {
-            if (Input.GetKeyDown(musouKey))
+            bool pressed = inputHandler != null
+                ? inputHandler.WasMusouPressedThisFrame()
+                : PlayerInputHandler.ReadUnifiedKeyDown(musouKey);
+
+            if (pressed)
             {
                 TryActivate();
             }

@@ -18,21 +18,28 @@ namespace ThirdPersonController
 
         [Header("References")]
         public TalentTree talentTree;
+        public bool logStartupStatus = true;
 
         public int ExpToNext => GetExpToNextLevel(level);
+        private bool startupLogged;
 
         private void Awake()
         {
-            if (talentTree == null)
-            {
-                talentTree = FindObjectOfType<TalentTree>();
-            }
-
+            EnsureReferences();
+            SanitizeConfig();
             LoadFromSave();
+        }
+
+        private void Start()
+        {
+            EnsureReferences();
+            SanitizeRuntimeState();
+            LogStartupStatus();
         }
 
         private void OnEnable()
         {
+            EnsureReferences();
             GameEvents.OnEnemyKilled += HandleEnemyKilled;
         }
 
@@ -48,6 +55,7 @@ namespace ThirdPersonController
                 return;
             }
 
+            EnsureReferences();
             ApplyExperience(amount);
             GameEvents.ExperienceGained(amount);
             SaveToData();
@@ -76,6 +84,7 @@ namespace ThirdPersonController
             level += 1;
             GameEvents.LevelUp(level);
 
+            EnsureReferences();
             if (talentTree != null && talentPointsPerLevel > 0)
             {
                 talentTree.availablePoints += talentPointsPerLevel;
@@ -107,6 +116,31 @@ namespace ThirdPersonController
             return Mathf.Max(1, Mathf.RoundToInt(baseExpToNext * Mathf.Pow(expGrowth, clampedLevel - 1)));
         }
 
+        private void EnsureReferences()
+        {
+            if (talentTree == null)
+            {
+                talentTree = FindObjectOfType<TalentTree>();
+            }
+        }
+
+        private void SanitizeConfig()
+        {
+            baseExpToNext = Mathf.Max(1, baseExpToNext);
+            expGrowth = Mathf.Max(1f, expGrowth);
+            if (maxLevel > 0)
+            {
+                maxLevel = Mathf.Max(1, maxLevel);
+            }
+        }
+
+        private void SanitizeRuntimeState()
+        {
+            int upper = maxLevel > 0 ? maxLevel : int.MaxValue;
+            level = Mathf.Clamp(level, 1, upper);
+            currentExp = Mathf.Max(0, currentExp);
+        }
+
         private void LoadFromSave()
         {
             if (SaveManager.Instance == null || SaveManager.Instance.CurrentData == null)
@@ -127,6 +161,18 @@ namespace ThirdPersonController
 
             SaveManager.Instance.CurrentData.playerLevel = level;
             SaveManager.Instance.CurrentData.currentExp = currentExp;
+        }
+
+        private void LogStartupStatus()
+        {
+            if (!logStartupStatus || startupLogged)
+            {
+                return;
+            }
+
+            startupLogged = true;
+            bool hasSave = SaveManager.Instance != null && SaveManager.Instance.CurrentData != null;
+            Debug.Log($"[PlayerExperienceSystem] Startup | level={level} exp={currentExp}/{ExpToNext} maxLevel={maxLevel} talentTree={(talentTree != null)} save={(hasSave)}");
         }
     }
 }

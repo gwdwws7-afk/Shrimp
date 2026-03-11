@@ -1,0 +1,19 @@
+{
+  "name": "ThirdPersonController.PlayModeTests",
+  "rootNamespace": "ThirdPersonController.Tests",
+  "references": [
+    "ThirdPersonController.Runtime"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

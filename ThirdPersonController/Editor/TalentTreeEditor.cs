@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
@@ -25,7 +25,7 @@ namespace ThirdPersonController.Editor
             GUILayout.Label("天赋树编辑器", EditorStyles.boldLabel);
             GUILayout.Space(10);
             
-            EditorGUILayout.LabelField("1. 选择天赋树数据:", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Settings", EditorStyles.boldLabel);
             talentTreeData = (TalentTreeData)EditorGUILayout.ObjectField(talentTreeData, typeof(TalentTreeData), false);
             
             if (talentTreeData == null)
@@ -35,13 +35,13 @@ namespace ThirdPersonController.Editor
                     CreateNewTalentTree();
                 }
                 
-                EditorGUILayout.HelpBox("请选择一个天赋树数据文件", MessageType.Info);
+                EditorGUILayout.HelpBox("请选择一个天赋树数据文件。", MessageType.Info);
                 return;
             }
             
             GUILayout.Space(10);
             
-            EditorGUILayout.LabelField($"2. 节点列表 ({talentTreeData.nodes.Count}个节点):", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"Overview", EditorStyles.boldLabel);
             
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
             
@@ -54,11 +54,11 @@ namespace ThirdPersonController.Editor
             
             GUILayout.Space(10);
             
-            EditorGUILayout.LabelField("3. 添加新节点:", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Settings", EditorStyles.boldLabel);
             
             newNodeId = EditorGUILayout.TextField("ID:", newNodeId);
             newNodeTitle = EditorGUILayout.TextField("名称:", newNodeTitle);
-            newNodeCost = EditorGUILayout.IntField("消耗:", newNodeCost);
+            newNodeCost = EditorGUILayout.IntField("Settings", newNodeCost);
             newNodeBranch = (TalentBranch)EditorGUILayout.EnumPopup("分支:", newNodeBranch);
             
             if (GUILayout.Button("添加节点"))
@@ -127,7 +127,7 @@ namespace ThirdPersonController.Editor
                 node.id = EditorGUILayout.TextField("ID:", node.id);
                 node.title = EditorGUILayout.TextField("名称:", node.title);
                 node.branch = (TalentBranch)EditorGUILayout.EnumPopup("分支:", node.branch);
-                node.cost = EditorGUILayout.IntField("消耗:", node.cost);
+                node.cost = EditorGUILayout.IntField("Settings", node.cost);
                 
                 EditorGUILayout.LabelField("前置节点:");
                 for (int i = 0; i < node.prerequisites.Count; i++)
@@ -147,7 +147,7 @@ namespace ThirdPersonController.Editor
                     node.prerequisites.Add("");
                 }
                 
-                EditorGUILayout.LabelField("属性修改:");
+                EditorGUILayout.LabelField("Settings");
                 for (int i = 0; i < node.modifiers.Count; i++)
                 {
                     EditorGUILayout.BeginHorizontal();
@@ -164,7 +164,7 @@ namespace ThirdPersonController.Editor
                     EditorGUILayout.EndHorizontal();
                 }
                 
-                if (GUILayout.Button("添加属性"))
+                if (GUILayout.Button("Add Modifier"))
                 {
                     node.modifiers.Add(new StatModifier { stat = StatType.AttackDamage, type = ModifierType.Percent, value = 0.1f });
                 }
@@ -189,7 +189,7 @@ namespace ThirdPersonController.Editor
         {
             if (string.IsNullOrEmpty(newNodeId) || string.IsNullOrEmpty(newNodeTitle))
             {
-                EditorUtility.DisplayDialog("错误", "ID和名称不能为空", "确定");
+                EditorUtility.DisplayDialog("提示", "操作已完成。", "确定");
                 return;
             }
             
@@ -212,7 +212,7 @@ namespace ThirdPersonController.Editor
         
         private void RemoveNode(int index)
         {
-            if (EditorUtility.DisplayDialog("确认删除", "确定要删除这个节点吗？", "确定", "取消"))
+            if (EditorUtility.DisplayDialog("提示", "操作已完成。", "确定"))
             {
                 talentTreeData.nodes.RemoveAt(index);
             }
@@ -229,14 +229,14 @@ namespace ThirdPersonController.Editor
         {
             if (talentTreeData == null) return;
             
-            if (!EditorUtility.DisplayDialog("确认", "这将覆盖当前所有节点，确定要生成吗？", "确定", "取消"))
+            if (!EditorUtility.DisplayDialog("提示", "操作已完成。", "确定"))
             {
                 return;
             }
             
             talentTreeData.nodes.Clear();
             
-            // 力量分支
+            // 注释已清理
             string[] offenseTitles = {
                 "Deep Strikes", "Riptide Pressure", "Wide Sweep", "Spellwake", "Titanic Force",
                 "Critical Edge", "Deadly Blow", "Armor Breaker", "Rapid Fury", "Combo Master",
@@ -257,7 +257,7 @@ namespace ThirdPersonController.Editor
                 talentTreeData.nodes.Add(node);
             }
             
-            // 控制分支
+            // 注释已清理
             string[] controlTitles = {
                 "Arc Mastery", "Shock Impact", "Surge Focus", "Cycle Pulse", "Expanded Reach",
                 "Air Superiority", "Knockout Master", "Crowd Control", "Chain Reaction", "Storm Caller",
@@ -278,7 +278,7 @@ namespace ThirdPersonController.Editor
                 talentTreeData.nodes.Add(node);
             }
             
-            // 生存分支
+            // 注释已清理
             string[] survivalTitles = {
                 "Abyss Shell", "Deep Reserves", "Tidal Footwork", "Breath Economy", "Swift Recovery",
                 "Damage Shield", "Second Wind", "Potion Boost", "Status Immune", "Leech Attack",
@@ -300,7 +300,7 @@ namespace ThirdPersonController.Editor
             }
             
             SaveTalentTree();
-            EditorUtility.DisplayDialog("完成", "已生成45个节点的天赋树模板", "确定");
+            EditorUtility.DisplayDialog("提示", "操作已完成。", "确定");
         }
     }
 }

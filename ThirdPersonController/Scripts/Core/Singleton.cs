@@ -3,8 +3,7 @@ using UnityEngine;
 namespace ThirdPersonController
 {
     /// <summary>
-    /// 单例模式基类
-    /// 使用方法: public class MyManager : Singleton<MyManager>
+    /// Singleton 模块的核心实现，负责统一管理关键运行流程与对外接口。
     /// </summary>
     public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     {

@@ -119,6 +119,20 @@ namespace ThirdPersonController
                 ai.chargeWindup = archetype.chargeWindup;
                 ai.canFlee = archetype.canFlee;
                 ai.fleeHealthThreshold = archetype.fleeHealthThreshold;
+                ai.dodgeDistance = archetype.dodgeDistance;
+                ai.dodgeDuration = archetype.dodgeDuration;
+                ai.dodgeCooldown = archetype.dodgeCooldown;
+                ai.blockDuration = archetype.blockDuration;
+                ai.blockCooldown = archetype.blockCooldown;
+                ai.blockDefenseBonus = archetype.blockDefenseBonus;
+                ai.chargeChance = archetype.chargeChance;
+                ai.chargeMinDistance = archetype.chargeMinDistance;
+                ai.chargeMaxDistance = archetype.chargeMaxDistance;
+                ai.chargeDuration = archetype.chargeDuration;
+                ai.chargeCooldown = archetype.chargeCooldown;
+                ai.fleeDistance = archetype.fleeDistance;
+                ai.fleeDuration = archetype.fleeDuration;
+                ai.fleeCooldown = archetype.fleeCooldown;
 
                 if (applyCrowd)
                 {

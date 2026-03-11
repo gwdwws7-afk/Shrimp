@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPersonController
 {
     /// <summary>
-    /// 自动设置玩家组件 - 一键修复常见问题
+    /// 快速为玩家对象补齐运行所需的基础组件与关键引用。
     /// </summary>
     [ExecuteInEditMode]
     public class PlayerAutoSetup : MonoBehaviour
@@ -11,24 +11,15 @@ namespace ThirdPersonController
         [ContextMenu("自动设置玩家")]
         public void AutoSetup()
         {
-            Debug.Log("[PlayerAutoSetup] 开始自动设置玩家...");
+            Debug.Log("[PlayerAutoSetup] 开始自动配置玩家组件。");
 
-            // 1. 检查并设置 Rigidbody
             SetupRigidbody();
-
-            // 2. 检查并设置 Collider
             SetupCollider();
-
-            // 3. 检查并设置 GroundCheck
             SetupGroundCheck();
-
-            // 4. 检查 PlayerMovement 设置
             SetupPlayerMovement();
 
-            // 5. 设置标签
             gameObject.tag = "Player";
-
-            Debug.Log("[PlayerAutoSetup] 设置完成！");
+            Debug.Log("[PlayerAutoSetup] 自动配置完成。");
         }
 
         private void SetupRigidbody()
@@ -37,7 +28,7 @@ namespace ThirdPersonController
             if (rb == null)
             {
                 rb = gameObject.AddComponent<Rigidbody>();
-                Debug.Log("[PlayerAutoSetup] 添加了 Rigidbody");
+                Debug.Log("[PlayerAutoSetup] 已添加 Rigidbody。");
             }
 
             rb.mass = 1f;
@@ -47,8 +38,7 @@ namespace ThirdPersonController
             rb.isKinematic = false;
             rb.interpolation = RigidbodyInterpolation.Interpolate;
             rb.constraints = RigidbodyConstraints.FreezeRotation;
-
-            Debug.Log("[PlayerAutoSetup] Rigidbody 配置完成");
+            Debug.Log("[PlayerAutoSetup] Rigidbody 参数配置完成。");
         }
 
         private void SetupCollider()
@@ -57,70 +47,65 @@ namespace ThirdPersonController
             if (capsule == null)
             {
                 capsule = gameObject.AddComponent<CapsuleCollider>();
-                Debug.Log("[PlayerAutoSetup] 添加了 CapsuleCollider");
+                Debug.Log("[PlayerAutoSetup] 已添加 CapsuleCollider。");
             }
 
             capsule.radius = 0.3f;
             capsule.height = 1.8f;
-            capsule.center = new Vector3(0, 0.9f, 0);
-            capsule.direction = 1; // Y轴
-
-            Debug.Log("[PlayerAutoSetup] CapsuleCollider 配置完成");
+            capsule.center = new Vector3(0f, 0.9f, 0f);
+            capsule.direction = 1;
+            Debug.Log("[PlayerAutoSetup] CapsuleCollider 参数配置完成。");
         }
 
         private void SetupGroundCheck()
         {
-            // 查找是否已有 GroundCheck
             Transform groundCheck = transform.Find("GroundCheck");
-            
             if (groundCheck == null)
             {
-                // 创建 GroundCheck 物体
-                GameObject gc = new GameObject("GroundCheck");
-                gc.transform.SetParent(transform);
-                gc.transform.localPosition = new Vector3(0, 0.05f, 0); // 脚底位置
-                groundCheck = gc.transform;
-                Debug.Log("[PlayerAutoSetup] 创建了 GroundCheck 子物体");
+                GameObject groundCheckObject = new GameObject("GroundCheck");
+                groundCheckObject.transform.SetParent(transform);
+                groundCheckObject.transform.localPosition = new Vector3(0f, 0.05f, 0f);
+                groundCheck = groundCheckObject.transform;
+                Debug.Log("[PlayerAutoSetup] 已创建 GroundCheck 子节点。");
             }
 
-            // 设置 PlayerMovement
             PlayerMovement movement = GetComponent<PlayerMovement>();
-            if (movement != null)
+            if (movement == null)
             {
-                // 使用反射设置私有字段
-                var groundCheckField = typeof(PlayerMovement).GetField("groundCheck", 
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                if (groundCheckField != null)
-                {
-                    groundCheckField.SetValue(movement, groundCheck);
-                    Debug.Log("[PlayerAutoSetup] GroundCheck 已赋值");
-                }
+                return;
+            }
 
-                // 设置地面层（默认第6层）
-                var groundLayerField = typeof(PlayerMovement).GetField("groundLayer",
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                if (groundLayerField != null)
-                {
-                    groundLayerField.SetValue(movement, LayerMask.GetMask("Ground"));
-                    Debug.Log("[PlayerAutoSetup] GroundLayer 已设置为 Ground 层");
-                }
+            var groundCheckField = typeof(PlayerMovement).GetField(
+                "groundCheck",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (groundCheckField != null)
+            {
+                groundCheckField.SetValue(movement, groundCheck);
+                Debug.Log("[PlayerAutoSetup] 已写入 PlayerMovement.groundCheck。");
+            }
+
+            var groundLayerField = typeof(PlayerMovement).GetField(
+                "groundLayer",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (groundLayerField != null)
+            {
+                groundLayerField.SetValue(movement, LayerMask.GetMask("Ground"));
+                Debug.Log("[PlayerAutoSetup] 已写入 PlayerMovement.groundLayer。");
             }
         }
 
         private void SetupPlayerMovement()
         {
-            PlayerMovement movement = GetComponent<PlayerMovement>();
-            if (movement == null)
+            if (GetComponent<PlayerMovement>() == null)
             {
-                movement = gameObject.AddComponent<PlayerMovement>();
-                Debug.Log("[PlayerAutoSetup] 添加了 PlayerMovement");
+                gameObject.AddComponent<PlayerMovement>();
+                Debug.Log("[PlayerAutoSetup] 已添加 PlayerMovement。");
             }
 
-            // 检查其他必要组件
             if (GetComponent<PlayerInputHandler>() == null)
             {
                 gameObject.AddComponent<PlayerInputHandler>();
-                Debug.Log("[PlayerAutoSetup] 添加了 PlayerInputHandler");
+                Debug.Log("[PlayerAutoSetup] 已添加 PlayerInputHandler。");
             }
         }
     }

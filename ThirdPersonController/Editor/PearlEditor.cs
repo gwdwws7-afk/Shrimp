@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
@@ -13,15 +13,15 @@ namespace ThirdPersonController.Editor
         [MenuItem("Tools/Progression/Pearl Editor")]
         public static void ShowWindow()
         {
-            GetWindow<PearlEditor>("珍珠编辑器");
+            GetWindow<PearlEditor>("Pearl Editor");
         }
         
         private void OnGUI()
         {
-            GUILayout.Label("珍珠装备编辑器", EditorStyles.boldLabel);
+            GUILayout.Label("信息");
             GUILayout.Space(10);
             
-            EditorGUILayout.LabelField("1. 选择珍珠数据库:", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Settings", EditorStyles.boldLabel);
             pearlDatabase = (PearlDatabase)EditorGUILayout.ObjectField(pearlDatabase, typeof(PearlDatabase), false);
             
             if (pearlDatabase == null)
@@ -31,13 +31,13 @@ namespace ThirdPersonController.Editor
                     CreateNewDatabase();
                 }
                 
-                EditorGUILayout.HelpBox("请选择一个珍珠数据库文件", MessageType.Info);
+                EditorGUILayout.HelpBox("请选择一个珍珠数据库文件。", MessageType.Info);
                 return;
             }
             
             GUILayout.Space(10);
             
-            EditorGUILayout.LabelField($"2. 珍珠列表 ({pearlDatabase.pearls.Count}个):", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"Overview", EditorStyles.boldLabel);
             
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.Height(200));
             
@@ -87,7 +87,7 @@ namespace ThirdPersonController.Editor
             
             GUILayout.Space(10);
             
-            if (GUILayout.Button("保存数据库"))
+            if (GUILayout.Button("Save Database"))
             {
                 SaveDatabase();
             }
@@ -100,9 +100,9 @@ namespace ThirdPersonController.Editor
             }
             else
             {
-                EditorGUILayout.LabelField("选择一个珍珠进行编辑", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField("信息");
                 
-                if (GUILayout.Button("创建新珍珠"))
+                if (GUILayout.Button("Create New Pearl"))
                 {
                     CreateNewPearl();
                 }
@@ -113,12 +113,12 @@ namespace ThirdPersonController.Editor
         {
             switch (rarity)
             {
-                case PearlRarity.Common: return "⚪";
+                case PearlRarity.Common: return "*";
                 case PearlRarity.Uncommon: return "🟢";
                 case PearlRarity.Rare: return "🔵";
                 case PearlRarity.Epic: return "🟣";
                 case PearlRarity.Legendary: return "🟡";
-                default: return "⚪";
+                default: return "*";
             }
         }
         
@@ -138,7 +138,7 @@ namespace ThirdPersonController.Editor
             
             GUILayout.Space(10);
             
-            EditorGUILayout.LabelField("属性修改:", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Settings", EditorStyles.boldLabel);
             
             for (int i = 0; i < pearl.modifiers.Count; i++)
             {
@@ -156,7 +156,7 @@ namespace ThirdPersonController.Editor
                 EditorGUILayout.EndHorizontal();
             }
             
-            if (GUILayout.Button("添加属性"))
+            if (GUILayout.Button("Add Modifier"))
             {
                 pearl.modifiers.Add(new StatModifier { stat = StatType.AttackDamage, type = ModifierType.Percent, value = 0.1f });
             }
@@ -164,7 +164,7 @@ namespace ThirdPersonController.Editor
             GUILayout.Space(10);
             
             EditorGUILayout.LabelField("强化设置:", EditorStyles.boldLabel);
-            pearl.maxEnhanceLevel = EditorGUILayout.IntSlider("最大强化等级:", pearl.maxEnhanceLevel, 1, 10);
+            pearl.maxEnhanceLevel = EditorGUILayout.IntSlider("Settings", pearl.maxEnhanceLevel, 1, 10);
             
             GUILayout.Space(10);
             

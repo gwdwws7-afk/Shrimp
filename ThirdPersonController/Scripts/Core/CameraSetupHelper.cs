@@ -1,9 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ThirdPersonController
 {
     /// <summary>
-    /// 相机设置助手 - 自动配置第三人称相机
+    /// CameraSetupHelper 模块的核心实现，负责统一管理关键运行流程与对外接口。
     /// </summary>
     public class CameraSetupHelper : MonoBehaviour
     {
@@ -22,26 +22,26 @@ namespace ThirdPersonController
 
         private void SetupCamera()
         {
-            // 如果没有指定目标，自动查找
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
             if (playerTarget == null)
             {
                 GameObject player = GameObject.FindGameObjectWithTag("Player");
                 if (player == null)
                 {
-                    Debug.LogError("[CameraSetupHelper] 未找到玩家对象！请设置 Player 标签或手动指定目标。");
+                    Debug.LogError("[CameraSetupHelper] 未找到 Player 标签对象，无法配置相机目标。");
                     return;
                 }
                 playerTarget = player.transform;
             }
 
-            // 获取或添加 PlayerCamera 组件
+// 按需获取组件引用，减少初始化顺序耦合。
             PlayerCamera playerCamera = GetComponent<PlayerCamera>();
             if (playerCamera == null)
             {
                 playerCamera = gameObject.AddComponent<PlayerCamera>();
             }
 
-            // 配置参数
+// 围绕 镜头 执行该步骤，用于保持上下文语义一致。
             playerCamera.target = playerTarget;
             playerCamera.offset = offset;
             playerCamera.mouseSensitivity = mouseSensitivity;

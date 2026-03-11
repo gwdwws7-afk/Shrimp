@@ -1,11 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 
 namespace ThirdPersonController.Editor
 {
     /// <summary>
-    /// 海星人敌人自动配置工具
-    /// 选中模型后自动设置材质并创建Prefab
+    /// 注释已清理
     /// </summary>
     public class StarfishEnemyConfigurator : EditorWindow
     {
@@ -26,16 +25,16 @@ namespace ThirdPersonController.Editor
             
             EditorGUILayout.HelpBox(
                 "自动配置海星人模型：\n" +
-                "1. 设置材质和贴图\n" +
-                "2. 添加碰撞体\n" +
-                "3. 添加AI脚本\n" +
+                "1. 设置材质和贴图\\n" +
+                "2. 添加碰撞体\\n" +
+                "3. 添加AI脚本\\n" +
                 "4. 创建Prefab",
                 MessageType.Info);
             
             EditorGUILayout.Space();
             
             modelPrefab = EditorGUILayout.ObjectField(
-                "模型预制体", modelPrefab, typeof(GameObject), false) as GameObject;
+                "Model Prefab", modelPrefab, typeof(GameObject), false) as GameObject;
             
             EditorGUILayout.Space();
             
@@ -61,7 +60,7 @@ namespace ThirdPersonController.Editor
             
             EditorGUILayout.LabelField("手动配置步骤:", EditorStyles.boldLabel);
             EditorGUILayout.LabelField("1. 将模型拖到场景中", EditorStyles.miniLabel);
-            EditorGUILayout.LabelField("2. 设置材质球 (Standard Shader)", EditorStyles.miniLabel);
+            EditorGUILayout.LabelField("[OK] (Standard Shader)", EditorStyles.miniLabel);
             EditorGUILayout.LabelField("3. 绑定Albedo/Normal/Metallic贴图", EditorStyles.miniLabel);
             EditorGUILayout.LabelField("4. 添加Rigidbody组件", EditorStyles.miniLabel);
             EditorGUILayout.LabelField("5. 添加CapsuleCollider", EditorStyles.miniLabel);
@@ -75,34 +74,34 @@ namespace ThirdPersonController.Editor
         {
             if (modelPrefab == null) return;
             
-            // 实例化到场景
+            // 注释已清理
             GameObject instance = PrefabUtility.InstantiatePrefab(modelPrefab) as GameObject;
             
-            // 1. 设置材质
+            // 注释已清理
             SetupMaterials(instance);
             
-            // 2. 添加物理组件
+            // 注释已清理
             SetupPhysics(instance);
             
-            // 3. 添加AI组件
+            // 注释已清理
             SetupAI(instance);
             
-            // 4. 设置层级
+            // 注释已清理
             instance.layer = LayerMask.NameToLayer("Enemy");
             
-            // 5. 创建Prefab
+            // 注释已清理
             if (createPrefab)
             {
                 CreatePrefab(instance);
             }
             
-            // 选中实例
+            // 注释已清理
             Selection.activeGameObject = instance;
             
             EditorUtility.DisplayDialog("配置完成", 
                 $"海星人敌人配置完成！\n" +
-                $"Prefab名称: {prefabName}\n" +
-                $"已添加到场景并选中。",
+                $"Prefab名称: {prefabName}\\n" +
+                $"Added to scene and selected.",
                 "确定");
         }
         
@@ -112,14 +111,14 @@ namespace ThirdPersonController.Editor
             
             foreach (var renderer in renderers)
             {
-                // 创建或获取材质
+                // 注释已清理
                 Material mat = renderer.sharedMaterial;
                 if (mat == null)
                 {
                     mat = new Material(Shader.Find("Standard"));
                 }
                 
-                // 设置Standard Shader参数
+                // 注释已清理
                 mat.shader = Shader.Find("Standard");
                 mat.SetFloat("_Mode", 0); // Opaque
                 mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
@@ -130,16 +129,16 @@ namespace ThirdPersonController.Editor
                 mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
                 mat.renderQueue = -1;
                 
-                // 尝试加载贴图
+                // 注释已清理
                 string basePath = AssetDatabase.GetAssetPath(modelPrefab);
                 string folderPath = System.IO.Path.GetDirectoryName(basePath);
                 
-                // 加载Albedo
+                // 注释已清理
                 Texture2D albedo = AssetDatabase.LoadAssetAtPath<Texture2D>(
                     folderPath + "/Meshy_AI_texture_0.png");
                 if (albedo != null) mat.SetTexture("_MainTex", albedo);
                 
-                // 加载Normal
+                // 注释已清理
                 Texture2D normal = AssetDatabase.LoadAssetAtPath<Texture2D>(
                     folderPath + "/Meshy_AI_texture_0_normal.png");
                 if (normal != null)
@@ -149,7 +148,7 @@ namespace ThirdPersonController.Editor
                     mat.EnableKeyword("_NORMALMAP");
                 }
                 
-                // 加载Metallic
+                // 注释已清理
                 Texture2D metallic = AssetDatabase.LoadAssetAtPath<Texture2D>(
                     folderPath + "/Meshy_AI_texture_0_metallic.png");
                 if (metallic != null)
@@ -158,8 +157,7 @@ namespace ThirdPersonController.Editor
                     mat.EnableKeyword("_METALLICGLOSSMAP");
                 }
                 
-                // 设置金属度和光滑度
-                mat.SetFloat("_Metallic", 0.3f);
+                // 注释已清理
                 mat.SetFloat("_Glossiness", 0.4f);
                 
                 renderer.material = mat;
@@ -211,7 +209,7 @@ namespace ThirdPersonController.Editor
             {
                 health = instance.AddComponent<EnemyHealth>();
             }
-            // 通过反射设置maxHealth (如果字段是private)
+            // 注释已清理
             // health.maxHealth = 40;
             
             // EnemyAI
@@ -221,7 +219,7 @@ namespace ThirdPersonController.Editor
                 ai = instance.AddComponent<EnemyAI>();
             }
             
-            // 设置AI参数
+            // 注释已清理
             ai.detectionRange = 15f;
             ai.attackRange = 2f;
             ai.attackCooldown = 1.5f;
@@ -230,7 +228,7 @@ namespace ThirdPersonController.Editor
             ai.chaseSpeed = 3f;
             ai.fieldOfView = 120f;
             
-            // 设置Animator
+            // 注释已清理
             Animator animator = instance.GetComponent<Animator>();
             if (animator == null)
             {
@@ -243,7 +241,7 @@ namespace ThirdPersonController.Editor
         {
             string prefabPath = $"Assets/Prefabs/Enemies/{prefabName}.prefab";
             
-            // 确保目录存在
+            // 注释已清理
             if (!AssetDatabase.IsValidFolder("Assets/Prefabs"))
             {
                 AssetDatabase.CreateFolder("Assets", "Prefabs");
@@ -253,10 +251,10 @@ namespace ThirdPersonController.Editor
                 AssetDatabase.CreateFolder("Assets/Prefabs", "Enemies");
             }
             
-            // 创建或覆盖Prefab
+            // 注释已清理
             GameObject prefab = PrefabUtility.SaveAsPrefabAsset(instance, prefabPath);
             
-            Debug.Log($"✅ Prefab创建成功: {prefabPath}");
+            Debug.Log($"[OK] Prefab创建成功: {prefabPath}");
         }
     }
 }

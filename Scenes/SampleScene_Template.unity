@@ -7587,14 +7587,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxStamina: 100
   currentStamina: 0
-  recoveryRate: 15
-  recoveryDelay: 1
-  heavyAttackCost: 20
-  dodgeCost: 15
-  blockCostPerSecond: 5
-  sprintCostPerSecond: 10
+  recoveryRate: 14
+  recoveryDelay: 1.1
+  heavyAttackCost: 22
+  dodgeCost: 17
+  blockCostPerSecond: 6
+  sprintCostPerSecond: 11
   isExhausted: 0
-  exhaustionDuration: 2
+  exhaustionDuration: 2.25
 --- !u!114 &543450653653645001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7619,18 +7619,22 @@ MonoBehaviour:
   hitStopDuration: 0.05
   lockMovementDuringAttack: 1
   lockRotationDuringAttack: 0
+  heavyDamageMultiplier: 1.1
+  heavyKnockbackMultiplier: 1.35
+  heavyRangeMultiplier: 1.08
+  heavyRadiusMultiplier: 1.05
   maxComboCount: 50
   comboResetTime: 1.5
   comboWindowTime: 0.8
   maxComboStepsUnlocked: 0
-  tier1DamageMultiplier: 1.1
-  tier2DamageMultiplier: 1.25
-  tier3DamageMultiplier: 1.5
+  tier1DamageMultiplier: 1.08
+  tier2DamageMultiplier: 1.18
+  tier3DamageMultiplier: 1.32
   tier3LifeStealPercent: 0.05
   berserkThreshold: 50
   berserkDuration: 3
   berserkAttackRangeMultiplier: 2
-  berserkDamageMultiplier: 2
+  berserkDamageMultiplier: 1.75
   berserkInvincible: 1
   attackOrigin: {fileID: 543450653653644993}
   attackRadius: 1

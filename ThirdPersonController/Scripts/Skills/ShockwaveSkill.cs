@@ -1,20 +1,20 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 namespace ThirdPersonController
 {
     /// <summary>
-    /// 技能2: 震荡波 - 前方扇形冲击波
-    /// 按键: W
+    /// ShockwaveSkill 模块的核心实现，负责统一管理关键运行流程与对外接口。
+    /// 对前方扇形区域敌人造成伤害、击退并附带短暂眩晕。
     /// </summary>
     [CreateAssetMenu(fileName = "SKILL_Shockwave", menuName = "Skills/Shockwave")]
     public class ShockwaveSkill : SkillBase
     {
-        [Header("冲击波设置")]
-        public float coneAngle = 90f;       // 扇形角度
-        public float coneRange = 8f;        // 扇形距离
-        public float stunDuration = 2f;     // 眩晕时间
-        public float knockbackForce = 12f;  // 击退力度
+        [Header("设置")]
+        public float coneAngle = 90f; // 运行时配置项，用于驱动模块行为并保持可调性。
+        public float coneRange = 8f; // 扇形范围半径，用于约束判定覆盖面并避免越界命中。
+        public float stunDuration = 2f; // 眩晕时长，用于定义效果生效窗口。
+        public float knockbackForce = 12f; // 运行时配置项，用于驱动模块行为并保持可调性。
 
         private readonly List<Collider> hitTargets = new List<Collider>();
 
@@ -37,7 +37,7 @@ namespace ThirdPersonController
         
         public override void Execute(Transform caster, Vector3 targetPosition)
         {
-            // 触发动画
+            // 播放震荡波施法动画
             Animator animator = caster.GetComponent<Animator>();
             if (animator != null)
             {
@@ -47,14 +47,14 @@ namespace ThirdPersonController
             Vector3 impactPosition = caster.position + caster.forward * 2f;
             StartSkillTimeline(caster, impactPosition, caster.rotation, () =>
             {
-                // 检测扇形范围内敌人
+                // 进入命中检测与伤害结算
                 DetectAndDamage(caster);
             });
         }
         
         private void DetectAndDamage(Transform caster)
         {
-            // 使用OverlapSphere获取所有敌人
+            // 计算当前释放的修正参数
             float adjustedRange = GetModifiedRange(caster, coneRange);
             int adjustedDamage = GetModifiedDamage(caster, damage);
             float adjustedKnockback = GetModifiedKnockback(caster, knockbackForce);
@@ -92,7 +92,7 @@ namespace ThirdPersonController
 
                 if (DamageService.ApplyDamage(context, hitCollider))
                 {
-                    // 眩晕效果（如果敌人有AI）
+                    // 命中后附加 AI 眩晕控制
                     EnemyAI ai = hitCollider.GetComponent<EnemyAI>();
                     if (ai != null)
                     {
@@ -105,7 +105,7 @@ namespace ThirdPersonController
             
             if (hitCount > 0)
             {
-                Debug.Log($"💥 震荡波命中 {hitCount} 个敌人！");
+                Debug.Log($"[Skill] Shockwave hit {hitCount} enemies.");
             }
         }
     }

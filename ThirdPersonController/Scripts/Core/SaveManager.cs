@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -7,23 +7,36 @@ using System.Collections.Generic;
 
 namespace ThirdPersonController
 {
+    [Serializable]
+    public class QuestStateData
+    {
+        public string questId = "";
+        public int status = 2;
+        public int currentProgress = 0;
+        public int stageIndex = 0;
+        public float stageElapsedTime = 0f;
+        public float totalElapsedTime = 0f;
+        public bool isTimerActive = false;
+        public string lastStrongholdId = "";
+    }
+
     /// <summary>
-    /// 游戏数据 - 可序列化的存档数据
+    /// SaveManager 模块的核心实现，负责统一管理关键运行流程与对外接口。
     /// </summary>
     [Serializable]
     public class GameData
     {
-        // 玩家数据
+// 玩家关卡配置项，用于驱动模块行为并保持可调性。
         public int playerLevel = 1;
         public int currentExp = 0;
         public int maxHealth = 100;
         public int currentHealth = 100;
         
-        // 技能数据
+// 技能配置项，用于驱动模块行为并保持可调性。
         public int[] skillLevels = new int[6];
         public int unlockedSkills = 0;
         
-        // 进度数据
+// 关卡配置项，用于驱动模块行为并保持可调性。
         public int currentLevel = 1;
         public int unlockedLevels = 1;
         public int enemiesKilled = 0;
@@ -36,14 +49,15 @@ namespace ThirdPersonController
         public int credits = 0;
         public List<ConsumableStack> consumables = new List<ConsumableStack>();
         public List<string> quickConsumableSlots = new List<string>();
+        public List<QuestStateData> questStates = new List<QuestStateData>();
         
-        // 章节进度
+// 系统配置项，用于驱动模块行为并保持可调性。
         public int currentChapter = 1;
         public int unlockedChapters = 1;
         public List<int> completedChapters = new List<int>();
         public List<int> completedLevels = new List<int>();
         
-        // 关卡评分
+// 围绕 Serializable 执行该步骤，用于保持上下文语义一致。
         [Serializable]
         public class LevelScore
         {
@@ -55,18 +69,18 @@ namespace ThirdPersonController
         }
         public List<LevelScore> levelScores = new List<LevelScore>();
         
-        // 成就进度
+// 系统配置项，用于驱动模块行为并保持可调性。
         public List<string> unlockedAchievements = new List<string>();
         public Dictionary<string, int> achievementProgress = new Dictionary<string, int>();
         
-        // 统计
+// 系统配置项，用于驱动模块行为并保持可调性。
         public int totalKills = 0;
         public int totalDamage = 0;
         public int longestCombo = 0;
         public int bossesDefeated = 0;
         public int pearlsCollected = 0;
 
-        // 长期成长
+// 系统配置项，用于驱动模块行为并保持可调性。
         public int unlockedPearlSlots = 3;
         public int maxPearlRarityUnlocked = 1;
         public float pearlDropRateMultiplier = 1f;
@@ -74,12 +88,12 @@ namespace ThirdPersonController
         public List<string> claimedProgressionMilestones = new List<string>();
         public string activeProgressionRoute = "Offense";
         
-        // 解锁
+// 系统配置项，用于驱动模块行为并保持可调性。
         public bool hardModeUnlocked = false;
         public bool nightmareModeUnlocked = false;
         public bool newGamePlusUnlocked = false;
         
-        // 设置数据
+// 系统配置项，用于驱动模块行为并保持可调性。
         public float masterVolume = 1f;
         public float musicVolume = 0.7f;
         public float sfxVolume = 0.8f;
@@ -87,7 +101,7 @@ namespace ThirdPersonController
         public bool fullscreen = true;
         public int resolutionIndex = 0;
         
-        // 时间戳
+// 存档配置项，用于驱动模块行为并保持可调性。
         public string saveTime = "";
         public float totalPlayTime = 0f;
         public string lastPlayedDate = "";
@@ -100,28 +114,28 @@ namespace ThirdPersonController
     }
     
     /// <summary>
-    /// 存档管理器 - 处理游戏存档的保存和加载
+    /// SaveManager 模块的核心实现，负责统一管理关键运行流程与对外接口。
     /// </summary>
     public class SaveManager : Singleton<SaveManager>
     {
         [Header("存档设置")]
         public bool encryptSave = true;
-        public string encryptionKey = "AbyssHunter2026"; // 简单的加密密钥
+        public string encryptionKey = "AbyssHunter2026"; // 运行时配置项，用于驱动模块行为并保持可调性。
         
-        // 存档文件路径
+// 存档配置项，用于驱动模块行为并保持可调性。
         private string SavePath => Application.persistentDataPath + "/savegame.dat";
         private string SettingsPath => Application.persistentDataPath + "/settings.dat";
 
         public string SaveFilePath => SavePath;
         public string SettingsFilePath => SettingsPath;
         
-        // 当前游戏数据
+// 系统配置项，用于驱动模块行为并保持可调性。
         public GameData CurrentData { get; private set; }
         
-        // 是否已加载存档
+// 运行时状态标记，用于快速分支判定与流程保护。
         public bool HasLoadedSave => CurrentData != null;
         
-        // 事件
+// 存档配置项，用于驱动模块行为并保持可调性。
         public System.Action OnSaveCompleted;
         public System.Action OnLoadCompleted;
         
@@ -130,44 +144,44 @@ namespace ThirdPersonController
             base.OnAwake();
             CurrentData = new GameData();
             EnsureProgressionLists();
-            LoadSettings(); // 启动时加载设置
+            LoadSettings(); // 围绕 加载 执行该步骤，用于保证流程状态与后续分支一致。
         }
         
         #region 保存游戏
         
         /// <summary>
-        /// 保存游戏进度
+        /// 保存Game，将关键数据持久化到本地。
         /// </summary>
         public void SaveGame()
         {
             try
             {
-                // 更新数据
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
                 UpdateGameData();
                 
-                // 序列化
+// 围绕 string 执行该步骤，用于保证流程状态与后续分支一致。
                 string json = JsonUtility.ToJson(CurrentData, true);
                 
-                // 加密（如果启用）
+// 围绕 存档 执行该步骤，用于保证流程状态与后续分支一致。
                 if (encryptSave)
                 {
                     json = EncryptString(json, encryptionKey);
                 }
                 
-                // 写入文件
+// 围绕 存档 执行该步骤，用于保证流程状态与后续分支一致。
                 File.WriteAllText(SavePath, json);
                 
-                Debug.Log($"✅ 游戏已保存: {SavePath}");
+                Debug.Log($"[Save] 游戏已保存: {SavePath}");
                 OnSaveCompleted?.Invoke();
             }
             catch (Exception e)
             {
-                Debug.LogError($"❌ 保存游戏失败: {e.Message}");
+                Debug.LogError($"[Save] 保存游戏失败: {e.Message}");
             }
         }
         
         /// <summary>
-        /// 自动保存
+        /// 执行 Auto Save 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public void AutoSave()
         {
@@ -176,11 +190,11 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 更新游戏数据
+        /// 更新Game Data，保持显示与运行数据一致。
         /// </summary>
         private void UpdateGameData()
         {
-            // 从游戏中收集数据
+// 场景级兜底查找依赖，降低手动绑定遗漏风险。
             PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
             if (playerHealth != null)
             {
@@ -195,7 +209,7 @@ namespace ThirdPersonController
                 CurrentData.currentExp = experienceSystem.currentExp;
             }
             
-            // 更新时间
+// 围绕 CurrentData 执行该步骤，用于保证流程状态与后续分支一致。
             CurrentData.saveTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         }
         
@@ -204,7 +218,7 @@ namespace ThirdPersonController
         #region 加载游戏
         
         /// <summary>
-        /// 加载游戏进度
+        /// 加载Game，从持久化数据恢复运行状态。
         /// </summary>
         public bool LoadGame()
         {
@@ -212,32 +226,32 @@ namespace ThirdPersonController
             {
                 if (!File.Exists(SavePath))
                 {
-                    Debug.Log("⚠️ 没有找到存档文件，创建新游戏");
+                    Debug.Log("[Save] Save file not found. Creating new game data.");
                     CurrentData = new GameData();
                     EnsureProgressionLists();
                     return false;
                 }
                 
-                // 读取文件
+// 围绕 存档 执行该步骤，用于保证流程状态与后续分支一致。
                 string json = File.ReadAllText(SavePath);
                 
-                // 解密（如果启用）
+// 围绕 存档 执行该步骤，用于保证流程状态与后续分支一致。
                 if (encryptSave)
                 {
                     json = DecryptString(json, encryptionKey);
                 }
                 
-                // 反序列化
+// 围绕 游戏 执行该步骤，用于保持上下文语义一致。
                 CurrentData = JsonUtility.FromJson<GameData>(json);
                 EnsureProgressionLists();
                 
-                Debug.Log($"✅ 游戏已加载: {CurrentData.saveTime}");
+                Debug.Log($"[Save] 游戏已加载: {CurrentData.saveTime}");
                 OnLoadCompleted?.Invoke();
                 return true;
             }
             catch (Exception e)
             {
-                Debug.LogError($"❌ 加载游戏失败: {e.Message}");
+                Debug.LogError($"[Save] 加载游戏失败: {e.Message}");
                 CurrentData = new GameData();
                 EnsureProgressionLists();
                 return false;
@@ -245,26 +259,26 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 应用加载的数据到游戏
+        /// 应用Loaded Data，统一入口下发效果并便于后续扩展。
         /// </summary>
         public void ApplyLoadedData()
         {
             if (CurrentData == null) return;
             
-            // 应用到玩家
+// 场景级兜底查找依赖，降低手动绑定遗漏风险。
             PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
             if (playerHealth != null)
             {
-                // 使用反射或方法设置血量
+// 围绕 当前步骤 执行该步骤，用于保持上下文语义一致。
                 // playerHealth.SetHealth(CurrentData.currentHealth);
             }
             
-            // 应用音量设置
+// 围绕 音频 执行该步骤，用于保证流程状态与后续分支一致。
             AudioManager.Instance?.SetMasterVolume(CurrentData.masterVolume);
             AudioManager.Instance?.SetMusicVolume(CurrentData.musicVolume);
             AudioManager.Instance?.SetSFXVolume(CurrentData.sfxVolume);
             
-            Debug.Log("✅ 存档数据已应用到游戏");
+            Debug.Log("[Save] Applied save data to runtime systems.");
         }
         
         #endregion
@@ -272,31 +286,31 @@ namespace ThirdPersonController
         #region 设置保存
         
         /// <summary>
-        /// 保存设置（音量、分辨率等）
+        /// 保存Settings，将关键数据持久化到本地。
         /// </summary>
         public void SaveSettings()
         {
             try
             {
-                // 更新设置数据
+// 围绕 音频 执行该步骤，用于保持上下文语义一致。
                 CurrentData.masterVolume = AudioManager.Instance?.masterVolume ?? 1f;
                 CurrentData.musicVolume = AudioManager.Instance?.musicVolume ?? 0.7f;
                 CurrentData.sfxVolume = AudioManager.Instance?.sfxVolume ?? 0.8f;
                 
-                // 保存到单独文件
+// 围绕 string 执行该步骤，用于保证流程状态与后续分支一致。
                 string json = JsonUtility.ToJson(CurrentData);
                 File.WriteAllText(SettingsPath, json);
                 
-                Debug.Log("✅ 设置已保存");
+                Debug.Log($"[Save] 设置已保存: {SettingsPath}");
             }
             catch (Exception e)
             {
-                Debug.LogError($"❌ 保存设置失败: {e.Message}");
+                Debug.LogError($"[Save] 保存设置失败: {e.Message}");
             }
         }
         
         /// <summary>
-        /// 加载设置
+        /// 加载Settings，从持久化数据恢复运行状态。
         /// </summary>
         public void LoadSettings()
         {
@@ -304,14 +318,14 @@ namespace ThirdPersonController
             {
                 if (!File.Exists(SettingsPath))
                 {
-                    Debug.Log("⚠️ 没有找到设置文件，使用默认设置");
+                    Debug.Log("[Save] Settings file not found. Using defaults.");
                     return;
                 }
                 
                 string json = File.ReadAllText(SettingsPath);
                 GameData settings = JsonUtility.FromJson<GameData>(json);
                 
-                // 应用设置
+// 围绕 CurrentData 执行该步骤，用于保持上下文语义一致。
                 CurrentData.masterVolume = settings.masterVolume;
                 CurrentData.musicVolume = settings.musicVolume;
                 CurrentData.sfxVolume = settings.sfxVolume;
@@ -319,11 +333,11 @@ namespace ThirdPersonController
                 CurrentData.fullscreen = settings.fullscreen;
                 CurrentData.resolutionIndex = settings.resolutionIndex;
                 
-                Debug.Log("✅ 设置已加载");
+                Debug.Log("[Save] Loaded local settings.");
             }
             catch (Exception e)
             {
-                Debug.LogError($"❌ 加载设置失败: {e.Message}");
+                Debug.LogError($"[Save] 加载设置失败: {e.Message}");
             }
         }
         
@@ -332,7 +346,7 @@ namespace ThirdPersonController
         #region 删除存档
         
         /// <summary>
-        /// 删除存档
+        /// 执行 Delete Save 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public void DeleteSave()
         {
@@ -341,19 +355,19 @@ namespace ThirdPersonController
                 if (File.Exists(SavePath))
                 {
                     File.Delete(SavePath);
-                    Debug.Log("🗑️ 存档已删除");
+                    Debug.Log("[Save] Save file deleted.");
                 }
                 
                 CurrentData = new GameData();
             }
             catch (Exception e)
             {
-                Debug.LogError($"❌ 删除存档失败: {e.Message}");
+                Debug.LogError($"[Save] 删除存档失败: {e.Message}");
             }
         }
         
         /// <summary>
-        /// 检查是否有存档
+        /// 执行 Has Save File 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public bool HasSaveFile()
         {
@@ -365,7 +379,7 @@ namespace ThirdPersonController
         #region 加密/解密
         
         /// <summary>
-        /// 加密字符串
+        /// 执行 Encrypt String 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         private string EncryptString(string text, string key)
         {
@@ -387,12 +401,12 @@ namespace ThirdPersonController
             }
             catch
             {
-                return text; // 加密失败返回原文
+                return text; // 围绕 return 执行该步骤，用于保持上下文语义一致。
             }
         }
         
         /// <summary>
-        /// 解密字符串
+        /// 执行 Decrypt String 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         private string DecryptString(string encryptedText, string key)
         {
@@ -414,7 +428,7 @@ namespace ThirdPersonController
             }
             catch
             {
-                return encryptedText; // 解密失败返回原文
+                return encryptedText; // 围绕 return 执行该步骤，用于保持上下文语义一致。
             }
         }
         
@@ -423,7 +437,7 @@ namespace ThirdPersonController
         #region 调试
         
         /// <summary>
-        /// 打印存档信息
+        /// 执行 Print Save Info 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public void PrintSaveInfo()
         {
@@ -436,13 +450,14 @@ namespace ThirdPersonController
                 Debug.Log($"当前关卡: {CurrentData.currentLevel}");
                 Debug.Log($"击杀数: {CurrentData.enemiesKilled}");
                 Debug.Log($"最高连击: {CurrentData.highestCombo}");
-                Debug.Log($"天赋点: {CurrentData.talentPoints}");
-                Debug.Log($"已解锁天赋: {CurrentData.unlockedTalentNodes?.Count ?? 0}");
-                Debug.Log($"珍珠数量: {CurrentData.ownedPearlIds?.Count ?? 0}");
-                Debug.Log($"深渊币余额: {CurrentData.credits}");
-                Debug.Log($"消耗品数量: {CurrentData.consumables?.Count ?? 0}");
-                Debug.Log($"游戏时长: {CurrentData.totalPlayTime:F1}秒");
-                Debug.Log($"最后保存: {CurrentData.saveTime}");
+                Debug.Log($"未分配天赋点: {CurrentData.talentPoints}");
+                Debug.Log($"已解锁天赋节点数: {CurrentData.unlockedTalentNodes.Count}");
+                Debug.Log($"拥有珍珠数: {CurrentData.ownedPearlIds.Count}");
+                Debug.Log($"货币: {CurrentData.credits}");
+                Debug.Log($"已装备珍珠数: {CurrentData.equippedPearlIds.Count}");
+                Debug.Log($"背包道具种类数: {CurrentData.consumables.Count}");
+                Debug.Log($"Total play time: {CurrentData.totalPlayTime:0.0}s");
+                Debug.Log($"最近存档时间: {CurrentData.saveTime}");
             }
         }
 
@@ -483,6 +498,11 @@ namespace ThirdPersonController
                 CurrentData.quickConsumableSlots = new List<string>();
             }
 
+            if (CurrentData.questStates == null)
+            {
+                CurrentData.questStates = new List<QuestStateData>();
+            }
+
             while (CurrentData.quickConsumableSlots.Count < 3)
             {
                 CurrentData.quickConsumableSlots.Add(string.Empty);
@@ -502,3 +522,5 @@ namespace ThirdPersonController
         #endregion
     }
 }
+
+

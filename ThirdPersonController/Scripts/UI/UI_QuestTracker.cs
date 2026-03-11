@@ -15,23 +15,32 @@ namespace ThirdPersonController
         [Header("Settings")]
         public int maxVisibleQuests = 3;
         public bool showCompletedQuests = false;
+        public bool logStartupStatus = true;
+
+        [Header("Fallback Overlay")]
+        public bool useFallbackOverlay = true;
+        public Vector2 fallbackPosition = new Vector2(20f, 180f);
+        public float fallbackWidth = 420f;
+        public int fallbackFontSize = 14;
         
         private List<QuestProgress> displayedQuests = new List<QuestProgress>();
+        private GUIStyle fallbackTitleStyle;
+        private GUIStyle fallbackBodyStyle;
+        private bool startupLogged;
         
         private void Awake()
         {
-            if (questSystem == null)
-            {
-                questSystem = FindObjectOfType<QuestSystem>();
-            }
+            EnsureQuestSystem();
+        }
+
+        private void Start()
+        {
+            LogStartupStatus();
         }
         
         private void OnEnable()
         {
-            if (questSystem == null)
-            {
-                questSystem = FindObjectOfType<QuestSystem>();
-            }
+            EnsureQuestSystem();
 
             if (questSystem != null)
             {
@@ -71,11 +80,17 @@ namespace ThirdPersonController
         private void RefreshQuests()
         {
             ClearQuestItems();
+
+            EnsureQuestSystem();
             
             if (questSystem == null) return;
-            
+             
             List<QuestProgress> quests = questSystem.GetActiveQuests();
-            
+            if (quests == null || quests.Count == 0)
+            {
+                return;
+            }
+             
             for (int i = 0; i < Mathf.Min(quests.Count, maxVisibleQuests); i++)
             {
                 CreateQuestItem(quests[i]);
@@ -87,6 +102,7 @@ namespace ThirdPersonController
             if (questItemPrefab == null || questListContainer == null) return;
             
             GameObject itemObj = Instantiate(questItemPrefab, questListContainer);
+            EnsureQuestItemTextComponents(itemObj);
             displayedQuests.Add(quest);
             
             UpdateQuestItem(quest);
@@ -94,8 +110,16 @@ namespace ThirdPersonController
         
         private void UpdateQuestItem(QuestProgress quest)
         {
+            if (quest == null || questListContainer == null)
+            {
+                return;
+            }
+
             int index = displayedQuests.IndexOf(quest);
-            if (index < 0) return;
+            if (index < 0 || index >= questListContainer.childCount)
+            {
+                return;
+            }
             
             Transform itemTransform = questListContainer.GetChild(index);
             if (itemTransform == null) return;
@@ -105,6 +129,11 @@ namespace ThirdPersonController
             Slider progressBar = itemTransform.Find("ProgressBar")?.GetComponent<Slider>();
             TextMeshProUGUI progressText = itemTransform.Find("ProgressText")?.GetComponent<TextMeshProUGUI>();
             TextMeshProUGUI rewardText = itemTransform.Find("RewardText")?.GetComponent<TextMeshProUGUI>();
+
+            EnsureTmpTextSafe(nameText);
+            EnsureTmpTextSafe(descText);
+            EnsureTmpTextSafe(progressText);
+            EnsureTmpTextSafe(rewardText);
             
             if (nameText != null)
             {
@@ -150,6 +179,11 @@ namespace ThirdPersonController
         
         private string GetQuestTypeText(QuestProgress quest)
         {
+            if (quest == null || quest.data == null)
+            {
+                return string.Empty;
+            }
+
             if (quest.CurrentStage != null && !string.IsNullOrEmpty(quest.CurrentStage.description))
             {
                 return quest.CurrentStage.description;
@@ -225,6 +259,143 @@ namespace ThirdPersonController
             }
             
             displayedQuests.Clear();
+        }
+
+        private void OnGUI()
+        {
+            if (!ShouldUseFallbackOverlay())
+            {
+                return;
+            }
+
+            if (questSystem == null)
+            {
+                questSystem = FindObjectOfType<QuestSystem>();
+            }
+
+            if (questSystem == null)
+            {
+                return;
+            }
+
+            List<QuestProgress> quests = questSystem.GetActiveQuests();
+            if (quests == null || quests.Count == 0)
+            {
+                return;
+            }
+
+            EnsureFallbackStyles();
+
+            int visibleCount = Mathf.Min(maxVisibleQuests, quests.Count);
+            float lineHeight = fallbackFontSize + 6f;
+            float panelHeight = 18f + visibleCount * (lineHeight * 2f + 6f);
+            Rect panelRect = new Rect(fallbackPosition.x, fallbackPosition.y, fallbackWidth, panelHeight);
+
+            GUILayout.BeginArea(panelRect, GUI.skin.box);
+            GUILayout.Label("任务追踪", fallbackTitleStyle);
+
+            for (int i = 0; i < visibleCount; i++)
+            {
+                QuestProgress quest = quests[i];
+                if (quest == null || quest.data == null)
+                {
+                    continue;
+                }
+
+                GUILayout.Label(GetQuestDisplayName(quest), fallbackBodyStyle);
+                GUILayout.Label($"{GetQuestProgressText(quest)} · {GetQuestTypeText(quest)}", fallbackBodyStyle);
+                if (i < visibleCount - 1)
+                {
+                    GUILayout.Space(4f);
+                }
+            }
+
+            GUILayout.EndArea();
+        }
+
+        private bool ShouldUseFallbackOverlay()
+        {
+            if (!useFallbackOverlay)
+            {
+                return false;
+            }
+
+            return questListContainer == null || questItemPrefab == null;
+        }
+
+        private void EnsureFallbackStyles()
+        {
+            if (fallbackTitleStyle == null)
+            {
+                fallbackTitleStyle = new GUIStyle(GUI.skin.label)
+                {
+                    fontSize = fallbackFontSize + 1,
+                    fontStyle = FontStyle.Bold,
+                    normal = { textColor = Color.white }
+                };
+            }
+
+            if (fallbackBodyStyle == null)
+            {
+                fallbackBodyStyle = new GUIStyle(GUI.skin.label)
+                {
+                    fontSize = fallbackFontSize,
+                    wordWrap = true,
+                    normal = { textColor = new Color(0.9f, 0.95f, 1f, 1f) }
+                };
+            }
+        }
+
+        private void EnsureQuestItemTextComponents(GameObject itemObj)
+        {
+            if (itemObj == null)
+            {
+                return;
+            }
+
+            TextMeshProUGUI[] texts = itemObj.GetComponentsInChildren<TextMeshProUGUI>(true);
+            for (int i = 0; i < texts.Length; i++)
+            {
+                EnsureTmpTextSafe(texts[i]);
+            }
+        }
+
+        private static void EnsureTmpTextSafe(TextMeshProUGUI text)
+        {
+            if (text == null)
+            {
+                return;
+            }
+
+            if (text.font == null)
+            {
+                text.font = TMP_Settings.defaultFontAsset;
+            }
+
+            if (text.font != null && text.fontSharedMaterial == null)
+            {
+                text.fontSharedMaterial = text.font.material;
+            }
+        }
+
+        private void EnsureQuestSystem()
+        {
+            if (questSystem == null)
+            {
+                questSystem = FindObjectOfType<QuestSystem>();
+            }
+        }
+
+        private void LogStartupStatus()
+        {
+            if (!logStartupStatus || startupLogged)
+            {
+                return;
+            }
+
+            startupLogged = true;
+            bool fallback = ShouldUseFallbackOverlay();
+            Debug.Log($"[UI_QuestTracker] Startup | questSystem={(questSystem != null)} container={(questListContainer != null)} itemPrefab={(questItemPrefab != null)} fallback={fallback}");
         }
     }
 }

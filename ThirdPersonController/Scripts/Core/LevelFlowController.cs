@@ -15,6 +15,7 @@ namespace ThirdPersonController
 
         [Header("Input")]
         public KeyCode menuKey = KeyCode.Escape;
+        public PlayerInputHandler inputHandler;
 
         [Header("UI")]
         public string levelTitle = "Sample Level";
@@ -53,6 +54,11 @@ namespace ThirdPersonController
 
         private void Awake()
         {
+            if (inputHandler == null)
+            {
+                inputHandler = FindObjectOfType<PlayerInputHandler>();
+            }
+
             ApplyLevelSelection();
             InitializeRuntimeConfigurator();
             EnsureLongTermProgression();
@@ -150,7 +156,11 @@ namespace ThirdPersonController
 
         private void Update()
         {
-            if (Input.GetKeyDown(menuKey))
+            bool menuPressed = inputHandler != null
+                ? inputHandler.WasUnifiedKeyPressedThisFrame(menuKey)
+                : PlayerInputHandler.ReadUnifiedKeyDown(menuKey);
+
+            if (menuPressed)
             {
                 ToggleMenu();
             }

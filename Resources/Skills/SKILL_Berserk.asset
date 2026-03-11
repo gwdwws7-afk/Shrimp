@@ -17,8 +17,8 @@ MonoBehaviour:
   icon: {fileID: 0}
   keyBinding: 0
   category: 2
-  cooldown: 10
-  staminaCost: 20
+  cooldown: 14
+  staminaCost: 22
   damage: 50
   range: 5
   effectDuration: 2
@@ -53,19 +53,10 @@ MonoBehaviour:
   breakValue: 0
   breakValueMultiplier: 1
   impactScale: 0.45
-  duration: 8
+  duration: 7
   attackSpeedMultiplier: 1.5
   moveSpeedMultiplier: 1.3
-  damageMultiplier: 1.3
+  damageMultiplier: 1.2
   berserkDamageReduction: 0.3
   enableLifeRegen: 1
-  lifeRegenPerSecond: 5
-*** Add File: C:\test\Shrimp\Assets\ThirdPersonController\Skills\SkillAssets\SKILL_Berserk.asset.meta
-fileFormatVersion: 2
-guid: d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9
-NativeFormatImporter:
-  externalObjects: {}
-  mainObjectFileID: 11400000
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+  lifeRegenPerSecond: 4

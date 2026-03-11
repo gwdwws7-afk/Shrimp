@@ -1,25 +1,25 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace ThirdPersonController
 {
     /// <summary>
-    /// 技能栏UI - 显示6个技能槽
+    /// UI_SkillBar 模块的核心实现，负责统一管理关键运行流程与对外接口。
     /// </summary>
     public class UI_SkillBar : MonoBehaviour
     {
         [System.Serializable]
         public class SkillSlot
         {
-            public Image icon;               // 技能图标
-            public Image cooldownOverlay;    // 冷却遮罩（黑色半透明）
-            public Text cooldownText;        // 冷却时间文字
-            public Text keyText;             // 按键提示（Q/W/E/R/T/F）
-            public GameObject highlight;     // 高亮边框
+            public Image icon; // UI 引用，用于驱动界面表现与信息同步。
+            public Image cooldownOverlay; // 冷却遮罩，用于限制触发频率并平衡节奏。
+            public Text cooldownText; // 冷却计时文本，用于限制触发频率并平衡节奏。
+            public Text keyText; // 按键提示文本，用于输入映射并支持后续重绑定。
+            public GameObject highlight; // 运行时配置项，用于驱动模块行为并保持可调性。
         }
         
-        [Header("技能槽")]
-        public SkillSlot[] skillSlots = new SkillSlot[6];  // 6个技能槽
+        [Header("技能槽位")]
+        public SkillSlot[] skillSlots = new SkillSlot[6];  // 六个主动技能槽位（与按键一一对应）
         
         [Header("按键绑定")]
         public string[] keyBindings = new string[6] { "Q", "W", "E", "R", "T", "F" };
@@ -44,10 +44,12 @@ namespace ThirdPersonController
         public string attackInputHintLabel = "A: 左键  B: 右键";
 
         public SkillManager skillManager;
+        private Texture2D fallbackSkillIconTexture;
+        private Sprite fallbackSkillIcon;
         
         private void Start()
         {
-            // 设置按键提示
+            // 初始化每个槽位的按键提示文本。
             for (int i = 0; i < skillSlots.Length && i < keyBindings.Length; i++)
             {
                 if (skillSlots[i].keyText != null)
@@ -62,7 +64,7 @@ namespace ThirdPersonController
                 attackInputHintText.text = attackInputHintLabel;
             }
             
-            // 订阅事件
+            // 监听技能释放与冷却完成事件。
             GameEvents.OnSkillUsed += OnSkillUsed;
             GameEvents.OnSkillReady += OnSkillReady;
 
@@ -79,9 +81,21 @@ namespace ThirdPersonController
         
         private void OnDestroy()
         {
-            // 取消订阅
+            // 销毁时解除事件监听。
             GameEvents.OnSkillUsed -= OnSkillUsed;
             GameEvents.OnSkillReady -= OnSkillReady;
+
+            if (fallbackSkillIcon != null)
+            {
+                Destroy(fallbackSkillIcon);
+                fallbackSkillIcon = null;
+            }
+
+            if (fallbackSkillIconTexture != null)
+            {
+                Destroy(fallbackSkillIconTexture);
+                fallbackSkillIconTexture = null;
+            }
         }
 
         private void OnGUI()
@@ -109,14 +123,14 @@ namespace ThirdPersonController
             DrawLegendItem("群控", crowdControlColor, style);
             DrawLegendItem("爆发", burstColor, style);
             DrawLegendItem("位移", mobilityColor, style);
-            DrawLegendItem("聚怪", gatherColor, style);
+            DrawLegendItem("Gather", gatherColor, style);
 
             GUILayout.EndHorizontal();
             GUILayout.EndArea();
         }
         
         /// <summary>
-        /// 更新技能槽
+        /// 更新技能槽位 UI 显示。
         /// </summary>
         public void UpdateSkillSlot(int index, Sprite icon, float cooldown, float remainingCD)
         {
@@ -124,17 +138,17 @@ namespace ThirdPersonController
             
             var slot = skillSlots[index];
             
-            // 更新图标
+            // 刷新槽位图标，并确保图标处于可见状态。
             if (slot.icon != null && icon != null)
             {
                 slot.icon.sprite = icon;
                 slot.icon.gameObject.SetActive(true);
             }
             
-            // 更新冷却显示
+            // 按剩余冷却切换冷却态与就绪态视觉。
             if (remainingCD > 0)
             {
-                // 冷却中
+                // 冷却中：显示遮罩比例与倒计时文本。
                 if (slot.cooldownOverlay != null)
                 {
                     slot.cooldownOverlay.fillAmount = remainingCD / cooldown;
@@ -154,7 +168,7 @@ namespace ThirdPersonController
             }
             else
             {
-                // 冷却完成
+                // 冷却结束：隐藏遮罩与倒计时，并恢复就绪颜色。
                 if (slot.cooldownOverlay != null)
                 {
                     slot.cooldownOverlay.fillAmount = 0;
@@ -181,7 +195,8 @@ namespace ThirdPersonController
             }
 
             float cooldownDuration = skill.cooldownDuration > 0f ? skill.cooldownDuration : skill.cooldown;
-            UpdateSkillSlot(index, skill.icon, cooldownDuration, skill.cooldownTimer);
+            Sprite displayIcon = skill.icon != null ? skill.icon : GetFallbackSkillIcon();
+            UpdateSkillSlot(index, displayIcon, cooldownDuration, skill.cooldownTimer);
 
             if (skillSlots[index].icon != null)
             {
@@ -202,7 +217,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 设置技能图标
+        /// 设置Skill Icon，统一写入入口，便于约束副作用。
         /// </summary>
         public void SetSkillIcon(int index, Sprite icon)
         {
@@ -215,7 +230,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 高亮技能槽
+        /// 执行 Highlight Slot 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public void HighlightSlot(int index, bool highlight)
         {
@@ -231,13 +246,13 @@ namespace ThirdPersonController
         
         private void OnSkillUsed(string skillName, float cooldown)
         {
-            // 找到对应的技能槽并更新
-            // 这里需要SkillManager的配合来知道是哪个技能
+            // 当前由 UpdateFromManager 轮询刷新 UI；保留事件接口兼容旧链路。
+            // 这里不直接改 UI，避免事件顺序与轮询刷新冲突。
         }
         
         private void OnSkillReady(string skillName)
         {
-            // 技能冷却完成
+            // 同样保留兼容入口，冷却完成由轮询逻辑统一反映。
         }
 
         private void UpdateFromManager()
@@ -310,6 +325,36 @@ namespace ThirdPersonController
                 default:
                     return readyColor;
             }
+        }
+
+        private Sprite GetFallbackSkillIcon()
+        {
+            if (fallbackSkillIcon != null)
+            {
+                return fallbackSkillIcon;
+            }
+
+            fallbackSkillIconTexture = new Texture2D(32, 32, TextureFormat.RGBA32, false);
+            fallbackSkillIconTexture.name = "FallbackSkillIconTexture";
+            fallbackSkillIconTexture.hideFlags = HideFlags.HideAndDontSave;
+
+            Color[] pixels = new Color[32 * 32];
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                pixels[i] = Color.white;
+            }
+
+            fallbackSkillIconTexture.SetPixels(pixels);
+            fallbackSkillIconTexture.Apply(false, false);
+
+            fallbackSkillIcon = Sprite.Create(
+                fallbackSkillIconTexture,
+                new Rect(0f, 0f, 32f, 32f),
+                new Vector2(0.5f, 0.5f),
+                32f);
+            fallbackSkillIcon.name = "FallbackSkillIcon";
+
+            return fallbackSkillIcon;
         }
 
         private void DrawLegendItem(string label, Color color, GUIStyle style)

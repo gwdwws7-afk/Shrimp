@@ -66,6 +66,23 @@ namespace ThirdPersonController
         public bool canFlee = false;
         public float fleeHealthThreshold = 0.2f;
 
+        [Header("Advanced Action Tuning")]
+        public float dodgeDistance = 2.4f;
+        public float dodgeDuration = 0.28f;
+        public float dodgeCooldown = 2.2f;
+        public float blockDuration = 0.45f;
+        public float blockCooldown = 2.8f;
+        public float blockDefenseBonus = 6f;
+        [Range(0f, 1f)]
+        public float chargeChance = 0.2f;
+        public float chargeMinDistance = 1.8f;
+        public float chargeMaxDistance = 4.2f;
+        public float chargeDuration = 0.45f;
+        public float chargeCooldown = 3.5f;
+        public float fleeDistance = 4.8f;
+        public float fleeDuration = 1.1f;
+        public float fleeCooldown = 6f;
+
         [Header("Crowd")]
         public bool useCrowdCoordinator = true;
         public float ringStandoffDistance = 2.4f;

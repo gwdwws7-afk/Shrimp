@@ -1,13 +1,11 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using UnityEngine.UI;
 
 namespace ThirdPersonController.Editor
 {
     /// <summary>
-    /// UI配置编辑器工具
-    /// 提供一键配置UI的功能
-    /// </summary>
+    /// 注释已清理
     public class UISetupEditor : EditorWindow
     {
         private bool createCanvas = true;
@@ -35,24 +33,24 @@ namespace ThirdPersonController.Editor
             
             createCanvas = EditorGUILayout.ToggleLeft("Canvas (画布)", createCanvas);
             createEventSystem = EditorGUILayout.ToggleLeft("EventSystem (事件系统)", createEventSystem);
-            createHPBar = EditorGUILayout.ToggleLeft("HP Bar (血条)", createHPBar);
-            createStaminaBar = EditorGUILayout.ToggleLeft("Stamina Bar (耐力条)", createStaminaBar);
-            createComboCounter = EditorGUILayout.ToggleLeft("Combo Counter (连击计数器)", createComboCounter);
-            createSkillBar = EditorGUILayout.ToggleLeft("Skill Bar (技能栏)", createSkillBar);
+            createHPBar = EditorGUILayout.ToggleLeft("生命条 (HP Bar)", createHPBar);
+            createStaminaBar = EditorGUILayout.ToggleLeft("耐力条 (Stamina Bar)", createStaminaBar);
+            createComboCounter = EditorGUILayout.ToggleLeft("连击计数 (Combo Counter)", createComboCounter);
+            createSkillBar = EditorGUILayout.ToggleLeft("技能栏 (Skill Bar)", createSkillBar);
             createDamageText = EditorGUILayout.ToggleLeft("Damage Text System (伤害数字)", createDamageText);
             
             GUILayout.Space(10);
             
             if (createDamageText)
             {
-                EditorGUILayout.LabelField("伤害数字预制体 (可选):", EditorStyles.label);
+                EditorGUILayout.LabelField("伤害数字预制体（可选）:", EditorStyles.label);
                 damageTextPrefab = EditorGUILayout.ObjectField(damageTextPrefab, typeof(GameObject), false) as GameObject;
             }
             
             GUILayout.Space(20);
             
             GUI.backgroundColor = Color.green;
-            if (GUILayout.Button("一键配置UI", GUILayout.Height(40)))
+            if (GUILayout.Button("一键配置 UI", GUILayout.Height(40)))
             {
                 SetupUI();
             }
@@ -60,16 +58,16 @@ namespace ThirdPersonController.Editor
             
             GUILayout.Space(10);
             
-            if (GUILayout.Button("检查UI状态"))
+            if (GUILayout.Button("检查 UI 状态"))
             {
                 CheckUIStatus();
             }
             
             GUILayout.Space(10);
             
-            if (GUILayout.Button("清理所有UI"))
+            if (GUILayout.Button("清理所有 UI"))
             {
-                if (EditorUtility.DisplayDialog("确认清理", "确定要删除所有UI元素吗？此操作不可撤销。", "确定", "取消"))
+                if (EditorUtility.DisplayDialog("提示", "操作已完成。", "确定"))
                 {
                     CleanupUI();
                 }
@@ -78,17 +76,17 @@ namespace ThirdPersonController.Editor
         
         private void SetupUI()
         {
-            // 查找或创建UIManager
+            // 注释已清理
             UIManager uiManager = FindObjectOfType<UIManager>();
             if (uiManager == null)
             {
                 GameObject uiManagerObj = new GameObject("UIManager");
                 uiManager = uiManagerObj.AddComponent<UIManager>();
                 Undo.RegisterCreatedObjectUndo(uiManagerObj, "Create UIManager");
-                Debug.Log("✓ 创建UIManager");
+                Debug.Log("[UISetup] 已创建 UIManager。");
             }
             
-            // 创建或查找Canvas
+            // 注释已清理
             Canvas canvas = null;
             if (createCanvas)
             {
@@ -101,25 +99,25 @@ namespace ThirdPersonController.Editor
             
             if (canvas == null)
             {
-                Debug.LogError("❌ 没有找到Canvas，请先创建Canvas或勾选'Canvas'选项");
+                Debug.LogError("[UISetup] 未找到 Canvas，请先创建 Canvas 或勾选 “Canvas (画布)” 选项。");
                 return;
             }
             
-            // 创建EventSystem
+            // 注释已清理
             if (createEventSystem)
             {
                 SetupEventSystem();
             }
             
-            // 配置各个UI组件
+            // 注释已清理
             if (createHPBar) SetupHPBar(uiManager, canvas);
             if (createStaminaBar) SetupStaminaBar(uiManager, canvas);
             if (createComboCounter) SetupComboCounter(uiManager, canvas);
             if (createSkillBar) SetupSkillBar(uiManager, canvas);
             if (createDamageText) SetupDamageText(uiManager, canvas);
             
-            Debug.Log("✅ UI配置完成！");
-            EditorUtility.DisplayDialog("完成", "UI配置成功！", "确定");
+            Debug.Log("[UISetup] 所选 UI 组件已配置完成。");
+            EditorUtility.DisplayDialog("提示", "操作已完成。", "确定");
         }
         
         private Canvas SetupCanvas()
@@ -142,11 +140,11 @@ namespace ThirdPersonController.Editor
                 canvasObj.AddComponent<UnityEngine.UI.GraphicRaycaster>();
                 
                 Undo.RegisterCreatedObjectUndo(canvasObj, "Create Canvas");
-                Debug.Log("✓ 创建Canvas");
+                Debug.Log("[UISetup] 已创建 Canvas。");
             }
             else
             {
-                Debug.Log("✓ 使用已存在的Canvas: " + canvas.name);
+                Debug.Log("[UISetup] 使用已存在的 Canvas: " + canvas.name);
             }
             
             return canvas;
@@ -160,11 +158,11 @@ namespace ThirdPersonController.Editor
                 eventSystem.AddComponent<UnityEngine.EventSystems.EventSystem>();
                 eventSystem.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
                 Undo.RegisterCreatedObjectUndo(eventSystem, "Create EventSystem");
-                Debug.Log("✓ 创建EventSystem");
+                Debug.Log("[UISetup] 已创建 EventSystem。");
             }
             else
             {
-                Debug.Log("✓ EventSystem已存在");
+                Debug.Log("[UISetup] EventSystem 已存在，跳过创建。");
             }
         }
         
@@ -172,7 +170,7 @@ namespace ThirdPersonController.Editor
         {
             if (uiManager.hpBar != null)
             {
-                Debug.Log("✓ HPBar已配置");
+                Debug.Log("[UISetup] HPBar 已存在，跳过创建。");
                 return;
             }
             
@@ -181,7 +179,7 @@ namespace ThirdPersonController.Editor
             if (hpBar == null)
             {
                 hpBar = CreateHPBarUI(canvas);
-                Debug.Log("✓ 创建HPBar UI");
+                Debug.Log("[UISetup] 已创建 HPBar。");
             }
             
             if (hpBar != null)
@@ -206,10 +204,10 @@ namespace ThirdPersonController.Editor
             
             UI_HPBar hpBar = hpBarObj.AddComponent<UI_HPBar>();
             
-            // 创建背景
+            // 注释已清理
             GameObject bgObj = CreateUIImage("Background", hpBarObj.transform, new Color(0.2f, 0.2f, 0.2f, 0.8f));
             
-            // 创建Slider
+            // 注释已清理
             GameObject sliderObj = new GameObject("Slider");
             sliderObj.transform.SetParent(hpBarObj.transform, false);
             UnityEngine.UI.Slider slider = sliderObj.AddComponent<UnityEngine.UI.Slider>();
@@ -220,7 +218,7 @@ namespace ThirdPersonController.Editor
             sliderRect.offsetMin = new Vector2(5, 5);
             sliderRect.offsetMax = new Vector2(-5, -5);
             
-            // 创建FillArea
+            // 注释已清理
             GameObject fillAreaObj = new GameObject("Fill Area");
             fillAreaObj.transform.SetParent(sliderObj.transform, false);
             RectTransform fillAreaRect = fillAreaObj.AddComponent<RectTransform>();
@@ -229,7 +227,7 @@ namespace ThirdPersonController.Editor
             fillAreaRect.offsetMin = Vector2.zero;
             fillAreaRect.offsetMax = Vector2.zero;
             
-            // 创建Fill
+            // 注释已清理
             GameObject fillObj = CreateUIImage("Fill", fillAreaObj.transform, new Color(0.2f, 0.8f, 0.2f));
             
             slider.fillRect = fillObj.GetComponent<RectTransform>();
@@ -238,7 +236,7 @@ namespace ThirdPersonController.Editor
             hpBar.hpSlider = slider;
             hpBar.fillImage = fillObj.GetComponent<UnityEngine.UI.Image>();
             
-            // 创建血量文字
+            // 注释已清理
             GameObject textObj = CreateUIText("HPText", hpBarObj.transform, "100/100", 18, TextAnchor.MiddleCenter);
             
             hpBar.hpText = textObj.GetComponent<UnityEngine.UI.Text>();
@@ -252,7 +250,7 @@ namespace ThirdPersonController.Editor
         {
             if (uiManager.staminaBar != null)
             {
-                Debug.Log("✓ StaminaBar已配置");
+                Debug.Log("[UISetup] StaminaBar 已存在，跳过创建。");
                 return;
             }
             
@@ -261,7 +259,7 @@ namespace ThirdPersonController.Editor
             if (staminaBar == null)
             {
                 staminaBar = CreateStaminaBarUI(canvas);
-                Debug.Log("✓ 创建StaminaBar UI");
+                Debug.Log("[UISetup] 已创建 StaminaBar。");
             }
             
             if (staminaBar != null)
@@ -286,10 +284,10 @@ namespace ThirdPersonController.Editor
             
             UI_StaminaBar staminaBar = staminaBarObj.AddComponent<UI_StaminaBar>();
             
-            // 创建背景
+            // 注释已清理
             CreateUIImage("Background", staminaBarObj.transform, new Color(0.2f, 0.2f, 0.2f, 0.8f));
             
-            // 创建Slider
+            // 注释已清理
             GameObject sliderObj = new GameObject("Slider");
             sliderObj.transform.SetParent(staminaBarObj.transform, false);
             UnityEngine.UI.Slider slider = sliderObj.AddComponent<UnityEngine.UI.Slider>();
@@ -300,7 +298,7 @@ namespace ThirdPersonController.Editor
             sliderRect.offsetMin = new Vector2(3, 3);
             sliderRect.offsetMax = new Vector2(-3, -3);
             
-            // 创建FillArea和Fill
+            // 注释已清理
             GameObject fillAreaObj = new GameObject("Fill Area");
             fillAreaObj.transform.SetParent(sliderObj.transform, false);
             RectTransform fillAreaRect = fillAreaObj.AddComponent<RectTransform>();
@@ -324,7 +322,7 @@ namespace ThirdPersonController.Editor
         {
             if (uiManager.comboCounter != null)
             {
-                Debug.Log("✓ ComboCounter已配置");
+                Debug.Log("[UISetup] ComboCounter 已存在，跳过创建。");
                 return;
             }
             
@@ -333,7 +331,7 @@ namespace ThirdPersonController.Editor
             if (comboCounter == null)
             {
                 comboCounter = CreateComboCounterUI(canvas);
-                Debug.Log("✓ 创建ComboCounter UI");
+                Debug.Log("[UISetup] 已创建 ComboCounter。");
             }
             
             if (comboCounter != null)
@@ -358,19 +356,19 @@ namespace ThirdPersonController.Editor
             
             UI_ComboCounter comboCounter = comboObj.AddComponent<UI_ComboCounter>();
             
-            // 创建CanvasGroup
+            // 注释已清理
             UnityEngine.CanvasGroup canvasGroup = comboObj.AddComponent<UnityEngine.CanvasGroup>();
             canvasGroup.alpha = 0f;
             comboCounter.canvasGroup = canvasGroup;
             
-            // 创建连击数字文本
+            // 注释已清理
             GameObject textObj = CreateUIText("ComboText", comboObj.transform, "0", 72, TextAnchor.MiddleRight);
             UnityEngine.UI.Text comboText = textObj.GetComponent<UnityEngine.UI.Text>();
             comboText.fontStyle = FontStyle.Bold;
             
             comboCounter.comboText = comboText;
             
-            // 创建"连击"标签
+            // 注释已清理
             GameObject labelObj = CreateUIText("ComboLabel", comboObj.transform, "连击", 24, TextAnchor.LowerRight);
             UnityEngine.UI.Text labelText = labelObj.GetComponent<UnityEngine.UI.Text>();
             labelText.color = new Color(1f, 1f, 1f, 0.7f);
@@ -389,7 +387,7 @@ namespace ThirdPersonController.Editor
         {
             if (uiManager.skillBar != null)
             {
-                Debug.Log("✓ SkillBar已配置");
+                Debug.Log("[UISetup] SkillBar 已存在，跳过创建。");
                 return;
             }
             
@@ -398,7 +396,7 @@ namespace ThirdPersonController.Editor
             if (skillBar == null)
             {
                 skillBar = CreateSkillBarUI(canvas);
-                Debug.Log("✓ 创建SkillBar UI");
+                Debug.Log("[UISetup] 已创建 SkillBar。");
             }
             
             if (skillBar != null)
@@ -443,7 +441,7 @@ namespace ThirdPersonController.Editor
         {
             UI_SkillBar.SkillSlot slot = new UI_SkillBar.SkillSlot();
             
-            // 技能槽背景
+            // 注释已清理
             GameObject slotObj = new GameObject($"SkillSlot_{key}");
             slotObj.transform.SetParent(parent, false);
             
@@ -457,7 +455,7 @@ namespace ThirdPersonController.Editor
             UnityEngine.UI.Image slotBg = slotObj.AddComponent<UnityEngine.UI.Image>();
             slotBg.color = new Color(0.2f, 0.2f, 0.2f, 0.8f);
             
-            // 图标
+            // 注释已清理
             GameObject iconObj = CreateUIImage("Icon", slotObj.transform, Color.gray);
             RectTransform iconRect = iconObj.GetComponent<RectTransform>();
             iconRect.anchorMin = Vector2.zero;
@@ -467,17 +465,17 @@ namespace ThirdPersonController.Editor
             
             slot.icon = iconObj.GetComponent<UnityEngine.UI.Image>();
             
-            // 冷却遮罩
+            // 注释已清理
             GameObject cdObj = CreateUIImage("CooldownOverlay", slotObj.transform, new Color(0, 0, 0, 0.7f));
             cdObj.SetActive(false);
             slot.cooldownOverlay = cdObj.GetComponent<UnityEngine.UI.Image>();
             
-            // 冷却时间文字
+            // 注释已清理
             GameObject cdTextObj = CreateUIText("CooldownText", slotObj.transform, "", 20, TextAnchor.MiddleCenter);
             cdTextObj.SetActive(false);
             slot.cooldownText = cdTextObj.GetComponent<UnityEngine.UI.Text>();
             
-            // 按键提示
+            // 注释已清理
             GameObject keyObj = CreateUIText("KeyText", slotObj.transform, key, 14, TextAnchor.UpperLeft);
             UnityEngine.UI.Text keyText = keyObj.GetComponent<UnityEngine.UI.Text>();
             keyText.color = new Color(1, 1, 1, 0.8f);
@@ -496,7 +494,7 @@ namespace ThirdPersonController.Editor
         {
             if (uiManager.damageTextParent != null)
             {
-                Debug.Log("✓ DamageTextSystem已配置");
+                Debug.Log("[UISetup] DamageTextParent 已存在，跳过创建。");
                 return;
             }
             
@@ -520,7 +518,7 @@ namespace ThirdPersonController.Editor
             EditorUtility.SetDirty(uiManager);
             
             Undo.RegisterCreatedObjectUndo(damageParentObj, "Create DamageTextParent");
-            Debug.Log("✓ 创建DamageTextParent");
+            Debug.Log("[UISetup] 已创建 DamageTextParent。");
         }
         
         private GameObject CreateUIImage(string name, Transform parent, Color color)
@@ -564,40 +562,40 @@ namespace ThirdPersonController.Editor
         private void CheckUIStatus()
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            sb.AppendLine("=== UI配置状态 ===\n");
+            sb.AppendLine("=== UI 状态 ===\n");
             
             UIManager uiManager = FindObjectOfType<UIManager>();
             if (uiManager != null)
             {
-                sb.AppendLine("UIManager: ✓");
-                sb.AppendLine($"  - HPBar: {(uiManager.hpBar != null ? "✓" : "✗")}");
-                sb.AppendLine($"  - StaminaBar: {(uiManager.staminaBar != null ? "✓" : "✗")}");
-                sb.AppendLine($"  - ComboCounter: {(uiManager.comboCounter != null ? "✓" : "✗")}");
-                sb.AppendLine($"  - SkillBar: {(uiManager.skillBar != null ? "✓" : "✗")}");
-                sb.AppendLine($"  - DamageTextParent: {(uiManager.damageTextParent != null ? "✓" : "✗")}");
+                sb.AppendLine("UIManager: 已找到");
+                sb.AppendLine($"  - HPBar: {(uiManager.hpBar != null ? "正常" : "缺失")}");
+                sb.AppendLine($"  - StaminaBar: {(uiManager.staminaBar != null ? "正常" : "缺失")}");
+                sb.AppendLine($"  - ComboCounter: {(uiManager.comboCounter != null ? "正常" : "缺失")}");
+                sb.AppendLine($"  - SkillBar: {(uiManager.skillBar != null ? "正常" : "缺失")}");
+                sb.AppendLine($"  - DamageTextParent: {(uiManager.damageTextParent != null ? "正常" : "缺失")}");
             }
             else
             {
-                sb.AppendLine("UIManager: ✗ 未找到");
+                sb.AppendLine("UIManager: 未找到");
             }
             
             sb.AppendLine();
             
             Canvas canvas = FindObjectOfType<Canvas>();
-            sb.AppendLine($"Canvas: {(canvas != null ? "✓ " + canvas.name : "✗ 未找到")}");
+            sb.AppendLine($"Canvas: {(canvas != null ? "已找到 " + canvas.name : "未找到")}");
             
             var eventSystem = FindObjectOfType<UnityEngine.EventSystems.EventSystem>();
-            sb.AppendLine($"EventSystem: {(eventSystem != null ? "✓" : "✗ 未找到")}");
+            sb.AppendLine($"EventSystem: {(eventSystem != null ? "已找到" : "未找到")}");
             
             sb.AppendLine("\n==================");
             
-            EditorUtility.DisplayDialog("UI状态检查", sb.ToString(), "确定");
+            EditorUtility.DisplayDialog("UI 状态", sb.ToString(), "确定");
             Debug.Log(sb.ToString());
         }
         
         private void CleanupUI()
         {
-            // 查找并删除所有UI相关物体
+            // 注释已清理
             string[] uiObjects = new string[] { "UIManager", "MainCanvas", "EventSystem", "HPBar", "StaminaBar", "ComboCounter", "SkillBar", "DamageTextParent" };
             
             foreach (string objName in uiObjects)
@@ -606,11 +604,11 @@ namespace ThirdPersonController.Editor
                 if (obj != null)
                 {
                     Undo.DestroyObjectImmediate(obj);
-                    Debug.Log($"删除: {objName}");
+                    Debug.Log($"[UISetup] 已删除: {objName}");
                 }
             }
             
-            Debug.Log("✅ 已清理所有UI元素");
+            Debug.Log("[UISetup] 已清理预设 UI 元素。");
         }
     }
 }

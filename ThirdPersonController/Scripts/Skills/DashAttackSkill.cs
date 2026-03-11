@@ -5,25 +5,25 @@ using System.Collections.Generic;
 namespace ThirdPersonController
 {
     /// <summary>
-    /// 技能3: 深渊突袭 - 瞬间移动并攻击路径敌人
-    /// 按键: E
+    /// Mobility skill: dashes forward and applies damage along the dash path.
     /// </summary>
     [CreateAssetMenu(fileName = "SKILL_DashAttack", menuName = "Skills/DashAttack")]
     public class DashAttackSkill : SkillBase
     {
-        [Header("突袭设置")]
+        [Header("Dash")]
         public float dashDistance = 8f;
         public float dashSpeed = 20f;
         public float hitBoxWidth = 2f;
         public int pathDamage = 30;
         public float pathKnockback = 5f;
-        
-        [Header("无敌")]
+
+        [Header("Invincibility")]
         public bool invincibleDuringDash = true;
         [FormerlySerializedAs("invincibilityDuration")]
         public float dashInvincibilityDuration = 0.5f;
 
         private readonly List<Collider> hitTargets = new List<Collider>();
+        private readonly HashSet<int> dashHitTargetIds = new HashSet<int>();
         [System.NonSerialized] private Coroutine dashRoutine;
         [System.NonSerialized] private MonoBehaviour activeRunner;
         [System.NonSerialized] private PlayerMovement cachedMovement;
@@ -46,7 +46,7 @@ namespace ThirdPersonController
                 impactShakeStrength = 0.2f;
             }
         }
-        
+
         public override void Execute(Transform caster, Vector3 targetPosition)
         {
             StartSkillTimeline(caster, caster.position, caster.rotation, () =>
@@ -58,6 +58,7 @@ namespace ThirdPersonController
                     {
                         activeRunner.StopCoroutine(dashRoutine);
                     }
+
                     dashRoutine = activeRunner.StartCoroutine(DashCoroutine(caster));
                 }
             });
@@ -84,71 +85,69 @@ namespace ThirdPersonController
             dashRoutine = null;
             activeRunner = null;
             cachedMovement = null;
+            dashHitTargetIds.Clear();
         }
-        
+
         private System.Collections.IEnumerator DashCoroutine(Transform caster)
         {
-            // 触发动画
             Animator animator = caster.GetComponent<Animator>();
             if (animator != null)
             {
                 animator.SetTrigger("Dash");
             }
-            
-            // 无敌状态
+
             PlayerHealth health = caster.GetComponent<PlayerHealth>();
             if (health != null && invincibleDuringDash)
             {
                 health.ApplyInvincibility(dashInvincibilityDuration);
             }
-            
-            // 禁用玩家控制
+
             cachedMovement = caster.GetComponent<PlayerMovement>();
-            if (cachedMovement != null) cachedMovement.enabled = false;
-            
-            // 计算起点和终点
+            if (cachedMovement != null)
+            {
+                cachedMovement.enabled = false;
+            }
+
             Vector3 startPos = caster.position;
             Vector3 dashDirection = caster.forward;
             Vector3 endPos = startPos + dashDirection * dashDistance;
-            
-            // 检查终点是否有效（不穿透墙壁）
+
             if (Physics.Raycast(startPos + Vector3.up, dashDirection, out RaycastHit hit, dashDistance, LayerMask.GetMask("Default")))
             {
                 endPos = hit.point - dashDirection * 0.5f;
             }
-            
-            // 突袭过程中检测敌人
+
             float traveled = 0f;
             Vector3 lastPos = startPos;
-            
+            dashHitTargetIds.Clear();
+
             while (traveled < dashDistance)
             {
                 float moveDistance = dashSpeed * Time.deltaTime;
                 caster.position += dashDirection * moveDistance;
                 traveled += moveDistance;
-                
-                // 检测路径上的敌人
+
                 DetectEnemiesInPath(lastPos, caster.position, hitBoxWidth, caster);
-                
                 lastPos = caster.position;
                 yield return null;
             }
-            
-            // 确保到达终点
-            caster.position = endPos;
-            
-            // 恢复控制
-            if (cachedMovement != null) cachedMovement.enabled = true;
 
-            // 播放结束特效
+            caster.position = endPos;
+
+            if (cachedMovement != null)
+            {
+                cachedMovement.enabled = true;
+            }
+
             SpawnEffect(endPos, caster.rotation);
 
             dashRoutine = null;
             activeRunner = null;
             cachedMovement = null;
+            dashHitTargetIds.Clear();
             NotifySkillEnded(caster);
         }
-        
+
         private void DetectEnemiesInPath(Vector3 from, Vector3 to, float width, Transform caster)
         {
             int adjustedDamage = GetModifiedDamage(caster, pathDamage);
@@ -161,6 +160,11 @@ namespace ThirdPersonController
             {
                 Collider hitCollider = hitTargets[i];
                 if (hitCollider == null)
+                {
+                    continue;
+                }
+
+                if (HasHitTargetThisDash(hitCollider))
                 {
                     continue;
                 }
@@ -183,8 +187,49 @@ namespace ThirdPersonController
                     isHeavyAttack = false
                 };
 
-                DamageService.ApplyDamage(context, hitCollider);
+                if (DamageService.ApplyDamage(context, hitCollider))
+                {
+                    RegisterDashHitTarget(hitCollider);
+                }
             }
+        }
+
+        private bool HasHitTargetThisDash(Collider hitCollider)
+        {
+            int targetId = ResolveDashHitTargetId(hitCollider);
+            return targetId != 0 && dashHitTargetIds.Contains(targetId);
+        }
+
+        private void RegisterDashHitTarget(Collider hitCollider)
+        {
+            int targetId = ResolveDashHitTargetId(hitCollider);
+            if (targetId != 0)
+            {
+                dashHitTargetIds.Add(targetId);
+            }
+        }
+
+        private int ResolveDashHitTargetId(Collider hitCollider)
+        {
+            if (hitCollider == null)
+            {
+                return 0;
+            }
+
+            EnemyHealth enemyHealth = hitCollider.GetComponent<EnemyHealth>();
+            if (enemyHealth == null)
+            {
+                enemyHealth = hitCollider.GetComponentInParent<EnemyHealth>();
+            }
+
+            if (enemyHealth != null)
+            {
+                return enemyHealth.GetInstanceID();
+            }
+
+            return hitCollider.transform.root != null
+                ? hitCollider.transform.root.GetInstanceID()
+                : hitCollider.GetInstanceID();
         }
     }
 }

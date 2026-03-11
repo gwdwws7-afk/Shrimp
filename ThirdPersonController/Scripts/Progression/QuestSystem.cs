@@ -196,6 +196,12 @@ namespace ThirdPersonController
         public int levelDifficulty = 1;
         public int levelChapterId = 1;
         public CurrencyWallet wallet;
+        public bool autoSaveOnQuestComplete = true;
+        public bool saveQuestRuntimeState = true;
+        public bool autoRestoreQuestStateOnStart = false;
+        public float questStateWriteInterval = 0.5f;
+        public bool logQuestStateSync = false;
+        public bool logStartupStatus = true;
         
         [Header("State")]
         public List<QuestProgress> activeQuests = new List<QuestProgress>();
@@ -207,41 +213,33 @@ namespace ThirdPersonController
         public System.Action<QuestProgress> OnQuestFailed;
         
         private PlayerExperienceSystem experienceSystem;
+        private bool startupLogged;
+        private int questStateSaveSuspendCount;
+        private float questStateWriteTimer;
         
         private void Awake()
         {
-            experienceSystem = FindObjectOfType<PlayerExperienceSystem>();
-            if (inventory == null)
-            {
-                inventory = FindObjectOfType<PearlInventory>();
-            }
+            EnsureCollections();
+            EnsureExperienceSystem();
+            EnsureRewardReferences();
+        }
 
-            if (pearlDatabase == null)
+        private void Start()
+        {
+            EnsureCollections();
+            EnsureRewardReferences();
+            if (autoRestoreQuestStateOnStart)
             {
-                PearlDropManager dropManager = FindObjectOfType<PearlDropManager>();
-                if (dropManager != null)
-                {
-                    pearlDatabase = dropManager.pearlDatabase;
-                }
+                RestoreQuestRuntimeStateFromSave(false);
             }
-
-            if (pearlDatabase == null)
-            {
-                pearlDatabase = Resources.Load<PearlDatabase>("PearlDatabase");
-            }
-
-            if (wallet == null)
-            {
-                wallet = FindObjectOfType<CurrencyWallet>();
-                if (wallet == null)
-                {
-                    wallet = CurrencyWallet.EnsureInstance();
-                }
-            }
+            LogStartupStatus();
         }
         
         private void OnEnable()
         {
+            EnsureCollections();
+            EnsureExperienceSystem();
+            EnsureRewardReferences();
             GameEvents.OnEnemyKilled += HandleEnemyKilled;
             GameEvents.OnWaveCompleted += HandleWaveCompleted;
             GameEvents.OnStrongholdCompleted += HandleStrongholdCompleted;
@@ -271,10 +269,237 @@ namespace ThirdPersonController
             GameEvents.OnPlayerDeath -= HandlePlayerDeath;
             GameEvents.OnGameOver -= HandleGameOver;
         }
+
+        public void BindExperienceSystem(PlayerExperienceSystem system)
+        {
+            if (system != null)
+            {
+                experienceSystem = system;
+            }
+        }
+
+        private void EnsureExperienceSystem()
+        {
+            if (experienceSystem == null)
+            {
+                experienceSystem = FindObjectOfType<PlayerExperienceSystem>();
+            }
+        }
+
+        public void SuspendQuestStateSave(bool suspend)
+        {
+            if (suspend)
+            {
+                questStateSaveSuspendCount++;
+            }
+            else
+            {
+                questStateSaveSuspendCount = Mathf.Max(0, questStateSaveSuspendCount - 1);
+            }
+        }
+
+        public void SaveQuestRuntimeStateToData()
+        {
+            EnsureCollections();
+            if (!saveQuestRuntimeState || questStateSaveSuspendCount > 0)
+            {
+                return;
+            }
+
+            SaveManager save = SaveManager.Instance;
+            if (save == null || save.CurrentData == null)
+            {
+                return;
+            }
+
+            if (save.CurrentData.questStates == null)
+            {
+                save.CurrentData.questStates = new List<QuestStateData>();
+            }
+
+            List<QuestStateData> states = save.CurrentData.questStates;
+            states.Clear();
+            HashSet<string> savedIds = new HashSet<string>();
+
+            for (int i = 0; i < activeQuests.Count; i++)
+            {
+                QuestProgress quest = activeQuests[i];
+                if (!IsValidQuest(quest))
+                {
+                    continue;
+                }
+
+                string questId = quest.data.questId;
+                if (string.IsNullOrEmpty(questId) || !savedIds.Add(questId))
+                {
+                    continue;
+                }
+
+                states.Add(new QuestStateData
+                {
+                    questId = questId,
+                    status = (int)quest.status,
+                    currentProgress = Mathf.Max(0, quest.currentProgress),
+                    stageIndex = Mathf.Max(0, quest.stageIndex),
+                    stageElapsedTime = Mathf.Max(0f, quest.stageElapsedTime),
+                    totalElapsedTime = Mathf.Max(0f, quest.totalElapsedTime),
+                    isTimerActive = quest.isTimerActive,
+                    lastStrongholdId = quest.lastStrongholdId ?? string.Empty
+                });
+            }
+
+            if (logQuestStateSync)
+            {
+                Debug.Log($"[QuestSystem] Saved quest runtime state entries={states.Count}");
+            }
+        }
+
+        public bool RestoreQuestRuntimeStateFromSave(bool notifyListeners = true, bool addMissingQuests = true)
+        {
+            EnsureCollections();
+            SaveManager save = SaveManager.Instance;
+            if (save == null || save.CurrentData == null || save.CurrentData.questStates == null || save.CurrentData.questStates.Count == 0)
+            {
+                return false;
+            }
+
+            int restoredCount = 0;
+            SuspendQuestStateSave(true);
+            try
+            {
+                Dictionary<string, QuestProgress> byId = new Dictionary<string, QuestProgress>();
+                for (int i = 0; i < activeQuests.Count; i++)
+                {
+                    QuestProgress quest = activeQuests[i];
+                    if (!IsValidQuest(quest))
+                    {
+                        continue;
+                    }
+
+                    string id = quest.data.questId;
+                    if (!string.IsNullOrEmpty(id) && !byId.ContainsKey(id))
+                    {
+                        byId.Add(id, quest);
+                    }
+                }
+
+                List<QuestStateData> states = save.CurrentData.questStates;
+                for (int i = 0; i < states.Count; i++)
+                {
+                    QuestStateData state = states[i];
+                    if (state == null || string.IsNullOrEmpty(state.questId))
+                    {
+                        continue;
+                    }
+
+                    if (!byId.TryGetValue(state.questId, out QuestProgress quest))
+                    {
+                        if (!addMissingQuests)
+                        {
+                            continue;
+                        }
+
+                        QuestData data = FindQuestById(state.questId);
+                        if (data == null)
+                        {
+                            continue;
+                        }
+
+                        EnsureRewardData(data);
+                        quest = new QuestProgress
+                        {
+                            data = data
+                        };
+                        activeQuests.Add(quest);
+                        byId[state.questId] = quest;
+                    }
+
+                    ApplySavedState(quest, state);
+                    restoredCount++;
+                }
+            }
+            finally
+            {
+                SuspendQuestStateSave(false);
+            }
+
+            if (restoredCount <= 0)
+            {
+                return false;
+            }
+
+            if (notifyListeners)
+            {
+                for (int i = 0; i < activeQuests.Count; i++)
+                {
+                    QuestProgress quest = activeQuests[i];
+                    if (IsInProgressQuest(quest))
+                    {
+                        OnQuestProgress?.Invoke(quest);
+                    }
+                }
+            }
+
+            if (logQuestStateSync)
+            {
+                Debug.Log($"[QuestSystem] Restored quest runtime state entries={restoredCount}");
+            }
+
+            return true;
+        }
+
+        private static void ApplySavedState(QuestProgress quest, QuestStateData state)
+        {
+            if (quest == null || quest.data == null || state == null)
+            {
+                return;
+            }
+
+            int minStatus = (int)QuestStatus.Locked;
+            int maxStatus = (int)QuestStatus.Failed;
+            quest.status = (QuestStatus)Mathf.Clamp(state.status, minStatus, maxStatus);
+            quest.currentProgress = Mathf.Max(0, state.currentProgress);
+            quest.totalElapsedTime = Mathf.Max(0f, state.totalElapsedTime);
+            quest.stageElapsedTime = Mathf.Max(0f, state.stageElapsedTime);
+            quest.elapsedTime = quest.stageElapsedTime;
+            quest.lastStrongholdId = state.lastStrongholdId ?? string.Empty;
+
+            int stageCount = quest.data.stages != null ? quest.data.stages.Count : 0;
+            if (stageCount <= 0)
+            {
+                quest.stageIndex = 0;
+            }
+            else
+            {
+                int maxIndex = Mathf.Max(0, stageCount);
+                quest.stageIndex = Mathf.Clamp(state.stageIndex, 0, maxIndex);
+                if (quest.status == QuestStatus.InProgress && quest.stageIndex >= stageCount)
+                {
+                    quest.stageIndex = stageCount - 1;
+                }
+            }
+
+            bool timerType = quest.CurrentType == QuestType.Survive
+                || quest.CurrentType == QuestType.Reach
+                || quest.CurrentType == QuestType.Protect;
+            quest.isTimerActive = quest.status == QuestStatus.InProgress && timerType;
+        }
         
         private void Update()
         {
+            EnsureCollections();
             UpdateQuestTimers();
+
+            if (saveQuestRuntimeState && questStateSaveSuspendCount == 0)
+            {
+                questStateWriteTimer += Time.deltaTime;
+                float interval = Mathf.Max(0.1f, questStateWriteInterval);
+                if (questStateWriteTimer >= interval)
+                {
+                    questStateWriteTimer = 0f;
+                    SaveQuestRuntimeStateToData();
+                }
+            }
         }
         
         public void StartQuest(QuestData questData)
@@ -284,6 +509,8 @@ namespace ThirdPersonController
                 return;
             }
 
+            EnsureCollections();
+            EnsureRewardData(questData);
             QuestProgress progress = new QuestProgress
             {
                 data = questData,
@@ -301,7 +528,7 @@ namespace ThirdPersonController
             }
             
             activeQuests.Add(progress);
-            OnQuestStarted?.Invoke(progress);
+            NotifyQuestStarted(progress);
             
             GameEvents.ShowMessage($"Quest Started: {questData.questName}", 3f);
             ShowStageStartMessage(progress, true);
@@ -309,6 +536,12 @@ namespace ThirdPersonController
         
         public void StartQuests(List<QuestData> quests)
         {
+            if (quests == null || quests.Count == 0)
+            {
+                return;
+            }
+
+            EnsureCollections();
             for (int i = 0; i < quests.Count; i++)
             {
                 StartQuest(quests[i]);
@@ -317,7 +550,9 @@ namespace ThirdPersonController
 
         public void ResetQuests()
         {
+            EnsureCollections();
             activeQuests.Clear();
+            SaveQuestRuntimeStateIfEnabled();
         }
         
         private void UpdateQuestTimers()
@@ -327,33 +562,34 @@ namespace ThirdPersonController
             for (int i = 0; i < activeQuests.Count; i++)
             {
                 QuestProgress quest = activeQuests[i];
-                
-                if (quest.status == QuestStatus.InProgress)
+                if (!IsInProgressQuest(quest))
                 {
-                    quest.totalElapsedTime += deltaTime;
-                    quest.stageElapsedTime += deltaTime;
+                    continue;
+                }
+                
+                quest.totalElapsedTime += deltaTime;
+                quest.stageElapsedTime += deltaTime;
 
-                    if (quest.data.timeLimit > 0f && quest.totalElapsedTime >= quest.data.timeLimit)
+                if (quest.data.timeLimit > 0f && quest.totalElapsedTime >= quest.data.timeLimit)
+                {
+                    FailQuest(quest, "Time limit exceeded");
+                    continue;
+                }
+
+                QuestStage stage = quest.CurrentStage;
+                if (stage != null && stage.useTimeLimit && stage.timeLimit > 0f && quest.stageElapsedTime >= stage.timeLimit)
+                {
+                    FailQuest(quest, "Stage time limit exceeded");
+                    continue;
+                }
+
+                if (quest.CurrentType == QuestType.Survive || quest.CurrentType == QuestType.Protect)
+                {
+                    quest.currentProgress = Mathf.FloorToInt(quest.stageElapsedTime);
+
+                    if (quest.IsStageComplete)
                     {
-                        FailQuest(quest, "Time limit exceeded");
-                        continue;
-                    }
-
-                    QuestStage stage = quest.CurrentStage;
-                    if (stage != null && stage.useTimeLimit && stage.timeLimit > 0f && quest.stageElapsedTime >= stage.timeLimit)
-                    {
-                        FailQuest(quest, "Stage time limit exceeded");
-                        continue;
-                    }
-
-                    if (quest.CurrentType == QuestType.Survive || quest.CurrentType == QuestType.Protect)
-                    {
-                        quest.currentProgress = Mathf.FloorToInt(quest.stageElapsedTime);
-
-                        if (quest.IsStageComplete)
-                        {
-                            AdvanceStageOrComplete(quest);
-                        }
+                        AdvanceStageOrComplete(quest);
                     }
                 }
             }
@@ -364,8 +600,8 @@ namespace ThirdPersonController
             for (int i = 0; i < activeQuests.Count; i++)
             {
                 QuestProgress quest = activeQuests[i];
-                
-                if (quest.status != QuestStatus.InProgress)
+
+                if (!IsInProgressQuest(quest))
                 {
                     continue;
                 }
@@ -385,7 +621,7 @@ namespace ThirdPersonController
                 
                 if (progressUpdated)
                 {
-                    OnQuestProgress?.Invoke(quest);
+                    NotifyQuestProgressChanged(quest);
                     
                     if (quest.IsStageComplete)
                     {
@@ -401,7 +637,7 @@ namespace ThirdPersonController
             {
                 QuestProgress quest = activeQuests[i];
                 
-                if (quest.status == QuestStatus.InProgress && quest.CurrentType == QuestType.CompleteWave)
+                if (IsInProgressQuest(quest) && quest.CurrentType == QuestType.CompleteWave)
                 {
                     if (!MatchesStronghold(quest, stronghold))
                     {
@@ -413,7 +649,7 @@ namespace ThirdPersonController
                     {
                         quest.lastStrongholdId = stronghold.StrongholdId;
                     }
-                    OnQuestProgress?.Invoke(quest);
+                    NotifyQuestProgressChanged(quest);
                     
                     if (quest.IsStageComplete)
                     {
@@ -429,7 +665,7 @@ namespace ThirdPersonController
             {
                 QuestProgress quest = activeQuests[i];
                 
-                if (quest.status == QuestStatus.InProgress && quest.CurrentType == QuestType.CompleteStronghold)
+                if (IsInProgressQuest(quest) && quest.CurrentType == QuestType.CompleteStronghold)
                 {
                     if (!MatchesStronghold(quest, stronghold))
                     {
@@ -441,7 +677,7 @@ namespace ThirdPersonController
                     {
                         quest.lastStrongholdId = stronghold.StrongholdId;
                     }
-                    OnQuestProgress?.Invoke(quest);
+                    NotifyQuestProgressChanged(quest);
                     
                     if (quest.IsStageComplete)
                     {
@@ -456,7 +692,7 @@ namespace ThirdPersonController
             for (int i = 0; i < activeQuests.Count; i++)
             {
                 QuestProgress quest = activeQuests[i];
-                if (quest.status != QuestStatus.InProgress || quest.CurrentType != QuestType.CompleteWaveEvent)
+                if (!IsInProgressQuest(quest) || quest.CurrentType != QuestType.CompleteWaveEvent)
                 {
                     continue;
                 }
@@ -476,7 +712,7 @@ namespace ThirdPersonController
                 {
                     quest.lastStrongholdId = stronghold.StrongholdId;
                 }
-                OnQuestProgress?.Invoke(quest);
+                NotifyQuestProgressChanged(quest);
 
                 if (quest.IsStageComplete)
                 {
@@ -490,7 +726,7 @@ namespace ThirdPersonController
             for (int i = 0; i < activeQuests.Count; i++)
             {
                 QuestProgress quest = activeQuests[i];
-                if (quest.status != QuestStatus.InProgress || quest.CurrentType != QuestType.BossBreak)
+                if (!IsInProgressQuest(quest) || quest.CurrentType != QuestType.BossBreak)
                 {
                     continue;
                 }
@@ -501,7 +737,7 @@ namespace ThirdPersonController
                 }
 
                 quest.currentProgress++;
-                OnQuestProgress?.Invoke(quest);
+                NotifyQuestProgressChanged(quest);
 
                 if (quest.IsStageComplete)
                 {
@@ -515,7 +751,7 @@ namespace ThirdPersonController
             for (int i = 0; i < activeQuests.Count; i++)
             {
                 QuestProgress quest = activeQuests[i];
-                if (quest.status != QuestStatus.InProgress || quest.CurrentType != QuestType.BossDefeat)
+                if (!IsInProgressQuest(quest) || quest.CurrentType != QuestType.BossDefeat)
                 {
                     continue;
                 }
@@ -526,7 +762,7 @@ namespace ThirdPersonController
                 }
 
                 quest.currentProgress++;
-                OnQuestProgress?.Invoke(quest);
+                NotifyQuestProgressChanged(quest);
 
                 if (quest.IsStageComplete)
                 {
@@ -540,7 +776,7 @@ namespace ThirdPersonController
             for (int i = 0; i < activeQuests.Count; i++)
             {
                 QuestProgress quest = activeQuests[i];
-                if (quest.status != QuestStatus.InProgress)
+                if (!IsInProgressQuest(quest))
                 {
                     continue;
                 }
@@ -548,7 +784,7 @@ namespace ThirdPersonController
                 if (quest.CurrentType == QuestType.Combo)
                 {
                     quest.currentProgress = Mathf.Max(quest.currentProgress, combo);
-                    OnQuestProgress?.Invoke(quest);
+                    NotifyQuestProgressChanged(quest);
 
                     if (quest.IsStageComplete)
                     {
@@ -563,7 +799,7 @@ namespace ThirdPersonController
             for (int i = 0; i < activeQuests.Count; i++)
             {
                 QuestProgress quest = activeQuests[i];
-                if (quest.status != QuestStatus.InProgress)
+                if (!IsInProgressQuest(quest))
                 {
                     continue;
                 }
@@ -579,7 +815,7 @@ namespace ThirdPersonController
                 }
 
                 quest.currentProgress++;
-                OnQuestProgress?.Invoke(quest);
+                NotifyQuestProgressChanged(quest);
                 if (quest.IsStageComplete)
                 {
                     AdvanceStageOrComplete(quest);
@@ -592,7 +828,7 @@ namespace ThirdPersonController
             for (int i = 0; i < activeQuests.Count; i++)
             {
                 QuestProgress quest = activeQuests[i];
-                if (quest.status != QuestStatus.InProgress)
+                if (!IsInProgressQuest(quest))
                 {
                     continue;
                 }
@@ -608,7 +844,7 @@ namespace ThirdPersonController
                 }
 
                 quest.currentProgress++;
-                OnQuestProgress?.Invoke(quest);
+                NotifyQuestProgressChanged(quest);
                 if (quest.IsStageComplete)
                 {
                     AdvanceStageOrComplete(quest);
@@ -621,7 +857,7 @@ namespace ThirdPersonController
             for (int i = 0; i < activeQuests.Count; i++)
             {
                 QuestProgress quest = activeQuests[i];
-                if (quest.status != QuestStatus.InProgress)
+                if (!IsInProgressQuest(quest))
                 {
                     continue;
                 }
@@ -636,27 +872,27 @@ namespace ThirdPersonController
                     continue;
                 }
 
-            if (!string.IsNullOrEmpty(quest.CurrentTargetLocationId) && quest.CurrentTargetLocationId != targetId)
-            {
-                continue;
-            }
+                if (!string.IsNullOrEmpty(quest.CurrentTargetLocationId) && quest.CurrentTargetLocationId != targetId)
+                {
+                    continue;
+                }
 
                 if (!string.IsNullOrEmpty(quest.CurrentTargetStrongholdId))
                 {
                     if (string.IsNullOrEmpty(targetId))
                     {
                         continue;
+                    }
+
+                    string strongholdId = quest.CurrentTargetStrongholdId;
+                    if (targetId != strongholdId && !targetId.StartsWith(strongholdId + "_"))
+                    {
+                        continue;
+                    }
                 }
 
-                string strongholdId = quest.CurrentTargetStrongholdId;
-                if (targetId != strongholdId && !targetId.StartsWith(strongholdId + "_"))
-                {
-                    continue;
-                }
+                FailQuest(quest, "Defense target destroyed");
             }
-
-            FailQuest(quest, "Defense target destroyed");
-        }
         }
 
         private void HandlePlayerDeath()
@@ -674,40 +910,54 @@ namespace ThirdPersonController
         
         private void CompleteQuest(QuestProgress quest)
         {
+            if (!IsValidQuest(quest))
+            {
+                return;
+            }
+
+            EnsureRewardReferences();
             quest.status = QuestStatus.Completed;
+            EnsureExperienceSystem();
+            QuestReward reward = EnsureRewardData(quest.data);
 
             string rewardStrongholdId = ResolveQuestStrongholdId(quest);
             float rewardMultiplier = Mathf.Max(0f, expRewardMultiplier) * Mathf.Max(0f, levelRewardMultiplier);
-            int expReward = EconomyService.AdjustQuestExp(quest.data.reward.exp, quest.data.questType, quest.data.difficultyRating, levelDifficulty, rewardMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
+            int expReward = EconomyService.AdjustQuestExp(reward.exp, quest.data.questType, quest.data.difficultyRating, levelDifficulty, rewardMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
             if (experienceSystem != null && expReward > 0)
             {
                 experienceSystem.GrantExperience(expReward);
             }
 
             float pearlMultiplier = Mathf.Max(0f, pearlRewardMultiplier) * Mathf.Max(0f, levelRewardMultiplier);
-            int pearlReward = EconomyService.AdjustQuestPearls(quest.data.reward.pearls, quest.data.questType, quest.data.difficultyRating, levelDifficulty, pearlMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
+            int pearlReward = EconomyService.AdjustQuestPearls(reward.pearls, quest.data.questType, quest.data.difficultyRating, levelDifficulty, pearlMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
             if (pearlReward > 0)
             {
                 GrantQuestPearls(pearlReward);
             }
 
-            int creditReward = EconomyService.AdjustQuestCredits(quest.data.reward.credits, quest.data.questType, quest.data.difficultyRating, levelDifficulty, levelRewardMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
+            int creditReward = EconomyService.AdjustQuestCredits(reward.credits, quest.data.questType, quest.data.difficultyRating, levelDifficulty, levelRewardMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
             if (wallet != null && creditReward > 0)
             {
                 wallet.AddCredits(creditReward);
             }
 
             GameEvents.ShowMessage($"Quest Complete: {quest.data.questName}!", 3f);
-            OnQuestCompleted?.Invoke(quest);
+            NotifyQuestCompleted(quest);
 
             if (autoStartGuidedQuests && quest.data.autoStartNextQuests)
             {
                 StartNextQuests(quest.data.nextQuestIds);
             }
+
+            if (autoSaveOnQuestComplete && SaveManager.Instance != null)
+            {
+                SaveManager.Instance.SaveGame();
+            }
         }
 
         private void GrantQuestPearls(int count)
         {
+            EnsureRewardReferences();
             if (count <= 0 || inventory == null)
             {
                 return;
@@ -737,6 +987,7 @@ namespace ThirdPersonController
 
         private PearlItem PickRandomPearl()
         {
+            EnsureRewardReferences();
             if (pearlDatabase == null || pearlDatabase.pearls == null || pearlDatabase.pearls.Count == 0)
             {
                 return null;
@@ -748,6 +999,11 @@ namespace ThirdPersonController
         
         public void FailQuest(QuestProgress quest, string reason = "")
         {
+            if (quest == null)
+            {
+                return;
+            }
+
             quest.status = QuestStatus.Failed;
             if (quest.data != null)
             {
@@ -756,15 +1012,21 @@ namespace ThirdPersonController
                     : $"Quest Failed: {quest.data.questName} ({reason})";
                 GameEvents.ShowMessage(label, 2f);
             }
-            OnQuestFailed?.Invoke(quest);
+            NotifyQuestFailed(quest);
         }
 
         private void FailQuestsOnCondition(System.Func<QuestProgress, bool> predicate, string reason)
         {
+            if (predicate == null)
+            {
+                return;
+            }
+
+            EnsureCollections();
             for (int i = 0; i < activeQuests.Count; i++)
             {
                 QuestProgress quest = activeQuests[i];
-                if (quest.status != QuestStatus.InProgress)
+                if (!IsInProgressQuest(quest))
                 {
                     continue;
                 }
@@ -778,6 +1040,11 @@ namespace ThirdPersonController
 
         private void AdvanceStageOrComplete(QuestProgress quest)
         {
+            if (!IsValidQuest(quest))
+            {
+                return;
+            }
+
             if (!quest.HasStages)
             {
                 CompleteQuest(quest);
@@ -802,7 +1069,7 @@ namespace ThirdPersonController
 
             QuestType type = quest.CurrentType;
             quest.isTimerActive = type == QuestType.Survive || type == QuestType.Reach || type == QuestType.Protect;
-            OnQuestProgress?.Invoke(quest);
+            NotifyQuestProgressChanged(quest);
             ShowStageStartMessage(quest, false);
         }
 
@@ -942,6 +1209,8 @@ namespace ThirdPersonController
 
         private QuestData FindQuestById(string id)
         {
+            EnsureCollections();
+
             if (questDatabase != null)
             {
                 QuestData fromDb = questDatabase.GetQuestById(id);
@@ -975,6 +1244,7 @@ namespace ThirdPersonController
                 return false;
             }
 
+            EnsureCollections();
             for (int i = 0; i < activeQuests.Count; i++)
             {
                 QuestProgress quest = activeQuests[i];
@@ -992,17 +1262,18 @@ namespace ThirdPersonController
 
         public string GetRewardPreview(QuestProgress quest)
         {
-            if (quest == null || quest.data == null)
+            if (!IsValidQuest(quest))
             {
                 return string.Empty;
             }
 
+            QuestReward reward = EnsureRewardData(quest.data);
             string rewardStrongholdId = ResolveQuestStrongholdId(quest);
             float rewardMultiplier = Mathf.Max(0f, expRewardMultiplier) * Mathf.Max(0f, levelRewardMultiplier);
             float pearlMultiplier = Mathf.Max(0f, pearlRewardMultiplier) * Mathf.Max(0f, levelRewardMultiplier);
-            int expReward = EconomyService.AdjustQuestExp(quest.data.reward.exp, quest.data.questType, quest.data.difficultyRating, levelDifficulty, rewardMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
-            int pearlReward = EconomyService.AdjustQuestPearls(quest.data.reward.pearls, quest.data.questType, quest.data.difficultyRating, levelDifficulty, pearlMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
-            int creditReward = EconomyService.AdjustQuestCredits(quest.data.reward.credits, quest.data.questType, quest.data.difficultyRating, levelDifficulty, levelRewardMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
+            int expReward = EconomyService.AdjustQuestExp(reward.exp, quest.data.questType, quest.data.difficultyRating, levelDifficulty, rewardMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
+            int pearlReward = EconomyService.AdjustQuestPearls(reward.pearls, quest.data.questType, quest.data.difficultyRating, levelDifficulty, pearlMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
+            int creditReward = EconomyService.AdjustQuestCredits(reward.credits, quest.data.questType, quest.data.difficultyRating, levelDifficulty, levelRewardMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
 
             List<string> parts = new List<string>();
             if (expReward > 0)
@@ -1023,12 +1294,136 @@ namespace ThirdPersonController
         
         public List<QuestProgress> GetActiveQuests()
         {
-            return activeQuests.FindAll(q => q.status == QuestStatus.InProgress);
+            EnsureCollections();
+            return activeQuests.FindAll(q => q != null && q.status == QuestStatus.InProgress);
         }
         
         public List<QuestProgress> GetCompletedQuests()
         {
-            return activeQuests.FindAll(q => q.status == QuestStatus.Completed);
+            EnsureCollections();
+            return activeQuests.FindAll(q => q != null && q.status == QuestStatus.Completed);
+        }
+
+        private void EnsureCollections()
+        {
+            if (availableQuests == null)
+            {
+                availableQuests = new List<QuestData>();
+            }
+
+            if (activeQuests == null)
+            {
+                activeQuests = new List<QuestProgress>();
+            }
+        }
+
+        private void EnsureRewardReferences()
+        {
+            if (inventory == null)
+            {
+                inventory = FindObjectOfType<PearlInventory>();
+            }
+
+            if (pearlDatabase == null)
+            {
+                PearlDropManager dropManager = FindObjectOfType<PearlDropManager>();
+                if (dropManager != null)
+                {
+                    pearlDatabase = dropManager.pearlDatabase;
+                }
+            }
+
+            if (pearlDatabase == null)
+            {
+                pearlDatabase = Resources.Load<PearlDatabase>("PearlDatabase");
+            }
+
+            if (wallet == null)
+            {
+                wallet = FindObjectOfType<CurrencyWallet>();
+                if (wallet == null)
+                {
+                    wallet = CurrencyWallet.EnsureInstance();
+                }
+            }
+        }
+
+        private static bool IsValidQuest(QuestProgress quest)
+        {
+            return quest != null && quest.data != null;
+        }
+
+        private static bool IsInProgressQuest(QuestProgress quest)
+        {
+            return IsValidQuest(quest) && quest.status == QuestStatus.InProgress;
+        }
+
+        private QuestReward EnsureRewardData(QuestData data)
+        {
+            if (data == null)
+            {
+                return new QuestReward();
+            }
+
+            if (data.reward == null)
+            {
+                data.reward = new QuestReward();
+            }
+
+            if (data.nextQuestIds == null)
+            {
+                data.nextQuestIds = new List<string>();
+            }
+
+            if (data.stages == null)
+            {
+                data.stages = new List<QuestStage>();
+            }
+
+            return data.reward;
+        }
+
+        private void SaveQuestRuntimeStateIfEnabled()
+        {
+            if (saveQuestRuntimeState)
+            {
+                SaveQuestRuntimeStateToData();
+            }
+        }
+
+        private void NotifyQuestStarted(QuestProgress quest)
+        {
+            OnQuestStarted?.Invoke(quest);
+            SaveQuestRuntimeStateIfEnabled();
+        }
+
+        private void NotifyQuestProgressChanged(QuestProgress quest)
+        {
+            OnQuestProgress?.Invoke(quest);
+            SaveQuestRuntimeStateIfEnabled();
+        }
+
+        private void NotifyQuestCompleted(QuestProgress quest)
+        {
+            OnQuestCompleted?.Invoke(quest);
+            SaveQuestRuntimeStateIfEnabled();
+        }
+
+        private void NotifyQuestFailed(QuestProgress quest)
+        {
+            OnQuestFailed?.Invoke(quest);
+            SaveQuestRuntimeStateIfEnabled();
+        }
+
+        private void LogStartupStatus()
+        {
+            if (!logStartupStatus || startupLogged)
+            {
+                return;
+            }
+
+            startupLogged = true;
+            Debug.Log($"[QuestSystem] Startup | questDb={(questDatabase != null)} exp={(experienceSystem != null)} inventory={(inventory != null)} pearlDb={(pearlDatabase != null)} wallet={(wallet != null)} available={availableQuests.Count} active={activeQuests.Count} autoSave={autoSaveOnQuestComplete} saveState={saveQuestRuntimeState}");
         }
     }
 }

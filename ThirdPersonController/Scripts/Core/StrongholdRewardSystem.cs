@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace ThirdPersonController
@@ -121,7 +121,7 @@ namespace ThirdPersonController
 
             if (showMessages)
             {
-                GameEvents.ShowMessage("据点奖励已发放", 2f);
+                GameEvents.ShowMessage("提示", 1f);
             }
         }
 

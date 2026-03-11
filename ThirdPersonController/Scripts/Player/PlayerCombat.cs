@@ -1,17 +1,17 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace ThirdPersonController
 {
-    // 连击等级枚举
+// 连击配置项，用于驱动模块行为并保持可调性。
     public enum ComboTier
     {
-        None,       // 0连击
-        Tier1,      // 1-10连击: +10%伤害
-        Tier2,      // 11-30连击: +25%伤害
-        Tier3,      // 31-50连击: +50%伤害, 吸血5%
-        Tier4       // 50+连击: 深渊狂暴模式
+        None, // 默认占位枚举值，表示当前未进入有效状态。
+        Tier1, // 连击档位枚举值，用于驱动分段增益与表现反馈。
+        Tier2, // 连击档位枚举值，用于驱动分段增益与表现反馈。
+        Tier3, // 连击档位枚举值，用于驱动分段增益与表现反馈。
+        Tier4 // 连击档位枚举值，用于驱动分段增益与表现反馈。
     }
 
     public class PlayerCombat : MonoBehaviour
@@ -53,26 +53,31 @@ namespace ThirdPersonController
         public float berserkImpactMultiplier = 2f;
 
         [Header("Combo Settings")]
-        public int maxComboCount = 999;              // 最大999连击
+        public int maxComboCount = 999; // 阈值/边界参数，用于触发分段策略并防止越界。
         public float comboResetTime = 1.1f;
         public float comboWindowTime = 0.8f;
 
         [Header("Combo Unlocks")]
         [Tooltip("0 means no limit, otherwise limits combo step count.")]
         public int maxComboStepsUnlocked = 0;
+
+        [Header("Heavy Opener")]
+        public bool allowHeavyOpener = true;
+        [Tooltip("Combo step index used when heavy attack starts from idle.")]
+        public int heavyOpenerStepIndex = 0;
         
         [Header("Combo Tier Settings")]
-        public float tier1DamageMultiplier = 1.1f;  // 1-10连击
-        public float tier2DamageMultiplier = 1.25f; // 11-30连击
-        public float tier3DamageMultiplier = 1.5f;  // 31-50连击
-        public float tier3LifeStealPercent = 0.05f; // Tier3吸血5%
+        public float tier1DamageMultiplier = 1.1f; // 数值倍率参数，用于统一调控效果强度。
+        public float tier2DamageMultiplier = 1.25f; // 数值倍率参数，用于统一调控效果强度。
+        public float tier3DamageMultiplier = 1.5f; // 数值倍率参数，用于统一调控效果强度。
+        public float tier3LifeStealPercent = 0.05f; // 运行时配置项，用于驱动模块行为并保持可调性。
         
         [Header("Berserk Mode Settings")]
-        public int berserkThreshold = 50;           // 狂暴阈值
-        public float berserkDuration = 3f;          // 狂暴持续时间
-        public float berserkAttackRangeMultiplier = 2f; // 攻击范围翻倍
-        public float berserkDamageMultiplier = 2f;  // 伤害翻倍
-        public bool berserkInvincible = true;       // 无敌状态
+        public int berserkThreshold = 50; // 阈值/边界参数，用于触发分段策略并防止越界。
+        public float berserkDuration = 3f; // 时序参数，用于控制触发节奏并防止状态抖动。
+        public float berserkAttackRangeMultiplier = 2f; // 判定范围参数，用于约束技能覆盖并保持平衡。
+        public float berserkDamageMultiplier = 2f; // 数值倍率参数，用于统一调控效果强度。
+        public bool berserkInvincible = true; // 运行时配置项，用于驱动模块行为并保持可调性。
 
         [Header("Hit Detection")]
         public Transform attackOrigin;
@@ -82,14 +87,14 @@ namespace ThirdPersonController
         [Header("Visual Effects")]
         public ParticleSystem attackEffect;
         public TrailRenderer weaponTrail;
-        public ParticleSystem berserkAuraEffect;    // 狂暴光环特效
+        public ParticleSystem berserkAuraEffect; // 运行时配置项，用于驱动模块行为并保持可调性。
         public AudioClip[] attackSounds;
-        public AudioClip berserkStartSound;         // 狂暴启动音效
+        public AudioClip berserkStartSound; // 运行时配置项，用于驱动模块行为并保持可调性。
 
         [Header("Animation")]
         public string attackAnimTrigger = "Attack";
         public string comboAnimParam = "ComboCount";
-        public string berserkAnimParam = "IsBerserk"; // 狂暴动画参数
+        public string berserkAnimParam = "IsBerserk"; // 运行时配置项，用于驱动模块行为并保持可调性。
 
         private static readonly int AttackStateHash = Animator.StringToHash("Attack");
         private static readonly int Attack2StateHash = Animator.StringToHash("Attack_2");
@@ -112,9 +117,9 @@ namespace ThirdPersonController
         private float comboResetTimer;
         private bool canAttack = true;
         private bool isAttacking = false;
-        private bool isBerserk = false;             // 是否在狂暴状态
-        private float berserkTimer = 0f;            // 狂暴倒计时
-        private float baseAttackRange;              // 记录基础攻击范围
+        private bool isBerserk = false; // 运行时状态标记，用于快速分支判定与流程保护。
+        private float berserkTimer = 0f; // 时序参数，用于控制触发节奏并防止状态抖动。
+        private float baseAttackRange; // 判定范围参数，用于约束技能覆盖并保持平衡。
 
         private int currentStepIndex = -1;
         private AttackStep currentStep;
@@ -132,8 +137,10 @@ namespace ThirdPersonController
         private AttackStep fallbackStep;
 
         private List<Collider> hitEnemies = new List<Collider>();
-        private readonly Dictionary<Collider, float> lastHitTimes = new Dictionary<Collider, float>();
+        private readonly HashSet<EnemyHealth> processedHitTargets = new HashSet<EnemyHealth>();
+        private readonly Dictionary<EnemyHealth, float> lastHitTimes = new Dictionary<EnemyHealth, float>();
         private float primaryHitTime = -1f;
+        private float skillDamageBuffMultiplier = 1f;
 
         public bool IsAttacking => isAttacking;
         public int CurrentCombo => currentCombo;
@@ -142,10 +149,26 @@ namespace ThirdPersonController
         public float ComboResetNormalized => GetComboResetTime() <= 0f ? 0f : Mathf.Clamp01(comboResetTimer / GetComboResetTime());
         public float ComboResetRemaining => comboResetTimer;
         
-        // 事件：连击变化
+// 连击配置项，用于驱动模块行为并保持可调性。
         public System.Action<int> OnComboChanged;
-        // 事件：狂暴模式启动/结束
+// 狂暴状态配置项，用于驱动模块行为并保持可调性。
         public System.Action<bool> OnBerserkStateChanged;
+
+        /// <summary>
+        /// External skill buffs can route their damage multiplier into the main combo damage path.
+        /// </summary>
+        public void SetSkillDamageBuffMultiplier(float multiplier)
+        {
+            skillDamageBuffMultiplier = Mathf.Max(0.1f, multiplier);
+        }
+
+        /// <summary>
+        /// Clear temporary external damage buff and restore neutral scaling.
+        /// </summary>
+        public void ClearSkillDamageBuffMultiplier()
+        {
+            skillDamageBuffMultiplier = 1f;
+        }
 
         private void Awake()
         {
@@ -168,13 +191,13 @@ namespace ThirdPersonController
 
             EnsureAttackOrigin();
                 
-            // 保存基础攻击范围
+// 围绕 baseAttackRange 执行该步骤，用于保持上下文语义一致。
             baseAttackRange = attackRange;
         }
 
         private void Start()
         {
-            // 订阅事件到全局事件系统
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
             SubscribeToGameEvents();
 
             if (actionController != null)
@@ -212,7 +235,7 @@ namespace ThirdPersonController
 
         private void UnsubscribeFromGameEvents()
         {
-            // 清理事件订阅
+// 围绕 当前步骤 执行该步骤，用于保持上下文语义一致。
         }
 
         private void Update()
@@ -222,7 +245,7 @@ namespace ThirdPersonController
             HandleInput();
         }
         
-        // 获取当前连击等级
+// 获取 系统 相关状态，减少外部重复计算。
         private ComboTier GetCurrentTier()
         {
             if (currentCombo <= 0) return ComboTier.None;
@@ -232,14 +255,14 @@ namespace ThirdPersonController
             return ComboTier.Tier4;
         }
         
-        // 处理狂暴模式
+// 处理 狂暴 事件并执行对应业务分支。
         private void HandleBerserkMode()
         {
             if (isBerserk)
             {
                 berserkTimer -= Time.deltaTime;
                 
-                // 狂暴期间保持连击计时器刷新，防止连击中断
+// 围绕 连击 执行该步骤，用于保证流程状态与后续分支一致。
                 comboResetTimer = GetComboResetTime();
                 
                 if (berserkTimer <= 0f)
@@ -249,7 +272,7 @@ namespace ThirdPersonController
             }
         }
         
-        // 进入狂暴模式
+// 执行 狂暴 相关流程，保证模块行为一致性。
         private void EnterBerserkMode()
         {
             if (isBerserk) return;
@@ -257,62 +280,62 @@ namespace ThirdPersonController
             isBerserk = true;
             berserkTimer = berserkDuration;
             
-            // 攻击范围翻倍
+// 围绕 attackRange 执行该步骤，用于保持上下文语义一致。
             attackRange = baseAttackRange * berserkAttackRangeMultiplier;
             
-            // 播放特效
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
             if (berserkAuraEffect != null)
             {
                 berserkAuraEffect.Play();
             }
             
-            // 播放音效
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
             if (berserkStartSound != null && audioSource != null)
             {
                 audioSource.PlayOneShot(berserkStartSound);
             }
             
-            // 动画参数
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
             if (animator != null && !string.IsNullOrEmpty(berserkAnimParam))
             {
                 animator.SetBool(berserkAnimParam, true);
             }
             
-            // 触发事件
+// 围绕 狂暴状态 执行该步骤，用于保证流程状态与后续分支一致。
             OnBerserkStateChanged?.Invoke(true);
             
-            Debug.Log("🔥 深渊狂暴模式启动！持续 " + berserkDuration + " 秒");
+            Debug.Log($"Berserk mode started for {berserkDuration:F1}s.");
         }
         
-        // 退出狂暴模式
+// 执行 狂暴 相关流程，保证模块行为一致性。
         private void ExitBerserkMode()
         {
             if (!isBerserk) return;
             
             isBerserk = false;
             
-            // 恢复攻击范围
+// 围绕 attackRange 执行该步骤，用于保持上下文语义一致。
             attackRange = baseAttackRange;
             
-            // 停止特效
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
             if (berserkAuraEffect != null)
             {
                 berserkAuraEffect.Stop();
             }
             
-            // 动画参数
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
             if (animator != null && !string.IsNullOrEmpty(berserkAnimParam))
             {
                 animator.SetBool(berserkAnimParam, false);
             }
             
-            // 触发事件
+// 围绕 狂暴状态 执行该步骤，用于保证流程状态与后续分支一致。
             OnBerserkStateChanged?.Invoke(false);
             
-            Debug.Log("💨 深渊狂暴模式结束");
+            Debug.Log("?? 深渊狂暴模式结束");
         }
         
-        // 获取当前伤害倍率
+// 获取 伤害 相关状态，减少外部重复计算。
         private float GetDamageMultiplier()
         {
             float multiplier = GetCurrentTier() switch
@@ -333,6 +356,8 @@ namespace ThirdPersonController
             {
                 multiplier *= musouSystem.DamageMultiplier;
             }
+
+            multiplier *= skillDamageBuffMultiplier;
 
             return multiplier;
         }
@@ -422,11 +447,6 @@ namespace ThirdPersonController
 
             if (!isAttacking)
             {
-                if (inputType == AttackInputType.Heavy)
-                {
-                    return;
-                }
-
                 if (!CanStartAttack())
                 {
                     return;
@@ -727,7 +747,7 @@ namespace ThirdPersonController
             return mask;
         }
         
-        // 根据连击等级播放音效
+// 执行 连击 相关流程，保证模块行为一致性。
         private void PlayComboSound()
         {
             if (attackSounds.Length == 0 || audioSource == null) return;
@@ -736,11 +756,11 @@ namespace ThirdPersonController
             int soundIndex = Mathf.Min(tier, attackSounds.Length - 1);
             AudioClip clip = attackSounds[soundIndex];
             
-            // 高连击时音调更高
+// 围绕 float 执行该步骤，用于保持上下文语义一致。
             float pitch = 1f + (tier * 0.1f);
             audioSource.pitch = pitch;
             audioSource.PlayOneShot(clip);
-            audioSource.pitch = 1f; // 恢复默认音调
+            audioSource.pitch = 1f; // 围绕 audioSource 执行该步骤，用于保持上下文语义一致。
         }
 
         private float GetComboResetTime()
@@ -810,7 +830,26 @@ namespace ThirdPersonController
             {
                 if (inputType == AttackInputType.Heavy)
                 {
-                    return -1;
+                    if (!allowHeavyOpener)
+                    {
+                        return -1;
+                    }
+
+                    int heavyIndex = ResolveHeavyOpenerIndex();
+                    if (heavyIndex < 0)
+                    {
+                        return -1;
+                    }
+
+                    int totalStepsOnOpener = comboDefinition.steps.Count;
+                    bool allowHeavyFinisherOnOpener = heavyIndex == totalStepsOnOpener - 1
+                        && heavyIndex == allowedSteps;
+                    if (heavyIndex >= allowedSteps && !allowHeavyFinisherOnOpener)
+                    {
+                        return -1;
+                    }
+
+                    return heavyIndex;
                 }
                 return comboDefinition.HasStep(0) ? 0 : -1;
             }
@@ -917,6 +956,22 @@ namespace ThirdPersonController
             }
 
             return -1;
+        }
+
+        private int ResolveHeavyOpenerIndex()
+        {
+            if (comboDefinition == null || comboDefinition.steps == null || comboDefinition.steps.Count == 0)
+            {
+                return -1;
+            }
+
+            int clampedIndex = Mathf.Clamp(heavyOpenerStepIndex, 0, comboDefinition.steps.Count - 1);
+            if (comboDefinition.HasStep(clampedIndex))
+            {
+                return clampedIndex;
+            }
+
+            return comboDefinition.HasStep(0) ? 0 : -1;
         }
 
         private BufferedActionType GetBufferedActionType(AttackInputType inputType)
@@ -1117,7 +1172,7 @@ namespace ThirdPersonController
             // Find all enemies in range
             HitQuery.OverlapCone(attackCenter, attackForward, range, angle, hitRadius, enemyLayers, hitEnemies, 0);
             
-            // 计算伤害倍率
+// 围绕 伤害 执行该步骤，用于保证流程状态与后续分支一致。
             float damageMultiplier = GetDamageMultiplier();
             int baseDamage = step != null ? step.baseDamage : attackDamage;
             if (statsController != null)
@@ -1160,8 +1215,9 @@ namespace ThirdPersonController
             float perTargetCooldown = step != null ? Mathf.Max(0f, step.perTargetHitCooldown) : 0f;
             float now = Time.time;
             
-            // 计算治疗量（Tier3以上吸血）
+// 围绕 伤害 执行该步骤，用于保持上下文语义一致。
             int totalDamageDealt = 0;
+            processedHitTargets.Clear();
 
             for (int i = 0; i < hitEnemies.Count; i++)
             {
@@ -1171,7 +1227,18 @@ namespace ThirdPersonController
                     continue;
                 }
 
-                if (lastHitTimes.TryGetValue(hitCollider, out float lastHitTime))
+                EnemyHealth enemyHealth = hitCollider.GetComponentInParent<EnemyHealth>();
+                if (enemyHealth == null || enemyHealth.IsDead)
+                {
+                    continue;
+                }
+
+                if (!processedHitTargets.Add(enemyHealth))
+                {
+                    continue;
+                }
+
+                if (lastHitTimes.TryGetValue(enemyHealth, out float lastHitTime))
                 {
                     if (perTargetCooldown <= 0f)
                     {
@@ -1185,7 +1252,6 @@ namespace ThirdPersonController
                 }
 
                 // Apply damage
-                EnemyHealth enemyHealth = hitCollider.GetComponent<EnemyHealth>();
                 if (enemyHealth != null)
                 {
                     float impactScale = isHeavyImpact ? heavyImpactScale : lightImpactScale;
@@ -1220,18 +1286,18 @@ namespace ThirdPersonController
                     if (DamageService.ApplyDamage(context, hitCollider))
                     {
                         totalDamageDealt += finalDamage;
-                        lastHitTimes[hitCollider] = now;
+                        lastHitTimes[enemyHealth] = now;
                     }
                 }
             }
             
-            // 应用吸血效果 (Tier3: 5%, Tier4/狂暴: 10%)
+// 围绕 生命伤害 执行该步骤，用于保证流程状态与后续分支一致。
             if (playerHealth != null && totalDamageDealt > 0)
             {
                 float lifeStealPercent = CurrentTier switch
                 {
                     ComboTier.Tier3 => tier3LifeStealPercent,
-                    ComboTier.Tier4 => tier3LifeStealPercent * 2f, // 狂暴双倍吸血
+                    ComboTier.Tier4 => tier3LifeStealPercent * 2f, // 围绕 连击 执行该步骤，用于保持上下文语义一致。
                     _ => 0f
                 };
                 
@@ -1268,7 +1334,7 @@ namespace ThirdPersonController
             queuedNextAttack = false;
             queuedStepIndex = -1;
              
-            // 触发连击变化事件
+// 围绕 连击 执行该步骤，用于保证流程状态与后续分支一致。
             OnComboChanged?.Invoke(0);
             
             if (animator != null && animator.runtimeAnimatorController != null)
@@ -1276,9 +1342,8 @@ namespace ThirdPersonController
                 animator.SetInteger("ComboCount", 0);
             }
             
-            // 如果在狂暴状态且狂暴时间未到，不重置狂暴（狂暴自然结束）
-            // 如果不在狂暴状态，正常重置
-            Debug.Log($"连击重置！最高连击: {previousCombo}");
+            // 记录连击中断前的数值，便于回放战斗时序问题。
+            Debug.Log($"[Combat] Combo reset from {previousCombo} to 0.");
         }
 
         public void RegisterHit(int damage)
@@ -1385,3 +1450,5 @@ namespace ThirdPersonController
         }
     }
 }
+
+

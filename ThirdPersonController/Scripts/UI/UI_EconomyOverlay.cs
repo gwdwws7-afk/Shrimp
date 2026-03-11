@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ThirdPersonController
 {
@@ -23,6 +23,7 @@ namespace ThirdPersonController
         public ConsumableCatalog catalog;
         public ConsumableUseSystem useSystem;
         public ConsumableQuickSlots quickSlots;
+        public PlayerInputHandler inputHandler;
 
         private bool isOpen = true;
         private Vector2 scroll;
@@ -59,6 +60,11 @@ namespace ThirdPersonController
                 quickSlots = FindObjectOfType<ConsumableQuickSlots>();
             }
 
+            if (inputHandler == null)
+            {
+                inputHandler = FindObjectOfType<PlayerInputHandler>();
+            }
+
             SetOpen(startOpen, false);
         }
 
@@ -69,7 +75,11 @@ namespace ThirdPersonController
                 return;
             }
 
-            if (Input.GetKeyDown(toggleKey))
+            bool togglePressed = inputHandler != null
+                ? inputHandler.WasUnifiedKeyPressedThisFrame(toggleKey)
+                : PlayerInputHandler.ReadUnifiedKeyDown(toggleKey);
+
+            if (togglePressed)
             {
                 Toggle();
             }
@@ -111,11 +121,11 @@ namespace ThirdPersonController
             GUILayout.BeginArea(panel);
             GUILayout.Space(panelPadding);
 
-            GUILayout.Label("补给与商店", HeaderStyle());
+            GUILayout.Label("信息");
             GUILayout.Space(6f);
 
             int credits = wallet != null ? wallet.Credits : 0;
-            GUILayout.Label($"深渊币: {credits}", SectionStyle());
+            GUILayout.Label($"货币: {credits}", SectionStyle());
             GUILayout.Space(8f);
 
             DrawQuickSlots();
@@ -162,7 +172,7 @@ namespace ThirdPersonController
         {
             if (catalog == null || catalog.items == null || catalog.items.Count == 0)
             {
-                GUILayout.Label("无可用物资。", SmallStyle());
+                GUILayout.Label("暂无可用物资。");
                 return;
             }
 

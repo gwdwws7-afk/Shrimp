@@ -2343,37 +2343,6 @@ MonoBehaviour:
   fillSpeed: 8
   exhaustedOverlay: {fileID: 0}
   pulseSpeed: 2
---- !u!1 &1030744381
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1030744382}
-  m_Layer: 0
-  m_Name: groundcheck
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1030744382
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1030744381}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.044, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 543450653653644993}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1086266536
 GameObject:
   m_ObjectHideFlags: 0
@@ -5161,10 +5130,10 @@ MonoBehaviour:
     spawnInterval: 0.25
     shuffleSpawnPoints: 1
     groups:
-    - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+    - prefab: {fileID: 100000, guid: f1c2c9f4a8f54c5b8f9a12d347c2e5ab, type: 3}
       count: 8
       spawnIntervalOverride: -1
-    - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+    - prefab: {fileID: 100000, guid: 4f8a2c7e1b9d5f0a3c6e8d2f1a4b7c9e, type: 3}
       count: 2
       spawnIntervalOverride: -1
     eliteTrigger:
@@ -5187,7 +5156,7 @@ MonoBehaviour:
       spawnRadius: 4
       useReinforcementPoints: 1
       groups:
-      - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+      - prefab: {fileID: 100000, guid: f1c2c9f4a8f54c5b8f9a12d347c2e5ab, type: 3}
         count: 3
         spawnIntervalOverride: -1
       holdPoint: {fileID: 0}
@@ -5203,7 +5172,7 @@ MonoBehaviour:
     - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
       count: 10
       spawnIntervalOverride: -1
-    - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+    - prefab: {fileID: 100000, guid: 9d6c5b4a3e2f1d0c8b7a6f5e4d3c2b1a, type: 3}
       count: 2
       spawnIntervalOverride: -1
     eliteTrigger:
@@ -5236,10 +5205,10 @@ MonoBehaviour:
     spawnInterval: 0.2
     shuffleSpawnPoints: 1
     groups:
-    - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+    - prefab: {fileID: 100000, guid: 6d7e5a3b91b64d8d8d3e4b2a7f9c1e02, type: 3}
       count: 12
       spawnIntervalOverride: -1
-    - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+    - prefab: {fileID: 100000, guid: 2a7f1d5c9b3e4f6a8c0d1e2f3a4b5c6d, type: 3}
       count: 2
       spawnIntervalOverride: -1
     eliteTrigger:
@@ -5262,7 +5231,7 @@ MonoBehaviour:
       spawnRadius: 4
       useReinforcementPoints: 1
       groups:
-      - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+      - prefab: {fileID: 100000, guid: f1c2c9f4a8f54c5b8f9a12d347c2e5ab, type: 3}
         count: 4
         spawnIntervalOverride: -1
       holdPoint: {fileID: 0}
@@ -5513,10 +5482,10 @@ MonoBehaviour:
     spawnInterval: 0.24
     shuffleSpawnPoints: 1
     groups:
-    - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+    - prefab: {fileID: 100000, guid: f1c2c9f4a8f54c5b8f9a12d347c2e5ab, type: 3}
       count: 10
       spawnIntervalOverride: -1
-    - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+    - prefab: {fileID: 100000, guid: 4f8a2c7e1b9d5f0a3c6e8d2f1a4b7c9e, type: 3}
       count: 2
       spawnIntervalOverride: -1
     eliteTrigger:
@@ -5536,7 +5505,7 @@ MonoBehaviour:
     - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
       count: 12
       spawnIntervalOverride: -1
-    - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+    - prefab: {fileID: 100000, guid: 9d6c5b4a3e2f1d0c8b7a6f5e4d3c2b1a, type: 3}
       count: 2
       spawnIntervalOverride: -1
     eliteTrigger:
@@ -5559,7 +5528,7 @@ MonoBehaviour:
       spawnRadius: 6
       useReinforcementPoints: 0
       groups:
-      - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+      - prefab: {fileID: 100000, guid: f1c2c9f4a8f54c5b8f9a12d347c2e5ab, type: 3}
         count: 2
         spawnIntervalOverride: -1
       holdPoint: {fileID: 0}
@@ -5572,10 +5541,10 @@ MonoBehaviour:
     spawnInterval: 0.2
     shuffleSpawnPoints: 1
     groups:
-    - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+    - prefab: {fileID: 100000, guid: 6d7e5a3b91b64d8d8d3e4b2a7f9c1e02, type: 3}
       count: 14
       spawnIntervalOverride: -1
-    - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
+    - prefab: {fileID: 100000, guid: 2a7f1d5c9b3e4f6a8c0d1e2f3a4b5c6d, type: 3}
       count: 2
       spawnIntervalOverride: -1
     eliteTrigger:
@@ -7604,14 +7573,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxStamina: 100
   currentStamina: 0
-  recoveryRate: 15
-  recoveryDelay: 1
-  heavyAttackCost: 20
-  dodgeCost: 15
-  blockCostPerSecond: 5
-  sprintCostPerSecond: 10
+  recoveryRate: 14
+  recoveryDelay: 1.1
+  heavyAttackCost: 22
+  dodgeCost: 17
+  blockCostPerSecond: 6
+  sprintCostPerSecond: 11
   isExhausted: 0
-  exhaustionDuration: 2
+  exhaustionDuration: 2.25
 --- !u!114 &543450653653645001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7636,18 +7605,22 @@ MonoBehaviour:
   hitStopDuration: 0.05
   lockMovementDuringAttack: 1
   lockRotationDuringAttack: 0
+  heavyDamageMultiplier: 1.1
+  heavyKnockbackMultiplier: 1.35
+  heavyRangeMultiplier: 1.08
+  heavyRadiusMultiplier: 1.05
   maxComboCount: 50
   comboResetTime: 1.5
   comboWindowTime: 0.8
   maxComboStepsUnlocked: 0
-  tier1DamageMultiplier: 1.1
-  tier2DamageMultiplier: 1.25
-  tier3DamageMultiplier: 1.5
+  tier1DamageMultiplier: 1.08
+  tier2DamageMultiplier: 1.18
+  tier3DamageMultiplier: 1.32
   tier3LifeStealPercent: 0.05
   berserkThreshold: 50
   berserkDuration: 3
   berserkAttackRangeMultiplier: 2
-  berserkDamageMultiplier: 2
+  berserkDamageMultiplier: 1.75
   berserkInvincible: 1
   attackOrigin: {fileID: 543450653653644993}
   attackRadius: 1
@@ -8017,10 +7990,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 7374266337761899106, guid: 8732ca168c916584cb02e6ff6b83b2ff, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1030744382}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 8504710007967951295, guid: 8732ca168c916584cb02e6ff6b83b2ff, type: 3}
       insertIndex: -1

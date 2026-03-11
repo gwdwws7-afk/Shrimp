@@ -14,6 +14,7 @@ namespace ThirdPersonController
         public ConsumableInventory inventory;
         public ConsumableCatalog catalog;
         public ConsumableUseSystem useSystem;
+        public PlayerInputHandler inputHandler;
 
         private void Awake()
         {
@@ -37,6 +38,11 @@ namespace ThirdPersonController
                 }
             }
 
+            if (inputHandler == null)
+            {
+                inputHandler = FindObjectOfType<PlayerInputHandler>();
+            }
+
             EnsureSlotArray();
             LoadFromSave();
         }
@@ -51,7 +57,11 @@ namespace ThirdPersonController
             int count = Mathf.Min(slotKeys.Length, slotItemIds.Length);
             for (int i = 0; i < count; i++)
             {
-                if (Input.GetKeyDown(slotKeys[i]))
+                bool pressed = inputHandler != null
+                    ? inputHandler.WasQuickSlotPressedThisFrame(i)
+                    : PlayerInputHandler.ReadUnifiedKeyDown(slotKeys[i]);
+
+                if (pressed)
                 {
                     UseSlot(i);
                 }
@@ -77,7 +87,7 @@ namespace ThirdPersonController
             }
 
             ConsumableDefinition item = catalog.GetById(id);
-            return item != null ? item.displayName : "(未知)";
+            return item != null ? item.displayName : "(δ֪)";
         }
 
         public int GetSlotCount(int index)

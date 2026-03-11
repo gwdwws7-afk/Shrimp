@@ -9,6 +9,7 @@ namespace ThirdPersonController
         public int levelIdOverride = 0;
         public bool grantOnVictoryOnly = true;
         public bool showMessages = true;
+        public bool autoSaveOnReward = true;
 
         [Header("Economy")]
         public float expRewardMultiplier = 1f;
@@ -94,6 +95,30 @@ namespace ThirdPersonController
                 return;
             }
 
+            if (experienceSystem == null)
+            {
+                experienceSystem = FindObjectOfType<PlayerExperienceSystem>();
+            }
+
+            if (inventory == null)
+            {
+                inventory = FindObjectOfType<PearlInventory>();
+            }
+
+            if (pearlDatabase == null)
+            {
+                pearlDatabase = FindObjectOfType<PearlDatabase>();
+            }
+
+            if (wallet == null)
+            {
+                wallet = FindObjectOfType<CurrencyWallet>();
+                if (wallet == null)
+                {
+                    wallet = CurrencyWallet.EnsureInstance();
+                }
+            }
+
             granted = true;
 
             float rewardMultiplier = Mathf.Max(0f, expRewardMultiplier) * Mathf.Max(0f, levelRewardMultiplier);
@@ -118,6 +143,11 @@ namespace ThirdPersonController
             if (wallet != null && creditReward > 0)
             {
                 wallet.AddCredits(creditReward);
+            }
+
+            if (autoSaveOnReward && SaveManager.Instance != null)
+            {
+                SaveManager.Instance.SaveGame();
             }
         }
 

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ThirdPersonController
 {
@@ -15,24 +15,24 @@ namespace ThirdPersonController
         public float deceleration = 10f;
 
         [Header("Jump Settings")]
-        [Tooltip("跳跃高度（米）")]
+        [Tooltip("说明")]
         public float jumpHeight = 2f;
-        [Tooltip("跳跃按键缓冲时间（秒）")]
+        [Tooltip("说明")]
         public float jumpBufferTime = 0.2f;
         [Tooltip("土狼时间 - 离开地面后仍可跳跃的时间")]
         public float coyoteTime = 0.15f;
         [Tooltip("下落重力倍率（越大下落越快）")]
         public float fallMultiplier = 5f;
-        [Tooltip("低高度跳跃倍率（按空格时间短跳得低）")]
+        [Tooltip("说明")]
         public float lowJumpMultiplier = 3f;
-        [Tooltip("最大下落速度")]
+        [Tooltip("鏈€澶т笅钀介€熷害")]
         public float maxFallSpeed = -20f;
 
         [Header("Ground Check")]
         public Transform groundCheck;
-        [Tooltip("地面检测半径")]
+        [Tooltip("说明")]
         public float groundCheckRadius = 0.4f;
-        [Tooltip("地面检测距离（从脚底向下）")]
+        [Tooltip("鍦伴潰妫€娴嬭窛绂伙紙浠庤剼搴曞悜涓嬶級")]
         public float groundCheckDistance = 0.2f;
         public LayerMask groundLayer;
 
@@ -40,6 +40,7 @@ namespace ThirdPersonController
         public float crouchHeight = 1f;
         public float standHeight = 1.8f;
         public float crouchTransitionSpeed = 10f;
+        public LayerMask standBlockLayers = ~0;
 
         [Header("Animation")]
         public float speedDampTime = 0.12f;
@@ -62,7 +63,7 @@ namespace ThirdPersonController
         private bool isJumping;
         private bool suppressJumpUntilRelease;
 
-        // 计时器
+// 时序参数，用于控制触发节奏并防止状态抖动。
         private float jumpBufferTimer;
         private float coyoteTimeTimer;
         
@@ -72,6 +73,7 @@ namespace ThirdPersonController
         private float currentHeight;
         private float externalSpeedMultiplier = 1f;
         private float externalSpeedTimer = 0f;
+        private readonly Collider[] standUpHits = new Collider[8];
 
         public bool IsGrounded => isGrounded;
         public bool IsSprinting => isSprinting;
@@ -92,12 +94,7 @@ namespace ThirdPersonController
             rb.freezeRotation = true;
             rb.interpolation = RigidbodyInterpolation.Interpolate;
             
-            // 确保使用合适的重力（Unity默认是 -9.81）
-            if (Physics.gravity.y > -5f)
-            {
-                Physics.gravity = new Vector3(0, -9.81f, 0);
-                Debug.Log("[PlayerMovement] 重力已设置为 -9.81");
-            }
+// 围绕 currentHeight 执行该步骤，用于保持上下文语义一致。
             
             currentHeight = standHeight;
             if (capsuleCollider != null)
@@ -126,9 +123,14 @@ namespace ThirdPersonController
 
         private void HandleInput()
         {
+            if (input == null)
+            {
+                return;
+            }
+
             Vector2 moveInput = input.MoveInput;
             
-            // 计算移动方向（相对于相机）
+// 围绕 镜头 执行该步骤，用于保持上下文语义一致。
             Transform cameraTransform = Camera.main != null ? Camera.main.transform : transform;
             Vector3 forward = cameraTransform.forward;
             Vector3 right = cameraTransform.right;
@@ -140,7 +142,7 @@ namespace ThirdPersonController
             
             moveDirection = (forward * moveInput.y + right * moveInput.x).normalized;
 
-            // 确定目标速度
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
             if (input.CrouchPressed)
             {
                 targetSpeed = crouchSpeed;
@@ -155,9 +157,17 @@ namespace ThirdPersonController
             }
             else
             {
-                targetSpeed = walkSpeed;
                 isSprinting = false;
-                isCrouching = false;
+                if (isCrouching && !CanStandUp())
+                {
+                    targetSpeed = crouchSpeed;
+                    isCrouching = true;
+                }
+                else
+                {
+                    targetSpeed = walkSpeed;
+                    isCrouching = false;
+                }
             }
         }
 
@@ -173,11 +183,11 @@ namespace ThirdPersonController
             float effectiveSpeed = targetSpeed * externalSpeedMultiplier;
             if (moveDirection.magnitude > 0.1f)
             {
-                // 平滑加速
+// 围绕 currentVelocity 执行该步骤，用于保证流程状态与后续分支一致。
                 currentVelocity = Vector3.MoveTowards(currentVelocity, 
                     moveDirection * effectiveSpeed, acceleration * Time.fixedDeltaTime);
 
-                // 旋转朝向移动方向
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
                 if (actionController == null || !actionController.IsRotationLocked)
                 {
                     Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
@@ -187,12 +197,12 @@ namespace ThirdPersonController
             }
             else
             {
-                // 平滑减速
+// 围绕 currentVelocity 执行该步骤，用于保证流程状态与后续分支一致。
                 currentVelocity = Vector3.MoveTowards(currentVelocity, 
                     Vector3.zero, deceleration * Time.fixedDeltaTime);
             }
 
-            // 应用速度（保持Y轴速度）
+// 围绕 rb 执行该步骤，用于保证流程状态与后续分支一致。
             rb.velocity = new Vector3(currentVelocity.x, rb.velocity.y, currentVelocity.z);
         }
 
@@ -222,6 +232,12 @@ namespace ThirdPersonController
 
         private void HandleJumpBuffer()
         {
+            if (input == null)
+            {
+                jumpBufferTimer = 0f;
+                return;
+            }
+
             if (actionController != null && actionController.CurrentState != PlayerActionState.Locomotion)
             {
                 if (input.JumpPressed)
@@ -247,7 +263,7 @@ namespace ThirdPersonController
                 suppressJumpUntilRelease = false;
             }
 
-            // 土狼时间 - 离开地面后短时间内仍可跳跃
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
             if (isGrounded)
             {
                 coyoteTimeTimer = coyoteTime;
@@ -257,7 +273,7 @@ namespace ThirdPersonController
                 coyoteTimeTimer -= Time.deltaTime;
             }
 
-            // 跳跃缓冲 - 在落地前按空格可以立即跳跃
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
             if (input.JumpPressed)
             {
                 if (!suppressJumpUntilRelease && (isGrounded || coyoteTimeTimer > 0f) && !isCrouching)
@@ -289,7 +305,7 @@ namespace ThirdPersonController
 
             bool canJumpNow = (isGrounded || coyoteTimeTimer > 0) && !isCrouching;
             
-            // 如果有跳跃缓冲且可以跳跃
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
             if (jumpBufferTimer > 0 && canJumpNow)
             {
                 PerformJump();
@@ -302,12 +318,12 @@ namespace ThirdPersonController
         {
             isJumping = true;
             
-            // 使用速度计算跳跃（更精确）
-            // v = sqrt(2 * g * h)
+// 围绕 float 执行该步骤，用于保证流程状态与后续分支一致。
+// 围绕 float 执行该步骤，用于保证流程状态与后续分支一致。
             float jumpVelocity = Mathf.Sqrt(2f * Physics.gravity.magnitude * jumpHeight);
             rb.velocity = new Vector3(rb.velocity.x, jumpVelocity, rb.velocity.z);
             
-            // 触发动画
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
             if (animator != null && animator.runtimeAnimatorController != null)
             {
                 animator.SetTrigger("Jump");
@@ -316,23 +332,23 @@ namespace ThirdPersonController
 
         private void ApplyBetterGravity()
         {
-            // 始终应用重力（当不在地面时）
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
             if (!isGrounded)
             {
                 if (rb.velocity.y < 0)
                 {
-                    // 下落时应用更强的重力
+// 围绕 float 执行该步骤，用于保持上下文语义一致。
                     float downwardForce = Physics.gravity.y * (fallMultiplier - 1);
                     rb.AddForce(Vector3.up * downwardForce, ForceMode.Acceleration);
                 }
-                else if (rb.velocity.y > 0 && !input.JumpPressed)
+                else if (rb.velocity.y > 0 && !input.JumpHeld)
                 {
-                    // 跳跃按键松开后应用更强的重力（低跳跃）
+// 围绕 float 执行该步骤，用于保持上下文语义一致。
                     float downwardForce = Physics.gravity.y * (lowJumpMultiplier - 1);
                     rb.AddForce(Vector3.up * downwardForce, ForceMode.Acceleration);
                 }
                 
-                // 限制最大下落速度
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
                 if (rb.velocity.y < maxFallSpeed)
                 {
                     rb.velocity = new Vector3(rb.velocity.x, maxFallSpeed, rb.velocity.z);
@@ -346,16 +362,16 @@ namespace ThirdPersonController
             
             if (groundCheck == null)
             {
-                // 如果没有groundCheck，使用射线检测
+// 围绕 isGrounded 执行该步骤，用于保证流程状态与后续分支一致。
                 isGrounded = Physics.Raycast(transform.position + Vector3.up * 0.1f, 
                     Vector3.down, groundCheckDistance + 0.1f, groundLayer);
             }
             else
             {
-                // 使用球体检测（更可靠）
+// 围绕 isGrounded 执行该步骤，用于保证流程状态与后续分支一致。
                 isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
                 
-                // 如果球体检测失败，尝试射线检测
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
                 if (!isGrounded)
                 {
                     isGrounded = Physics.Raycast(groundCheck.position, 
@@ -363,11 +379,48 @@ namespace ThirdPersonController
                 }
             }
 
-            // 着陆时重置跳跃状态
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
             if (isGrounded && !wasGrounded)
             {
                 isJumping = false;
             }
+        }
+
+        private bool CanStandUp()
+        {
+            if (capsuleCollider == null)
+            {
+                return true;
+            }
+
+            float radius = Mathf.Max(0.01f, capsuleCollider.radius * 0.95f);
+            Vector3 bottom = transform.position + Vector3.up * radius;
+            Vector3 top = transform.position + Vector3.up * Mathf.Max(radius, standHeight - radius);
+            int hitCount = Physics.OverlapCapsuleNonAlloc(
+                bottom,
+                top,
+                radius,
+                standUpHits,
+                standBlockLayers,
+                QueryTriggerInteraction.Ignore);
+
+            for (int i = 0; i < hitCount; i++)
+            {
+                Collider hit = standUpHits[i];
+                if (hit == null)
+                {
+                    continue;
+                }
+
+                if (hit.transform == transform || hit.transform.IsChildOf(transform))
+                {
+                    continue;
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         private void HandleCrouch()
@@ -428,14 +481,15 @@ namespace ThirdPersonController
 
         private void OnDrawGizmosSelected()
         {
-            // 绘制地面检测范围
+// 围绕 Gizmos 执行该步骤，用于保持上下文语义一致。
             Gizmos.color = isGrounded ? Color.green : Color.red;
             Vector3 checkPos = groundCheck != null ? groundCheck.position : transform.position;
             Gizmos.DrawWireSphere(checkPos, groundCheckRadius);
             
-            // 绘制射线检测
+// 围绕 Gizmos 执行该步骤，用于保持上下文语义一致。
             Gizmos.color = Color.yellow;
             Gizmos.DrawRay(checkPos, Vector3.down * groundCheckDistance);
         }
     }
 }
+

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ThirdPersonController
 {
@@ -43,7 +43,7 @@ namespace ThirdPersonController
             {
                 if (showMessages)
                 {
-                    GameEvents.ShowMessage("消耗品冷却中", 1f);
+                    GameEvents.ShowMessage("提示", 1f);
                 }
                 return false;
             }

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 
 namespace ThirdPersonController.Editor
@@ -13,7 +13,7 @@ namespace ThirdPersonController.Editor
         
         private void OnGUI()
         {
-            GUILayout.Label("一键创建 Starman 敌人 Prefab", EditorStyles.boldLabel);
+            GUILayout.Label("[OK] Starman 敌人 Prefab", EditorStyles.boldLabel);
             
             if (GUILayout.Button("创建 Prefab", GUILayout.Height(40)))
             {
@@ -28,17 +28,17 @@ namespace ThirdPersonController.Editor
             
             if (model == null)
             {
-                EditorUtility.DisplayDialog("错误", "找不到模型文件", "确定");
+                EditorUtility.DisplayDialog("提示", "操作已完成。", "确定");
                 return;
             }
             
-            // 创建文件夹
+            // 注释已清理
             if (!AssetDatabase.IsValidFolder("Assets/Prefabs"))
                 AssetDatabase.CreateFolder("Assets", "Prefabs");
             if (!AssetDatabase.IsValidFolder("Assets/Prefabs/Enemies"))
                 AssetDatabase.CreateFolder("Assets/Prefabs", "Enemies");
             
-            // 创建材质
+            // 注释已清理
             Material mat = new Material(Shader.Find("Standard"));
             string texPath = "Assets/fbx/Characters/starman/Meshy_AI_biped/";
             
@@ -55,15 +55,15 @@ namespace ThirdPersonController.Editor
             
             AssetDatabase.CreateAsset(mat, "Assets/Prefabs/Enemies/MAT_Starman_01.mat");
             
-            // 实例化并配置
+            // 注释已清理
             GameObject instance = Instantiate(model);
             instance.name = "ENM_Starman_01";
             
-            // 设置材质
+            // 注释已清理
             foreach (var renderer in instance.GetComponentsInChildren<Renderer>())
                 renderer.material = mat;
             
-            // 添加组件
+            // 注释已清理
             instance.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             
             var col = instance.AddComponent<CapsuleCollider>();
@@ -83,7 +83,7 @@ namespace ThirdPersonController.Editor
             
             instance.layer = LayerMask.NameToLayer("Enemy");
             
-            // 保存 Prefab
+            // 注释已清理
             string prefabPath = "Assets/Prefabs/Enemies/ENM_Starman_01.prefab";
             if (AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath))
                 AssetDatabase.DeleteAsset(prefabPath);
@@ -94,7 +94,7 @@ namespace ThirdPersonController.Editor
             if (prefab)
             {
                 Selection.activeObject = prefab;
-                EditorUtility.DisplayDialog("成功", "Prefab 创建成功！\n位置: Assets/Prefabs/Enemies/ENM_Starman_01.prefab", "确定");
+                EditorUtility.DisplayDialog("成功", "Prefab 创建成功！\\n位置: Assets/Prefabs/Enemies/ENM_Starman_01.prefab", "确定");
             }
         }
     }

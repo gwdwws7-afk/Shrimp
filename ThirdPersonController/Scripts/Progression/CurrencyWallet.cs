@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ThirdPersonController
 {
@@ -7,7 +7,7 @@ namespace ThirdPersonController
         public static CurrencyWallet Instance { get; private set; }
 
         [Header("Currency")]
-        public string currencyLabel = "深渊币";
+        public string currencyLabel = "Credits";
         public bool showMessages = true;
 
         private int credits;

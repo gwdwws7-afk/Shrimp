@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPersonController
 {
     /// <summary>
-    /// 基础状态机类，可用于玩家或敌人的状态管理
+    /// StateMachine 模块的核心实现，负责统一管理关键运行流程与对外接口。
     /// </summary>
     public abstract class StateMachine<T> : MonoBehaviour where T : StateMachine<T>
     {
@@ -38,7 +38,7 @@ namespace ThirdPersonController
     }
 
     /// <summary>
-    /// 状态基类
+    /// StateMachine 模块的核心实现，负责统一管理关键运行流程与对外接口。
     /// </summary>
     public abstract class State<T> where T : StateMachine<T>
     {

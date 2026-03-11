@@ -22,6 +22,22 @@ namespace ThirdPersonController
         public bool ensureEconomyUI = true;
         public bool ensureHudHints = true;
 
+        [Header("Runtime Wiring")]
+        public bool ensureRuntimeWiring = true;
+        public bool ensurePlayerExperienceSystem = true;
+        public bool ensurePlayerSkillManager = true;
+        public bool ensureQuestTracker = true;
+        public bool ensureStrongholdWavePanel = true;
+        public bool ensureRewardSaveWriteback = true;
+
+        [Header("Runtime References")]
+        public GameObject playerObject;
+        public PlayerExperienceSystem experienceSystem;
+        public SkillManager skillManager;
+        public UI_QuestTracker questTracker;
+        public UI_StrongholdWavePanel strongholdWavePanel;
+        public ProgressionSaveBridge progressionSaveBridge;
+
         [Header("Apply")]
         public bool autoApplyOnAwake = true;
         public bool applyStrongholds = true;
@@ -39,6 +55,11 @@ namespace ThirdPersonController
 
         public void Apply()
         {
+            if (ensureRuntimeWiring)
+            {
+                EnsurePlayerRuntime();
+            }
+
             ResolveReferences();
 
             if (levelFlow != null)
@@ -59,9 +80,25 @@ namespace ThirdPersonController
                 ConfigureQuests();
             }
 
+            bool restoredQuestState = false;
+            if (applyQuests && questSystem != null)
+            {
+                restoredQuestState = questSystem.RestoreQuestRuntimeStateFromSave(false, false);
+                if (!restoredQuestState)
+                {
+                    questSystem.SaveQuestRuntimeStateToData();
+                }
+            }
+
             if (applyRewards)
             {
                 ConfigureRewards();
+            }
+
+            if (ensureRuntimeWiring)
+            {
+                EnsureUiRuntime();
+                BindRuntimeReferences();
             }
 
             ConfigureBoss();
@@ -127,6 +164,312 @@ namespace ThirdPersonController
             {
                 bossSpawnPoint = FindObjectOfType<BossSpawnPoint>();
             }
+        }
+
+        private void EnsurePlayerRuntime()
+        {
+            playerObject = ResolvePlayerObject();
+            if (playerObject == null)
+            {
+                return;
+            }
+
+            if (ensurePlayerExperienceSystem)
+            {
+                experienceSystem = EnsureComponent<PlayerExperienceSystem>(playerObject);
+                if (experienceSystem.talentTree == null)
+                {
+                    experienceSystem.talentTree = EnsureTalentTree();
+                }
+            }
+            else if (experienceSystem == null)
+            {
+                experienceSystem = FindObjectOfType<PlayerExperienceSystem>();
+            }
+
+            if (ensurePlayerSkillManager)
+            {
+                EnsureComponent<PlayerInputHandler>(playerObject);
+                EnsureComponent<PlayerInputBuffer>(playerObject);
+                PlayerActionController actionController = EnsureComponent<PlayerActionController>(playerObject);
+                SkillTimelineController timelineController = EnsureComponent<SkillTimelineController>(playerObject);
+
+                skillManager = EnsureComponent<SkillManager>(playerObject);
+                skillManager.playerTransform = playerObject.transform;
+                skillManager.staminaSystem = playerObject.GetComponent<StaminaSystem>();
+                skillManager.inputHandler = playerObject.GetComponent<PlayerInputHandler>();
+                skillManager.inputBuffer = playerObject.GetComponent<PlayerInputBuffer>();
+                skillManager.actionController = actionController;
+                skillManager.timelineController = timelineController;
+            }
+            else if (skillManager == null)
+            {
+                skillManager = FindObjectOfType<SkillManager>();
+            }
+
+            EnsureProgressionSaveBridge(playerObject);
+        }
+
+        private void EnsureUiRuntime()
+        {
+            if (ensureQuestTracker)
+            {
+                if (questTracker == null)
+                {
+                    questTracker = FindObjectOfType<UI_QuestTracker>();
+                }
+
+                if (questTracker == null)
+                {
+                    GameObject trackerObject = new GameObject("UI_QuestTracker");
+                    questTracker = trackerObject.AddComponent<UI_QuestTracker>();
+                }
+            }
+
+            if (ensureStrongholdWavePanel)
+            {
+                if (strongholdWavePanel == null)
+                {
+                    strongholdWavePanel = FindObjectOfType<UI_StrongholdWavePanel>();
+                }
+
+                if (strongholdWavePanel == null)
+                {
+                    GameObject panelObject = new GameObject("UI_StrongholdWavePanel");
+                    strongholdWavePanel = panelObject.AddComponent<UI_StrongholdWavePanel>();
+                }
+            }
+        }
+
+        private void BindRuntimeReferences()
+        {
+            if (experienceSystem == null)
+            {
+                experienceSystem = FindObjectOfType<PlayerExperienceSystem>();
+            }
+
+            if (questSystem != null)
+            {
+                questSystem.questDatabase = questDatabase;
+                questSystem.BindExperienceSystem(experienceSystem);
+                if (questSystem.inventory == null)
+                {
+                    questSystem.inventory = EnsurePearlInventory();
+                }
+
+                if (questSystem.pearlDatabase == null)
+                {
+                    questSystem.pearlDatabase = FindPearlDatabase();
+                }
+
+                if (questSystem.wallet == null)
+                {
+                    questSystem.wallet = EnsureWallet();
+                }
+
+                questSystem.autoSaveOnQuestComplete = ensureRewardSaveWriteback;
+            }
+
+            if (rewardSystem != null)
+            {
+                if (rewardSystem.experienceSystem == null)
+                {
+                    rewardSystem.experienceSystem = experienceSystem;
+                }
+
+                if (rewardSystem.inventory == null)
+                {
+                    rewardSystem.inventory = EnsurePearlInventory();
+                }
+
+                if (rewardSystem.pearlDatabase == null)
+                {
+                    rewardSystem.pearlDatabase = FindPearlDatabase();
+                }
+
+                if (rewardSystem.wallet == null)
+                {
+                    rewardSystem.wallet = EnsureWallet();
+                }
+
+                rewardSystem.autoSaveOnReward = ensureRewardSaveWriteback;
+            }
+
+            if (progressionRewardSystem != null && progressionRewardSystem.talentTree == null)
+            {
+                progressionRewardSystem.talentTree = EnsureTalentTree();
+            }
+
+            if (questTracker != null)
+            {
+                questTracker.questSystem = questSystem;
+            }
+
+            if (strongholdWavePanel != null)
+            {
+                strongholdWavePanel.sequenceController = sequenceController;
+            }
+
+            if (skillManager != null && playerObject != null)
+            {
+                skillManager.playerTransform = playerObject.transform;
+                skillManager.staminaSystem = playerObject.GetComponent<StaminaSystem>();
+                skillManager.inputHandler = playerObject.GetComponent<PlayerInputHandler>();
+                skillManager.inputBuffer = playerObject.GetComponent<PlayerInputBuffer>();
+                skillManager.actionController = playerObject.GetComponent<PlayerActionController>();
+                skillManager.timelineController = playerObject.GetComponent<SkillTimelineController>();
+            }
+
+            if (progressionSaveBridge != null)
+            {
+                if (progressionSaveBridge.inventory == null)
+                {
+                    progressionSaveBridge.inventory = EnsurePearlInventory();
+                }
+
+                if (progressionSaveBridge.equipment == null)
+                {
+                    progressionSaveBridge.equipment = EnsurePearlEquipment();
+                }
+
+                if (progressionSaveBridge.talentTree == null)
+                {
+                    progressionSaveBridge.talentTree = EnsureTalentTree();
+                }
+
+                if (progressionSaveBridge.experienceSystem == null)
+                {
+                    progressionSaveBridge.experienceSystem = experienceSystem;
+                }
+
+                if (progressionSaveBridge.pearlDatabase == null)
+                {
+                    progressionSaveBridge.pearlDatabase = FindPearlDatabase();
+                }
+            }
+        }
+
+        private GameObject ResolvePlayerObject()
+        {
+            if (playerObject != null)
+            {
+                return playerObject;
+            }
+
+            PlayerCombat combat = FindObjectOfType<PlayerCombat>();
+            if (combat != null)
+            {
+                return combat.gameObject;
+            }
+
+            PlayerHealth health = FindObjectOfType<PlayerHealth>();
+            if (health != null)
+            {
+                return health.gameObject;
+            }
+
+            GameObject taggedPlayer = GameObject.FindGameObjectWithTag("Player");
+            return taggedPlayer;
+        }
+
+        private void EnsureProgressionSaveBridge(GameObject target)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            if (progressionSaveBridge == null)
+            {
+                progressionSaveBridge = FindObjectOfType<ProgressionSaveBridge>();
+            }
+
+            if (progressionSaveBridge == null)
+            {
+                progressionSaveBridge = target.GetComponent<ProgressionSaveBridge>();
+            }
+
+            if (progressionSaveBridge == null)
+            {
+                progressionSaveBridge = target.AddComponent<ProgressionSaveBridge>();
+            }
+        }
+
+        private TalentTree EnsureTalentTree()
+        {
+            TalentTree tree = FindObjectOfType<TalentTree>();
+            if (tree == null && playerObject != null)
+            {
+                tree = EnsureComponent<TalentTree>(playerObject);
+            }
+
+            return tree;
+        }
+
+        private PearlInventory EnsurePearlInventory()
+        {
+            PearlInventory inventory = FindObjectOfType<PearlInventory>();
+            if (inventory == null && playerObject != null)
+            {
+                inventory = EnsureComponent<PearlInventory>(playerObject);
+            }
+
+            return inventory;
+        }
+
+        private PearlEquipment EnsurePearlEquipment()
+        {
+            PearlEquipment equipment = FindObjectOfType<PearlEquipment>();
+            if (equipment == null && playerObject != null)
+            {
+                equipment = EnsureComponent<PearlEquipment>(playerObject);
+            }
+
+            return equipment;
+        }
+
+        private PearlDatabase FindPearlDatabase()
+        {
+            PearlDatabase database = FindObjectOfType<PearlDatabase>();
+            if (database != null)
+            {
+                return database;
+            }
+
+            PearlDropManager dropManager = FindObjectOfType<PearlDropManager>();
+            if (dropManager != null && dropManager.pearlDatabase != null)
+            {
+                return dropManager.pearlDatabase;
+            }
+
+            return Resources.Load<PearlDatabase>("PearlDatabase");
+        }
+
+        private CurrencyWallet EnsureWallet()
+        {
+            CurrencyWallet wallet = FindObjectOfType<CurrencyWallet>();
+            if (wallet == null)
+            {
+                wallet = CurrencyWallet.EnsureInstance();
+            }
+
+            return wallet;
+        }
+
+        private static T EnsureComponent<T>(GameObject target) where T : Component
+        {
+            if (target == null)
+            {
+                return null;
+            }
+
+            T component = target.GetComponent<T>();
+            if (component == null)
+            {
+                component = target.AddComponent<T>();
+            }
+
+            return component;
         }
 
         private void ConfigureBoss()
@@ -508,10 +851,19 @@ namespace ThirdPersonController
                 questsToStart.Add(questCopy);
             }
 
-            if (questsToStart.Count > 0)
+            questSystem.SuspendQuestStateSave(true);
+            try
             {
                 questSystem.ResetQuests();
-                questSystem.StartQuests(questsToStart);
+                questSystem.availableQuests = questsToStart;
+                if (questsToStart.Count > 0)
+                {
+                    questSystem.StartQuests(questsToStart);
+                }
+            }
+            finally
+            {
+                questSystem.SuspendQuestStateSave(false);
             }
         }
 

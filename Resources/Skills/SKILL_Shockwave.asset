@@ -17,9 +17,9 @@ MonoBehaviour:
   icon: {fileID: 0}
   keyBinding: 0
   category: 1
-  cooldown: 10
-  staminaCost: 20
-  damage: 50
+  cooldown: 9
+  staminaCost: 18
+  damage: 42
   range: 5
   effectDuration: 2
   castDuration: 0.5
@@ -33,8 +33,8 @@ MonoBehaviour:
   damageReductionTiming: 0
   endsOnRecovery: 1
   useAnimationEvents: 1
-  impactDelay: 0.22
-  recoveryDelay: 0.28
+  impactDelay: 0.18
+  recoveryDelay: 0.24
   impactShakeDuration: 0.12
   impactShakeStrength: 0.18
   useCategoryTint: 1
@@ -55,14 +55,5 @@ MonoBehaviour:
   impactScale: 0.4
   coneAngle: 90
   coneRange: 8
-  stunDuration: 2
+  stunDuration: 1.6
   knockbackForce: 12
-*** Add File: C:\test\Shrimp\Assets\ThirdPersonController\Skills\SkillAssets\SKILL_Shockwave.asset.meta
-fileFormatVersion: 2
-guid: b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7
-NativeFormatImporter:
-  externalObjects: {}
-  mainObjectFileID: 11400000
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 

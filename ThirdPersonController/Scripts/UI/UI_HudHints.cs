@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace ThirdPersonController
@@ -17,6 +17,7 @@ namespace ThirdPersonController
         public bool show = true;
         public bool allowToggle = true;
         public KeyCode toggleKey = KeyCode.H;
+        public PlayerInputHandler inputHandler;
         public Corner anchor = Corner.TopRight;
         public Vector2 offset = new Vector2(16f, 16f);
         public float width = 240f;
@@ -34,7 +35,16 @@ namespace ThirdPersonController
 
         private void Update()
         {
-            if (allowToggle && Input.GetKeyDown(toggleKey))
+            if (inputHandler == null)
+            {
+                inputHandler = FindObjectOfType<PlayerInputHandler>();
+            }
+
+            bool togglePressed = inputHandler != null
+                ? inputHandler.WasUnifiedKeyPressedThisFrame(toggleKey)
+                : PlayerInputHandler.ReadUnifiedKeyDown(toggleKey);
+
+            if (allowToggle && togglePressed)
             {
                 show = !show;
             }

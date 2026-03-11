@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,12 +12,13 @@ namespace ThirdPersonController
         public SessionRewardTracker rewardTracker;
         public StatisticsManager statisticsManager;
         public LongTermProgressionSystem longTermProgression;
+        public PlayerInputHandler inputHandler;
 
         [Header("Prep")]
         public bool pauseDuringPrep = true;
         public KeyCode startKey = KeyCode.Return;
-        public string startButtonLabel = "开始战斗";
-        public string startHintLabel = "按回车开始";
+        public string startButtonLabel = "Start Battle";
+        public string startHintLabel = "Press Enter to Start";
         public bool showRouteSelector = true;
         public string routeLabel = "成长路线";
 
@@ -90,6 +91,11 @@ namespace ThirdPersonController
             {
                 longTermProgression = FindObjectOfType<LongTermProgressionSystem>();
             }
+
+            if (inputHandler == null)
+            {
+                inputHandler = FindObjectOfType<PlayerInputHandler>();
+            }
         }
 
         private void OnEnable()
@@ -106,9 +112,19 @@ namespace ThirdPersonController
 
         private void Update()
         {
+            bool startPressed = inputHandler != null
+                ? inputHandler.WasUnifiedKeyPressedThisFrame(startKey)
+                : PlayerInputHandler.ReadUnifiedKeyDown(startKey);
+            bool continuePressed = inputHandler != null
+                ? inputHandler.WasUnifiedKeyPressedThisFrame(continueKey)
+                : PlayerInputHandler.ReadUnifiedKeyDown(continueKey);
+            bool retryPressed = inputHandler != null
+                ? inputHandler.WasUnifiedKeyPressedThisFrame(retryKey)
+                : PlayerInputHandler.ReadUnifiedKeyDown(retryKey);
+
             if (showPrep)
             {
-                if (Input.GetKeyDown(startKey))
+                if (startPressed)
                 {
                     StartFromPrep();
                 }
@@ -117,11 +133,11 @@ namespace ThirdPersonController
 
             if (showResult)
             {
-                if (Input.GetKeyDown(continueKey))
+                if (continuePressed)
                 {
                     ContinueFromResult();
                 }
-                else if (Input.GetKeyDown(retryKey))
+                else if (retryPressed)
                 {
                     RetryFromResult();
                 }
@@ -300,12 +316,12 @@ namespace ThirdPersonController
             {
                 if (data.strongholds != null && data.strongholds.Count > 0)
                 {
-                    lines.Add($"目标: 清除 {data.strongholds.Count} 个据点.");
+                    lines.Add("清理全部据点");
                 }
 
                 if (data.quests != null && data.quests.Count > 0)
                 {
-                    lines.Add($"可选目标: 完成 {data.quests.Count} 个任务.");
+                    lines.Add($"完成 {data.quests.Count} 个任务");
                 }
 
                 if (data.timeLimit > 0)
@@ -322,7 +338,7 @@ namespace ThirdPersonController
 
             if (lines.Count == 0)
             {
-                return "目标: 生存并击败敌人.";
+                return "无额外目标";
             }
 
             return string.Join("\n", lines);
@@ -376,7 +392,7 @@ namespace ThirdPersonController
             else
             {
                 GUI.Label(new Rect(embedRect.x + 10f, embedRect.y + 10f, embedRect.width - 20f, 20f),
-                    "未找到天赋/装备界面.", smallStyle);
+                    "未找到天赋/装备面板组件。", smallStyle);
             }
 
             Rect footerRect = new Rect(panelRect.x, panelRect.y + panelRect.height - 60f, panelRect.width, 50f);
@@ -413,9 +429,9 @@ namespace ThirdPersonController
             GUILayout.Space(10f);
 
             GUILayout.Label("奖励", sectionStyle);
-            GUILayout.Label($"+{cachedTalentPoints} 天赋点", bodyStyle);
+            GUILayout.Label($"+{cachedCredits} 货币", bodyStyle);
             GUILayout.Label($"+{cachedPearls} 珍珠", bodyStyle);
-            GUILayout.Label($"+{cachedCredits} 深渊币", bodyStyle);
+            GUILayout.Label($"+{cachedTalentPoints} 天赋点", bodyStyle);
             GUILayout.Space(10f);
 
             GUILayout.Label("统计", sectionStyle);

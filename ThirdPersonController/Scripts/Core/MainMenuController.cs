@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -18,11 +18,12 @@ namespace ThirdPersonController
         [Header("Progression UI")]
         public bool showLevelSelect = true;
         public float levelListHeight = 220f;
-        public string lockedLevelLabel = "未解锁";
+        public string lockedLevelLabel = "Locked";
 
         [Header("Input")]
         public KeyCode startKey = KeyCode.Return;
         public KeyCode quitKey = KeyCode.Escape;
+        public PlayerInputHandler inputHandler;
 
         [Header("UI")]
         public string titleText = "Abyss Warriors";
@@ -45,17 +46,30 @@ namespace ThirdPersonController
             {
                 SaveManager.Instance.LoadGame();
             }
+
+            if (inputHandler == null)
+            {
+                inputHandler = FindObjectOfType<PlayerInputHandler>();
+            }
+
             SetupStyles();
         }
 
         private void Update()
         {
-            if (Input.GetKeyDown(startKey))
+            bool startPressed = inputHandler != null
+                ? inputHandler.WasUnifiedKeyPressedThisFrame(startKey)
+                : PlayerInputHandler.ReadUnifiedKeyDown(startKey);
+            bool quitPressed = inputHandler != null
+                ? inputHandler.WasUnifiedKeyPressedThisFrame(quitKey)
+                : PlayerInputHandler.ReadUnifiedKeyDown(quitKey);
+
+            if (startPressed)
             {
                 StartGame();
             }
 
-            if (Input.GetKeyDown(quitKey))
+            if (quitPressed)
             {
                 QuitGame();
             }
@@ -165,10 +179,10 @@ namespace ThirdPersonController
             }
 
             GUILayout.Space(12f);
-            GUILayout.Label("下一关", sectionStyle);
+            GUILayout.Label("下一关奖励预览");
             GUILayout.Label($"{nextLevel.levelId} - {nextLevel.levelName}", infoStyle);
             GUILayout.Label($"难度: {nextLevel.difficulty}  |  推荐等级 {nextLevel.recommendedLevel}", infoStyle);
-            GUILayout.Label($"奖励: EXP {nextLevel.baseExp}  /  珍珠 {nextLevel.basePearls}  /  深渊币 {nextLevel.baseCredits}", infoStyle);
+            GUILayout.Label($"基础货币奖励: {nextLevel.baseCredits}", infoStyle);
         }
 
         private void DrawLevelSelection()

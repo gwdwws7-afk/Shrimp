@@ -54,7 +54,7 @@ namespace ThirdPersonController
                 return false;
             }
 
-            EnemyHealth enemyHealth = target.GetComponent<EnemyHealth>();
+            EnemyHealth enemyHealth = ResolveEnemyHealth(target);
             if (enemyHealth == null || enemyHealth.IsDead)
             {
                 return false;
@@ -178,6 +178,33 @@ namespace ThirdPersonController
             }
 
             return Mathf.Max(0, mitigated);
+        }
+
+        private static EnemyHealth ResolveEnemyHealth(Collider target)
+        {
+            if (target == null)
+            {
+                return null;
+            }
+
+            EnemyHealth enemyHealth = target.GetComponent<EnemyHealth>();
+            if (enemyHealth != null)
+            {
+                return enemyHealth;
+            }
+
+            enemyHealth = target.GetComponentInParent<EnemyHealth>();
+            if (enemyHealth != null)
+            {
+                return enemyHealth;
+            }
+
+            if (target.attachedRigidbody != null)
+            {
+                return target.attachedRigidbody.GetComponent<EnemyHealth>();
+            }
+
+            return null;
         }
 
         private static bool IsPlayerSource(DamageSourceType sourceType)

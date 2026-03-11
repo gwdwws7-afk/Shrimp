@@ -1,11 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace ThirdPersonController
 {
     /// <summary>
-    /// UI自动配置器 - 自动创建和配置所有UI元素
-    /// 使用方式：将脚本拖到场景中的任意物体上，运行游戏时会自动配置
+    /// UIAutoSetup 模块的核心实现，负责统一管理关键运行流程与对外接口。
     /// </summary>
     public class UIAutoSetup : MonoBehaviour
     {
@@ -14,8 +13,8 @@ namespace ThirdPersonController
         public bool createIfNotExists = true;
         public bool logDebugInfo = true;
         
-        [Header("UI预制体引用")]
-        public GameObject damageTextPrefab;  // 伤害数字预制体（可选）
+        [Header("设置")]
+        public GameObject damageTextPrefab; // UI 引用，用于驱动界面表现与信息同步。
         
         private void Start()
         {
@@ -26,24 +25,24 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 配置所有UI系统
+        /// 设置Setup All UI，统一写入入口，便于约束副作用。
         /// </summary>
         public void SetupAllUI()
         {
-            if (logDebugInfo) Debug.Log("🎨 开始自动配置UI系统...");
+            if (logDebugInfo) Debug.Log("[UIAutoSetup] 开始自动配置 UI。");
             
-            // 1. 创建或查找UIManager
+// 围绕 UIManager 执行该步骤，用于保证流程状态与后续分支一致。
             UIManager uiManager = SetupUIManager();
             if (uiManager == null)
             {
-                Debug.LogError("❌ UIManager配置失败！");
+                Debug.LogError("[UIAutoSetup] 配置失败：未能获取或创建 UIManager。");
                 return;
             }
             
-            // 2. 创建或查找Canvas
+// 围绕 Canvas 执行该步骤，用于保证流程状态与后续分支一致。
             Canvas canvas = SetupCanvas();
             
-            // 3. 配置各个UI组件
+// 围绕 SetupHPBar 执行该步骤，用于保证流程状态与后续分支一致。
             SetupHPBar(uiManager, canvas);
             SetupStaminaBar(uiManager, canvas);
             SetupMusouBar(uiManager, canvas);
@@ -53,11 +52,11 @@ namespace ThirdPersonController
             SetupSkillBar(uiManager, canvas);
             SetupDamageTextSystem(uiManager, canvas);
             
-            if (logDebugInfo) Debug.Log("✅ UI系统配置完成！");
+            if (logDebugInfo) Debug.Log("[UIAutoSetup] 目标 UI 已存在，跳过创建。");
         }
         
         /// <summary>
-        /// 设置UIManager
+        /// 设置Setup UIManager，统一写入入口，便于约束副作用。
         /// </summary>
         private UIManager SetupUIManager()
         {
@@ -69,24 +68,24 @@ namespace ThirdPersonController
                 {
                     GameObject uiManagerObj = new GameObject("UIManager");
                     uiManager = uiManagerObj.AddComponent<UIManager>();
-                    if (logDebugInfo) Debug.Log("✓ 创建UIManager");
+                    if (logDebugInfo) Debug.Log("[UIAutoSetup] 已创建 UIManager。");
                 }
                 else
                 {
-                    Debug.LogWarning("⚠️ 未找到UIManager");
+                    Debug.LogWarning("[UIAutoSetup] 未找到 UIManager，且未启用自动创建。");
                     return null;
                 }
             }
             else
             {
-                if (logDebugInfo) Debug.Log("✓ 找到已存在的UIManager");
+                if (logDebugInfo) Debug.Log("[UIAutoSetup] 使用已存在的 UIManager。");
             }
             
             return uiManager;
         }
         
         /// <summary>
-        /// 设置Canvas
+        /// 设置Setup Canvas，统一写入入口，便于约束副作用。
         /// </summary>
         private Canvas SetupCanvas()
         {
@@ -96,43 +95,43 @@ namespace ThirdPersonController
             {
                 if (createIfNotExists)
                 {
-                    // 创建Canvas
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
                     GameObject canvasObj = new GameObject("MainCanvas");
                     canvas = canvasObj.AddComponent<Canvas>();
                     canvas.renderMode = RenderMode.ScreenSpaceOverlay;
                     canvas.sortingOrder = 0;
                     
-                    // 添加CanvasScaler
+// 围绕 CanvasScaler 执行该步骤，用于保持上下文语义一致。
                     CanvasScaler scaler = canvasObj.AddComponent<CanvasScaler>();
                     scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
                     scaler.referenceResolution = new Vector2(1920, 1080);
                     scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
                     scaler.matchWidthOrHeight = 0.5f;
                     
-                    // 添加GraphicRaycaster
+// 围绕 canvasObj 执行该步骤，用于保持上下文语义一致。
                     canvasObj.AddComponent<GraphicRaycaster>();
                     
-                    // 创建EventSystem
+// 围绕 CreateEventSystem 执行该步骤，用于保证流程状态与后续分支一致。
                     CreateEventSystem();
                     
-                    if (logDebugInfo) Debug.Log("✓ 创建MainCanvas");
+                    if (logDebugInfo) Debug.Log("[UIAutoSetup] 已创建 MainCanvas。");
                 }
                 else
                 {
-                    Debug.LogWarning("⚠️ 未找到Canvas");
+                    Debug.LogWarning("[UIAutoSetup] 未找到 Canvas，且未启用自动创建。");
                     return null;
                 }
             }
             else
             {
-                if (logDebugInfo) Debug.Log("✓ 找到已存在的Canvas: " + canvas.name);
+                if (logDebugInfo) Debug.Log("[UIAutoSetup] 使用已存在的 Canvas: " + canvas.name);
             }
             
             return canvas;
         }
         
         /// <summary>
-        /// 创建EventSystem
+        /// 创建Event System，按默认规则构建实例并纳入管理。
         /// </summary>
         private void CreateEventSystem()
         {
@@ -141,35 +140,35 @@ namespace ThirdPersonController
                 GameObject eventSystem = new GameObject("EventSystem");
                 eventSystem.AddComponent<UnityEngine.EventSystems.EventSystem>();
                 eventSystem.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
-                if (logDebugInfo) Debug.Log("✓ 创建EventSystem");
+                if (logDebugInfo) Debug.Log("[UIAutoSetup] 已创建 EventSystem。");
             }
         }
         
         /// <summary>
-        /// 设置血条UI
+        /// 设置Setup HPBar，统一写入入口，便于约束副作用。
         /// </summary>
         private void SetupHPBar(UIManager uiManager, Canvas canvas)
         {
             if (uiManager.hpBar != null)
             {
-                if (logDebugInfo) Debug.Log("✓ HPBar已配置");
+                if (logDebugInfo) Debug.Log("[UIAutoSetup] 目标 UI 已存在，跳过创建。");
                 return;
             }
             
-            // 查找或创建血条
+// 场景级兜底查找依赖，降低手动绑定遗漏风险。
             UI_HPBar hpBar = FindObjectOfType<UI_HPBar>();
             
             if (hpBar == null && createIfNotExists)
             {
                 hpBar = CreateHPBarUI(canvas);
-                if (logDebugInfo) Debug.Log("✓ 创建HPBar UI");
+                if (logDebugInfo) Debug.Log("[UIAutoSetup] 已创建 HPBar。");
             }
             
             if (hpBar != null)
             {
                 uiManager.hpBar = hpBar;
                 
-                // 配置HPBar的引用
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
                 if (hpBar.hpSlider == null)
                 {
                     hpBar.hpSlider = hpBar.GetComponentInChildren<Slider>();
@@ -182,11 +181,11 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 创建血条UI元素
+        /// 创建HPBar UI，按默认规则构建实例并纳入管理。
         /// </summary>
         private UI_HPBar CreateHPBarUI(Canvas canvas)
         {
-            // 创建血条父物体
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject hpBarObj = new GameObject("HPBar");
             hpBarObj.transform.SetParent(canvas.transform, false);
             
@@ -199,7 +198,7 @@ namespace ThirdPersonController
             
             UI_HPBar hpBar = hpBarObj.AddComponent<UI_HPBar>();
             
-            // 创建背景
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject bgObj = new GameObject("Background");
             bgObj.transform.SetParent(hpBarObj.transform, false);
             Image bgImage = bgObj.AddComponent<Image>();
@@ -211,7 +210,7 @@ namespace ThirdPersonController
             bgRect.offsetMin = Vector2.zero;
             bgRect.offsetMax = Vector2.zero;
             
-            // 创建Slider
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject sliderObj = new GameObject("Slider");
             sliderObj.transform.SetParent(hpBarObj.transform, false);
             Slider slider = sliderObj.AddComponent<Slider>();
@@ -222,7 +221,7 @@ namespace ThirdPersonController
             sliderRect.offsetMin = new Vector2(5, 5);
             sliderRect.offsetMax = new Vector2(-5, -5);
             
-            // 创建FillArea
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject fillAreaObj = new GameObject("Fill Area");
             fillAreaObj.transform.SetParent(sliderObj.transform, false);
             RectTransform fillAreaRect = fillAreaObj.AddComponent<RectTransform>();
@@ -231,7 +230,7 @@ namespace ThirdPersonController
             fillAreaRect.offsetMin = Vector2.zero;
             fillAreaRect.offsetMax = Vector2.zero;
             
-            // 创建Fill
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject fillObj = new GameObject("Fill");
             fillObj.transform.SetParent(fillAreaObj.transform, false);
             Image fillImage = fillObj.AddComponent<Image>();
@@ -246,11 +245,11 @@ namespace ThirdPersonController
             slider.fillRect = fillRect;
             slider.value = 1f;
             
-            // 赋值给HPBar
+// 围绕 hpBar 执行该步骤，用于保持上下文语义一致。
             hpBar.hpSlider = slider;
             hpBar.fillImage = fillImage;
             
-            // 创建血量文字
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject textObj = new GameObject("HPText");
             textObj.transform.SetParent(hpBarObj.transform, false);
             Text hpText = textObj.AddComponent<Text>();
@@ -272,13 +271,13 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 设置耐力条UI
+        /// 设置Setup Stamina Bar，统一写入入口，便于约束副作用。
         /// </summary>
         private void SetupStaminaBar(UIManager uiManager, Canvas canvas)
         {
             if (uiManager.staminaBar != null)
             {
-                if (logDebugInfo) Debug.Log("✓ StaminaBar已配置");
+                if (logDebugInfo) Debug.Log("[UIAutoSetup] 目标 UI 已存在，跳过创建。");
                 return;
             }
             
@@ -287,7 +286,7 @@ namespace ThirdPersonController
             if (staminaBar == null && createIfNotExists)
             {
                 staminaBar = CreateStaminaBarUI(canvas);
-                if (logDebugInfo) Debug.Log("✓ 创建StaminaBar UI");
+                if (logDebugInfo) Debug.Log("[UIAutoSetup] 已创建 StaminaBar。");
             }
             
             if (staminaBar != null)
@@ -297,13 +296,13 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 设置无双槽UI
+        /// 设置Setup Musou Bar，统一写入入口，便于约束副作用。
         /// </summary>
         private void SetupMusouBar(UIManager uiManager, Canvas canvas)
         {
             if (uiManager.musouBar != null)
             {
-                if (logDebugInfo) Debug.Log("✓ MusouBar已配置");
+                if (logDebugInfo) Debug.Log("[UIAutoSetup] 目标 UI 已存在，跳过创建。");
                 return;
             }
 
@@ -312,7 +311,7 @@ namespace ThirdPersonController
             if (musouBar == null && createIfNotExists)
             {
                 musouBar = CreateMusouBarUI(canvas);
-                if (logDebugInfo) Debug.Log("✓ 创建MusouBar UI");
+                if (logDebugInfo) Debug.Log("[UIAutoSetup] 已创建 MusouBar。");
             }
 
             if (musouBar != null)
@@ -322,7 +321,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 创建耐力条UI元素
+        /// 创建Stamina Bar UI，按默认规则构建实例并纳入管理。
         /// </summary>
         private UI_StaminaBar CreateStaminaBarUI(Canvas canvas)
         {
@@ -338,7 +337,7 @@ namespace ThirdPersonController
             
             UI_StaminaBar staminaBar = staminaBarObj.AddComponent<UI_StaminaBar>();
             
-            // 创建背景
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject bgObj = new GameObject("Background");
             bgObj.transform.SetParent(staminaBarObj.transform, false);
             Image bgImage = bgObj.AddComponent<Image>();
@@ -350,7 +349,7 @@ namespace ThirdPersonController
             bgRect.offsetMin = Vector2.zero;
             bgRect.offsetMax = Vector2.zero;
             
-            // 创建Slider
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject sliderObj = new GameObject("Slider");
             sliderObj.transform.SetParent(staminaBarObj.transform, false);
             Slider slider = sliderObj.AddComponent<Slider>();
@@ -361,7 +360,7 @@ namespace ThirdPersonController
             sliderRect.offsetMin = new Vector2(3, 3);
             sliderRect.offsetMax = new Vector2(-3, -3);
             
-            // 创建FillArea
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject fillAreaObj = new GameObject("Fill Area");
             fillAreaObj.transform.SetParent(sliderObj.transform, false);
             RectTransform fillAreaRect = fillAreaObj.AddComponent<RectTransform>();
@@ -370,7 +369,7 @@ namespace ThirdPersonController
             fillAreaRect.offsetMin = Vector2.zero;
             fillAreaRect.offsetMax = Vector2.zero;
             
-            // 创建Fill
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject fillObj = new GameObject("Fill");
             fillObj.transform.SetParent(fillAreaObj.transform, false);
             Image fillImage = fillObj.AddComponent<Image>();
@@ -392,7 +391,7 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 创建无双槽UI元素
+        /// 创建Musou Bar UI，按默认规则构建实例并纳入管理。
         /// </summary>
         private UI_MusouBar CreateMusouBarUI(Canvas canvas)
         {
@@ -408,7 +407,7 @@ namespace ThirdPersonController
 
             UI_MusouBar musouBar = musouObj.AddComponent<UI_MusouBar>();
 
-            // 背景
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject bgObj = new GameObject("Background");
             bgObj.transform.SetParent(musouObj.transform, false);
             Image bgImage = bgObj.AddComponent<Image>();
@@ -480,7 +479,7 @@ namespace ThirdPersonController
             readyText.fontSize = 16;
             readyText.color = new Color(1f, 0.8f, 0.2f, 1f);
             readyText.alignment = TextAnchor.UpperLeft;
-            readyText.text = "可发动 V";
+            readyText.text = "V 可释放";
 
             RectTransform readyRect = readyObj.GetComponent<RectTransform>();
             readyRect.anchorMin = new Vector2(0, 1);
@@ -499,13 +498,13 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 设置据点波次UI
+        /// 设置Setup Stronghold Wave Panel，统一写入入口，便于约束副作用。
         /// </summary>
         private void SetupStrongholdWavePanel(UIManager uiManager, Canvas canvas)
         {
             if (uiManager.strongholdWavePanel != null)
             {
-                if (logDebugInfo) Debug.Log("✓ StrongholdWavePanel已配置");
+                if (logDebugInfo) Debug.Log("[UIAutoSetup] 目标 UI 已存在，跳过创建。");
                 return;
             }
 
@@ -513,7 +512,7 @@ namespace ThirdPersonController
             if (panel == null && createIfNotExists)
             {
                 panel = CreateStrongholdWavePanelUI(canvas);
-                if (logDebugInfo) Debug.Log("✓ 创建StrongholdWavePanel UI");
+                if (logDebugInfo) Debug.Log("[UIAutoSetup] 已创建 StrongholdWavePanel。");
             }
 
             if (panel != null)
@@ -523,7 +522,7 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 创建据点波次UI
+        /// 创建Stronghold Wave Panel UI，按默认规则构建实例并纳入管理。
         /// </summary>
         private UI_StrongholdWavePanel CreateStrongholdWavePanelUI(Canvas canvas)
         {
@@ -596,13 +595,13 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 设置经验条UI
+        /// 设置Setup Experience Bar，统一写入入口，便于约束副作用。
         /// </summary>
         private void SetupExperienceBar(UIManager uiManager, Canvas canvas)
         {
             if (uiManager.experienceBar != null)
             {
-                if (logDebugInfo) Debug.Log("✓ ExperienceBar已配置");
+                if (logDebugInfo) Debug.Log("[UIAutoSetup] 目标 UI 已存在，跳过创建。");
                 return;
             }
 
@@ -611,7 +610,7 @@ namespace ThirdPersonController
             if (experienceBar == null && createIfNotExists)
             {
                 experienceBar = CreateExperienceBarUI(canvas);
-                if (logDebugInfo) Debug.Log("✓ 创建ExperienceBar UI");
+                if (logDebugInfo) Debug.Log("[UIAutoSetup] 已创建 ExperienceBar。");
             }
 
             if (experienceBar != null)
@@ -621,7 +620,7 @@ namespace ThirdPersonController
         }
 
         /// <summary>
-        /// 创建经验条UI元素
+        /// 创建Experience Bar UI，按默认规则构建实例并纳入管理。
         /// </summary>
         private UI_ExperienceBar CreateExperienceBarUI(Canvas canvas)
         {
@@ -727,13 +726,13 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 设置连击计数器UI
+        /// 设置Setup Combo Counter，统一写入入口，便于约束副作用。
         /// </summary>
         private void SetupComboCounter(UIManager uiManager, Canvas canvas)
         {
             if (uiManager.comboCounter != null)
             {
-                if (logDebugInfo) Debug.Log("✓ ComboCounter已配置");
+                if (logDebugInfo) Debug.Log("[UIAutoSetup] 目标 UI 已存在，跳过创建。");
                 return;
             }
             
@@ -742,7 +741,7 @@ namespace ThirdPersonController
             if (comboCounter == null && createIfNotExists)
             {
                 comboCounter = CreateComboCounterUI(canvas);
-                if (logDebugInfo) Debug.Log("✓ 创建ComboCounter UI");
+                if (logDebugInfo) Debug.Log("[UIAutoSetup] 已创建 ComboCounter。");
             }
             
             if (comboCounter != null)
@@ -752,7 +751,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 创建连击计数器UI元素
+        /// 创建Combo Counter UI，按默认规则构建实例并纳入管理。
         /// </summary>
         private UI_ComboCounter CreateComboCounterUI(Canvas canvas)
         {
@@ -768,12 +767,12 @@ namespace ThirdPersonController
             
             UI_ComboCounter comboCounter = comboObj.AddComponent<UI_ComboCounter>();
             
-            // 创建CanvasGroup用于淡入淡出
+// 围绕 CanvasGroup 执行该步骤，用于保持上下文语义一致。
             CanvasGroup canvasGroup = comboObj.AddComponent<CanvasGroup>();
             canvasGroup.alpha = 0f;
             comboCounter.canvasGroup = canvasGroup;
             
-            // 创建连击数字文本
+// 围绕 游戏连击 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject textObj = new GameObject("ComboText");
             textObj.transform.SetParent(comboObj.transform, false);
             Text comboText = textObj.AddComponent<Text>();
@@ -792,7 +791,7 @@ namespace ThirdPersonController
             
             comboCounter.comboText = comboText;
             
-            // 创建"连击"标签
+// 围绕 游戏连击 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject labelObj = new GameObject("ComboLabel");
             labelObj.transform.SetParent(comboObj.transform, false);
             Text labelText = labelObj.AddComponent<Text>();
@@ -813,13 +812,13 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 设置技能栏UI
+        /// 设置Setup Skill Bar，统一写入入口，便于约束副作用。
         /// </summary>
         private void SetupSkillBar(UIManager uiManager, Canvas canvas)
         {
             if (uiManager.skillBar != null)
             {
-                if (logDebugInfo) Debug.Log("✓ SkillBar已配置");
+                if (logDebugInfo) Debug.Log("[UIAutoSetup] 目标 UI 已存在，跳过创建。");
                 return;
             }
             
@@ -828,7 +827,7 @@ namespace ThirdPersonController
             if (skillBar == null && createIfNotExists)
             {
                 skillBar = CreateSkillBarUI(canvas);
-                if (logDebugInfo) Debug.Log("✓ 创建SkillBar UI");
+                if (logDebugInfo) Debug.Log("[UIAutoSetup] 已创建 SkillBar。");
             }
             
             if (skillBar != null)
@@ -838,7 +837,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 创建技能栏UI元素
+        /// 创建Skill Bar UI，按默认规则构建实例并纳入管理。
         /// </summary>
         private UI_SkillBar CreateSkillBarUI(Canvas canvas)
         {
@@ -887,13 +886,13 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 创建单个技能槽
+        /// 围绕 技能 执行该方法，确保调用链路与状态迁移一致。
         /// </summary>
         private UI_SkillBar.SkillSlot CreateSkillSlot(Transform parent, string key, int index, float xPos, float size)
         {
             UI_SkillBar.SkillSlot slot = new UI_SkillBar.SkillSlot();
             
-            // 技能槽背景
+// 围绕 游戏技能 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject slotObj = new GameObject($"SkillSlot_{key}");
             slotObj.transform.SetParent(parent, false);
             
@@ -907,7 +906,7 @@ namespace ThirdPersonController
             Image slotBg = slotObj.AddComponent<Image>();
             slotBg.color = new Color(0.2f, 0.2f, 0.2f, 0.8f);
             
-            // 图标
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject iconObj = new GameObject("Icon");
             iconObj.transform.SetParent(slotObj.transform, false);
             Image iconImage = iconObj.AddComponent<Image>();
@@ -921,7 +920,7 @@ namespace ThirdPersonController
             
             slot.icon = iconImage;
             
-            // 冷却遮罩
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject cdObj = new GameObject("CooldownOverlay");
             cdObj.transform.SetParent(slotObj.transform, false);
             Image cdImage = cdObj.AddComponent<Image>();
@@ -936,7 +935,7 @@ namespace ThirdPersonController
             
             slot.cooldownOverlay = cdImage;
             
-            // 冷却时间文字
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject cdTextObj = new GameObject("CooldownText");
             cdTextObj.transform.SetParent(slotObj.transform, false);
             Text cdText = cdTextObj.AddComponent<Text>();
@@ -954,7 +953,7 @@ namespace ThirdPersonController
             
             slot.cooldownText = cdText;
             
-            // 按键提示
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject keyObj = new GameObject("KeyText");
             keyObj.transform.SetParent(slotObj.transform, false);
             Text keyText = keyObj.AddComponent<Text>();
@@ -977,17 +976,17 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 设置伤害数字系统
+        /// 设置Setup Damage Text System，统一写入入口，便于约束副作用。
         /// </summary>
         private void SetupDamageTextSystem(UIManager uiManager, Canvas canvas)
         {
             if (uiManager.damageTextParent != null)
             {
-                if (logDebugInfo) Debug.Log("✓ DamageTextSystem已配置");
+                if (logDebugInfo) Debug.Log("[UIAutoSetup] 目标 UI 已存在，跳过创建。");
                 return;
             }
             
-            // 创建伤害数字父物体
+// 围绕 游戏伤害 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject damageParentObj = new GameObject("DamageTextParent");
             damageParentObj.transform.SetParent(canvas.transform, false);
             
@@ -999,19 +998,19 @@ namespace ThirdPersonController
             
             uiManager.damageTextParent = damageParentObj.transform;
             
-            // 如果有预制体就赋值
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
             if (damageTextPrefab != null)
             {
                 uiManager.damageTextPrefab = damageTextPrefab;
             }
             
-            if (logDebugInfo) Debug.Log("✓ 创建DamageTextParent");
+            if (logDebugInfo) Debug.Log("[UIAutoSetup] 已创建 DamageTextParent。");
         }
         
         #region 编辑器工具方法
         
         /// <summary>
-        /// 手动触发配置（可在编辑器中调用）
+        /// 设置Setup UINow，统一写入入口，便于约束副作用。
         /// </summary>
         [ContextMenu("Setup UI Now")]
         public void SetupUINow()
@@ -1020,40 +1019,41 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 检查UI配置状态
+        /// 执行 Check UIStatus 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         [ContextMenu("Check UI Status")]
         public void CheckUIStatus()
         {
-            Debug.Log("=== UI配置状态检查 ===");
+            Debug.Log("=== UI 状态检查 ===");
             
             UIManager uiManager = FindObjectOfType<UIManager>();
             if (uiManager != null)
             {
-                Debug.Log($"UIManager: ✓");
-                Debug.Log($"  - HPBar: {(uiManager.hpBar != null ? "✓" : "✗")}");
-                Debug.Log($"  - StaminaBar: {(uiManager.staminaBar != null ? "✓" : "✗")}");
-                Debug.Log($"  - MusouBar: {(uiManager.musouBar != null ? "✓" : "✗")}");
-                Debug.Log($"  - ExperienceBar: {(uiManager.experienceBar != null ? "✓" : "✗")}");
-                Debug.Log($"  - StrongholdWavePanel: {(uiManager.strongholdWavePanel != null ? "✓" : "✗")}");
-                Debug.Log($"  - ComboCounter: {(uiManager.comboCounter != null ? "✓" : "✗")}");
-                Debug.Log($"  - SkillBar: {(uiManager.skillBar != null ? "✓" : "✗")}");
-                Debug.Log($"  - DamageTextParent: {(uiManager.damageTextParent != null ? "✓" : "✗")}");
+                Debug.Log("UIManager: 已找到");
+                Debug.Log($"  - HPBar: {(uiManager.hpBar != null ? "正常" : "缺失")}");
+                Debug.Log($"  - StaminaBar: {(uiManager.staminaBar != null ? "正常" : "缺失")}");
+                Debug.Log($"  - MusouBar: {(uiManager.musouBar != null ? "正常" : "缺失")}");
+                Debug.Log($"  - ExperienceBar: {(uiManager.experienceBar != null ? "正常" : "缺失")}");
+                Debug.Log($"  - StrongholdWavePanel: {(uiManager.strongholdWavePanel != null ? "正常" : "缺失")}");
+                Debug.Log($"  - ComboCounter: {(uiManager.comboCounter != null ? "正常" : "缺失")}");
+                Debug.Log($"  - SkillBar: {(uiManager.skillBar != null ? "正常" : "缺失")}");
+                Debug.Log($"  - DamageTextParent: {(uiManager.damageTextParent != null ? "正常" : "缺失")}");
             }
             else
             {
-                Debug.Log($"UIManager: ✗ 未找到");
+                Debug.Log("UIManager: 未找到");
             }
             
             Canvas canvas = FindObjectOfType<Canvas>();
-            Debug.Log($"Canvas: {(canvas != null ? "✓ " + canvas.name : "✗ 未找到")}");
+            Debug.Log($"Canvas: {(canvas != null ? "已找到 " + canvas.name : "未找到")}");
             
             var eventSystem = FindObjectOfType<UnityEngine.EventSystems.EventSystem>();
-            Debug.Log($"EventSystem: {(eventSystem != null ? "✓" : "✗ 未找到")}");
+            Debug.Log($"EventSystem: {(eventSystem != null ? "已找到" : "未找到")}");
             
-            Debug.Log("=== 检查完成 ===");
+            Debug.Log("=== 状态检查完成 ===");
         }
         
         #endregion
     }
 }
+

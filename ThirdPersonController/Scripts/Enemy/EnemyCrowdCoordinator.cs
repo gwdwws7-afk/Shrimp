@@ -23,14 +23,30 @@ namespace ThirdPersonController
         public float nearbyCountRadius = 12f;
         public float nearbyCountInterval = 0.5f;
 
+        [Header("Debug (Runtime)")]
+        [SerializeField] private int debugTokenRequests = 0;
+        [SerializeField] private int debugTokenGranted = 0;
+        [SerializeField] private int debugTokenRejected = 0;
+        [SerializeField] private int debugTokenReleases = 0;
+
         private readonly HashSet<EnemyAI> activeAttackers = new HashSet<EnemyAI>();
         private readonly Dictionary<EnemyAI, int> slotMap = new Dictionary<EnemyAI, int>();
         private readonly List<EnemyAI> registeredEnemies = new List<EnemyAI>();
+        private readonly List<EnemyAI> pruneBuffer = new List<EnemyAI>();
         private int nextSlotIndex = 0;
         private int nearbyEnemyCount = 0;
         private float nextCountTime = 0f;
 
         public int NearbyEnemyCount => nearbyEnemyCount;
+        public int ActiveAttackersCount => activeAttackers.Count;
+        public int EffectiveMaxAttackers => GetEffectiveMaxAttackers();
+        public float TokenUtilization => EffectiveMaxAttackers > 0
+            ? (float)activeAttackers.Count / EffectiveMaxAttackers
+            : 0f;
+        public int TokenRequestCount => debugTokenRequests;
+        public int TokenGrantedCount => debugTokenGranted;
+        public int TokenRejectedCount => debugTokenRejected;
+        public int TokenReleaseCount => debugTokenReleases;
 
         private void Awake()
         {
@@ -46,6 +62,7 @@ namespace ThirdPersonController
 
         private void Update()
         {
+            PruneInactiveReferences();
             UpdateNearbyCount();
         }
 
@@ -81,23 +98,29 @@ namespace ThirdPersonController
 
         public bool RequestAttackToken(EnemyAI enemy)
         {
+            debugTokenRequests++;
             if (enemy == null)
             {
+                debugTokenRejected++;
                 return false;
             }
 
+            PruneInactiveReferences();
             if (activeAttackers.Contains(enemy))
             {
+                debugTokenGranted++;
                 return true;
             }
 
             int effectiveMax = GetEffectiveMaxAttackers();
             if (activeAttackers.Count >= effectiveMax)
             {
+                debugTokenRejected++;
                 return false;
             }
 
             activeAttackers.Add(enemy);
+            debugTokenGranted++;
             return true;
         }
 
@@ -108,7 +131,10 @@ namespace ThirdPersonController
                 return;
             }
 
-            activeAttackers.Remove(enemy);
+            if (activeAttackers.Remove(enemy))
+            {
+                debugTokenReleases++;
+            }
         }
 
         public Vector3 GetRingPosition(EnemyAI enemy)
@@ -195,6 +221,38 @@ namespace ThirdPersonController
             }
 
             return Mathf.Clamp(baseMax + extra, baseMax, Mathf.Max(baseMax, cap));
+        }
+
+        private void PruneInactiveReferences()
+        {
+            pruneBuffer.Clear();
+            foreach (EnemyAI enemy in activeAttackers)
+            {
+                if (enemy == null || !enemy.isActiveAndEnabled)
+                {
+                    pruneBuffer.Add(enemy);
+                }
+            }
+
+            for (int i = 0; i < pruneBuffer.Count; i++)
+            {
+                activeAttackers.Remove(pruneBuffer[i]);
+            }
+
+            for (int i = registeredEnemies.Count - 1; i >= 0; i--)
+            {
+                EnemyAI enemy = registeredEnemies[i];
+                if (enemy == null)
+                {
+                    registeredEnemies.RemoveAt(i);
+                    continue;
+                }
+
+                if (!enemy.isActiveAndEnabled)
+                {
+                    activeAttackers.Remove(enemy);
+                }
+            }
         }
 
         private int GetNextSlot()

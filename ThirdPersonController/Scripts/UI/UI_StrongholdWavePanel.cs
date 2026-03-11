@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace ThirdPersonController
@@ -16,12 +16,22 @@ namespace ThirdPersonController
         public float fadeSpeed = 6f;
         public float statusMessageDuration = 1.8f;
         public bool showWhenInactive = false;
+        public bool logStartupStatus = true;
+
+        [Header("Fallback Overlay")]
+        public bool useFallbackOverlay = true;
+        public Vector2 fallbackPosition = new Vector2(20f, 20f);
+        public float fallbackWidth = 320f;
+        public int fallbackFontSize = 14;
 
         public StrongholdSequenceController sequenceController;
 
         private StrongholdController activeStronghold;
         private float statusTimer;
         private string statusMessage;
+        private GUIStyle fallbackTitleStyle;
+        private GUIStyle fallbackBodyStyle;
+        private bool startupLogged;
 
         private void OnEnable()
         {
@@ -30,12 +40,14 @@ namespace ThirdPersonController
                 canvasGroup = GetComponent<CanvasGroup>();
             }
 
-            if (sequenceController == null)
-            {
-                sequenceController = FindObjectOfType<StrongholdSequenceController>();
-            }
+            EnsureSequenceController();
 
             RefreshActiveStronghold();
+        }
+
+        private void Start()
+        {
+            LogStartupStatus();
         }
 
         private void OnDisable()
@@ -45,6 +57,7 @@ namespace ThirdPersonController
 
         private void Update()
         {
+            EnsureSequenceController();
             RefreshActiveStronghold();
 
             UpdateStatusTimer();
@@ -163,17 +176,17 @@ namespace ThirdPersonController
 
         private void HandleStrongholdStarted(StrongholdController stronghold)
         {
-            ShowStatus("据点战开始");
+            ShowStatus("Stronghold battle started");
         }
 
         private void HandleWaveStarted(StrongholdController stronghold, int waveIndex)
         {
-            ShowStatus($"第 {waveIndex + 1} 波来袭");
+            ShowStatus($"Wave {waveIndex + 1} started");
         }
 
         private void HandleWaveCompleted(StrongholdController stronghold, int waveIndex)
         {
-            ShowStatus($"第 {waveIndex + 1} 波清除");
+            ShowStatus($"Wave {waveIndex + 1} completed");
         }
 
         private void HandleStrongholdCompleted(StrongholdController stronghold)
@@ -185,6 +198,104 @@ namespace ThirdPersonController
         {
             statusMessage = message;
             statusTimer = statusMessageDuration;
+        }
+
+        private void OnGUI()
+        {
+            if (!ShouldUseFallbackOverlay())
+            {
+                return;
+            }
+
+            bool hasStronghold = activeStronghold != null && activeStronghold.IsRunning;
+            if (!hasStronghold && !showWhenInactive)
+            {
+                return;
+            }
+
+            EnsureFallbackStyles();
+
+            Rect panelRect = new Rect(fallbackPosition.x, fallbackPosition.y, fallbackWidth, 122f);
+            GUILayout.BeginArea(panelRect, GUI.skin.box);
+            GUILayout.Label("据点推进", fallbackTitleStyle);
+
+            if (hasStronghold && activeStronghold.TryGetWaveStatus(out int waveIndex, out int totalWaves, out int remaining, out int plannedTotal))
+            {
+                GUILayout.Label($"波次 {waveIndex + 1}/{totalWaves} · {activeStronghold.GetWaveDisplayName(waveIndex)}", fallbackBodyStyle);
+                if (plannedTotal > 0)
+                {
+                    GUILayout.Label($"剩余 {remaining}/{plannedTotal}", fallbackBodyStyle);
+                }
+                else
+                {
+                    GUILayout.Label($"剩余 {remaining}", fallbackBodyStyle);
+                }
+            }
+            else
+            {
+                GUILayout.Label("信息");
+            }
+
+            if (!string.IsNullOrEmpty(statusMessage))
+            {
+                GUILayout.Space(4f);
+                GUILayout.Label(statusMessage, fallbackBodyStyle);
+            }
+
+            GUILayout.EndArea();
+        }
+
+        private bool ShouldUseFallbackOverlay()
+        {
+            if (!useFallbackOverlay)
+            {
+                return false;
+            }
+
+            return titleText == null || waveText == null || remainingText == null || stateText == null;
+        }
+
+        private void EnsureFallbackStyles()
+        {
+            if (fallbackTitleStyle == null)
+            {
+                fallbackTitleStyle = new GUIStyle(GUI.skin.label)
+                {
+                    fontSize = fallbackFontSize + 1,
+                    fontStyle = FontStyle.Bold,
+                    normal = { textColor = Color.white }
+                };
+            }
+
+            if (fallbackBodyStyle == null)
+            {
+                fallbackBodyStyle = new GUIStyle(GUI.skin.label)
+                {
+                    fontSize = fallbackFontSize,
+                    wordWrap = true,
+                    normal = { textColor = new Color(0.9f, 0.95f, 1f, 1f) }
+                };
+            }
+        }
+
+        private void EnsureSequenceController()
+        {
+            if (sequenceController == null)
+            {
+                sequenceController = FindObjectOfType<StrongholdSequenceController>();
+            }
+        }
+
+        private void LogStartupStatus()
+        {
+            if (!logStartupStatus || startupLogged)
+            {
+                return;
+            }
+
+            startupLogged = true;
+            bool fallback = ShouldUseFallbackOverlay();
+            Debug.Log($"[UI_StrongholdWavePanel] Startup | sequence={(sequenceController != null)} canvasGroup={(canvasGroup != null)} title={(titleText != null)} wave={(waveText != null)} remaining={(remainingText != null)} state={(stateText != null)} fallback={fallback}");
         }
     }
 }

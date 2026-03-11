@@ -17,7 +17,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   keyBinding: 0
   category: 4
-  cooldown: 10
+  cooldown: 11
   staminaCost: 20
   damage: 50
   range: 5
@@ -53,18 +53,9 @@ MonoBehaviour:
   breakValue: 0
   breakValueMultiplier: 1
   impactScale: 0.3
-  pullRadius: 10
+  pullRadius: 9
   pullForce: 15
   liftHeight: 3
-  floatDuration: 1.5
-  landingDamage: 40
+  floatDuration: 1.2
+  landingDamage: 46
   landingKnockback: 8
-*** Add File: C:\test\Shrimp\Assets\ThirdPersonController\Skills\SkillAssets\SKILL_Pull.asset.meta
-fileFormatVersion: 2
-guid: e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0
-NativeFormatImporter:
-  externalObjects: {}
-  mainObjectFileID: 11400000
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 

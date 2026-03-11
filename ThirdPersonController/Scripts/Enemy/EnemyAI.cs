@@ -59,7 +59,24 @@ namespace ThirdPersonController
         public float chargeWindup = 0.5f;
         public bool canFlee = false;
         public float fleeHealthThreshold = 0.2f;
-        
+
+        [Header("Advanced Action Tuning")]
+        public float dodgeDistance = 2.4f;
+        public float dodgeDuration = 0.28f;
+        public float dodgeCooldown = 2.2f;
+        public float blockDuration = 0.45f;
+        public float blockCooldown = 2.8f;
+        public float blockDefenseBonus = 6f;
+        [Range(0f, 1f)]
+        public float chargeChance = 0.2f;
+        public float chargeMinDistance = 1.8f;
+        public float chargeMaxDistance = 4.2f;
+        public float chargeDuration = 0.45f;
+        public float chargeCooldown = 3.5f;
+        public float fleeDistance = 4.8f;
+        public float fleeDuration = 1.1f;
+        public float fleeCooldown = 6f;
+
         [Header("Attack Patterns")]
         public bool useAttackPatterns = false;
         public List<string> availablePatterns = new List<string>();
@@ -80,6 +97,17 @@ namespace ThirdPersonController
         public int crowdSlowdownFull = 40;
         public float maxCrowdUpdateMultiplier = 2f;
         public float maxDecisionInterval = 0.25f;
+
+        [Header("Debug (Runtime)")]
+        [SerializeField] private string debugCurrentState = "Patrol";
+        [SerializeField] private float debugStateElapsed = 0f;
+        [SerializeField] private float debugLastDecisionInterval = 0f;
+        [SerializeField] private float debugLastDistanceToTarget = 0f;
+        [SerializeField] private int debugDecisionCount = 0;
+        [SerializeField] private int debugAttackSequenceCount = 0;
+        [SerializeField] private int debugHitsAppliedCount = 0;
+        [SerializeField] private int debugTokenAcquireSuccessCount = 0;
+        [SerializeField] private int debugTokenAcquireFailCount = 0;
 
         private NavMeshAgent agent;
         private EnemyHealth health;
@@ -116,9 +144,53 @@ namespace ThirdPersonController
         private bool isFleeing = false;
         private Vector3 chargeTarget;
         private float chargeTimer = 0f;
+        private bool chargeHitApplied = false;
+        private Vector3 dodgeDestination;
+        private Vector3 fleeDestination;
+        private float dodgeTimer = 0f;
+        private float blockTimer = 0f;
+        private float fleeTimer = 0f;
+        private float dodgeCooldownTimer = 0f;
+        private float blockCooldownTimer = 0f;
+        private float chargeCooldownTimer = 0f;
+        private float fleeCooldownTimer = 0f;
+        private float blockDefenseBaseline = 0f;
+        private bool blockDefenseApplied = false;
+        private float stateElapsed = 0f;
+        private State debugLastState = State.Patrol;
 
         private EnemyAttackPattern currentPattern;
         private readonly List<EnemyAttackPattern> patternBuffer = new List<EnemyAttackPattern>();
+
+        [System.Serializable]
+        public struct EnemyAIDebugSnapshot
+        {
+            public string state;
+            public float stateElapsedSeconds;
+            public float lastDecisionIntervalSeconds;
+            public float lastDistanceToTarget;
+            public int decisionCount;
+            public int attackSequenceCount;
+            public int hitsAppliedCount;
+            public int tokenAcquireSuccessCount;
+            public int tokenAcquireFailCount;
+        }
+
+        public EnemyAIDebugSnapshot GetDebugSnapshot()
+        {
+            return new EnemyAIDebugSnapshot
+            {
+                state = debugCurrentState,
+                stateElapsedSeconds = debugStateElapsed,
+                lastDecisionIntervalSeconds = debugLastDecisionInterval,
+                lastDistanceToTarget = debugLastDistanceToTarget,
+                decisionCount = debugDecisionCount,
+                attackSequenceCount = debugAttackSequenceCount,
+                hitsAppliedCount = debugHitsAppliedCount,
+                tokenAcquireSuccessCount = debugTokenAcquireSuccessCount,
+                tokenAcquireFailCount = debugTokenAcquireFailCount
+            };
+        }
 
         private void Awake()
         {
@@ -169,6 +241,7 @@ namespace ThirdPersonController
 
         private void OnDisable()
         {
+            CancelTransientActions();
             ReleaseAttackToken();
             if (crowdCoordinator != null)
             {
@@ -217,6 +290,7 @@ namespace ThirdPersonController
         {
             if (health.IsDead) return;
 
+            UpdateDebugState();
             UpdateStun();
             if (isStunned)
             {
@@ -224,7 +298,11 @@ namespace ThirdPersonController
                 return;
             }
 
-            if (isSuppressed) return;
+            if (isSuppressed)
+            {
+                UpdateAnimations();
+                return;
+            }
 
             currentTarget = GetCurrentTarget();
             if (currentTarget == null)
@@ -238,6 +316,7 @@ namespace ThirdPersonController
                 return;
             }
 
+            debugLastDistanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
             HandleCooldowns();
             if (isAttacking)
             {
@@ -252,7 +331,7 @@ namespace ThirdPersonController
                 return;
             }
 
-            float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
+            float distanceToTarget = debugLastDistanceToTarget;
             float interval = GetUpdateInterval(distanceToTarget);
             interval = ApplyCrowdScaling(interval);
             if (maxDecisionInterval > 0f)
@@ -260,7 +339,10 @@ namespace ThirdPersonController
                 interval = Mathf.Min(interval, maxDecisionInterval);
             }
             float jitter = aiUpdateJitter > 0f ? Random.Range(-aiUpdateJitter, aiUpdateJitter) : 0f;
-            nextDecisionTime = Time.time + Mathf.Max(0.02f, interval + jitter);
+            float decisionInterval = Mathf.Max(0.02f, interval + jitter);
+            nextDecisionTime = Time.time + decisionInterval;
+            debugLastDecisionInterval = decisionInterval;
+            debugDecisionCount++;
 
             DetectTarget();
             UpdateState();
@@ -278,7 +360,10 @@ namespace ThirdPersonController
             if (stunTimer <= 0f)
             {
                 isStunned = false;
-                agent.isStopped = false;
+                if (!isSuppressed)
+                {
+                    agent.isStopped = false;
+                }
             }
             else
             {
@@ -327,8 +412,46 @@ namespace ThirdPersonController
 
         private void HandleCooldowns()
         {
-            if (attackCooldownTimer > 0)
+            if (attackCooldownTimer > 0f)
+            {
                 attackCooldownTimer -= Time.deltaTime;
+            }
+
+            if (dodgeCooldownTimer > 0f)
+            {
+                dodgeCooldownTimer -= Time.deltaTime;
+            }
+
+            if (blockCooldownTimer > 0f)
+            {
+                blockCooldownTimer -= Time.deltaTime;
+            }
+
+            if (chargeCooldownTimer > 0f)
+            {
+                chargeCooldownTimer -= Time.deltaTime;
+            }
+
+            if (fleeCooldownTimer > 0f)
+            {
+                fleeCooldownTimer -= Time.deltaTime;
+            }
+        }
+
+        private void UpdateDebugState()
+        {
+            if (currentState != debugLastState)
+            {
+                debugLastState = currentState;
+                stateElapsed = 0f;
+            }
+            else
+            {
+                stateElapsed += Time.deltaTime;
+            }
+
+            debugCurrentState = currentState.ToString();
+            debugStateElapsed = stateElapsed;
         }
 
         private void DetectTarget()
@@ -373,6 +496,38 @@ namespace ThirdPersonController
             }
 
             float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
+            debugLastDistanceToTarget = distanceToTarget;
+
+            if (isDodging)
+            {
+                currentState = State.Dodge;
+                return;
+            }
+
+            if (isBlocking)
+            {
+                currentState = State.Block;
+                return;
+            }
+
+            if (isCharging)
+            {
+                currentState = State.Charge;
+                return;
+            }
+
+            if (isFleeing)
+            {
+                currentState = State.Flee;
+                return;
+            }
+
+            if (isChasing && CanEnterFlee())
+            {
+                BeginFlee();
+                currentState = State.Flee;
+                return;
+            }
 
             float desiredAttackRange = GetDecisionAttackRange();
             if (!isChasing || distanceToTarget > desiredAttackRange)
@@ -388,6 +543,24 @@ namespace ThirdPersonController
 
             if (isChasing)
             {
+                if (TryEnterCharge(distanceToTarget, readyToAttack))
+                {
+                    currentState = State.Charge;
+                    return;
+                }
+
+                if (TryEnterDodge(distanceToTarget))
+                {
+                    currentState = State.Dodge;
+                    return;
+                }
+
+                if (TryEnterBlock(distanceToTarget))
+                {
+                    currentState = State.Block;
+                    return;
+                }
+
                 if (distanceToTarget <= desiredAttackRange)
                 {
                     if (readyToAttack && TryAcquireAttackToken())
@@ -425,6 +598,18 @@ namespace ThirdPersonController
                     break;
                 case State.Attack:
                     Attack();
+                    break;
+                case State.Dodge:
+                    Dodge();
+                    break;
+                case State.Block:
+                    Block();
+                    break;
+                case State.Charge:
+                    Charge();
+                    break;
+                case State.Flee:
+                    Flee();
                     break;
             }
 
@@ -485,6 +670,332 @@ namespace ThirdPersonController
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 
                     rotationSpeed * Time.deltaTime);
             }
+        }
+
+        private bool TryEnterCharge(float distanceToTarget, bool readyToAttack)
+        {
+            if (!readyToAttack || !canCharge || chargeCooldownTimer > 0f || currentTarget == null)
+            {
+                return false;
+            }
+
+            float minDistance = Mathf.Max(0.1f, chargeMinDistance);
+            float maxDistance = Mathf.Max(minDistance, chargeMaxDistance);
+            if (distanceToTarget < minDistance || distanceToTarget > maxDistance)
+            {
+                return false;
+            }
+
+            if (Random.value > Mathf.Clamp01(chargeChance))
+            {
+                return false;
+            }
+
+            if (!TryAcquireAttackToken())
+            {
+                return false;
+            }
+
+            BeginCharge();
+            return true;
+        }
+
+        private bool TryEnterDodge(float distanceToTarget)
+        {
+            if (!canDodge || dodgeCooldownTimer > 0f || currentTarget == null)
+            {
+                return false;
+            }
+
+            float triggerDistance = Mathf.Max(stoppingDistance + 0.5f, attackRange * 1.35f);
+            if (distanceToTarget > triggerDistance)
+            {
+                return false;
+            }
+
+            if (Random.value > Mathf.Clamp01(dodgeChance))
+            {
+                return false;
+            }
+
+            BeginDodge();
+            return true;
+        }
+
+        private bool TryEnterBlock(float distanceToTarget)
+        {
+            if (!canBlock || blockCooldownTimer > 0f || currentTarget == null || isAttacking)
+            {
+                return false;
+            }
+
+            float triggerDistance = Mathf.Max(stoppingDistance + 0.4f, attackRange * 1.15f);
+            if (distanceToTarget > triggerDistance)
+            {
+                return false;
+            }
+
+            if (Random.value > Mathf.Clamp01(blockChance))
+            {
+                return false;
+            }
+
+            BeginBlock();
+            return true;
+        }
+
+        private bool CanEnterFlee()
+        {
+            if (!canFlee || fleeCooldownTimer > 0f || health == null || health.MaxHealth <= 0)
+            {
+                return false;
+            }
+
+            float healthRatio = (float)health.CurrentHealth / health.MaxHealth;
+            return healthRatio <= Mathf.Clamp01(fleeHealthThreshold);
+        }
+
+        private void BeginDodge()
+        {
+            isDodging = true;
+            dodgeTimer = Mathf.Max(0.05f, dodgeDuration);
+            dodgeCooldownTimer = Mathf.Max(0f, dodgeCooldown);
+            ReleaseAttackToken();
+
+            Vector3 toTarget = currentTarget != null
+                ? currentTarget.position - transform.position
+                : transform.forward;
+            toTarget.y = 0f;
+            if (toTarget.sqrMagnitude < 0.01f)
+            {
+                toTarget = transform.forward;
+            }
+
+            Vector3 lateral = Vector3.Cross(Vector3.up, toTarget.normalized);
+            if (Random.value < 0.5f)
+            {
+                lateral = -lateral;
+            }
+
+            if (lateral.sqrMagnitude < 0.01f)
+            {
+                lateral = transform.right;
+            }
+
+            dodgeDestination = transform.position + lateral.normalized * Mathf.Max(1f, dodgeDistance);
+        }
+
+        private void Dodge()
+        {
+            if (!isDodging)
+            {
+                currentState = isChasing ? State.Circle : State.Patrol;
+                return;
+            }
+
+            agent.isStopped = false;
+            agent.speed = Mathf.Max(chaseSpeed, chaseSpeed * 1.35f);
+            agent.SetDestination(dodgeDestination);
+            dodgeTimer -= Time.deltaTime;
+
+            float remaining = Vector3.Distance(transform.position, dodgeDestination);
+            if (dodgeTimer <= 0f || remaining <= 0.35f)
+            {
+                isDodging = false;
+                currentState = isChasing ? State.Circle : State.Patrol;
+            }
+        }
+
+        private void BeginBlock()
+        {
+            isBlocking = true;
+            blockTimer = Mathf.Max(0.05f, blockDuration);
+            blockCooldownTimer = Mathf.Max(0f, blockCooldown);
+            ReleaseAttackToken();
+            ApplyBlockDefense();
+        }
+
+        private void Block()
+        {
+            if (!isBlocking)
+            {
+                currentState = isChasing ? State.Circle : State.Patrol;
+                return;
+            }
+
+            agent.isStopped = true;
+            FaceCurrentTarget();
+            blockTimer -= Time.deltaTime;
+            if (blockTimer <= 0f)
+            {
+                EndBlock();
+                currentState = isChasing ? State.Circle : State.Patrol;
+            }
+        }
+
+        private void EndBlock()
+        {
+            isBlocking = false;
+            blockTimer = 0f;
+            RestoreBlockDefense();
+        }
+
+        private void BeginCharge()
+        {
+            isCharging = true;
+            chargeTimer = Mathf.Max(0.1f, Mathf.Max(0f, chargeWindup) + Mathf.Max(0.1f, chargeDuration));
+            chargeCooldownTimer = Mathf.Max(0f, chargeCooldown);
+            chargeHitApplied = false;
+            chargeTarget = currentTarget != null
+                ? currentTarget.position
+                : transform.position + transform.forward * Mathf.Max(chargeMinDistance, 2f);
+            attackCooldownTimer = Mathf.Max(attackCooldownTimer, GetAttackCooldown());
+
+            if (animator != null && animator.runtimeAnimatorController != null)
+            {
+                animator.SetTrigger(attackTrigger);
+            }
+        }
+
+        private void Charge()
+        {
+            if (!isCharging)
+            {
+                currentState = isChasing ? State.Circle : State.Patrol;
+                return;
+            }
+
+            float dashDuration = Mathf.Max(0.05f, chargeDuration);
+            chargeTimer -= Time.deltaTime;
+
+            if (chargeTimer > dashDuration)
+            {
+                agent.isStopped = true;
+                FaceCurrentTarget();
+            }
+            else
+            {
+                agent.isStopped = false;
+                agent.speed = Mathf.Max(chaseSpeed, chargeSpeed);
+                if (currentTarget != null)
+                {
+                    chargeTarget = currentTarget.position;
+                }
+                agent.SetDestination(chargeTarget);
+
+                if (!chargeHitApplied && currentTarget != null)
+                {
+                    float hitRange = Mathf.Max(GetAttackHitRadius(), attackRange);
+                    if (Vector3.Distance(transform.position, currentTarget.position) <= hitRange)
+                    {
+                        int damage = Mathf.RoundToInt(GetAttackDamage() * 1.15f);
+                        float knockback = Mathf.Max(GetAttackKnockback(), attackKnockback);
+                        ApplyDirectHit(damage, knockback);
+                        debugHitsAppliedCount++;
+                        chargeHitApplied = true;
+                    }
+                }
+            }
+
+            if (chargeTimer <= 0f)
+            {
+                EndCharge();
+            }
+        }
+
+        private void EndCharge()
+        {
+            isCharging = false;
+            chargeTimer = 0f;
+            chargeHitApplied = false;
+            ReleaseAttackToken();
+            currentState = isChasing ? State.Circle : State.Patrol;
+        }
+
+        private void BeginFlee()
+        {
+            isFleeing = true;
+            fleeTimer = Mathf.Max(0.1f, fleeDuration);
+            fleeCooldownTimer = Mathf.Max(0f, fleeCooldown);
+            ReleaseAttackToken();
+            UpdateFleeDestination();
+        }
+
+        private void Flee()
+        {
+            if (!isFleeing)
+            {
+                currentState = isChasing ? State.Circle : State.Patrol;
+                return;
+            }
+
+            agent.isStopped = false;
+            agent.speed = Mathf.Max(patrolSpeed, chaseSpeed * 0.9f);
+            UpdateFleeDestination();
+            agent.SetDestination(fleeDestination);
+            fleeTimer -= Time.deltaTime;
+
+            if (fleeTimer <= 0f)
+            {
+                isFleeing = false;
+                currentState = isChasing ? State.Circle : State.Patrol;
+            }
+        }
+
+        private void UpdateFleeDestination()
+        {
+            Vector3 away = currentTarget != null
+                ? transform.position - currentTarget.position
+                : -transform.forward;
+            away.y = 0f;
+            if (away.sqrMagnitude < 0.01f)
+            {
+                away = -transform.forward;
+            }
+
+            fleeDestination = transform.position + away.normalized * Mathf.Max(1f, fleeDistance);
+        }
+
+        private void FaceCurrentTarget()
+        {
+            if (currentTarget == null)
+            {
+                return;
+            }
+
+            Vector3 directionToTarget = (currentTarget.position - transform.position).normalized;
+            directionToTarget.y = 0f;
+            if (directionToTarget.sqrMagnitude <= 0.01f)
+            {
+                return;
+            }
+
+            Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
+
+        private void ApplyBlockDefense()
+        {
+            if (blockDefenseApplied || health == null)
+            {
+                return;
+            }
+
+            blockDefenseBaseline = health.defense;
+            health.defense = blockDefenseBaseline + Mathf.Max(0f, blockDefenseBonus);
+            blockDefenseApplied = true;
+        }
+
+        private void RestoreBlockDefense()
+        {
+            if (!blockDefenseApplied || health == null)
+            {
+                blockDefenseApplied = false;
+                return;
+            }
+
+            health.defense = blockDefenseBaseline;
+            blockDefenseApplied = false;
         }
 
         private void Attack()
@@ -554,6 +1065,7 @@ namespace ThirdPersonController
             isAttacking = true;
             attackHitApplied = false;
             attackPhaseTimer = GetAttackWindup() + attackActiveTime + GetAttackRecovery();
+            debugAttackSequenceCount++;
 
             if (animator != null && animator.runtimeAnimatorController != null)
             {
@@ -618,12 +1130,14 @@ namespace ThirdPersonController
             {
                 if (currentPattern != null && currentPattern.isRanged)
                 {
+                    debugHitsAppliedCount++;
                     FireProjectile(directionToTarget);
                     return;
                 }
 
                 if (currentPattern != null && currentPattern.isSuicide)
                 {
+                    debugHitsAppliedCount++;
                     StartSuicideAttack();
                     return;
                 }
@@ -635,12 +1149,14 @@ namespace ThirdPersonController
                 {
                     playerHealth.TakeDamage(damage, transform.position, knockback);
                     ApplyStatusToPlayer(playerHealth, currentPattern);
+                    debugHitsAppliedCount++;
                     return;
                 }
 
                 if (currentTarget.TryGetComponent<DefenseTarget>(out DefenseTarget defenseTarget))
                 {
                     defenseTarget.TakeDamage(damage, transform.position, knockback);
+                    debugHitsAppliedCount++;
                 }
             }
         }
@@ -1036,20 +1552,34 @@ namespace ThirdPersonController
                 nextAnimationTime = Time.time;
             }
 
-            float moveSpeed = agent.velocity.magnitude / chaseSpeed;
+            float moveSpeed = chaseSpeed > 0.01f ? agent.velocity.magnitude / chaseSpeed : 0f;
             animator.SetFloat("MoveSpeed", moveSpeed);
             animator.SetBool("IsChasing", isChasing);
         }
 
         private bool TryAcquireAttackToken()
         {
+            if (hasAttackToken)
+            {
+                return true;
+            }
+
             if (!useCrowdCoordinator || crowdCoordinator == null)
             {
                 hasAttackToken = true;
+                debugTokenAcquireSuccessCount++;
                 return true;
             }
 
             hasAttackToken = crowdCoordinator.RequestAttackToken(this);
+            if (hasAttackToken)
+            {
+                debugTokenAcquireSuccessCount++;
+            }
+            else
+            {
+                debugTokenAcquireFailCount++;
+            }
             return hasAttackToken;
         }
 
@@ -1067,6 +1597,27 @@ namespace ThirdPersonController
             }
         }
 
+        private void CancelTransientActions()
+        {
+            isAttacking = false;
+            attackPhaseTimer = 0f;
+            attackHitApplied = false;
+
+            isDodging = false;
+            dodgeTimer = 0f;
+
+            isBlocking = false;
+            blockTimer = 0f;
+            RestoreBlockDefense();
+
+            isCharging = false;
+            chargeTimer = 0f;
+            chargeHitApplied = false;
+
+            isFleeing = false;
+            fleeTimer = 0f;
+        }
+
         public void SetSuppressed(bool suppressed)
         {
             if (isSuppressed == suppressed)
@@ -1078,6 +1629,7 @@ namespace ThirdPersonController
 
             if (suppressed)
             {
+                CancelTransientActions();
                 ReleaseAttackToken();
                 agent.isStopped = true;
             }
@@ -1099,10 +1651,8 @@ namespace ThirdPersonController
 
             stunTimer = Mathf.Max(stunTimer, duration);
             isStunned = true;
+            CancelTransientActions();
             ReleaseAttackToken();
-            isAttacking = false;
-            attackPhaseTimer = 0f;
-            attackHitApplied = false;
             agent.isStopped = true;
         }
         
@@ -1111,11 +1661,16 @@ namespace ThirdPersonController
             isStunned = stunned;
             if (stunned)
             {
+                CancelTransientActions();
+                ReleaseAttackToken();
                 agent.isStopped = true;
             }
             else
             {
-                agent.isStopped = false;
+                if (!isSuppressed)
+                {
+                    agent.isStopped = false;
+                }
             }
         }
 
@@ -1126,12 +1681,14 @@ namespace ThirdPersonController
 
         public void OnDespawned()
         {
+            CancelTransientActions();
             ReleaseAttackToken();
             isSuppressed = false;
         }
 
         private void ResetState()
         {
+            ReleaseAttackToken();
             isSuppressed = false;
             isStunned = false;
             stunTimer = 0f;
@@ -1139,10 +1696,35 @@ namespace ThirdPersonController
             isAttacking = false;
             attackPhaseTimer = 0f;
             attackHitApplied = false;
+            isDodging = false;
+            isBlocking = false;
+            isCharging = false;
+            isFleeing = false;
+            dodgeTimer = 0f;
+            blockTimer = 0f;
+            chargeTimer = 0f;
+            fleeTimer = 0f;
+            dodgeCooldownTimer = 0f;
+            blockCooldownTimer = 0f;
+            chargeCooldownTimer = 0f;
+            fleeCooldownTimer = 0f;
+            chargeHitApplied = false;
+            RestoreBlockDefense();
             isChasing = false;
             waitTimer = 0f;
             attackCooldownTimer = 0f;
             currentState = State.Patrol;
+            debugLastState = State.Patrol;
+            stateElapsed = 0f;
+            debugCurrentState = State.Patrol.ToString();
+            debugStateElapsed = 0f;
+            debugLastDecisionInterval = 0f;
+            debugLastDistanceToTarget = 0f;
+            debugDecisionCount = 0;
+            debugAttackSequenceCount = 0;
+            debugHitsAppliedCount = 0;
+            debugTokenAcquireSuccessCount = 0;
+            debugTokenAcquireFailCount = 0;
             nextDecisionTime = Time.time + Random.Range(0f, Mathf.Max(0.02f, aiUpdateInterval));
             nextAnimationTime = Time.time + Random.Range(0f, Mathf.Max(0.02f, farAnimationUpdateInterval));
         }

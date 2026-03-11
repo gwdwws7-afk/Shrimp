@@ -1,20 +1,20 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 namespace ThirdPersonController
 {
     /// <summary>
-    /// 音频管理器 - 管理所有游戏音效和背景音乐
+    /// AudioManager 模块的核心实现，负责统一管理关键运行流程与对外接口。
     /// </summary>
     public class AudioManager : Singleton<AudioManager>
     {
-        [Header("音频源")]
-        public AudioSource musicSource;      // 背景音乐源
-        public AudioSource sfxSource;        // 音效源
-        public AudioSource uiSource;         // UI音效源
-        public AudioSource voiceSource;      // 语音源
+        [Header("设置")]
+        public AudioSource musicSource; // 背景音乐播放通道，保持 BGM 独立控制。
+        public AudioSource sfxSource; // 战斗/场景音效通道，承载高频短音。
+        public AudioSource uiSource; // UI 交互音效通道，避免与战斗音效抢占。
+        public AudioSource voiceSource; // 语音/台词通道，便于单独调节混音。
         
-        [Header("音频混合器")]
+        [Header("设置")]
         public UnityEngine.Audio.AudioMixer audioMixer;
         
         [Header("音量设置")]
@@ -27,7 +27,7 @@ namespace ThirdPersonController
         [Range(0f, 1f)]
         public float uiVolume = 0.8f;
         
-        [Header("音效库")]
+        [Header("设置")]
         public AudioClip[] attackSounds;
         public AudioClip[] hitSounds;
         public AudioClip[] heavyHitSounds;
@@ -45,7 +45,7 @@ namespace ThirdPersonController
         public AudioClip[] bgmTracks;
         private int currentBgmIndex = 0;
         
-        // 对象池
+// 缓存容器，用于复用对象并减少运行时分配。
         private Queue<AudioSource> sfxPool = new Queue<AudioSource>();
         private const int POOL_SIZE = 10;
         
@@ -75,7 +75,7 @@ namespace ThirdPersonController
         
         private void InitializeAudioSources()
         {
-            // 如果没有指定音频源，自动创建
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
             if (musicSource == null)
             {
                 GameObject musicObj = new GameObject("Music Source");
@@ -119,10 +119,10 @@ namespace ThirdPersonController
             }
         }
         
-        #region 背景音乐
+        #region 鑳屾櫙闊充箰
         
         /// <summary>
-        /// 播放背景音乐
+        /// 播放BGM，触发表现层反馈并保持时序一致。
         /// </summary>
         public void PlayBGM(int index)
         {
@@ -141,7 +141,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 播放下一首BGM
+        /// 播放Next BGM，触发表现层反馈并保持时序一致。
         /// </summary>
         public void PlayNextBGM()
         {
@@ -150,7 +150,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 停止BGM
+        /// 停止BGM，及时收束表现避免状态叠加。
         /// </summary>
         public void StopBGM()
         {
@@ -158,7 +158,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 暂停BGM
+        /// 执行 Pause BGM 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public void PauseBGM()
         {
@@ -166,7 +166,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 恢复BGM
+        /// 执行 Resume BGM 相关逻辑，并保证模块状态与外部调用约定一致。
         /// </summary>
         public void ResumeBGM()
         {
@@ -175,10 +175,10 @@ namespace ThirdPersonController
         
         #endregion
         
-        #region 音效播放
+        #region 闊虫晥鎾斁
         
         /// <summary>
-        /// 播放音效（带变调）
+        /// 播放SFX，触发表现层反馈并保持时序一致。
         /// </summary>
         public void PlaySFX(AudioClip clip, float volume = 1f, float pitch = 1f)
         {
@@ -189,12 +189,12 @@ namespace ThirdPersonController
             source.volume = volume * sfxVolume * masterVolume;
             source.PlayOneShot(clip);
             
-            // 播放完成后回收
+// 围绕 对象池 执行该步骤，用于保证流程状态与后续分支一致。
             StartCoroutine(ReturnToPool(source, clip.length));
         }
         
         /// <summary>
-        /// 在指定位置播放音效
+        /// 播放SFXAt Position，触发表现层反馈并保持时序一致。
         /// </summary>
         public void PlaySFXAtPosition(AudioClip clip, Vector3 position, float volume = 1f)
         {
@@ -204,7 +204,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 随机播放攻击音效
+        /// 播放Attack Sound，触发表现层反馈并保持时序一致。
         /// </summary>
         public void PlayAttackSound(int comboTier = 0)
         {
@@ -217,7 +217,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 播放受击音效
+        /// 播放Hit Sound，触发表现层反馈并保持时序一致。
         /// </summary>
         public void PlayHitSound(Vector3 position)
         {
@@ -249,7 +249,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 播放敌人死亡音效
+        /// 播放Enemy Death Sound，触发表现层反馈并保持时序一致。
         /// </summary>
         public void PlayEnemyDeathSound(Vector3 position)
         {
@@ -260,7 +260,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 播放连击音效
+        /// 播放Combo Sound，触发表现层反馈并保持时序一致。
         /// </summary>
         public void PlayComboSound(int combo)
         {
@@ -271,7 +271,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 播放狂暴启动音效
+        /// 播放Berserk Sound，触发表现层反馈并保持时序一致。
         /// </summary>
         public void PlayBerserkSound()
         {
@@ -282,7 +282,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 播放技能音效
+        /// 播放Skill Sound，触发表现层反馈并保持时序一致。
         /// </summary>
         public void PlaySkillSound(int skillIndex)
         {
@@ -292,7 +292,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 播放脚步声
+        /// 播放Footstep，触发表现层反馈并保持时序一致。
         /// </summary>
         public void PlayFootstep()
         {
@@ -303,7 +303,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 播放UI音效
+        /// 播放UISound，触发表现层反馈并保持时序一致。
         /// </summary>
         public void PlayUISound(AudioClip clip)
         {
@@ -325,10 +325,10 @@ namespace ThirdPersonController
             PlayEnemyDeathSound(position);
         }
         
-        #region 音量控制
+        #region 闊抽噺鎺у埗
         
         /// <summary>
-        /// 设置主音量
+        /// 设置Master Volume，统一写入入口，便于约束副作用。
         /// </summary>
         public void SetMasterVolume(float volume)
         {
@@ -337,7 +337,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 设置音乐音量
+        /// 设置Music Volume，统一写入入口，便于约束副作用。
         /// </summary>
         public void SetMusicVolume(float volume)
         {
@@ -349,7 +349,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 设置音效音量
+        /// 设置SFXVolume，统一写入入口，便于约束副作用。
         /// </summary>
         public void SetSFXVolume(float volume)
         {
@@ -357,7 +357,7 @@ namespace ThirdPersonController
         }
         
         /// <summary>
-        /// 应用音量设置
+        /// 应用Volume Settings，统一入口下发效果并便于后续扩展。
         /// </summary>
         private void ApplyVolumeSettings()
         {
@@ -370,7 +370,7 @@ namespace ThirdPersonController
             if (uiSource != null)
                 uiSource.volume = uiVolume * masterVolume;
             
-            // 更新AudioMixer
+// 围绕 if 执行该步骤，用于保证流程状态与后续分支一致。
             if (audioMixer != null)
             {
                 audioMixer.SetFloat("MasterVolume", Mathf.Log10(masterVolume) * 20);
@@ -381,7 +381,7 @@ namespace ThirdPersonController
         
         #endregion
         
-        #region 对象池
+        #region 瀵硅薄姹?
         
         private AudioSource GetPooledSFXSource()
         {
@@ -390,7 +390,7 @@ namespace ThirdPersonController
                 return sfxPool.Dequeue();
             }
             
-            // 池为空时创建新的
+// 围绕 游戏 执行该步骤，用于保证流程状态与后续分支一致。
             GameObject sfxObj = new GameObject("SFX_Temp");
             sfxObj.transform.SetParent(transform);
             return sfxObj.AddComponent<AudioSource>();

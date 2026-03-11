@@ -17,8 +17,8 @@ MonoBehaviour:
   icon: {fileID: 0}
   keyBinding: 0
   category: 2
-  cooldown: 10
-  staminaCost: 20
+  cooldown: 13
+  staminaCost: 24
   damage: 50
   range: 5
   effectDuration: 2
@@ -53,18 +53,9 @@ MonoBehaviour:
   breakValue: 0
   breakValueMultiplier: 1
   impactScale: 0.45
-  duration: 2
-  tickRate: 0.3
+  duration: 1.8
+  tickRate: 0.35
   radius: 3
   rotationSpeed: 720
-  tickDamage: 15
+  tickDamage: 14
   knockbackForce: 8
-*** Add File: C:\test\Shrimp\Assets\ThirdPersonController\Skills\SkillAssets\SKILL_Whirlwind.asset.meta
-fileFormatVersion: 2
-guid: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
-NativeFormatImporter:
-  externalObjects: {}
-  mainObjectFileID: 11400000
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 

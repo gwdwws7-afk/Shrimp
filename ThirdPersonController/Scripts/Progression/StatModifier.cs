@@ -5,7 +5,7 @@ namespace ThirdPersonController
 {
     public enum StatType
     {
-        // 攻击相关
+// 围绕 伤害 执行该步骤，用于保持上下文语义一致。
         AttackDamage,
         AttackRange,
         AttackAngle,
@@ -14,7 +14,7 @@ namespace ThirdPersonController
         CriticalRate,
         CriticalDamage,
         
-        // 防御相关
+// 围绕 生命 执行该步骤，用于保持上下文语义一致。
         MaxHealth,
         MaxStamina,
         Defense,
@@ -22,23 +22,23 @@ namespace ThirdPersonController
         DodgeRate,
         HealthRegen,
         
-        // 移动相关
+// 围绕 MoveSpeed 执行该步骤，用于保持上下文语义一致。
         MoveSpeed,
         SprintDistance,
         DodgeDistance,
         DodgeInvincibility,
         
-        // 无双相关
+// 围绕 无双 执行该步骤，用于保持上下文语义一致。
         MusouGain,
         
-        // 技能相关
+// 围绕 技能伤害 执行该步骤，用于保持上下文语义一致。
         SkillDamage,
         SkillCooldown,
         SkillRange,
         SkillKnockback,
         SkillStaminaCost,
         
-        // 特殊效果
+// 围绕 LifeSteal 执行该步骤，用于保持上下文语义一致。
         LifeSteal,
         BossDamage,
         ComboDamage,
@@ -48,7 +48,7 @@ namespace ThirdPersonController
         ExtraLife,
         SecondWind,
 
-        // 元素倾向（用于攻击/技能元素）
+// 围绕 AttackElementHeat 执行该步骤，用于保持上下文语义一致。
         AttackElementHeat,
         AttackElementElectric,
         AttackElementToxin,
