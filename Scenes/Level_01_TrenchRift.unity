@@ -158,66 +158,10 @@ RectTransform:
   - {fileID: 1575749601}
   m_Father: {fileID: 1361968052}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-
---- !u!1 &990002001
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 990002002}
-  - component: {fileID: 990002003}
-  m_Layer: 0
-  m_Name: BossSpawn_Eel
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &990002002
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 990002001}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &990002003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 990002001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f4e5061728394a5b6c7d8e901a2b3c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bossPrefab: {fileID: 100000, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
-  prototype: 0
-  bossName: 深渊裂口巨鳗
-  spawnOnStart: 0
-  spawnOffset: {x: 0, y: 0, z: 0}
-  scaleMultiplier: 2.2
-  maxHealth: 3800
-  expReward: 320
-  baseDamage: 28
-  knockback: 6
-  bossHealthBar: {fileID: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -120, y: 0}
-  m_SizeDelta: {x: 60, y: 60}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &22687551
 MonoBehaviour:
@@ -1923,6 +1867,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100000, guid: a7a8f396331a43b3812e2638be1a311b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7013574787686540499}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: a7a8f396331a43b3812e2638be1a311b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7013574787686540500}
   m_SourcePrefab: {fileID: 100100000, guid: a7a8f396331a43b3812e2638be1a311b, type: 3}
 --- !u!1 &857717912
 GameObject:
@@ -2200,13 +2147,84 @@ MonoBehaviour:
   minDistance: 2
   maxDistance: 10
   zoomSpeed: 5
+  gamepadZoomSpeed: 8
+  gamepadZoomDeadzone: 0.15
+  invertGamepadZoom: 0
+  autoRecenter: 1
+  recenterDelay: 1.2
+  recenterYawSpeed: 120
+  recenterPitch: 10
+  targetReacquireInterval: 0.5
+  gamepadLookDeadzone: 0.15
+  gamepadLookExponent: 1.6
+  gamepadYawSpeed: 220
+  gamepadPitchSpeed: 180
   collisionLayers:
     serializedVersion: 2
     m_Bits: 4294967295
   collisionRadius: 0.3
   collisionSmoothTime: 0.05
+  occlusionEnterSmoothTime: 0.03
+  occlusionExitSmoothTime: 0.15
+  occlusionReleaseDelay: 0.08
+  occlusionDistanceDeadband: 0.02
   lockCursor: 1
   invertY: 0
+--- !u!1 &990002001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 990002002}
+  - component: {fileID: 990002003}
+  m_Layer: 0
+  m_Name: BossSpawn_Eel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &990002002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990002001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &990002003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990002001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f4e5061728394a5b6c7d8e901a2b3c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bossPrefab: {fileID: 5352883075750062607, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
+  prototype: 0
+  bossName: "\u6DF1\u6E0A\u88C2\u53E3\u5DE8\u9CD7"
+  spawnOnStart: 0
+  spawnOffset: {x: 0, y: 0, z: 0}
+  scaleMultiplier: 2.2
+  maxHealth: 3800
+  expReward: 320
+  baseDamage: 28
+  knockback: 6
+  bossHealthBar: {fileID: 0}
 --- !u!1 &1010105436
 GameObject:
   m_ObjectHideFlags: 0
@@ -3104,6 +3122,8 @@ MonoBehaviour:
   skillBar: {fileID: 1361968053}
   damageTextParent: {fileID: 2071014279}
   damageTextPrefab: {fileID: 0}
+  initialDamageTextPoolSize: 24
+  maxDamageTextPoolSize: 96
 --- !u!4 &1326578367
 Transform:
   m_ObjectHideFlags: 0
@@ -3423,10 +3443,21 @@ MonoBehaviour:
   keyBindings:
   - Q
   - W
-  - E
+  - C
   - R
   - T
   - F
+  useDynamicInputHints: 1
+  includeGamepadOnSkillHints: 0
+  inputHintRefreshInterval: 0.25
+  skillActionNames:
+  - Skill1
+  - Skill2
+  - Skill3
+  - Skill4
+  - Skill5
+  - Skill6
+  inputHandler: {fileID: 0}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   cooldownColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   readyColor: {r: 0.5, g: 1, b: 0.5, a: 1}
@@ -3436,6 +3467,13 @@ MonoBehaviour:
   gatherColor: {r: 0.8, g: 0.6, b: 1, a: 1}
   showLegend: 1
   legendOffsetY: -90
+  attackInputHintText: {fileID: 0}
+  attackInputHintLabel: "A: \u5DE6\u952E  B: \u53F3\u952E"
+  attackActionName: Attack
+  heavyAttackActionName: HeavyAttack
+  attackFallbackKey: 323
+  heavyAttackFallbackKey: 324
+  includeGamepadOnAttackHint: 1
   skillManager: {fileID: 0}
 --- !u!1 &1373681579
 GameObject:
@@ -4049,10 +4087,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyPrefab: {fileID: 2085776811}
   player: {fileID: 543450653653644993}
+  inputHandler: {fileID: 0}
   spawnCount: 10
   spawnRadius: 5
   spawnHeight: 0.5
-  enemyHealth: 50
+  spawnActionName: DebugSpawnerWave
+  stressSpawnActionName: DebugSpawnerStress
+  clearActionName: DebugSpawnerClear
+  spawnKey: 103
+  stressSpawnKey: 289
+  clearKey: 127
   showDebugInfo: 1
 --- !u!4 &1753198173
 Transform:
@@ -5018,9 +5062,9 @@ MonoBehaviour:
   autoStartFirst: 1
   triggerLevelCompleteOnFinish: 1
   triggerVictoryOnFinish: 1
-  levelId: 1
-  deferCompletionUntilBoss: 1
-  bossSpawnPoint: {fileID: 990002003}
+  levelId: 101
+  deferCompletionUntilBoss: 0
+  bossSpawnPoint: {fileID: 0}
 --- !u!1 &2800000100
 GameObject:
   m_ObjectHideFlags: 0
@@ -5088,6 +5132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1c6f1b8f7a54e0d9d0d8b1c44f4e7b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  strongholdId: 
   activeOnStart: 1
   startOnPlayerEnter: 0
   playerTag: Player
@@ -5097,6 +5142,7 @@ MonoBehaviour:
   - {fileID: 2800000113}
   - {fileID: 2800000115}
   - {fileID: 2800000117}
+  reinforcementPoints: []
   spawnRadius: 6
   spawnHeight: 0.5
   spawnPointJitter: 0.4
@@ -5107,6 +5153,8 @@ MonoBehaviour:
   facePlayerOnSpawn: 1
   usePooling: 1
   waveCompleteDelay: 0.6
+  autoFindDirector: 1
+  spawnDirector: {fileID: 0}
   waves:
   - name: Wave 1
     startDelay: 0.4
@@ -5116,6 +5164,7 @@ MonoBehaviour:
     - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
       count: 6
       spawnIntervalOverride: -1
+      archetypeOverride: {fileID: 0}
     eliteTrigger:
       enabled: 0
       triggerOnRemaining: 2
@@ -5125,6 +5174,15 @@ MonoBehaviour:
       - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
         count: 2
         spawnIntervalOverride: -1
+        archetypeOverride: {fileID: 0}
+    events: []
+    objective:
+      objectiveType: 0
+      targetValue: 0
+      timeLimit: 0
+      isOptional: 0
+    useTimeLimit: 0
+    waveTimeLimit: 120
   - name: Wave 2
     startDelay: 0.5
     spawnInterval: 0.25
@@ -5133,9 +5191,11 @@ MonoBehaviour:
     - prefab: {fileID: 100000, guid: f1c2c9f4a8f54c5b8f9a12d347c2e5ab, type: 3}
       count: 8
       spawnIntervalOverride: -1
+      archetypeOverride: {fileID: 0}
     - prefab: {fileID: 100000, guid: 4f8a2c7e1b9d5f0a3c6e8d2f1a4b7c9e, type: 3}
       count: 2
       spawnIntervalOverride: -1
+      archetypeOverride: {fileID: 0}
     eliteTrigger:
       enabled: 0
       triggerOnRemaining: 2
@@ -5145,6 +5205,7 @@ MonoBehaviour:
       - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
         count: 3
         spawnIntervalOverride: -1
+        archetypeOverride: {fileID: 0}
     events:
     - name: Reinforcement
       eventType: 0
@@ -5159,11 +5220,26 @@ MonoBehaviour:
       - prefab: {fileID: 100000, guid: f1c2c9f4a8f54c5b8f9a12d347c2e5ab, type: 3}
         count: 3
         spawnIntervalOverride: -1
+        archetypeOverride: {fileID: 0}
       holdPoint: {fileID: 0}
       holdRadius: 3
       holdDuration: 6
       holdDecayRate: 1
       showHoldMarker: 1
+      defenseTarget: {fileID: 0}
+      defenseTargetPrefab: {fileID: 0}
+      defenseTargetHealth: 200
+      spawnDefenseTarget: 1
+      failOnTargetDestroyed: 1
+      assignTargetToSpawnedEnemies: 1
+      defenseTargetId: 
+    objective:
+      objectiveType: 0
+      targetValue: 0
+      timeLimit: 0
+      isOptional: 0
+    useTimeLimit: 0
+    waveTimeLimit: 120
   - name: Wave 3
     startDelay: 0.5
     spawnInterval: 0.22
@@ -5172,9 +5248,11 @@ MonoBehaviour:
     - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
       count: 10
       spawnIntervalOverride: -1
+      archetypeOverride: {fileID: 0}
     - prefab: {fileID: 100000, guid: 9d6c5b4a3e2f1d0c8b7a6f5e4d3c2b1a, type: 3}
       count: 2
       spawnIntervalOverride: -1
+      archetypeOverride: {fileID: 0}
     eliteTrigger:
       enabled: 0
       triggerOnRemaining: 2
@@ -5184,6 +5262,7 @@ MonoBehaviour:
       - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
         count: 4
         spawnIntervalOverride: -1
+        archetypeOverride: {fileID: 0}
     events:
     - name: Hold Point
       eventType: 2
@@ -5200,6 +5279,20 @@ MonoBehaviour:
       holdDuration: 45
       holdDecayRate: 1
       showHoldMarker: 1
+      defenseTarget: {fileID: 0}
+      defenseTargetPrefab: {fileID: 0}
+      defenseTargetHealth: 200
+      spawnDefenseTarget: 1
+      failOnTargetDestroyed: 1
+      assignTargetToSpawnedEnemies: 1
+      defenseTargetId: 
+    objective:
+      objectiveType: 0
+      targetValue: 0
+      timeLimit: 0
+      isOptional: 0
+    useTimeLimit: 0
+    waveTimeLimit: 120
   - name: Wave 4
     startDelay: 0.6
     spawnInterval: 0.2
@@ -5208,9 +5301,11 @@ MonoBehaviour:
     - prefab: {fileID: 100000, guid: 6d7e5a3b91b64d8d8d3e4b2a7f9c1e02, type: 3}
       count: 12
       spawnIntervalOverride: -1
+      archetypeOverride: {fileID: 0}
     - prefab: {fileID: 100000, guid: 2a7f1d5c9b3e4f6a8c0d1e2f3a4b5c6d, type: 3}
       count: 2
       spawnIntervalOverride: -1
+      archetypeOverride: {fileID: 0}
     eliteTrigger:
       enabled: 0
       triggerOnRemaining: 3
@@ -5220,6 +5315,7 @@ MonoBehaviour:
       - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
         count: 4
         spawnIntervalOverride: -1
+        archetypeOverride: {fileID: 0}
     events:
     - name: Reinforcement
       eventType: 0
@@ -5234,6 +5330,7 @@ MonoBehaviour:
       - prefab: {fileID: 100000, guid: f1c2c9f4a8f54c5b8f9a12d347c2e5ab, type: 3}
         count: 4
         spawnIntervalOverride: -1
+        archetypeOverride: {fileID: 0}
       holdPoint: {fileID: 0}
       holdRadius: 6
       holdDuration: 8
@@ -5245,6 +5342,22 @@ MonoBehaviour:
       spawnDefenseTarget: 1
       failOnTargetDestroyed: 1
       assignTargetToSpawnedEnemies: 1
+      defenseTargetId: 
+    objective:
+      objectiveType: 0
+      targetValue: 0
+      timeLimit: 0
+      isOptional: 0
+    useTimeLimit: 0
+    waveTimeLimit: 120
+  useObjectives: 1
+  strongholdObjective:
+    objectiveType: 0
+    targetValue: 0
+    timeLimit: 0
+    isOptional: 0
+  comboTarget: 50
+  requireNoDamage: 0
 --- !u!1 &2800000110
 GameObject:
   m_ObjectHideFlags: 0
@@ -5439,6 +5552,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1c6f1b8f7a54e0d9d0d8b1c44f4e7b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  strongholdId: 
   activeOnStart: 0
   startOnPlayerEnter: 1
   playerTag: Player
@@ -5449,6 +5563,7 @@ MonoBehaviour:
   - {fileID: 2800000215}
   - {fileID: 2800000217}
   - {fileID: 2800000219}
+  reinforcementPoints: []
   spawnRadius: 7
   spawnHeight: 0.5
   spawnPointJitter: 0.5
@@ -5459,6 +5574,8 @@ MonoBehaviour:
   facePlayerOnSpawn: 1
   usePooling: 1
   waveCompleteDelay: 0.6
+  autoFindDirector: 1
+  spawnDirector: {fileID: 0}
   waves:
   - name: Wave 1
     startDelay: 0.5
@@ -5468,6 +5585,7 @@ MonoBehaviour:
     - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
       count: 8
       spawnIntervalOverride: -1
+      archetypeOverride: {fileID: 0}
     eliteTrigger:
       enabled: 0
       triggerOnRemaining: 4
@@ -5477,6 +5595,15 @@ MonoBehaviour:
       - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
         count: 2
         spawnIntervalOverride: -1
+        archetypeOverride: {fileID: 0}
+    events: []
+    objective:
+      objectiveType: 0
+      targetValue: 0
+      timeLimit: 0
+      isOptional: 0
+    useTimeLimit: 0
+    waveTimeLimit: 120
   - name: Wave 2
     startDelay: 0.5
     spawnInterval: 0.24
@@ -5485,9 +5612,11 @@ MonoBehaviour:
     - prefab: {fileID: 100000, guid: f1c2c9f4a8f54c5b8f9a12d347c2e5ab, type: 3}
       count: 10
       spawnIntervalOverride: -1
+      archetypeOverride: {fileID: 0}
     - prefab: {fileID: 100000, guid: 4f8a2c7e1b9d5f0a3c6e8d2f1a4b7c9e, type: 3}
       count: 2
       spawnIntervalOverride: -1
+      archetypeOverride: {fileID: 0}
     eliteTrigger:
       enabled: 0
       triggerOnRemaining: 3
@@ -5497,6 +5626,15 @@ MonoBehaviour:
       - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
         count: 3
         spawnIntervalOverride: -1
+        archetypeOverride: {fileID: 0}
+    events: []
+    objective:
+      objectiveType: 0
+      targetValue: 0
+      timeLimit: 0
+      isOptional: 0
+    useTimeLimit: 0
+    waveTimeLimit: 120
   - name: Wave 3
     startDelay: 0.6
     spawnInterval: 0.22
@@ -5505,9 +5643,11 @@ MonoBehaviour:
     - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
       count: 12
       spawnIntervalOverride: -1
+      archetypeOverride: {fileID: 0}
     - prefab: {fileID: 100000, guid: 9d6c5b4a3e2f1d0c8b7a6f5e4d3c2b1a, type: 3}
       count: 2
       spawnIntervalOverride: -1
+      archetypeOverride: {fileID: 0}
     eliteTrigger:
       enabled: 0
       triggerOnRemaining: 4
@@ -5517,6 +5657,7 @@ MonoBehaviour:
       - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
         count: 4
         spawnIntervalOverride: -1
+        archetypeOverride: {fileID: 0}
     events:
     - name: Chase
       eventType: 1
@@ -5531,11 +5672,26 @@ MonoBehaviour:
       - prefab: {fileID: 100000, guid: f1c2c9f4a8f54c5b8f9a12d347c2e5ab, type: 3}
         count: 2
         spawnIntervalOverride: -1
+        archetypeOverride: {fileID: 0}
       holdPoint: {fileID: 0}
       holdRadius: 3
       holdDuration: 6
       holdDecayRate: 1
       showHoldMarker: 0
+      defenseTarget: {fileID: 0}
+      defenseTargetPrefab: {fileID: 0}
+      defenseTargetHealth: 200
+      spawnDefenseTarget: 1
+      failOnTargetDestroyed: 1
+      assignTargetToSpawnedEnemies: 1
+      defenseTargetId: 
+    objective:
+      objectiveType: 0
+      targetValue: 0
+      timeLimit: 0
+      isOptional: 0
+    useTimeLimit: 0
+    waveTimeLimit: 120
   - name: Wave 4
     startDelay: 0.6
     spawnInterval: 0.2
@@ -5544,9 +5700,11 @@ MonoBehaviour:
     - prefab: {fileID: 100000, guid: 6d7e5a3b91b64d8d8d3e4b2a7f9c1e02, type: 3}
       count: 14
       spawnIntervalOverride: -1
+      archetypeOverride: {fileID: 0}
     - prefab: {fileID: 100000, guid: 2a7f1d5c9b3e4f6a8c0d1e2f3a4b5c6d, type: 3}
       count: 2
       spawnIntervalOverride: -1
+      archetypeOverride: {fileID: 0}
     eliteTrigger:
       enabled: 0
       triggerOnRemaining: 4
@@ -5556,6 +5714,7 @@ MonoBehaviour:
       - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
         count: 5
         spawnIntervalOverride: -1
+        archetypeOverride: {fileID: 0}
     events:
     - name: Hold Point
       eventType: 2
@@ -5572,6 +5731,20 @@ MonoBehaviour:
       holdDuration: 8
       holdDecayRate: 1
       showHoldMarker: 1
+      defenseTarget: {fileID: 0}
+      defenseTargetPrefab: {fileID: 0}
+      defenseTargetHealth: 200
+      spawnDefenseTarget: 1
+      failOnTargetDestroyed: 1
+      assignTargetToSpawnedEnemies: 1
+      defenseTargetId: 
+    objective:
+      objectiveType: 0
+      targetValue: 0
+      timeLimit: 0
+      isOptional: 0
+    useTimeLimit: 0
+    waveTimeLimit: 120
   - name: Wave 5
     startDelay: 0.7
     spawnInterval: 0.18
@@ -5580,6 +5753,7 @@ MonoBehaviour:
     - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
       count: 16
       spawnIntervalOverride: -1
+      archetypeOverride: {fileID: 0}
     eliteTrigger:
       enabled: 0
       triggerOnRemaining: 5
@@ -5589,6 +5763,7 @@ MonoBehaviour:
       - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
         count: 6
         spawnIntervalOverride: -1
+        archetypeOverride: {fileID: 0}
     events:
     - name: Reinforcement
       eventType: 0
@@ -5603,11 +5778,34 @@ MonoBehaviour:
       - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
         count: 4
         spawnIntervalOverride: -1
+        archetypeOverride: {fileID: 0}
       holdPoint: {fileID: 0}
       holdRadius: 3
       holdDuration: 6
       holdDecayRate: 1
       showHoldMarker: 0
+      defenseTarget: {fileID: 0}
+      defenseTargetPrefab: {fileID: 0}
+      defenseTargetHealth: 200
+      spawnDefenseTarget: 1
+      failOnTargetDestroyed: 1
+      assignTargetToSpawnedEnemies: 1
+      defenseTargetId: 
+    objective:
+      objectiveType: 0
+      targetValue: 0
+      timeLimit: 0
+      isOptional: 0
+    useTimeLimit: 0
+    waveTimeLimit: 120
+  useObjectives: 1
+  strongholdObjective:
+    objectiveType: 0
+    targetValue: 0
+    timeLimit: 0
+    isOptional: 0
+  comboTarget: 50
+  requireNoDamage: 0
 --- !u!1 &2800000210
 GameObject:
   m_ObjectHideFlags: 0
@@ -5777,6 +5975,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2900000001}
   - component: {fileID: 2900000002}
+  - component: {fileID: 2900000003}
   m_Layer: 0
   m_Name: LevelFlow
   m_TagString: Untagged
@@ -5814,15 +6013,17 @@ MonoBehaviour:
   levelData: {fileID: 11400000, guid: 3e4f5061728394a5b6c7d8e901a2b3c4, type: 2}
   chapterData: {fileID: 11400000, guid: b4e5f6a7c8d9e0f1a2b3c4d5e6f7a8b9, type: 2}
   mainMenuSceneName: MainMenu
-  levelId: 1
+  levelId: 101
+  menuActionName: MenuCancel
   menuKey: 27
+  inputHandler: {fileID: 0}
   levelTitle: Trench Rift
   showOverlay: 1
   showLevelIntro: 1
   introDuration: 3
   flowUI: {fileID: 0}
   comboRewards: {fileID: 0}
-  runtimeConfigurator: {fileID: 0}
+  runtimeConfigurator: {fileID: 2900000003}
   questDatabase: {fileID: 11400000, guid: c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0, type: 2}
   progressionMilestones: {fileID: 11400000, guid: d0c1b2a3f4e5d6c7b8a9f0e1d2c3b4a5, type: 2}
   longTermProgression: {fileID: 0}
@@ -5831,6 +6032,48 @@ MonoBehaviour:
   levelTime: 0
   ensureLightingOnStart: 1
   fallbackLightIntensity: 1
+--- !u!114 &2900000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a3b4c5d6e7f8091a2b3c4d5e6f70819, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levelData: {fileID: 11400000, guid: 3e4f5061728394a5b6c7d8e901a2b3c4, type: 2}
+  chapterData: {fileID: 0}
+  levelFlow: {fileID: 2900000002}
+  sequenceController: {fileID: 2800000002}
+  questSystem: {fileID: 0}
+  questDatabase: {fileID: 0}
+  rewardSystem: {fileID: 0}
+  progressionRewardSystem: {fileID: 0}
+  economyConfig: {fileID: 0}
+  bossSpawnPoint: {fileID: 0}
+  ensureShopAndConsumables: 1
+  ensureEconomyUI: 1
+  ensureHudHints: 1
+  ensureRuntimeWiring: 1
+  ensurePlayerExperienceSystem: 1
+  ensurePlayerSkillManager: 1
+  ensureQuestTracker: 1
+  ensureStrongholdWavePanel: 1
+  ensureRewardSaveWriteback: 1
+  playerObject: {fileID: 0}
+  experienceSystem: {fileID: 0}
+  skillManager: {fileID: 0}
+  questTracker: {fileID: 0}
+  strongholdWavePanel: {fileID: 0}
+  progressionSaveBridge: {fileID: 0}
+  autoApplyOnAwake: 1
+  applyStrongholds: 1
+  includeOptionalStrongholds: 0
+  applyQuests: 1
+  applyRewards: 1
 --- !u!1 &3000000000
 GameObject:
   m_ObjectHideFlags: 0
@@ -5876,17 +6119,47 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventory: {fileID: 543450653653645005}
+  pearlDatabase: {fileID: 0}
   pickupPrefab: {fileID: 100000, guid: 0a1b2c3d4e5f60718293a4b5c6d7e8f9, type: 3}
   dropChance: 0.25
   dropTable:
   - pearl: {fileID: 11400000, guid: d1f2c3b4a5e6f7890abc1d2e3f4a5b6c, type: 2}
     weight: 1
+    restrictedToEnemyTypes: 
   - pearl: {fileID: 11400000, guid: a2b3c4d5e6f708192a3b4c5d6e7f8091, type: 2}
     weight: 1
+    restrictedToEnemyTypes: 
   - pearl: {fileID: 11400000, guid: b3c4d5e6f70918293b4c5d6e7f8091a2, type: 2}
     weight: 1
+    restrictedToEnemyTypes: 
+  useEnemyConfig: 1
+  enemyDropConfigs: []
+  enableConsumableDrops: 1
+  useConsumableConfig: 0
+  consumableInventory: {fileID: 0}
+  consumableCatalog: {fileID: 0}
+  consumableDropChance: 0.12
+  consumableDropMultiplier: 1
+  autoPopulateConsumableTable: 1
+  consumableDropTable: []
+  consumableDropConfigs: []
+  enableCreditDrops: 1
+  useCreditConfig: 0
+  wallet: {fileID: 0}
+  creditDropChance: 0.35
+  creditDropMultiplier: 1
+  creditAmountMultiplier: 1
+  autoPopulateCreditTable: 1
+  creditDropTable: []
+  creditDropConfigs: []
   spawnHeightOffset: 0.35
   scatterRadius: 0.45
+  useProgressionCaps: 1
+  maxRarityCap: 3
+  dropChanceMultiplier: 1
+  economyDropMultiplier: 1
+  levelDropMultiplier: 1
+  levelDifficulty: 1
 --- !u!1 &3100000000
 GameObject:
   m_ObjectHideFlags: 0
@@ -5934,8 +6207,11 @@ MonoBehaviour:
   talentTree: {fileID: 543450653653645006}
   inventory: {fileID: 543450653653645005}
   equipment: {fileID: 543450653653645004}
-  toggleKey: 116
+  toggleActionName: ToggleTalent
+  toggleKey: 117
   pauseGameWhenOpen: 1
+  allowToggle: 1
+  inputHandler: {fileID: 0}
 --- !u!1 &3200000000
 GameObject:
   m_ObjectHideFlags: 0
@@ -5985,6 +6261,24 @@ MonoBehaviour:
   ringSlots: 10
   ringRadius: 3.2
   ringJitter: 0.25
+  separateMeleeAndRangedLayers: 1
+  meleeRingRadiusMultiplier: 0.9
+  rangedRingRadiusMultiplier: 1.3
+  overflowRadiusStep: 0.45
+  avoidSlotConflicts: 1
+  scaleAttackersWithNearby: 1
+  maxActiveAttackersCap: 8
+  attackersPerNearbyEnemy: 6
+  useFairTokenQueue: 1
+  maxQueueGrantsPerTick: 8
+  queueRequestFreshWindow: 0.75
+  nearbyCountRadius: 12
+  nearbyCountInterval: 0.5
+  debugTokenRequests: 0
+  debugTokenGranted: 0
+  debugTokenRejected: 0
+  debugTokenReleases: 0
+  debugQueuedAttackers: 0
 --- !u!1 &3300000000
 GameObject:
   m_ObjectHideFlags: 0
@@ -7581,6 +7875,7 @@ MonoBehaviour:
   sprintCostPerSecond: 11
   isExhausted: 0
   exhaustionDuration: 2.25
+  allowRecoveryWhileExhausted: 1
 --- !u!114 &543450653653645001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7598,6 +7893,9 @@ MonoBehaviour:
   attackCooldown: 0.5
   attackDamage: 25
   attackKnockback: 5
+  attackSpeed: 1
+  criticalRate: 0.05
+  criticalDamage: 1.5
   damageCurveProfile: {fileID: 0}
   comboDefinition: {fileID: 11400000, guid: f14d62763c639e04ebf7598c4b2e6520, type: 2}
   useAnimationEvents: 1
@@ -7609,10 +7907,16 @@ MonoBehaviour:
   heavyKnockbackMultiplier: 1.35
   heavyRangeMultiplier: 1.08
   heavyRadiusMultiplier: 1.05
+  heavyHitStopMultiplier: 1.2
+  lightImpactScale: 0.3
+  heavyImpactScale: 0.35
+  berserkImpactMultiplier: 2
   maxComboCount: 50
   comboResetTime: 1.5
   comboWindowTime: 0.8
   maxComboStepsUnlocked: 0
+  allowHeavyOpener: 1
+  heavyOpenerStepIndex: 0
   tier1DamageMultiplier: 1.08
   tier2DamageMultiplier: 1.18
   tier3DamageMultiplier: 1.32
@@ -7904,6 +8208,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 928111301263920612, guid: 8732ca168c916584cb02e6ff6b83b2ff, type: 3}
+      propertyPath: skill3Key
+      value: 99
+      objectReference: {fileID: 0}
     - target: {fileID: 5547784804453351938, guid: 8732ca168c916584cb02e6ff6b83b2ff, type: 3}
       propertyPath: m_Height
       value: 1.5
@@ -8057,6 +8365,12 @@ MonoBehaviour:
   dropChance: 0.3
   enemyType: 0
   expReward: 1
+  resistPhysical: 0
+  resistHeat: 0
+  resistElectric: 0
+  resistToxin: 0
+  resistCorrosion: 0
+  defense: 0
 --- !u!114 &7013574787686540498
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8102,6 +8416,32 @@ MonoBehaviour:
   knockdownTrigger: Knockdown
   useCrowdCoordinator: 1
   ringStandoffDistance: 2.4
+  canDodge: 0
+  dodgeChance: 0.1
+  canBlock: 0
+  blockChance: 0.1
+  canCharge: 0
+  chargeSpeed: 10
+  chargeWindup: 0.5
+  canFlee: 0
+  fleeHealthThreshold: 0.2
+  dodgeDistance: 2.4
+  dodgeDuration: 0.28
+  dodgeCooldown: 2.2
+  blockDuration: 0.45
+  blockCooldown: 2.8
+  blockDefenseBonus: 6
+  chargeChance: 0.2
+  chargeMinDistance: 1.8
+  chargeMaxDistance: 4.2
+  chargeDuration: 0.45
+  chargeCooldown: 3.5
+  fleeDistance: 4.8
+  fleeDuration: 1.1
+  fleeCooldown: 6
+  useAttackPatterns: 0
+  availablePatterns: []
+  attackPatterns: []
   aiUpdateInterval: 0.08
   aiUpdateJitter: 0.02
   nearUpdateInterval: 0.05
@@ -8109,6 +8449,34 @@ MonoBehaviour:
   nearUpdateDistance: 8
   farUpdateDistance: 18
   farAnimationUpdateInterval: 0.2
+  enableDistanceLod: 1
+  lodFullDistance: 9
+  lodSimplifiedDistance: 22
+  simplifiedDecisionIntervalMultiplier: 1.4
+  minimalDecisionIntervalMultiplier: 2.4
+  simplifiedAnimationIntervalMultiplier: 1.5
+  minimalAnimationIntervalMultiplier: 2.8
+  minimalTargetRescanInterval: 0.35
+  disableAdvancedActionsInMinimal: 1
+  enableBatchDecisionTick: 1
+  simplifiedBatchModulo: 2
+  minimalBatchModulo: 4
+  scaleDecisionIntervalWithCrowd: 1
+  crowdSlowdownStart: 12
+  crowdSlowdownFull: 40
+  maxCrowdUpdateMultiplier: 2
+  maxDecisionInterval: 0.25
+  debugCurrentState: Patrol
+  debugStateElapsed: 0
+  debugLastDecisionInterval: 0
+  debugLastDistanceToTarget: 0
+  debugDecisionCount: 0
+  debugAttackSequenceCount: 0
+  debugHitsAppliedCount: 0
+  debugTokenAcquireSuccessCount: 0
+  debugTokenAcquireFailCount: 0
+  debugUpdateLod: Full
+  debugBatchDecisionSkipped: 0
 --- !u!114 &7013574787686540499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8132,6 +8500,26 @@ MonoBehaviour:
   knockdownRecoverTime: 0.6
   flinchTrigger: Hit
   knockdownTrigger: Knockdown
+--- !u!114 &7013574787686540500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2085776811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03df1be736c54b1989c75236ab679312, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  archetype: {fileID: 11400000, guid: 3df7c976ac8d42a688bad0f7e43e0948, type: 2}
+  applyOnStart: 1
+  applyOnSpawned: 1
+  applyHealth: 1
+  applyAI: 1
+  applyCrowd: 1
+  applyHitReaction: 1
+  applyNavMesh: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -8157,3 +8545,4 @@ SceneRoots:
   - {fileID: 3300000001}
   - {fileID: 3400000001}
   - {fileID: 4500000001}
+  - {fileID: 990002002}

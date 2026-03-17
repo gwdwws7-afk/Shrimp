@@ -5,6 +5,7 @@ namespace ThirdPersonController
     public class UI_EconomyOverlay : MonoBehaviour
     {
         [Header("Input")]
+        public string toggleActionName = "ToggleEconomy";
         public KeyCode toggleKey = KeyCode.Y;
         public bool allowToggle = true;
         public bool pauseGameWhenOpen = false;
@@ -75,14 +76,24 @@ namespace ThirdPersonController
                 return;
             }
 
-            bool togglePressed = inputHandler != null
-                ? inputHandler.WasUnifiedKeyPressedThisFrame(toggleKey)
-                : PlayerInputHandler.ReadUnifiedKeyDown(toggleKey);
+            PlayerInputHandler handler = ResolveInputHandler();
+            bool togglePressed = handler != null && handler.WasActionPressedThisFrame(toggleActionName, toggleKey);
 
             if (togglePressed)
             {
                 Toggle();
             }
+        }
+
+        private PlayerInputHandler ResolveInputHandler()
+        {
+            if (inputHandler != null)
+            {
+                return inputHandler;
+            }
+
+            inputHandler = PlayerInputHandler.ResolveActiveInstance();
+            return inputHandler;
         }
 
         private void Toggle()
@@ -137,13 +148,13 @@ namespace ThirdPersonController
             GUILayout.EndScrollView();
 
             GUILayout.FlexibleSpace();
-            GUILayout.Label($"按 {toggleKey} 关闭", SmallStyle());
+            GUILayout.Label($"按 {GetToggleBindingLabel()} 关闭", SmallStyle());
             GUILayout.EndArea();
         }
 
         private void DrawQuickSlots()
         {
-            GUILayout.Label("快捷使用 (1-3)", SectionStyle());
+            GUILayout.Label($"快捷使用 ({GetQuickSlotHint()})", SectionStyle());
             if (quickSlots == null)
             {
                 GUILayout.Label("未找到快捷栏组件", SmallStyle());
@@ -166,6 +177,39 @@ namespace ThirdPersonController
                 }
                 GUILayout.EndHorizontal();
             }
+        }
+
+        private string GetToggleBindingLabel()
+        {
+            PlayerInputHandler handler = ResolveInputHandler();
+            if (handler == null)
+            {
+                return PlayerInputHandler.GetFriendlyKeyLabel(toggleKey);
+            }
+
+            string binding = handler.GetActionBindingLabel(toggleActionName, toggleKey);
+            return string.IsNullOrEmpty(binding)
+                ? PlayerInputHandler.GetFriendlyKeyLabel(toggleKey)
+                : binding;
+        }
+
+        private string GetQuickSlotHint()
+        {
+            PlayerInputHandler handler = ResolveInputHandler();
+            if (handler == null)
+            {
+                return "1/2/3";
+            }
+
+            string slot1 = handler.GetActionBindingLabel("QuickSlot1", KeyCode.Alpha1, includeGamepad: false);
+            string slot2 = handler.GetActionBindingLabel("QuickSlot2", KeyCode.Alpha2, includeGamepad: false);
+            string slot3 = handler.GetActionBindingLabel("QuickSlot3", KeyCode.Alpha3, includeGamepad: false);
+            if (string.IsNullOrEmpty(slot1) || string.IsNullOrEmpty(slot2) || string.IsNullOrEmpty(slot3))
+            {
+                return "1/2/3";
+            }
+
+            return $"{slot1}/{slot2}/{slot3}";
         }
 
         private void DrawCatalogList()

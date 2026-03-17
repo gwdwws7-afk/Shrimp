@@ -54,18 +54,28 @@ namespace ThirdPersonController
                 return;
             }
 
+            PlayerInputHandler handler = ResolveInputHandler();
             int count = Mathf.Min(slotKeys.Length, slotItemIds.Length);
             for (int i = 0; i < count; i++)
             {
-                bool pressed = inputHandler != null
-                    ? inputHandler.WasQuickSlotPressedThisFrame(i)
-                    : PlayerInputHandler.ReadUnifiedKeyDown(slotKeys[i]);
+                bool pressed = handler != null && handler.WasQuickSlotPressedThisFrame(i);
 
                 if (pressed)
                 {
                     UseSlot(i);
                 }
             }
+        }
+
+        private PlayerInputHandler ResolveInputHandler()
+        {
+            if (inputHandler != null)
+            {
+                return inputHandler;
+            }
+
+            inputHandler = PlayerInputHandler.ResolveActiveInstance();
+            return inputHandler;
         }
 
         public string GetSlotItemId(int index)

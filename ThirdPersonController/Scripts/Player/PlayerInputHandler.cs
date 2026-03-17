@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -14,6 +15,16 @@ namespace ThirdPersonController
     public class PlayerInputHandler : MonoBehaviour
     {
         public static PlayerInputHandler ActiveInstance { get; private set; }
+
+        public static PlayerInputHandler ResolveActiveInstance()
+        {
+            if (ActiveInstance != null)
+            {
+                return ActiveInstance;
+            }
+
+            return FindObjectOfType<PlayerInputHandler>();
+        }
 
         [Header("Input Settings (Legacy Fallback)")]
         public string horizontalAxis = "Horizontal";
@@ -32,7 +43,7 @@ namespace ThirdPersonController
         public KeyCode dodgeKey = KeyCode.LeftAlt;
         public KeyCode skill1Key = KeyCode.Q;
         public KeyCode skill2Key = KeyCode.W;
-        public KeyCode skill3Key = KeyCode.E;
+        public KeyCode skill3Key = KeyCode.C;
         public KeyCode skill4Key = KeyCode.R;
         public KeyCode skill5Key = KeyCode.T;
         public KeyCode skill6Key = KeyCode.F;
@@ -47,6 +58,10 @@ namespace ThirdPersonController
         public float mouseLookScale = 1f;
         public float gamepadLookScale = 140f;
         public string rebindSaveKey = "ThirdPersonController.PlayerInput.Rebinds";
+
+        [Header("Debug Hotkeys")]
+        public bool enableDebugHotkeys = true;
+        public bool logBindingConflicts = true;
 #endif
 
         [Header("Cursor Settings")]
@@ -69,9 +84,11 @@ namespace ThirdPersonController
         public float GamepadZoomAxis { get; private set; }
         private readonly bool[] skillPressedThisFrame = new bool[6];
         private readonly bool[] quickSlotPressedThisFrame = new bool[3];
+        private bool inputActionsUnavailableLogged;
 
 #if ENABLE_INPUT_SYSTEM
         private InputActionMap gameplayActionMap;
+        private InputActionMap debugActionMap;
         private InputAction moveAction;
         private InputAction lookAction;
         private InputAction jumpAction;
@@ -86,6 +103,12 @@ namespace ThirdPersonController
         private InputAction[] skillActions;
         private InputAction[] quickSlotActions;
         private InputActionRebindingExtensions.RebindingOperation rebindOperation;
+        private static bool bindingConflictsLogged;
+        private static readonly HashSet<string> keyboardBindingConflictWhitelist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            BuildConflictWhitelistKey("<keyboard>/r", "Gameplay.MenuRetry", "Gameplay.Skill4"),
+            BuildConflictWhitelistKey("<keyboard>/escape", "Gameplay.MenuCancel", "Gameplay.QuitMenu"),
+        };
 #endif
 
         private void Awake()
@@ -93,6 +116,12 @@ namespace ThirdPersonController
             ActiveInstance = this;
 
 #if ENABLE_INPUT_SYSTEM
+            if (!useInputActions)
+            {
+                useInputActions = true;
+                Debug.LogWarning("[Input] Legacy backend has been removed. Forcing Input Actions mode on PlayerInputHandler.");
+            }
+
             if (useInputActions)
             {
                 BuildInputActions();
@@ -104,9 +133,10 @@ namespace ThirdPersonController
         private void OnEnable()
         {
 #if ENABLE_INPUT_SYSTEM
-            if (useInputActions)
+            if (useInputActions && EnsureInputActionsReady())
             {
                 gameplayActionMap?.Enable();
+                SetActionMapEnabled(debugActionMap, ShouldEnableDebugHotkeys());
             }
 #endif
 
@@ -120,7 +150,7 @@ namespace ThirdPersonController
         private void Update()
         {
 #if ENABLE_INPUT_SYSTEM
-            if (useInputActions && gameplayActionMap != null)
+            if (useInputActions && EnsureInputActionsReady())
             {
                 ReadInputActions();
                 HandleCursorToggleInputActions();
@@ -128,55 +158,84 @@ namespace ThirdPersonController
             }
 #endif
 
-            ReadLegacyInput();
-            HandleCursorToggleLegacy();
+            // Input System unavailable or disabled: keep frame input deterministic (all false/zero).
+            ClearFrameInputState();
+            HandleCursorToggleUnifiedFallback();
         }
 
-        private void ReadLegacyInput()
+        private void ClearFrameInputState()
         {
-            float horizontal = Input.GetAxisRaw(horizontalAxis);
-            float vertical = Input.GetAxisRaw(verticalAxis);
-            MoveInput = new Vector2(horizontal, vertical).normalized;
-
-            float mouseX = Input.GetAxis(mouseXAxis);
-            float mouseY = Input.GetAxis(mouseYAxis);
-            LookInput = new Vector2(mouseX, mouseY);
-
-            JumpPressed = Input.GetKeyDown(jumpKey);
-            JumpHeld = Input.GetKey(jumpKey);
-            SprintPressed = Input.GetKey(sprintKey);
-            CrouchPressed = Input.GetKey(crouchKey);
-            AttackPressed = Input.GetKeyDown(attackKey);
-            HeavyAttackPressed = Input.GetKeyDown(heavyAttackKey);
-            InteractPressed = Input.GetKeyDown(interactKey);
-            BlockHeld = Input.GetKey(blockKey);
-            DodgePressed = Input.GetKeyDown(dodgeKey);
-            MusouPressed = Input.GetKeyDown(musouKey);
-
-            skillPressedThisFrame[0] = Input.GetKeyDown(skill1Key);
-            skillPressedThisFrame[1] = Input.GetKeyDown(skill2Key);
-            skillPressedThisFrame[2] = Input.GetKeyDown(skill3Key);
-            skillPressedThisFrame[3] = Input.GetKeyDown(skill4Key);
-            skillPressedThisFrame[4] = Input.GetKeyDown(skill5Key);
-            skillPressedThisFrame[5] = Input.GetKeyDown(skill6Key);
-
-            quickSlotPressedThisFrame[0] = Input.GetKeyDown(quickSlot1Key);
-            quickSlotPressedThisFrame[1] = Input.GetKeyDown(quickSlot2Key);
-            quickSlotPressedThisFrame[2] = Input.GetKeyDown(quickSlot3Key);
-
-            MouseScrollDelta = Input.GetAxis("Mouse ScrollWheel");
+            MoveInput = Vector2.zero;
+            LookInput = Vector2.zero;
+            JumpPressed = false;
+            JumpHeld = false;
+            SprintPressed = false;
+            CrouchPressed = false;
+            AttackPressed = false;
+            HeavyAttackPressed = false;
+            InteractPressed = false;
+            BlockHeld = false;
+            DodgePressed = false;
+            MusouPressed = false;
+            MouseScrollDelta = 0f;
             GamepadZoomAxis = 0f;
+
+            for (int i = 0; i < skillPressedThisFrame.Length; i++)
+            {
+                skillPressedThisFrame[i] = false;
+            }
+
+            for (int i = 0; i < quickSlotPressedThisFrame.Length; i++)
+            {
+                quickSlotPressedThisFrame[i] = false;
+            }
         }
 
-        private void HandleCursorToggleLegacy()
+        private void HandleCursorToggleUnifiedFallback()
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (ReadUnifiedKeyDown(KeyCode.Escape))
             {
                 ToggleCursorLock();
             }
         }
 
 #if ENABLE_INPUT_SYSTEM
+        private bool EnsureInputActionsReady()
+        {
+            if (gameplayActionMap != null)
+            {
+                EnsureDebugInputActionsState();
+                if (logBindingConflicts && !bindingConflictsLogged)
+                {
+                    bindingConflictsLogged = true;
+                    LogKeyboardBindingConflicts();
+                }
+
+                return true;
+            }
+
+            BuildInputActions();
+            EnsureDebugInputActionsState();
+            if (gameplayActionMap == null)
+            {
+                if (!inputActionsUnavailableLogged)
+                {
+                    inputActionsUnavailableLogged = true;
+                    Debug.LogWarning("[Input] Gameplay InputActionMap unavailable. Input is disabled for this frame.");
+                }
+
+                return false;
+            }
+
+            LoadBindingOverrides();
+            if (logBindingConflicts)
+            {
+                bindingConflictsLogged = true;
+                LogKeyboardBindingConflicts();
+            }
+            return true;
+        }
+
         private void BuildInputActions()
         {
             if (gameplayActionMap != null)
@@ -242,7 +301,7 @@ namespace ThirdPersonController
 
             skillActions[0].AddBinding("<Keyboard>/q");
             skillActions[1].AddBinding("<Keyboard>/w");
-            skillActions[2].AddBinding("<Keyboard>/e");
+            skillActions[2].AddBinding("<Keyboard>/c");
             skillActions[3].AddBinding("<Keyboard>/r");
             skillActions[4].AddBinding("<Keyboard>/t");
             skillActions[5].AddBinding("<Keyboard>/f");
@@ -264,6 +323,232 @@ namespace ThirdPersonController
             quickSlotActions[0].AddBinding("<Keyboard>/1");
             quickSlotActions[1].AddBinding("<Keyboard>/2");
             quickSlotActions[2].AddBinding("<Keyboard>/3");
+
+            InputAction menuConfirmAction = gameplayActionMap.AddAction("MenuConfirm", InputActionType.Button);
+            menuConfirmAction.AddBinding("<Keyboard>/enter");
+            menuConfirmAction.AddBinding("<Gamepad>/buttonSouth");
+
+            InputAction menuRetryAction = gameplayActionMap.AddAction("MenuRetry", InputActionType.Button);
+            menuRetryAction.AddBinding("<Keyboard>/r");
+            menuRetryAction.AddBinding("<Gamepad>/buttonWest");
+
+            InputAction menuCancelAction = gameplayActionMap.AddAction("MenuCancel", InputActionType.Button);
+            menuCancelAction.AddBinding("<Keyboard>/escape");
+            menuCancelAction.AddBinding("<Gamepad>/start");
+
+            InputAction quitMenuAction = gameplayActionMap.AddAction("QuitMenu", InputActionType.Button);
+            quitMenuAction.AddBinding("<Keyboard>/escape");
+
+            InputAction toggleEconomyAction = gameplayActionMap.AddAction("ToggleEconomy", InputActionType.Button);
+            toggleEconomyAction.AddBinding("<Keyboard>/y");
+
+            InputAction toggleTalentAction = gameplayActionMap.AddAction("ToggleTalent", InputActionType.Button);
+            toggleTalentAction.AddBinding("<Keyboard>/u");
+
+            InputAction toggleHintsAction = gameplayActionMap.AddAction("ToggleHints", InputActionType.Button);
+            toggleHintsAction.AddBinding("<Keyboard>/h");
+        }
+
+        private void EnsureDebugInputActionsState()
+        {
+            if (!ShouldEnableDebugHotkeys())
+            {
+                SetActionMapEnabled(debugActionMap, false);
+                return;
+            }
+
+            BuildDebugInputActions();
+            SetActionMapEnabled(debugActionMap, true);
+        }
+
+        private void BuildDebugInputActions()
+        {
+            if (debugActionMap != null)
+            {
+                return;
+            }
+
+            debugActionMap = new InputActionMap("DebugTools");
+
+            InputAction debugComboStatusAction = debugActionMap.AddAction("DebugComboStatus", InputActionType.Button);
+            debugComboStatusAction.AddBinding("<Keyboard>/tab");
+
+            InputAction debugComboResetHintAction = debugActionMap.AddAction("DebugComboResetHint", InputActionType.Button);
+            debugComboResetHintAction.AddBinding("<Keyboard>/f7");
+
+            InputAction debugSpawnerWaveAction = debugActionMap.AddAction("DebugSpawnerWave", InputActionType.Button);
+            debugSpawnerWaveAction.AddBinding("<Keyboard>/g");
+
+            InputAction debugSpawnerStressAction = debugActionMap.AddAction("DebugSpawnerStress", InputActionType.Button);
+            debugSpawnerStressAction.AddBinding("<Keyboard>/f8");
+
+            InputAction debugSpawnerClearAction = debugActionMap.AddAction("DebugSpawnerClear", InputActionType.Button);
+            debugSpawnerClearAction.AddBinding("<Keyboard>/delete");
+
+            InputAction debugStressRunAction = debugActionMap.AddAction("DebugStressRun", InputActionType.Button);
+            debugStressRunAction.AddBinding("<Keyboard>/f9");
+
+            InputAction debugStressClearAction = debugActionMap.AddAction("DebugStressClear", InputActionType.Button);
+            debugStressClearAction.AddBinding("<Keyboard>/f10");
+        }
+
+        private bool ShouldEnableDebugHotkeys()
+        {
+            return enableDebugHotkeys && (Application.isEditor || Debug.isDebugBuild);
+        }
+
+        private static void SetActionMapEnabled(InputActionMap actionMap, bool enabled)
+        {
+            if (actionMap == null)
+            {
+                return;
+            }
+
+            if (enabled)
+            {
+                if (!actionMap.enabled)
+                {
+                    actionMap.Enable();
+                }
+                return;
+            }
+
+            if (actionMap.enabled)
+            {
+                actionMap.Disable();
+            }
+        }
+
+        private InputAction FindActionAcrossMaps(string actionName)
+        {
+            if (string.IsNullOrEmpty(actionName))
+            {
+                return null;
+            }
+
+            InputAction action = gameplayActionMap?.FindAction(actionName, false);
+            if (action != null)
+            {
+                return action;
+            }
+
+            return debugActionMap?.FindAction(actionName, false);
+        }
+
+        private void LogKeyboardBindingConflicts()
+        {
+            var bindingOwners = new System.Collections.Generic.Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+
+            CollectBindingOwners(gameplayActionMap, bindingOwners);
+            CollectBindingOwners(debugActionMap, bindingOwners);
+
+            bool conflictFound = false;
+            foreach (var entry in bindingOwners)
+            {
+                if (entry.Value == null || entry.Value.Count <= 1)
+                {
+                    continue;
+                }
+
+                if (IsConflictEntryWhitelisted(entry.Key, entry.Value))
+                {
+                    continue;
+                }
+
+                conflictFound = true;
+                Debug.LogWarning($"[Input] Binding conflict {entry.Key}: {string.Join(", ", entry.Value)}");
+            }
+
+            if (!conflictFound)
+            {
+                Debug.Log("[Input] Binding conflict scan: no duplicate keyboard bindings found.");
+            }
+        }
+
+        private static bool IsConflictEntryWhitelisted(string path, List<string> owners)
+        {
+            if (string.IsNullOrEmpty(path) || owners == null || owners.Count <= 1)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < owners.Count; i++)
+            {
+                for (int j = i + 1; j < owners.Count; j++)
+                {
+                    if (!keyboardBindingConflictWhitelist.Contains(BuildConflictWhitelistKey(path, owners[i], owners[j])))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private static string BuildConflictWhitelistKey(string path, string ownerA, string ownerB)
+        {
+            string normalizedPath = string.IsNullOrEmpty(path) ? string.Empty : path.Trim().ToLowerInvariant();
+            string first = string.IsNullOrEmpty(ownerA) ? string.Empty : ownerA.Trim();
+            string second = string.IsNullOrEmpty(ownerB) ? string.Empty : ownerB.Trim();
+
+            if (string.Compare(first, second, StringComparison.OrdinalIgnoreCase) > 0)
+            {
+                string temp = first;
+                first = second;
+                second = temp;
+            }
+
+            return $"{normalizedPath}|{first.ToLowerInvariant()}|{second.ToLowerInvariant()}";
+        }
+
+        private static void CollectBindingOwners(
+            InputActionMap map,
+            System.Collections.Generic.Dictionary<string, List<string>> bindingOwners)
+        {
+            if (map == null || bindingOwners == null)
+            {
+                return;
+            }
+
+            var actions = map.actions;
+            for (int actionIndex = 0; actionIndex < actions.Count; actionIndex++)
+            {
+                InputAction action = actions[actionIndex];
+                if (action == null)
+                {
+                    continue;
+                }
+
+                var bindings = action.bindings;
+                for (int bindingIndex = 0; bindingIndex < bindings.Count; bindingIndex++)
+                {
+                    InputBinding binding = bindings[bindingIndex];
+                    if (binding.isComposite || binding.isPartOfComposite)
+                    {
+                        continue;
+                    }
+
+                    string path = !string.IsNullOrEmpty(binding.overridePath) ? binding.overridePath : binding.path;
+                    if (string.IsNullOrEmpty(path) || path.IndexOf("<Keyboard>/", StringComparison.OrdinalIgnoreCase) < 0)
+                    {
+                        continue;
+                    }
+
+                    string normalizedPath = path.Trim().ToLowerInvariant();
+                    if (!bindingOwners.TryGetValue(normalizedPath, out List<string> owners))
+                    {
+                        owners = new List<string>();
+                        bindingOwners.Add(normalizedPath, owners);
+                    }
+
+                    string owner = $"{map.name}.{action.name}";
+                    if (!owners.Contains(owner))
+                    {
+                        owners.Add(owner);
+                    }
+                }
+            }
         }
 
         private void ReadInputActions()
@@ -335,12 +620,12 @@ namespace ThirdPersonController
 
         public bool StartInteractiveRebind(string actionName, int bindingIndex = -1, Action<string> onComplete = null, Action onCancel = null)
         {
-            if (!useInputActions || gameplayActionMap == null || string.IsNullOrEmpty(actionName))
+            if (!useInputActions || string.IsNullOrEmpty(actionName) || !EnsureInputActionsReady())
             {
                 return false;
             }
 
-            InputAction action = gameplayActionMap.FindAction(actionName, false);
+            InputAction action = FindActionAcrossMaps(actionName);
             if (action == null)
             {
                 return false;
@@ -384,12 +669,12 @@ namespace ThirdPersonController
 
         public string GetBindingDisplayString(string actionName, int bindingIndex = 0)
         {
-            if (!useInputActions || gameplayActionMap == null || string.IsNullOrEmpty(actionName))
+            if (!useInputActions || string.IsNullOrEmpty(actionName) || !EnsureInputActionsReady())
             {
                 return string.Empty;
             }
 
-            InputAction action = gameplayActionMap.FindAction(actionName, false);
+            InputAction action = FindActionAcrossMaps(actionName);
             if (action == null || bindingIndex < 0 || bindingIndex >= action.bindings.Count)
             {
                 return string.Empty;
@@ -400,12 +685,12 @@ namespace ThirdPersonController
 
         public bool ResetBindingOverride(string actionName, int bindingIndex = -1)
         {
-            if (!useInputActions || gameplayActionMap == null || string.IsNullOrEmpty(actionName))
+            if (!useInputActions || string.IsNullOrEmpty(actionName) || !EnsureInputActionsReady())
             {
                 return false;
             }
 
-            InputAction action = gameplayActionMap.FindAction(actionName, false);
+            InputAction action = FindActionAcrossMaps(actionName);
             if (action == null)
             {
                 return false;
@@ -431,8 +716,19 @@ namespace ThirdPersonController
                 return;
             }
 
-            string json = gameplayActionMap.SaveBindingOverridesAsJson();
-            PlayerPrefs.SetString(rebindSaveKey, json);
+            string gameplayJson = gameplayActionMap.SaveBindingOverridesAsJson();
+            PlayerPrefs.SetString(rebindSaveKey, gameplayJson);
+
+            if (debugActionMap != null)
+            {
+                string debugJson = debugActionMap.SaveBindingOverridesAsJson();
+                PlayerPrefs.SetString($"{rebindSaveKey}.DebugTools", debugJson);
+            }
+            else
+            {
+                PlayerPrefs.DeleteKey($"{rebindSaveKey}.DebugTools");
+            }
+
             PlayerPrefs.Save();
         }
 
@@ -443,13 +739,20 @@ namespace ThirdPersonController
                 return;
             }
 
-            string json = PlayerPrefs.GetString(rebindSaveKey, string.Empty);
-            if (string.IsNullOrEmpty(json))
+            string gameplayJson = PlayerPrefs.GetString(rebindSaveKey, string.Empty);
+            if (!string.IsNullOrEmpty(gameplayJson))
             {
-                return;
+                gameplayActionMap.LoadBindingOverridesFromJson(gameplayJson, true);
             }
 
-            gameplayActionMap.LoadBindingOverridesFromJson(json, true);
+            if (debugActionMap != null)
+            {
+                string debugJson = PlayerPrefs.GetString($"{rebindSaveKey}.DebugTools", string.Empty);
+                if (!string.IsNullOrEmpty(debugJson))
+                {
+                    debugActionMap.LoadBindingOverridesFromJson(debugJson, true);
+                }
+            }
         }
 
         public void ClearBindingOverrides()
@@ -460,9 +763,11 @@ namespace ThirdPersonController
             }
 
             gameplayActionMap.RemoveAllBindingOverrides();
+            debugActionMap?.RemoveAllBindingOverrides();
             if (!string.IsNullOrEmpty(rebindSaveKey))
             {
                 PlayerPrefs.DeleteKey(rebindSaveKey);
+                PlayerPrefs.DeleteKey($"{rebindSaveKey}.DebugTools");
                 PlayerPrefs.Save();
             }
         }
@@ -532,6 +837,102 @@ namespace ThirdPersonController
             return MusouPressed;
         }
 
+        public bool WasActionPressedThisFrame(string actionName, KeyCode fallbackKey = KeyCode.None)
+        {
+            bool isDebugAction = !string.IsNullOrEmpty(actionName)
+                && actionName.StartsWith("Debug", StringComparison.OrdinalIgnoreCase);
+
+            if (string.IsNullOrEmpty(actionName))
+            {
+                return fallbackKey != KeyCode.None && WasUnifiedKeyPressedThisFrame(fallbackKey);
+            }
+
+#if ENABLE_INPUT_SYSTEM
+            if (isDebugAction && !ShouldEnableDebugHotkeys())
+            {
+                return false;
+            }
+
+            if (useInputActions && EnsureInputActionsReady())
+            {
+                InputAction action = FindActionAcrossMaps(actionName);
+                if (action != null)
+                {
+                    return action.WasPressedThisFrame();
+                }
+            }
+#endif
+
+            if (isDebugAction)
+            {
+                return false;
+            }
+
+            return fallbackKey != KeyCode.None && WasUnifiedKeyPressedThisFrame(fallbackKey);
+        }
+
+        public string GetActionBindingLabel(string actionName, KeyCode fallbackKey = KeyCode.None, bool includeGamepad = true)
+        {
+            bool isDebugAction = !string.IsNullOrEmpty(actionName)
+                && actionName.StartsWith("Debug", StringComparison.OrdinalIgnoreCase);
+
+#if ENABLE_INPUT_SYSTEM
+            if (isDebugAction && !ShouldEnableDebugHotkeys())
+            {
+                return string.Empty;
+            }
+
+            if (!string.IsNullOrEmpty(actionName) && useInputActions && EnsureInputActionsReady())
+            {
+                InputAction action = FindActionAcrossMaps(actionName);
+                if (action != null)
+                {
+                    string keyboardLabel = GetActionBindingDisplayByDevice(action, "Keyboard");
+                    string gamepadLabel = includeGamepad ? GetActionBindingDisplayByDevice(action, "Gamepad") : string.Empty;
+
+                    if (!string.IsNullOrEmpty(keyboardLabel) && !string.IsNullOrEmpty(gamepadLabel))
+                    {
+                        if (string.Equals(keyboardLabel, gamepadLabel, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return keyboardLabel;
+                        }
+
+                        return $"{keyboardLabel}/{gamepadLabel}";
+                    }
+
+                    if (!string.IsNullOrEmpty(keyboardLabel))
+                    {
+                        return keyboardLabel;
+                    }
+
+                    if (!string.IsNullOrEmpty(gamepadLabel))
+                    {
+                        return gamepadLabel;
+                    }
+                }
+            }
+#endif
+
+            if (isDebugAction)
+            {
+                return string.Empty;
+            }
+
+            return fallbackKey != KeyCode.None ? GetFriendlyKeyLabel(fallbackKey) : string.Empty;
+        }
+
+        public bool AreDebugHotkeysEnabled()
+        {
+#if ENABLE_INPUT_SYSTEM
+            if (useInputActions)
+            {
+                return ShouldEnableDebugHotkeys();
+            }
+#endif
+
+            return false;
+        }
+
         public bool WasUnifiedKeyPressedThisFrame(KeyCode key)
         {
             return ReadUnifiedKeyDown(key);
@@ -560,7 +961,7 @@ namespace ThirdPersonController
                 return control.wasPressedThisFrame;
             }
 #endif
-            return Input.GetKeyDown(key);
+            return false;
         }
 
         public static bool ReadUnifiedKey(KeyCode key)
@@ -571,7 +972,7 @@ namespace ThirdPersonController
                 return control.isPressed;
             }
 #endif
-            return Input.GetKey(key);
+            return false;
         }
 
         public static float ReadUnifiedMouseScrollDelta()
@@ -582,7 +983,7 @@ namespace ThirdPersonController
                 return Mouse.current.scroll.ReadValue().y * 0.01f;
             }
 #endif
-            return Input.GetAxis("Mouse ScrollWheel");
+            return 0f;
         }
 
         public static float ReadUnifiedGamepadZoomAxis()
@@ -596,7 +997,68 @@ namespace ThirdPersonController
             return 0f;
         }
 
+        public static string GetFriendlyKeyLabel(KeyCode key)
+        {
+            switch (key)
+            {
+                case KeyCode.None: return string.Empty;
+                case KeyCode.Return: return "Enter";
+                case KeyCode.Escape: return "Esc";
+                case KeyCode.Space: return "Space";
+                case KeyCode.Tab: return "Tab";
+                case KeyCode.Delete: return "Del";
+                case KeyCode.Mouse0: return "LMB";
+                case KeyCode.Mouse1: return "RMB";
+                case KeyCode.Mouse2: return "MMB";
+                case KeyCode.LeftShift: return "LShift";
+                case KeyCode.RightShift: return "RShift";
+                case KeyCode.LeftControl: return "LCtrl";
+                case KeyCode.RightControl: return "RCtrl";
+                case KeyCode.LeftAlt: return "LAlt";
+                case KeyCode.RightAlt: return "RAlt";
+            }
+
+            if (key >= KeyCode.Alpha0 && key <= KeyCode.Alpha9)
+            {
+                int digit = key - KeyCode.Alpha0;
+                return digit.ToString();
+            }
+
+            return key.ToString();
+        }
+
 #if ENABLE_INPUT_SYSTEM
+        private string GetActionBindingDisplayByDevice(InputAction action, string deviceName)
+        {
+            if (action == null || string.IsNullOrEmpty(deviceName))
+            {
+                return string.Empty;
+            }
+
+            for (int i = 0; i < action.bindings.Count; i++)
+            {
+                InputBinding binding = action.bindings[i];
+                if (binding.isComposite || binding.isPartOfComposite)
+                {
+                    continue;
+                }
+
+                string path = !string.IsNullOrEmpty(binding.overridePath) ? binding.overridePath : binding.path;
+                if (string.IsNullOrEmpty(path) || path.IndexOf($"<{deviceName}>", StringComparison.OrdinalIgnoreCase) < 0)
+                {
+                    continue;
+                }
+
+                string display = action.GetBindingDisplayString(i);
+                if (!string.IsNullOrEmpty(display))
+                {
+                    return display;
+                }
+            }
+
+            return string.Empty;
+        }
+
         private static bool TryReadInputSystemButton(KeyCode key, out ButtonControl button)
         {
             button = null;
@@ -676,6 +1138,18 @@ namespace ThirdPersonController
                 case KeyCode.Return: mapped = Key.Enter; return true;
                 case KeyCode.Escape: mapped = Key.Escape; return true;
                 case KeyCode.Delete: mapped = Key.Delete; return true;
+                case KeyCode.F1: mapped = Key.F1; return true;
+                case KeyCode.F2: mapped = Key.F2; return true;
+                case KeyCode.F3: mapped = Key.F3; return true;
+                case KeyCode.F4: mapped = Key.F4; return true;
+                case KeyCode.F5: mapped = Key.F5; return true;
+                case KeyCode.F6: mapped = Key.F6; return true;
+                case KeyCode.F7: mapped = Key.F7; return true;
+                case KeyCode.F8: mapped = Key.F8; return true;
+                case KeyCode.F9: mapped = Key.F9; return true;
+                case KeyCode.F10: mapped = Key.F10; return true;
+                case KeyCode.F11: mapped = Key.F11; return true;
+                case KeyCode.F12: mapped = Key.F12; return true;
                 case KeyCode.LeftShift: mapped = Key.LeftShift; return true;
                 case KeyCode.RightShift: mapped = Key.RightShift; return true;
                 case KeyCode.LeftControl: mapped = Key.LeftCtrl; return true;
@@ -695,6 +1169,7 @@ namespace ThirdPersonController
             if (useInputActions)
             {
                 gameplayActionMap?.Disable();
+                debugActionMap?.Disable();
             }
 
             DisposeRebindOperation();
@@ -714,6 +1189,7 @@ namespace ThirdPersonController
 #if ENABLE_INPUT_SYSTEM
             DisposeRebindOperation();
             gameplayActionMap?.Disable();
+            debugActionMap?.Disable();
 #endif
         }
     }

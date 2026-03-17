@@ -89,14 +89,24 @@ namespace ThirdPersonController
 
         private void HandleInput()
         {
-            bool pressed = inputHandler != null
-                ? inputHandler.WasMusouPressedThisFrame()
-                : PlayerInputHandler.ReadUnifiedKeyDown(musouKey);
+            PlayerInputHandler handler = ResolveInputHandler();
+            bool pressed = handler != null && handler.WasMusouPressedThisFrame();
 
             if (pressed)
             {
                 TryActivate();
             }
+        }
+
+        private PlayerInputHandler ResolveInputHandler()
+        {
+            if (inputHandler != null)
+            {
+                return inputHandler;
+            }
+
+            inputHandler = PlayerInputHandler.ResolveActiveInstance();
+            return inputHandler;
         }
 
         private void UpdateTimers()

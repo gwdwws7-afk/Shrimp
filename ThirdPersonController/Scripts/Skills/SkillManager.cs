@@ -20,7 +20,7 @@ namespace ThirdPersonController
         [Header("按键绑定")]
         public KeyCode[] skillKeys = new KeyCode[6] 
         { 
-            KeyCode.Q, KeyCode.W, KeyCode.E, 
+            KeyCode.Q, KeyCode.W, KeyCode.C, 
             KeyCode.R, KeyCode.T, KeyCode.F 
         };
 
@@ -217,20 +217,13 @@ namespace ThirdPersonController
                 return false;
             }
 
-            if (inputHandler != null)
-            {
-                if (inputHandler.WasSkillPressedThisFrame(slotIndex))
-                {
-                    return true;
-                }
-            }
-
-            if (skillKeys == null || slotIndex >= skillKeys.Length)
+            PlayerInputHandler handler = ResolveInputHandler();
+            if (handler == null)
             {
                 return false;
             }
 
-            return PlayerInputHandler.ReadUnifiedKeyDown(skillKeys[slotIndex]);
+            return handler.WasSkillPressedThisFrame(slotIndex);
         }
 
         private void TryConsumeBufferedSkills()
@@ -537,10 +530,21 @@ namespace ThirdPersonController
             {
                 skillKeys = new[]
                 {
-                    KeyCode.Q, KeyCode.W, KeyCode.E,
+                    KeyCode.Q, KeyCode.W, KeyCode.C,
                     KeyCode.R, KeyCode.T, KeyCode.F
                 };
             }
+        }
+
+        private PlayerInputHandler ResolveInputHandler()
+        {
+            if (inputHandler != null)
+            {
+                return inputHandler;
+            }
+
+            inputHandler = PlayerInputHandler.ResolveActiveInstance();
+            return inputHandler;
         }
 
         private void LogStartupStatus()

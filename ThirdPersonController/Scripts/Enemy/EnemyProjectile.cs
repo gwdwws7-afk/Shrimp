@@ -4,7 +4,7 @@ namespace ThirdPersonController
 {
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(Collider))]
-    public class EnemyProjectile : MonoBehaviour
+    public class EnemyProjectile : MonoBehaviour, IPoolable
     {
         public int damage = 10;
         public float knockback = 2f;
@@ -21,6 +21,7 @@ namespace ThirdPersonController
         public float damageReductionDuration = 2f;
 
         private Rigidbody body;
+        private Collider triggerCollider;
         private Transform owner;
         private float timer;
 
@@ -30,8 +31,11 @@ namespace ThirdPersonController
             body.useGravity = false;
             body.isKinematic = false;
 
-            Collider col = GetComponent<Collider>();
-            col.isTrigger = true;
+            triggerCollider = GetComponent<Collider>();
+            if (triggerCollider != null)
+            {
+                triggerCollider.isTrigger = true;
+            }
         }
 
         private void Update()
@@ -39,7 +43,7 @@ namespace ThirdPersonController
             timer += Time.deltaTime;
             if (timer >= lifetime)
             {
-                Destroy(gameObject);
+                DespawnSelf();
             }
         }
 
@@ -55,6 +59,35 @@ namespace ThirdPersonController
             body.velocity = direction.normalized * speed;
         }
 
+        public void OnSpawned()
+        {
+            timer = 0f;
+            owner = null;
+
+            if (body != null)
+            {
+                body.velocity = Vector3.zero;
+                body.angularVelocity = Vector3.zero;
+            }
+
+            if (triggerCollider != null)
+            {
+                triggerCollider.enabled = true;
+            }
+        }
+
+        public void OnDespawned()
+        {
+            timer = 0f;
+            owner = null;
+
+            if (body != null)
+            {
+                body.velocity = Vector3.zero;
+                body.angularVelocity = Vector3.zero;
+            }
+        }
+
         private void OnTriggerEnter(Collider other)
         {
             if (other == null || other.isTrigger)
@@ -62,7 +95,7 @@ namespace ThirdPersonController
                 return;
             }
 
-            if (owner != null && other.transform == owner)
+            if (owner != null && other.transform != null && other.transform.IsChildOf(owner))
             {
                 return;
             }
@@ -82,7 +115,7 @@ namespace ThirdPersonController
 
             if (destroyOnHit || damaged)
             {
-                Destroy(gameObject);
+                DespawnSelf();
             }
         }
 
@@ -110,6 +143,16 @@ namespace ThirdPersonController
                     parentMovement.ApplyMoveSlow(slowMultiplier, slowDuration);
                 }
             }
+        }
+
+        private void DespawnSelf()
+        {
+            if (!gameObject.activeInHierarchy)
+            {
+                return;
+            }
+
+            ObjectPoolManager.Despawn(gameObject);
         }
     }
 }

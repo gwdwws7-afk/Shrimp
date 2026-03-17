@@ -139,6 +139,19 @@ namespace ThirdPersonController
                     ai.useCrowdCoordinator = archetype.useCrowdCoordinator;
                     ai.ringStandoffDistance = archetype.ringStandoffDistance;
                 }
+
+                ai.enableDistanceLod = archetype.enableDistanceLod;
+                ai.lodFullDistance = archetype.lodFullDistance;
+                ai.lodSimplifiedDistance = archetype.lodSimplifiedDistance;
+                ai.simplifiedDecisionIntervalMultiplier = archetype.simplifiedDecisionIntervalMultiplier;
+                ai.minimalDecisionIntervalMultiplier = archetype.minimalDecisionIntervalMultiplier;
+                ai.simplifiedAnimationIntervalMultiplier = archetype.simplifiedAnimationIntervalMultiplier;
+                ai.minimalAnimationIntervalMultiplier = archetype.minimalAnimationIntervalMultiplier;
+                ai.minimalTargetRescanInterval = archetype.minimalTargetRescanInterval;
+                ai.disableAdvancedActionsInMinimal = archetype.disableAdvancedActionsInMinimal;
+                ai.enableBatchDecisionTick = archetype.enableBatchDecisionTick;
+                ai.simplifiedBatchModulo = Mathf.Max(1, archetype.simplifiedBatchModulo);
+                ai.minimalBatchModulo = Mathf.Max(1, archetype.minimalBatchModulo);
             }
 
             if (applyNavMesh && agent != null && archetype.overrideAgentSettings)

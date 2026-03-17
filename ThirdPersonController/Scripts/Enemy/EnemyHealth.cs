@@ -48,6 +48,7 @@ namespace ThirdPersonController
         private DamageSourceType lastDamageSourceType = DamageSourceType.Environment;
         private bool lastDamageWasHeavy;
         private BossCombatTemplate bossTemplate;
+        private BossController bossController;
         private Coroutine deathRoutine;
 
         public int CurrentHealth => currentHealth;
@@ -68,6 +69,7 @@ namespace ThirdPersonController
             ai = GetComponent<EnemyAI>();
             hitReaction = GetComponent<EnemyHitReaction>();
             bossTemplate = GetComponent<BossCombatTemplate>();
+            bossController = GetComponent<BossController>();
 
             if (hitReaction != null && hitStunDuration > 0f && hitReaction.profile == null)
             {
@@ -175,6 +177,19 @@ namespace ThirdPersonController
                 }
             }
 
+            if (bossController != null)
+            {
+                if (bossController.IsBreakWindowActive && bossController.forceKnockdownDuringBreak)
+                {
+                    return EnemyHitReactionType.Knockdown;
+                }
+
+                if (enemyType == EnemyType.Boss && lastDamageWasHeavy && bossController.allowHeavyKnockdownOutsideBreak)
+                {
+                    return EnemyHitReactionType.Knockback;
+                }
+            }
+
             if (!lastDamageWasHeavy)
             {
                 return null;
@@ -202,6 +217,11 @@ namespace ThirdPersonController
             }
 
             if (bossTemplate != null && bossTemplate.IsBreakWindowActive)
+            {
+                return knockbackForce;
+            }
+
+            if (bossController != null && bossController.IsBreakWindowActive)
             {
                 return knockbackForce;
             }

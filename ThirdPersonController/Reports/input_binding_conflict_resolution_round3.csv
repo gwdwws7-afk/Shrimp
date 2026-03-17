@@ -1,0 +1,7 @@
+Action,OldBinding,NewBinding,Status,Reason
+Gameplay.Skill3,<Keyboard>/e,<Keyboard>/c,Applied,Avoid overlap with Gameplay.Interact on E.
+Gameplay.ToggleTalent,<Keyboard>/t,<Keyboard>/u,Applied,Avoid overlap with Gameplay.Skill5 on T.
+DebugTools.DebugComboResetHint,<Keyboard>/r,<Keyboard>/f7,Applied,Reduce overlap with gameplay and menu retry.
+Gameplay.MenuRetry,<Keyboard>/r,<Keyboard>/r,Whitelisted,Only used on result panel; accepted contextual overlap with Skill4.
+Gameplay.MenuCancel,<Keyboard>/escape,<Keyboard>/escape,Whitelisted,In-game pause/menu usage.
+Gameplay.QuitMenu,<Keyboard>/escape,<Keyboard>/escape,Whitelisted,Main menu quit usage.

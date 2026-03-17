@@ -16,7 +16,13 @@ namespace ThirdPersonController
         [Header("Display")]
         public bool show = true;
         public bool allowToggle = true;
+        public string toggleHintsActionName = "ToggleHints";
+        public string toggleEconomyActionName = "ToggleEconomy";
+        public string toggleTalentActionName = "ToggleTalent";
         public KeyCode toggleKey = KeyCode.H;
+        public KeyCode economyKey = KeyCode.Y;
+        public KeyCode talentKey = KeyCode.U;
+        public bool useDynamicInputHints = true;
         public PlayerInputHandler inputHandler;
         public Corner anchor = Corner.TopRight;
         public Vector2 offset = new Vector2(16f, 16f);
@@ -26,28 +32,28 @@ namespace ThirdPersonController
 
         [Header("Hints")]
         public string title = "操作提示";
-        public List<string> hints = new List<string>
-        {
-            "Y 补给/商店",
-            "1-3 快捷使用",
-            "T 天赋/装备"
-        };
+        public List<string> hints = new List<string>();
 
         private void Update()
         {
-            if (inputHandler == null)
-            {
-                inputHandler = FindObjectOfType<PlayerInputHandler>();
-            }
-
-            bool togglePressed = inputHandler != null
-                ? inputHandler.WasUnifiedKeyPressedThisFrame(toggleKey)
-                : PlayerInputHandler.ReadUnifiedKeyDown(toggleKey);
+            PlayerInputHandler handler = ResolveInputHandler();
+            bool togglePressed = handler != null && handler.WasActionPressedThisFrame(toggleHintsActionName, toggleKey);
 
             if (allowToggle && togglePressed)
             {
                 show = !show;
             }
+        }
+
+        private PlayerInputHandler ResolveInputHandler()
+        {
+            if (inputHandler != null)
+            {
+                return inputHandler;
+            }
+
+            inputHandler = PlayerInputHandler.ResolveActiveInstance();
+            return inputHandler;
         }
 
         private void OnGUI()
@@ -57,7 +63,8 @@ namespace ThirdPersonController
                 return;
             }
 
-            int count = hints != null ? hints.Count : 0;
+            List<string> displayHints = BuildDisplayHints();
+            int count = displayHints.Count;
             float height = padding * 2f + lineHeight * Mathf.Max(1, count + 1);
             Rect panel = BuildPanelRect(width, height);
 
@@ -65,14 +72,63 @@ namespace ThirdPersonController
             GUILayout.BeginArea(panel);
             GUILayout.Space(padding * 0.5f);
             GUILayout.Label(title, HeaderStyle());
+            for (int i = 0; i < displayHints.Count; i++)
+            {
+                GUILayout.Label(displayHints[i], HintStyle());
+            }
+            GUILayout.EndArea();
+        }
+
+        private List<string> BuildDisplayHints()
+        {
+            var displayHints = new List<string>();
+            if (useDynamicInputHints)
+            {
+                string economyLabel = ResolveActionLabel(toggleEconomyActionName, economyKey);
+                string talentLabel = ResolveActionLabel(toggleTalentActionName, talentKey);
+                string slot1Label = ResolveActionLabel("QuickSlot1", KeyCode.Alpha1, includeGamepad: false);
+                string slot2Label = ResolveActionLabel("QuickSlot2", KeyCode.Alpha2, includeGamepad: false);
+                string slot3Label = ResolveActionLabel("QuickSlot3", KeyCode.Alpha3, includeGamepad: false);
+
+                displayHints.Add($"{economyLabel} 补给/商店");
+                displayHints.Add($"{slot1Label}/{slot2Label}/{slot3Label} 快捷使用");
+                displayHints.Add($"{talentLabel} 天赋/装备");
+            }
+
             if (hints != null)
             {
                 for (int i = 0; i < hints.Count; i++)
                 {
-                    GUILayout.Label(hints[i], HintStyle());
+                    if (!string.IsNullOrWhiteSpace(hints[i]))
+                    {
+                        displayHints.Add(hints[i]);
+                    }
                 }
             }
-            GUILayout.EndArea();
+
+            if (displayHints.Count == 0)
+            {
+                displayHints.Add("暂无提示");
+            }
+
+            return displayHints;
+        }
+
+        private string ResolveActionLabel(string actionName, KeyCode fallbackKey, bool includeGamepad = true)
+        {
+            PlayerInputHandler handler = ResolveInputHandler();
+            if (handler == null)
+            {
+                return PlayerInputHandler.GetFriendlyKeyLabel(fallbackKey);
+            }
+
+            string binding = handler.GetActionBindingLabel(actionName, fallbackKey, includeGamepad);
+            if (!string.IsNullOrEmpty(binding))
+            {
+                return binding;
+            }
+
+            return PlayerInputHandler.GetFriendlyKeyLabel(fallbackKey);
         }
 
         private Rect BuildPanelRect(float panelWidth, float panelHeight)

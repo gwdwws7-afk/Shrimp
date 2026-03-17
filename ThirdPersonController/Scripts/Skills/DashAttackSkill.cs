@@ -174,6 +174,7 @@ namespace ThirdPersonController
                     source = caster,
                     sourceType = DamageSourceType.PlayerSkill,
                     damage = adjustedDamage,
+                    skillCategory = category,
                     elementType = ResolveSkillElement(caster),
                     category = damageCategory,
                     knockback = adjustedKnockback,

@@ -36,6 +36,93 @@ MonoBehaviour:
   - questId: l02_salvage_sweep
     required: 0
     order: 1
+  strongholdOverrides:
+  - strongholdId: Stronghold_01
+    waves:
+    - waveIndex: 0
+      replaceEvents: 1
+      events:
+      - name: Chase
+        eventType: 1
+        duration: 8
+        spawnCount: 2
+        archetypeOverride: {fileID: 11400000, guid: a059d58600154f13bd410369ea8cf924, type: 2}
+    - waveIndex: 1
+      replaceEvents: 1
+      events:
+      - name: Reinforcement
+        eventType: 0
+        triggerOnRemaining: 5
+        spawnCount: 3
+        archetypeOverride: {fileID: 11400000, guid: c6a1b3f0e1d24d5aa4f7b2c9d3e4f5a6, type: 2}
+    - waveIndex: 2
+      replaceEvents: 1
+      events:
+      - name: Hold Point
+        eventType: 2
+        holdDuration: 8
+        holdRadius: 5
+        spawnCount: 3
+        archetypeOverride: {fileID: 11400000, guid: a2f4c8d9e6b1471c8f3d2b4a5e6c7d8e, type: 2}
+    - waveIndex: 3
+      replaceEvents: 1
+      events:
+      - name: Protect Target
+        eventType: 3
+        defenseTargetHealth: 280
+        spawnCount: 4
+        archetypeOverride: {fileID: 11400000, guid: a06db0f69c764af7bdd821d48c1bfa54, type: 2}
+    - waveIndex: 4
+      replaceEvents: 1
+      events:
+      - name: Reinforcement
+        eventType: 0
+        triggerOnRemaining: 6
+        spawnCount: 4
+        archetypeOverride: {fileID: 11400000, guid: 928b955f2e00431381d3312948f53fcb, type: 2}
+  - strongholdId: Stronghold_02
+    waves:
+    - waveIndex: 0
+      replaceEvents: 1
+      events:
+      - name: Reinforcement
+        eventType: 0
+        triggerOnRemaining: 5
+        spawnCount: 3
+        archetypeOverride: {fileID: 11400000, guid: a059d58600154f13bd410369ea8cf924, type: 2}
+    - waveIndex: 1
+      replaceEvents: 1
+      events:
+      - name: Chase
+        eventType: 1
+        duration: 10
+        spawnCount: 3
+        archetypeOverride: {fileID: 11400000, guid: a059d58600154f13bd410369ea8cf924, type: 2}
+    - waveIndex: 2
+      replaceEvents: 1
+      events:
+      - name: Hold Point
+        eventType: 2
+        holdDuration: 9
+        holdRadius: 5.5
+        spawnCount: 3
+        archetypeOverride: {fileID: 11400000, guid: a2f4c8d9e6b1471c8f3d2b4a5e6c7d8e, type: 2}
+    - waveIndex: 3
+      replaceEvents: 1
+      events:
+      - name: Reinforcement
+        eventType: 0
+        triggerOnRemaining: 4
+        spawnCount: 4
+        archetypeOverride: {fileID: 11400000, guid: a06db0f69c764af7bdd821d48c1bfa54, type: 2}
+    - waveIndex: 4
+      replaceEvents: 1
+      events:
+      - name: Protect Target
+        eventType: 3
+        defenseTargetHealth: 320
+        spawnCount: 5
+        archetypeOverride: {fileID: 11400000, guid: 928b955f2e00431381d3312948f53fcb, type: 2}
   nextLevelId: LEVEL_03
   starsRequired: 1
   unlockCost: 0

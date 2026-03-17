@@ -1,0 +1,13 @@
+﻿scope,target,field,current,expected,status,note
+Scene,Assets/Scenes/Level_01_TrenchRift.unity:GameObject,QuickEnemySpawner.spawnKey,G,G,OK,
+Scene,Assets/Scenes/Level_01_TrenchRift.unity:GameObject,QuickEnemySpawner.stressSpawnKey,F8,F8,OK,
+Scene,Assets/Scenes/Level_01_TrenchRift.unity:GameObject,QuickEnemySpawner.clearKey,Delete,Delete,OK,
+Scene,Assets/Scenes/Level_01_TrenchRift.unity:ProgressionUI,UI_TalentEquipmentOverlay.toggleKey,U,U,OK,
+Scene,Assets/Scenes/Level_01_TrenchRift.unity:Meshy_AI_Animation_Walking_frame_rate_60,PlayerInputHandler.skill3Key,C,C,OK,
+Scene,Assets/Scenes/Level_01_TrenchRift.unity:MainCanvas/SkillBar,UI_SkillBar.keyBindings[2],C,C,OK,
+Scene,Assets/Scenes/SampleScene_Template.unity:GameObject,QuickEnemySpawner.spawnKey,G,G,OK,
+Scene,Assets/Scenes/SampleScene_Template.unity:GameObject,QuickEnemySpawner.stressSpawnKey,F8,F8,OK,
+Scene,Assets/Scenes/SampleScene_Template.unity:GameObject,QuickEnemySpawner.clearKey,Delete,Delete,OK,
+Scene,Assets/Scenes/SampleScene_Template.unity:ProgressionUI,UI_TalentEquipmentOverlay.toggleKey,U,U,OK,
+Scene,Assets/Scenes/SampleScene_Template.unity:Meshy_AI_Animation_Walking_frame_rate_60,PlayerInputHandler.skill3Key,C,C,OK,
+Scene,Assets/Scenes/SampleScene_Template.unity:MainCanvas/SkillBar,UI_SkillBar.keyBindings[2],C,C,OK,

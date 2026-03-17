@@ -11,7 +11,8 @@ namespace ThirdPersonController
         public PearlEquipment equipment;
 
         [Header("Input")]
-        public KeyCode toggleKey = KeyCode.T;
+        public string toggleActionName = "ToggleTalent";
+        public KeyCode toggleKey = KeyCode.U;
         public bool pauseGameWhenOpen = true;
         public bool allowToggle = true;
         public PlayerInputHandler inputHandler;
@@ -51,14 +52,24 @@ namespace ThirdPersonController
                 return;
             }
 
-            bool togglePressed = inputHandler != null
-                ? inputHandler.WasUnifiedKeyPressedThisFrame(toggleKey)
-                : PlayerInputHandler.ReadUnifiedKeyDown(toggleKey);
+            PlayerInputHandler handler = ResolveInputHandler();
+            bool togglePressed = handler != null && handler.WasActionPressedThisFrame(toggleActionName, toggleKey);
 
             if (togglePressed)
             {
                 Toggle();
             }
+        }
+
+        private PlayerInputHandler ResolveInputHandler()
+        {
+            if (inputHandler != null)
+            {
+                return inputHandler;
+            }
+
+            inputHandler = PlayerInputHandler.ResolveActiveInstance();
+            return inputHandler;
         }
 
         private void Toggle()
@@ -116,7 +127,7 @@ namespace ThirdPersonController
             if (showFooter)
             {
                 GUILayout.FlexibleSpace();
-                GUILayout.Label("按 T 关闭", SmallStyle());
+                GUILayout.Label($"按 {GetToggleBindingLabel()} 关闭", SmallStyle());
             }
         }
 
@@ -264,6 +275,20 @@ namespace ThirdPersonController
                 alignment = TextAnchor.MiddleCenter,
                 normal = { textColor = new Color(1f, 1f, 1f, 0.6f) }
             };
+        }
+
+        private string GetToggleBindingLabel()
+        {
+            PlayerInputHandler handler = ResolveInputHandler();
+            if (handler == null)
+            {
+                return PlayerInputHandler.GetFriendlyKeyLabel(toggleKey);
+            }
+
+            string binding = handler.GetActionBindingLabel(toggleActionName, toggleKey);
+            return string.IsNullOrEmpty(binding)
+                ? PlayerInputHandler.GetFriendlyKeyLabel(toggleKey)
+                : binding;
         }
     }
 }

@@ -21,6 +21,8 @@ namespace ThirdPersonController
         public string lockedLevelLabel = "Locked";
 
         [Header("Input")]
+        public string startActionName = "MenuConfirm";
+        public string quitActionName = "QuitMenu";
         public KeyCode startKey = KeyCode.Return;
         public KeyCode quitKey = KeyCode.Escape;
         public PlayerInputHandler inputHandler;
@@ -57,12 +59,9 @@ namespace ThirdPersonController
 
         private void Update()
         {
-            bool startPressed = inputHandler != null
-                ? inputHandler.WasUnifiedKeyPressedThisFrame(startKey)
-                : PlayerInputHandler.ReadUnifiedKeyDown(startKey);
-            bool quitPressed = inputHandler != null
-                ? inputHandler.WasUnifiedKeyPressedThisFrame(quitKey)
-                : PlayerInputHandler.ReadUnifiedKeyDown(quitKey);
+            PlayerInputHandler handler = ResolveInputHandler();
+            bool startPressed = handler != null && handler.WasActionPressedThisFrame(startActionName, startKey);
+            bool quitPressed = handler != null && handler.WasActionPressedThisFrame(quitActionName, quitKey);
 
             if (startPressed)
             {
@@ -99,7 +98,7 @@ namespace ThirdPersonController
             if (showSubtitle)
             {
                 GUILayout.Space(8f);
-                GUILayout.Label(subtitleText, subtitleStyle);
+                GUILayout.Label(GetSubtitleText(), subtitleStyle);
             }
 
             DrawNextLevelPreview();
@@ -444,6 +443,32 @@ namespace ThirdPersonController
             }
 
             return levels;
+        }
+
+        private PlayerInputHandler ResolveInputHandler()
+        {
+            if (inputHandler != null)
+            {
+                return inputHandler;
+            }
+
+            inputHandler = PlayerInputHandler.ResolveActiveInstance();
+            return inputHandler;
+        }
+
+        private string GetSubtitleText()
+        {
+            PlayerInputHandler handler = ResolveInputHandler();
+            string binding = handler != null
+                ? handler.GetActionBindingLabel(startActionName, startKey)
+                : PlayerInputHandler.GetFriendlyKeyLabel(startKey);
+
+            if (string.IsNullOrEmpty(binding))
+            {
+                return subtitleText;
+            }
+
+            return $"Press {binding} to Start";
         }
     }
 }

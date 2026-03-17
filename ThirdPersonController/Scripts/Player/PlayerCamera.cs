@@ -110,9 +110,10 @@ namespace ThirdPersonController
 
         private void HandleInput()
         {
-            if (input == null) return;
+            PlayerInputHandler handler = ResolveInputHandler();
+            if (handler == null) return;
 
-            Vector2 lookInput = GetLookDelta();
+            Vector2 lookInput = GetLookDelta(handler);
             if (!IsFinite(lookInput.x) || !IsFinite(lookInput.y))
             {
                 lookInput = Vector2.zero;
@@ -132,14 +133,10 @@ namespace ThirdPersonController
             float pitchInput = lookInput.y * (invertY ? 1 : -1);
             targetPitch = Mathf.Clamp(targetPitch + pitchInput, minVerticalAngle, maxVerticalAngle);
 
-            float scrollInput = input != null
-                ? input.ReadMouseScrollDelta()
-                : PlayerInputHandler.ReadUnifiedMouseScrollDelta();
+            float scrollInput = handler.ReadMouseScrollDelta();
             float zoomDelta = -scrollInput * zoomSpeed;
 
-            float triggerAxisRaw = input != null
-                ? input.ReadGamepadZoomAxis()
-                : PlayerInputHandler.ReadUnifiedGamepadZoomAxis();
+            float triggerAxisRaw = handler.ReadGamepadZoomAxis();
             if (Mathf.Abs(triggerAxisRaw) > 0.00001f)
             {
                 float triggerAxis = triggerAxisRaw;
@@ -283,14 +280,14 @@ namespace ThirdPersonController
             return !(float.IsNaN(value) || float.IsInfinity(value));
         }
 
-        private Vector2 GetLookDelta()
+        private Vector2 GetLookDelta(PlayerInputHandler handler)
         {
-            if (input == null)
+            if (handler == null)
             {
                 return Vector2.zero;
             }
 
-            return input.LookInput * mouseSensitivity;
+            return handler.LookInput * mouseSensitivity;
         }
 
         private Vector2 ApplyStickCurve(Vector2 stick)
@@ -369,6 +366,26 @@ namespace ThirdPersonController
                 input = target.GetComponent<PlayerInputHandler>();
                 lookIdleTimer = 0f;
             }
+        }
+
+        private PlayerInputHandler ResolveInputHandler()
+        {
+            if (input != null)
+            {
+                return input;
+            }
+
+            if (target != null)
+            {
+                input = target.GetComponent<PlayerInputHandler>();
+                if (input != null)
+                {
+                    return input;
+                }
+            }
+
+            input = PlayerInputHandler.ResolveActiveInstance();
+            return input;
         }
 
         public void ResetCamera()

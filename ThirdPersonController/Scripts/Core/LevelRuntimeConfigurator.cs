@@ -497,7 +497,21 @@ namespace ThirdPersonController
             bossSpawnPoint.knockback = levelData.bossKnockback;
             bossSpawnPoint.scaleMultiplier = Mathf.Max(0.1f, levelData.bossScaleMultiplier);
             bossSpawnPoint.spawnOffset = levelData.bossSpawnOffset;
-            bossSpawnPoint.spawnOnStart = true;
+            bossSpawnPoint.spawnOnStart = false;
+
+            if (sequenceController == null)
+            {
+                sequenceController = FindObjectOfType<StrongholdSequenceController>();
+            }
+
+            if (sequenceController != null)
+            {
+                sequenceController.ConfigureBossGate(true, bossSpawnPoint);
+            }
+            else
+            {
+                Debug.LogWarning("StrongholdSequenceController not found. Boss gate wiring skipped.");
+            }
         }
 
         private void ConfigureStrongholds()

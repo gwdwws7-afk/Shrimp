@@ -72,11 +72,15 @@ namespace ThirdPersonController
                     continue;
                 }
 
+                EnemyHealth enemyHealth = ResolveEnemyHealth(hitCollider);
+                EnemyAI ai = ResolveEnemyAI(hitCollider);
+
                 DamageContext context = new DamageContext
                 {
                     source = caster,
                     sourceType = DamageSourceType.PlayerSkill,
                     damage = adjustedDamage,
+                    skillCategory = category,
                     elementType = ResolveSkillElement(caster),
                     category = damageCategory,
                     knockback = adjustedKnockback,
@@ -93,10 +97,13 @@ namespace ThirdPersonController
                 if (DamageService.ApplyDamage(context, hitCollider))
                 {
                     // 命中后附加 AI 眩晕控制
-                    EnemyAI ai = hitCollider.GetComponent<EnemyAI>();
                     if (ai != null)
                     {
-                        ai.ApplyStun(stunDuration);
+                        float scaledStunDuration = stunDuration * GetEnemyControlMultiplier(enemyHealth);
+                        if (scaledStunDuration > 0.01f)
+                        {
+                            ai.ApplyStun(scaledStunDuration);
+                        }
                     }
 
                     hitCount++;

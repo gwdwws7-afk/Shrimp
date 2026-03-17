@@ -17,8 +17,8 @@ MonoBehaviour:
   icon: {fileID: 0}
   keyBinding: 0
   category: 3
-  cooldown: 12
-  staminaCost: 18
+  cooldown: 10
+  staminaCost: 14
   damage: 50
   range: 5
   effectDuration: 2
@@ -56,7 +56,7 @@ MonoBehaviour:
   dashDistance: 7.5
   dashSpeed: 20
   hitBoxWidth: 1.4
-  pathDamage: 20
+  pathDamage: 24
   pathKnockback: 5
   invincibleDuringDash: 1
   dashInvincibilityDuration: 0.5

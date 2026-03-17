@@ -17,8 +17,8 @@ MonoBehaviour:
   icon: {fileID: 0}
   keyBinding: 0
   category: 4
-  cooldown: 11
-  staminaCost: 20
+  cooldown: 13
+  staminaCost: 24
   damage: 50
   range: 5
   effectDuration: 2
@@ -53,9 +53,9 @@ MonoBehaviour:
   breakValue: 0
   breakValueMultiplier: 1
   impactScale: 0.3
-  pullRadius: 9
+  pullRadius: 8.5
   pullForce: 15
   liftHeight: 3
   floatDuration: 1.2
-  landingDamage: 46
+  landingDamage: 42
   landingKnockback: 8

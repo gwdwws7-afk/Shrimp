@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: rusher
   displayName: 深渊突击
   enemyType: 1
-  maxHealth: 40
+  maxHealth: 34
   hitStunDuration: 0.18
   defense: 0
   expReward: 3
@@ -29,16 +29,16 @@ MonoBehaviour:
   attackRange: 1.7
   fieldOfView: 150
   patrolSpeed: 2.8
-  chaseSpeed: 5.8
+  chaseSpeed: 6.4
   rotationSpeed: 8
-  stoppingDistance: 0.95
-  attackCooldown: 1.1
-  attackDamage: 10
-  attackKnockback: 2.2
-  attackWindup: 0.25
+  stoppingDistance: 0.85
+  attackCooldown: 0.92
+  attackDamage: 12
+  attackKnockback: 2.4
+  attackWindup: 0.18
   attackActiveTime: 0.1
-  attackRecovery: 0.35
-  attackHitRadius: 0.95
+  attackRecovery: 0.26
+  attackHitRadius: 0.9
   attackHitAngle: 115
   useAttackPatterns: 1
   attackPatterns:
@@ -46,11 +46,11 @@ MonoBehaviour:
     patternName: Jab
     priority: 0
     weight: 0.65
-    damage: 9
+    damage: 10
     range: 1.6
     minRange: 0
-    cooldown: 0.9
-    windup: 0.2
+    cooldown: 0.82
+    windup: 0.17
     knockback: 2
     isRanged: 0
     projectilePrefab: {fileID: 0}
@@ -78,12 +78,12 @@ MonoBehaviour:
     patternName: Lunge
     priority: 0
     weight: 0.35
-    damage: 12
+    damage: 13
     range: 2.4
     minRange: 1.2
-    cooldown: 1.4
-    windup: 0.35
-    knockback: 2.6
+    cooldown: 1.25
+    windup: 0.3
+    knockback: 2.9
     isRanged: 0
     projectilePrefab: {fileID: 0}
     projectileSpeed: 12
@@ -107,26 +107,34 @@ MonoBehaviour:
     explosionKnockback: 5
     selfDestructDelay: 0
   canDodge: 1
-  dodgeChance: 0.28
+  dodgeChance: 0.44
   canBlock: 0
   blockChance: 0.05
   canCharge: 1
-  chargeSpeed: 11
-  chargeWindup: 0.3
+  chargeSpeed: 12
+  chargeWindup: 0.26
   canFlee: 0
   fleeHealthThreshold: 0.2
+  dodgeDistance: 2.8
+  dodgeDuration: 0.22
+  dodgeCooldown: 1.68
+  chargeChance: 0.58
+  chargeMinDistance: 1.6
+  chargeMaxDistance: 5.05
+  chargeDuration: 0.36
+  chargeCooldown: 2.5
   useCrowdCoordinator: 1
-  ringStandoffDistance: 1.6
+  ringStandoffDistance: 1.2
   overrideAgentSettings: 1
-  agentSpeed: 5
+  agentSpeed: 5.4
   agentAcceleration: 12
   agentAngularSpeed: 440
   agentStoppingDistance: 1.1
   agentRadius: 0.34
   agentHeight: 1.65
   overrideHitReaction: 1
-  knockbackThreshold: 1.6
-  knockdownThreshold: 5
+  knockbackThreshold: 1.5
+  knockdownThreshold: 4.6
   flinchDuration: 0.16
   knockbackDuration: 0.2
   knockbackDistance: 1.2

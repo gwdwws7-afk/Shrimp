@@ -36,7 +36,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 543450653699924297}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &100003
@@ -125,6 +126,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 50
   deathDelay: 2
+  hitStunDuration: 0.2
   hitEffect: {fileID: 0}
   heavyHitEffect: {fileID: 0}
   knockdownEffect: {fileID: 0}
@@ -133,8 +135,14 @@ MonoBehaviour:
   deathSound: {fileID: 0}
   dropItems: []
   dropChance: 0.3
-  enemyType: 0
+  enemyType: 4
   expReward: 1
+  resistPhysical: 0
+  resistHeat: 0
+  resistElectric: 0
+  resistToxin: 0
+  resistCorrosion: 0
+  defense: 0
 --- !u!114 &100007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,29 +186,69 @@ MonoBehaviour:
   isChasingParam: IsChasing
   hitTrigger: Hit
   knockdownTrigger: Knockdown
---- !u!95 &100009
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100000}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 9a124949527149e6ba77bc23f6bcbe7e, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
   useCrowdCoordinator: 1
-  ringStandoffDistance: 3
+  ringStandoffDistance: 2.4
+  canDodge: 0
+  dodgeChance: 0.1
+  canBlock: 0
+  blockChance: 0.1
+  canCharge: 0
+  chargeSpeed: 10
+  chargeWindup: 0.5
+  canFlee: 0
+  fleeHealthThreshold: 0.2
+  dodgeDistance: 2.4
+  dodgeDuration: 0.28
+  dodgeCooldown: 2.2
+  blockDuration: 0.45
+  blockCooldown: 2.8
+  blockDefenseBonus: 6
+  chargeChance: 0.2
+  chargeMinDistance: 1.8
+  chargeMaxDistance: 4.2
+  chargeDuration: 0.45
+  chargeCooldown: 3.5
+  fleeDistance: 4.8
+  fleeDuration: 1.1
+  fleeCooldown: 6
+  useAttackPatterns: 0
+  availablePatterns: []
+  attackPatterns: []
+  aiUpdateInterval: 0.08
+  aiUpdateJitter: 0.02
+  nearUpdateInterval: 0.05
+  farUpdateInterval: 0.18
+  nearUpdateDistance: 8
+  farUpdateDistance: 18
+  farAnimationUpdateInterval: 0.2
+  enableDistanceLod: 1
+  lodFullDistance: 9
+  lodSimplifiedDistance: 22
+  simplifiedDecisionIntervalMultiplier: 1.4
+  minimalDecisionIntervalMultiplier: 2.4
+  simplifiedAnimationIntervalMultiplier: 1.5
+  minimalAnimationIntervalMultiplier: 2.8
+  minimalTargetRescanInterval: 0.35
+  disableAdvancedActionsInMinimal: 1
+  enableBatchDecisionTick: 1
+  simplifiedBatchModulo: 2
+  minimalBatchModulo: 4
+  scaleDecisionIntervalWithCrowd: 1
+  crowdSlowdownStart: 12
+  crowdSlowdownFull: 40
+  maxCrowdUpdateMultiplier: 2
+  maxDecisionInterval: 0.25
+  debugCurrentState: Patrol
+  debugStateElapsed: 0
+  debugLastDecisionInterval: 0
+  debugLastDistanceToTarget: 0
+  debugDecisionCount: 0
+  debugAttackSequenceCount: 0
+  debugHitsAppliedCount: 0
+  debugTokenAcquireSuccessCount: 0
+  debugTokenAcquireFailCount: 0
+  debugUpdateLod: Full
+  debugBatchDecisionSkipped: 0
 --- !u!114 &100008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,6 +272,27 @@ MonoBehaviour:
   knockdownRecoverTime: 0.6
   flinchTrigger: Hit
   knockdownTrigger: Knockdown
+--- !u!95 &100009
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 9a124949527149e6ba77bc23f6bcbe7e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &100010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -251,9 +320,58 @@ PrefabInstance:
   m_Modification:
     serializedVersion: 3
     m_TransformParent: {fileID: 100001}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 611ed31b51884209ada6f8216e97d9ca, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 611ed31b51884209ada6f8216e97d9ca, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 611ed31b51884209ada6f8216e97d9ca, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 611ed31b51884209ada6f8216e97d9ca, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 611ed31b51884209ada6f8216e97d9ca, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 611ed31b51884209ada6f8216e97d9ca, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 611ed31b51884209ada6f8216e97d9ca, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 611ed31b51884209ada6f8216e97d9ca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 611ed31b51884209ada6f8216e97d9ca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 611ed31b51884209ada6f8216e97d9ca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 611ed31b51884209ada6f8216e97d9ca, type: 3}
+      propertyPath: m_Name
+      value: Meshy_AI_Character_output
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 611ed31b51884209ada6f8216e97d9ca, type: 3}
+--- !u!4 &543450653699924297 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 611ed31b51884209ada6f8216e97d9ca, type: 3}
+  m_PrefabInstance: {fileID: 100002}
+  m_PrefabAsset: {fileID: 0}

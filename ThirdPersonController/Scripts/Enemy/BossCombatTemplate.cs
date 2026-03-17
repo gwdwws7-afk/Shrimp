@@ -22,6 +22,12 @@ namespace ThirdPersonController
         public float recovery = 0.8f;
         public float damageMultiplier = 1f;
         public string animatorTrigger = "";
+
+        [Header("Selection")]
+        public bool usePreferredRange = false;
+        [Min(0f)] public float preferredMinRange = 0f;
+        [Min(0f)] public float preferredMaxRange = 5f;
+        [Min(0f)] public float phase2WeightMultiplier = 1f;
     }
 
     public class BossCombatTemplate : MonoBehaviour
@@ -44,6 +50,16 @@ namespace ThirdPersonController
         [Header("Skills")]
         public List<BossSkillDefinition> phase1Skills = new List<BossSkillDefinition>();
         public List<BossSkillDefinition> phase2Skills = new List<BossSkillDefinition>();
+
+        [Header("Behavior Depth")]
+        public bool avoidSkillSpam = true;
+        [Range(0f, 1f)] public float repeatSkillWeightPenalty = 0.55f;
+        public bool preferRangeMatching = true;
+        [Range(0f, 1f)] public float outOfRangeWeightPenalty = 0.35f;
+        [Min(0.2f)] public float phase2DecisionIntervalMultiplier = 0.75f;
+        [Min(0.1f)] public float phase2DamageMultiplier = 1.15f;
+        public bool refreshCooldownOnPhaseTransition = true;
+        [Range(0f, 1f)] public float phase2CooldownRemainingScale = 0.4f;
 
         [Header("Break Window")]
         public bool enableBreakWindow = true;
@@ -83,6 +99,8 @@ namespace ThirdPersonController
         private float staggerCurrent;
         private PlayerHealth cachedPlayer;
         private bool suppressNextDamageStagger;
+        private string lastSkillId = string.Empty;
+        private int repeatedSkillCount = 0;
 
         public bool IsBreakWindowActive => breakWindowActive;
 
@@ -128,7 +146,7 @@ namespace ThirdPersonController
 
             if (Time.time >= nextDecisionTime)
             {
-                nextDecisionTime = Time.time + Mathf.Max(0.1f, decisionInterval);
+                nextDecisionTime = Time.time + GetEffectiveDecisionInterval();
                 BossSkillDefinition skill = SelectSkill();
                 if (skill != null)
                 {
@@ -154,6 +172,12 @@ namespace ThirdPersonController
         protected virtual void EnterPhase2()
         {
             currentPhase = BossCombatPhase.Phase2;
+            if (refreshCooldownOnPhaseTransition)
+            {
+                RefreshCooldownForPhase2();
+            }
+
+            nextDecisionTime = Mathf.Min(nextDecisionTime, Time.time + GetEffectiveDecisionInterval() * 0.5f);
             if (animator != null && !string.IsNullOrEmpty(phase2Trigger))
             {
                 animator.SetTrigger(phase2Trigger);
@@ -271,8 +295,10 @@ namespace ThirdPersonController
                 return null;
             }
 
+            float distanceToPlayer = GetDistanceToPlayerFlat();
             float totalWeight = 0f;
             List<BossSkillDefinition> available = new List<BossSkillDefinition>();
+            List<float> dynamicWeights = new List<float>();
             for (int i = 0; i < pool.Count; i++)
             {
                 BossSkillDefinition skill = pool[i];
@@ -286,8 +312,15 @@ namespace ThirdPersonController
                     continue;
                 }
 
+                float dynamicWeight = ComputeDynamicSkillWeight(skill, distanceToPlayer);
+                if (dynamicWeight <= 0.001f)
+                {
+                    continue;
+                }
+
                 available.Add(skill);
-                totalWeight += Mathf.Max(0.01f, skill.weight);
+                dynamicWeights.Add(dynamicWeight);
+                totalWeight += dynamicWeight;
             }
 
             if (available.Count == 0)
@@ -299,7 +332,7 @@ namespace ThirdPersonController
             float accum = 0f;
             for (int i = 0; i < available.Count; i++)
             {
-                accum += Mathf.Max(0.01f, available[i].weight);
+                accum += dynamicWeights[i];
                 if (roll <= accum)
                 {
                     return available[i];
@@ -413,6 +446,7 @@ namespace ThirdPersonController
         protected void EndSkillExecution(BossSkillDefinition skill)
         {
             SetSkillCooldown(skill);
+            UpdateSkillHistory(skill);
             isExecutingSkill = false;
         }
 
@@ -440,7 +474,11 @@ namespace ThirdPersonController
                 baseValue = Mathf.Max(1, ai.attackDamage);
             }
 
-            return Mathf.Max(1, Mathf.RoundToInt(baseValue * Mathf.Max(0.1f, skill.damageMultiplier)));
+            float phaseMultiplier = currentPhase == BossCombatPhase.Phase2
+                ? Mathf.Max(0.1f, phase2DamageMultiplier)
+                : 1f;
+
+            return Mathf.Max(1, Mathf.RoundToInt(baseValue * Mathf.Max(0.1f, skill.damageMultiplier) * phaseMultiplier));
         }
 
         protected float GetSkillKnockback()
@@ -556,6 +594,166 @@ namespace ThirdPersonController
             }
 
             nextReadyTime[skill.id] = Time.time + Mathf.Max(0f, skill.cooldown);
+        }
+
+        private float GetEffectiveDecisionInterval()
+        {
+            float interval = Mathf.Max(0.1f, decisionInterval);
+            if (currentPhase == BossCombatPhase.Phase2)
+            {
+                interval *= Mathf.Max(0.2f, phase2DecisionIntervalMultiplier);
+            }
+
+            return Mathf.Max(0.1f, interval);
+        }
+
+        private void RefreshCooldownForPhase2()
+        {
+            if (nextReadyTime.Count == 0)
+            {
+                return;
+            }
+
+            List<string> keys = new List<string>(nextReadyTime.Keys);
+            float remainScale = Mathf.Clamp01(phase2CooldownRemainingScale);
+            for (int i = 0; i < keys.Count; i++)
+            {
+                string key = keys[i];
+                float currentReady = nextReadyTime[key];
+                if (currentReady <= Time.time)
+                {
+                    continue;
+                }
+
+                float remaining = currentReady - Time.time;
+                nextReadyTime[key] = Time.time + remaining * remainScale;
+            }
+        }
+
+        private float ComputeDynamicSkillWeight(BossSkillDefinition skill, float distanceToPlayer)
+        {
+            if (skill == null)
+            {
+                return 0f;
+            }
+
+            float weight = Mathf.Max(0.01f, skill.weight);
+
+            if (currentPhase == BossCombatPhase.Phase2)
+            {
+                weight *= Mathf.Max(0.1f, skill.phase2WeightMultiplier);
+            }
+
+            if (avoidSkillSpam && !string.IsNullOrEmpty(lastSkillId) && skill.id == lastSkillId)
+            {
+                float penalty = Mathf.Clamp01(repeatSkillWeightPenalty);
+                int repeatCount = Mathf.Max(1, repeatedSkillCount);
+                float penaltyFactor = Mathf.Pow(Mathf.Lerp(1f, 0.05f, penalty), repeatCount);
+                weight *= penaltyFactor;
+            }
+
+            if (preferRangeMatching && !float.IsInfinity(distanceToPlayer) && !IsSkillWithinPreferredRange(skill, distanceToPlayer))
+            {
+                weight *= Mathf.Clamp01(outOfRangeWeightPenalty);
+            }
+
+            return Mathf.Max(0f, weight);
+        }
+
+        private bool IsSkillWithinPreferredRange(BossSkillDefinition skill, float distanceToPlayer)
+        {
+            if (skill == null)
+            {
+                return true;
+            }
+
+            float minRange;
+            float maxRange;
+            if (skill.usePreferredRange)
+            {
+                minRange = Mathf.Max(0f, skill.preferredMinRange);
+                maxRange = Mathf.Max(minRange, skill.preferredMaxRange);
+            }
+            else if (!TryGetPreferredRangeBySkillId(skill.id, out minRange, out maxRange))
+            {
+                return true;
+            }
+
+            return distanceToPlayer >= minRange && distanceToPlayer <= maxRange;
+        }
+
+        private static bool TryGetPreferredRangeBySkillId(string skillId, out float minRange, out float maxRange)
+        {
+            minRange = 0f;
+            maxRange = 8f;
+            if (string.IsNullOrEmpty(skillId))
+            {
+                return false;
+            }
+
+            string id = skillId.ToLowerInvariant();
+            if (id.Contains("charge") || id.Contains("dash") || id.Contains("rush"))
+            {
+                minRange = 3f;
+                maxRange = 14f;
+                return true;
+            }
+
+            if (id.Contains("tail") || id.Contains("sweep") || id.Contains("shield") || id.Contains("slam"))
+            {
+                minRange = 0f;
+                maxRange = 4.8f;
+                return true;
+            }
+
+            if (id.Contains("spray"))
+            {
+                minRange = 2f;
+                maxRange = 8f;
+                return true;
+            }
+
+            if (id.Contains("shock") || id.Contains("overload") || id.Contains("vortex") || id.Contains("devour"))
+            {
+                minRange = 1.5f;
+                maxRange = 7.5f;
+                return true;
+            }
+
+            return false;
+        }
+
+        private float GetDistanceToPlayerFlat()
+        {
+            PlayerHealth player = GetPlayer();
+            if (player == null)
+            {
+                return float.PositiveInfinity;
+            }
+
+            Vector3 delta = player.transform.position - transform.position;
+            delta.y = 0f;
+            return delta.magnitude;
+        }
+
+        private void UpdateSkillHistory(BossSkillDefinition skill)
+        {
+            if (skill == null || string.IsNullOrEmpty(skill.id))
+            {
+                lastSkillId = string.Empty;
+                repeatedSkillCount = 0;
+                return;
+            }
+
+            if (skill.id == lastSkillId)
+            {
+                repeatedSkillCount++;
+            }
+            else
+            {
+                lastSkillId = skill.id;
+                repeatedSkillCount = 1;
+            }
         }
 
         protected virtual void HandleDeath()

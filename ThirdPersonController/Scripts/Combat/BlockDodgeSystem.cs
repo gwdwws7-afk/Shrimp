@@ -94,9 +94,8 @@ namespace ThirdPersonController
         private void HandleBlockInput()
         {
             if (IsDodging) return;  // 闪避中不允许进入格挡
-            bool blockPressed = inputHandler != null
-                ? inputHandler.BlockHeld
-                : PlayerInputHandler.ReadUnifiedKey(blockKey);
+            PlayerInputHandler handler = ResolveInputHandler();
+            bool blockPressed = handler != null && handler.BlockHeld;
 
             if (inputBuffer != null)
             {
@@ -267,9 +266,8 @@ namespace ThirdPersonController
         {
             if (IsBlocking || IsDodging) return;  // 防御动作中禁止再次闪避
             if (dodgeCooldownTimer > 0) return; // 闪避仍在冷却，用于限制触发频率并平衡节奏。
-            bool dodgePressed = inputHandler != null
-                ? inputHandler.DodgePressed
-                : PlayerInputHandler.ReadUnifiedKeyDown(dodgeKey);
+            PlayerInputHandler handler = ResolveInputHandler();
+            bool dodgePressed = handler != null && handler.DodgePressed;
 
             // 检测闪避输入并写入缓冲
             if (dodgePressed)
@@ -483,6 +481,17 @@ namespace ThirdPersonController
             }
 
             return false;
+        }
+
+        private PlayerInputHandler ResolveInputHandler()
+        {
+            if (inputHandler != null)
+            {
+                return inputHandler;
+            }
+
+            inputHandler = PlayerInputHandler.ResolveActiveInstance();
+            return inputHandler;
         }
 
         #endregion

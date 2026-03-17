@@ -17,8 +17,8 @@ MonoBehaviour:
   icon: {fileID: 0}
   keyBinding: 0
   category: 2
-  cooldown: 13
-  staminaCost: 24
+  cooldown: 15
+  staminaCost: 26
   damage: 50
   range: 5
   effectDuration: 2
@@ -53,9 +53,9 @@ MonoBehaviour:
   breakValue: 0
   breakValueMultiplier: 1
   impactScale: 0.45
-  duration: 1.8
-  tickRate: 0.35
+  duration: 2.2
+  tickRate: 0.32
   radius: 3
   rotationSpeed: 720
-  tickDamage: 14
+  tickDamage: 13
   knockbackForce: 8

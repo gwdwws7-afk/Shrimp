@@ -15,29 +15,29 @@ MonoBehaviour:
   archetypeId: tank
   displayName: 深渊重装
   enemyType: 2
-  maxHealth: 200
+  maxHealth: 245
   hitStunDuration: 0.18
-  defense: 5
+  defense: 6
   expReward: 6
   dropChance: 0.35
-  resistPhysical: 0.2
+  resistPhysical: 0.25
   resistHeat: 0
   resistElectric: 0.1
   resistToxin: 0.2
-  resistCorrosion: -0.2
+  resistCorrosion: -0.25
   detectionRange: 12
   attackRange: 2.6
   fieldOfView: 100
   patrolSpeed: 1.6
-  chaseSpeed: 2.4
+  chaseSpeed: 2.15
   rotationSpeed: 3.8
-  stoppingDistance: 2.2
-  attackCooldown: 2.4
-  attackDamage: 18
-  attackKnockback: 5.2
-  attackWindup: 0.65
+  stoppingDistance: 2.4
+  attackCooldown: 2.45
+  attackDamage: 20
+  attackKnockback: 5.8
+  attackWindup: 0.72
   attackActiveTime: 0.15
-  attackRecovery: 0.7
+  attackRecovery: 0.92
   attackHitRadius: 1.35
   attackHitAngle: 125
   useAttackPatterns: 1
@@ -46,12 +46,12 @@ MonoBehaviour:
     patternName: Slam
     priority: 0
     weight: 0.4
-    damage: 20
+    damage: 22
     range: 2.6
     minRange: 1.6
-    cooldown: 2.6
-    windup: 0.7
-    knockback: 6
+    cooldown: 2.8
+    windup: 0.78
+    knockback: 6.4
     isRanged: 0
     projectilePrefab: {fileID: 0}
     projectileSpeed: 12
@@ -78,12 +78,12 @@ MonoBehaviour:
     patternName: Bash
     priority: 0
     weight: 0.6
-    damage: 16
+    damage: 18
     range: 2
     minRange: 0
-    cooldown: 2.2
-    windup: 0.55
-    knockback: 4.8
+    cooldown: 2.35
+    windup: 0.62
+    knockback: 5.2
     isRanged: 0
     projectilePrefab: {fileID: 0}
     projectileSpeed: 12
@@ -109,27 +109,30 @@ MonoBehaviour:
   canDodge: 0
   dodgeChance: 0.02
   canBlock: 1
-  blockChance: 0.35
+  blockChance: 0.55
   canCharge: 0
   chargeSpeed: 7
   chargeWindup: 0.65
   canFlee: 0
   fleeHealthThreshold: 0.2
+  blockDuration: 0.78
+  blockCooldown: 2.48
+  blockDefenseBonus: 12
   useCrowdCoordinator: 1
-  ringStandoffDistance: 3.6
+  ringStandoffDistance: 4.4
   overrideAgentSettings: 1
-  agentSpeed: 2.4
+  agentSpeed: 2.2
   agentAcceleration: 5
   agentAngularSpeed: 300
   agentStoppingDistance: 2
   agentRadius: 0.55
   agentHeight: 2.1
   overrideHitReaction: 1
-  knockbackThreshold: 3.4
-  knockdownThreshold: 8.5
+  knockbackThreshold: 3.8
+  knockdownThreshold: 9
   flinchDuration: 0.2
   knockbackDuration: 0.32
-  knockbackDistance: 0.7
+  knockbackDistance: 0.55
   knockdownDuration: 0.45
-  knockdownDistance: 1.6
-  knockdownRecoverTime: 0.8
+  knockdownDistance: 1.35
+  knockdownRecoverTime: 0.95

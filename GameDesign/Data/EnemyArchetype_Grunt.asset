@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: grunt
   displayName: 深渊杂兵
   enemyType: 0
-  maxHealth: 60
+  maxHealth: 54
   hitStunDuration: 0.2
   defense: 0
   expReward: 2
@@ -29,13 +29,13 @@ MonoBehaviour:
   attackRange: 2
   fieldOfView: 125
   patrolSpeed: 2.2
-  chaseSpeed: 4
+  chaseSpeed: 4.3
   rotationSpeed: 6
-  stoppingDistance: 1.4
-  attackCooldown: 1.55
-  attackDamage: 9
+  stoppingDistance: 1.3
+  attackCooldown: 1.52
+  attackDamage: 8
   attackKnockback: 2.6
-  attackWindup: 0.4
+  attackWindup: 0.42
   attackActiveTime: 0.12
   attackRecovery: 0.5
   attackHitRadius: 1.1
@@ -46,12 +46,12 @@ MonoBehaviour:
     patternName: Swipe
     priority: 0
     weight: 1
-    damage: 9
+    damage: 8
     range: 2
     minRange: 0
-    cooldown: 1.55
-    windup: 0.4
-    knockback: 2.6
+    cooldown: 1.62
+    windup: 0.44
+    knockback: 2.4
     isRanged: 0
     projectilePrefab: {fileID: 0}
     projectileSpeed: 12
@@ -75,29 +75,30 @@ MonoBehaviour:
     explosionKnockback: 5
     selfDestructDelay: 0
   canDodge: 0
-  dodgeChance: 0.05
+  dodgeChance: 0.02
   canBlock: 0
-  blockChance: 0.05
+  blockChance: 0.02
   canCharge: 0
   chargeSpeed: 9
   chargeWindup: 0.5
   canFlee: 0
   fleeHealthThreshold: 0.2
+  chargeChance: 0
   useCrowdCoordinator: 1
-  ringStandoffDistance: 2.2
+  ringStandoffDistance: 1.9
   overrideAgentSettings: 1
-  agentSpeed: 3.4
+  agentSpeed: 3.2
   agentAcceleration: 8
   agentAngularSpeed: 360
   agentStoppingDistance: 1.5
   agentRadius: 0.4
   agentHeight: 1.8
   overrideHitReaction: 1
-  knockbackThreshold: 2
-  knockdownThreshold: 6
+  knockbackThreshold: 1.7
+  knockdownThreshold: 5.4
   flinchDuration: 0.2
   knockbackDuration: 0.25
   knockbackDistance: 1.2
   knockdownDuration: 0.35
   knockdownDistance: 2.5
-  knockdownRecoverTime: 0.6
+  knockdownRecoverTime: 0.55

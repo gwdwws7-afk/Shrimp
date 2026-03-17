@@ -91,6 +91,22 @@ namespace ThirdPersonController
         public float farUpdateDistance = 18f;
         public float farAnimationUpdateInterval = 0.2f;
 
+        [Header("Performance LOD (P3)")]
+        public bool enableDistanceLod = true;
+        public float lodFullDistance = 9f;
+        public float lodSimplifiedDistance = 22f;
+        public float simplifiedDecisionIntervalMultiplier = 1.4f;
+        public float minimalDecisionIntervalMultiplier = 2.4f;
+        public float simplifiedAnimationIntervalMultiplier = 1.5f;
+        public float minimalAnimationIntervalMultiplier = 2.8f;
+        public float minimalTargetRescanInterval = 0.35f;
+        public bool disableAdvancedActionsInMinimal = true;
+
+        [Header("Batch Update (P3)")]
+        public bool enableBatchDecisionTick = true;
+        [Min(1)] public int simplifiedBatchModulo = 2;
+        [Min(1)] public int minimalBatchModulo = 4;
+
         [Header("Crowd Scaling")]
         public bool scaleDecisionIntervalWithCrowd = true;
         public int crowdSlowdownStart = 12;
@@ -108,6 +124,8 @@ namespace ThirdPersonController
         [SerializeField] private int debugHitsAppliedCount = 0;
         [SerializeField] private int debugTokenAcquireSuccessCount = 0;
         [SerializeField] private int debugTokenAcquireFailCount = 0;
+        [SerializeField] private string debugUpdateLod = "Full";
+        [SerializeField] private bool debugBatchDecisionSkipped = false;
 
         private NavMeshAgent agent;
         private EnemyHealth health;
@@ -136,7 +154,9 @@ namespace ThirdPersonController
         private bool isChasing = false;
 
         private enum State { Patrol, Chase, Circle, Attack, Dodge, Block, Charge, Flee }
+        private enum UpdateLodTier { Full, Simplified, Minimal }
         private State currentState = State.Patrol;
+        private UpdateLodTier currentUpdateLod = UpdateLodTier.Full;
         
         private bool isDodging = false;
         private bool isBlocking = false;
@@ -158,9 +178,13 @@ namespace ThirdPersonController
         private bool blockDefenseApplied = false;
         private float stateElapsed = 0f;
         private State debugLastState = State.Patrol;
+        private int decisionBatchOffset = 0;
+        private float nextMinimalTargetRescanTime = 0f;
 
         private EnemyAttackPattern currentPattern;
         private readonly List<EnemyAttackPattern> patternBuffer = new List<EnemyAttackPattern>();
+        private static readonly List<EnemyAI> activeInstances = new List<EnemyAI>(512);
+        public static IReadOnlyList<EnemyAI> ActiveInstances => activeInstances;
 
         [System.Serializable]
         public struct EnemyAIDebugSnapshot
@@ -174,6 +198,8 @@ namespace ThirdPersonController
             public int hitsAppliedCount;
             public int tokenAcquireSuccessCount;
             public int tokenAcquireFailCount;
+            public string updateLod;
+            public bool batchDecisionSkipped;
         }
 
         public EnemyAIDebugSnapshot GetDebugSnapshot()
@@ -188,8 +214,34 @@ namespace ThirdPersonController
                 attackSequenceCount = debugAttackSequenceCount,
                 hitsAppliedCount = debugHitsAppliedCount,
                 tokenAcquireSuccessCount = debugTokenAcquireSuccessCount,
-                tokenAcquireFailCount = debugTokenAcquireFailCount
+                tokenAcquireFailCount = debugTokenAcquireFailCount,
+                updateLod = debugUpdateLod,
+                batchDecisionSkipped = debugBatchDecisionSkipped
             };
+        }
+
+        public bool PrefersRangedRingLayer()
+        {
+            if (!useAttackPatterns || attackPatterns == null || attackPatterns.Count == 0)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < attackPatterns.Count; i++)
+            {
+                EnemyAttackPattern pattern = attackPatterns[i];
+                if (pattern == null || !pattern.isRanged)
+                {
+                    continue;
+                }
+
+                if (IsPatternAvailable(pattern))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void Awake()
@@ -221,10 +273,17 @@ namespace ThirdPersonController
             {
                 nextAnimationTime = Time.time + Random.Range(0f, Mathf.Max(0.02f, farAnimationUpdateInterval));
             }
+
+            decisionBatchOffset = GetStableBatchOffset();
+            currentUpdateLod = UpdateLodTier.Full;
+            nextMinimalTargetRescanTime = 0f;
+            debugUpdateLod = currentUpdateLod.ToString();
+            debugBatchDecisionSkipped = false;
         }
 
         private void OnEnable()
         {
+            RegisterActiveInstance();
             if (useCrowdCoordinator)
             {
                 if (crowdCoordinator == null)
@@ -241,12 +300,18 @@ namespace ThirdPersonController
 
         private void OnDisable()
         {
+            UnregisterActiveInstance();
             CancelTransientActions();
             ReleaseAttackToken();
             if (crowdCoordinator != null)
             {
                 crowdCoordinator.Unregister(this);
             }
+        }
+
+        private void OnDestroy()
+        {
+            UnregisterActiveInstance();
         }
 
         private void FindPlayer()
@@ -317,6 +382,9 @@ namespace ThirdPersonController
             }
 
             debugLastDistanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
+            currentUpdateLod = ResolveUpdateLodTier(debugLastDistanceToTarget);
+            debugUpdateLod = currentUpdateLod.ToString();
+
             HandleCooldowns();
             if (isAttacking)
             {
@@ -325,6 +393,14 @@ namespace ThirdPersonController
                 return;
             }
 
+            if (!ShouldRunDecisionThisFrame(currentUpdateLod))
+            {
+                debugBatchDecisionSkipped = true;
+                UpdateAnimations();
+                return;
+            }
+
+            debugBatchDecisionSkipped = false;
             if (Time.time < nextDecisionTime)
             {
                 UpdateAnimations();
@@ -334,6 +410,7 @@ namespace ThirdPersonController
             float distanceToTarget = debugLastDistanceToTarget;
             float interval = GetUpdateInterval(distanceToTarget);
             interval = ApplyCrowdScaling(interval);
+            interval *= GetLodDecisionIntervalMultiplier(currentUpdateLod);
             if (maxDecisionInterval > 0f)
             {
                 interval = Mathf.Min(interval, maxDecisionInterval);
@@ -344,7 +421,10 @@ namespace ThirdPersonController
             debugLastDecisionInterval = decisionInterval;
             debugDecisionCount++;
 
-            DetectTarget();
+            if (ShouldRunTargetDetection(currentUpdateLod))
+            {
+                DetectTarget();
+            }
             UpdateState();
             ExecuteState();
         }
@@ -362,13 +442,133 @@ namespace ThirdPersonController
                 isStunned = false;
                 if (!isSuppressed)
                 {
-                    agent.isStopped = false;
+                    SetAgentStoppedSafe(false);
                 }
             }
             else
             {
-                agent.isStopped = true;
+                SetAgentStoppedSafe(true);
             }
+        }
+
+        private void SetAgentStoppedSafe(bool stopped)
+        {
+            if (agent == null || !agent.enabled || !agent.isOnNavMesh)
+            {
+                return;
+            }
+
+            agent.isStopped = stopped;
+        }
+
+        private UpdateLodTier ResolveUpdateLodTier(float distanceToTarget)
+        {
+            if (!enableDistanceLod)
+            {
+                return UpdateLodTier.Full;
+            }
+
+            float fullDistance = Mathf.Max(0.5f, lodFullDistance);
+            float simplifiedDistance = Mathf.Max(fullDistance + 0.1f, lodSimplifiedDistance);
+
+            if (distanceToTarget <= fullDistance)
+            {
+                return UpdateLodTier.Full;
+            }
+
+            if (distanceToTarget <= simplifiedDistance)
+            {
+                return UpdateLodTier.Simplified;
+            }
+
+            return UpdateLodTier.Minimal;
+        }
+
+        private bool ShouldRunDecisionThisFrame(UpdateLodTier lodTier)
+        {
+            if (!enableBatchDecisionTick)
+            {
+                return true;
+            }
+
+            int modulo = 1;
+            if (lodTier == UpdateLodTier.Simplified)
+            {
+                modulo = Mathf.Max(1, simplifiedBatchModulo);
+            }
+            else if (lodTier == UpdateLodTier.Minimal)
+            {
+                modulo = Mathf.Max(1, minimalBatchModulo);
+            }
+
+            if (modulo <= 1)
+            {
+                return true;
+            }
+
+            return (Time.frameCount + decisionBatchOffset) % modulo == 0;
+        }
+
+        private bool ShouldRunTargetDetection(UpdateLodTier lodTier)
+        {
+            if (lodTier != UpdateLodTier.Minimal)
+            {
+                return true;
+            }
+
+            if (isChasing)
+            {
+                return true;
+            }
+
+            if (Time.time < nextMinimalTargetRescanTime)
+            {
+                return false;
+            }
+
+            nextMinimalTargetRescanTime = Time.time + Mathf.Max(0.05f, minimalTargetRescanInterval);
+            return true;
+        }
+
+        private float GetLodDecisionIntervalMultiplier(UpdateLodTier lodTier)
+        {
+            switch (lodTier)
+            {
+                case UpdateLodTier.Simplified:
+                    return Mathf.Max(1f, simplifiedDecisionIntervalMultiplier);
+                case UpdateLodTier.Minimal:
+                    return Mathf.Max(1f, minimalDecisionIntervalMultiplier);
+                default:
+                    return 1f;
+            }
+        }
+
+        private float GetLodAnimationIntervalMultiplier(UpdateLodTier lodTier)
+        {
+            switch (lodTier)
+            {
+                case UpdateLodTier.Simplified:
+                    return Mathf.Max(1f, simplifiedAnimationIntervalMultiplier);
+                case UpdateLodTier.Minimal:
+                    return Mathf.Max(1f, minimalAnimationIntervalMultiplier);
+                default:
+                    return 1f;
+            }
+        }
+
+        private bool AllowAdvancedActionsInCurrentLod()
+        {
+            if (!disableAdvancedActionsInMinimal)
+            {
+                return true;
+            }
+
+            return currentUpdateLod != UpdateLodTier.Minimal;
+        }
+
+        private int GetStableBatchOffset()
+        {
+            return GetInstanceID() & int.MaxValue;
         }
 
         private float GetUpdateInterval(float distanceToPlayer)
@@ -394,12 +594,14 @@ namespace ThirdPersonController
 
         private float ApplyCrowdScaling(float interval)
         {
-            if (!scaleDecisionIntervalWithCrowd || crowdCoordinator == null)
+            if (!scaleDecisionIntervalWithCrowd)
             {
                 return interval;
             }
 
-            int crowdCount = crowdCoordinator.NearbyEnemyCount;
+            int crowdCount = crowdCoordinator != null
+                ? crowdCoordinator.NearbyEnemyCount
+                : CountEstimatedCrowd();
             if (crowdCount <= crowdSlowdownStart)
             {
                 return interval;
@@ -408,6 +610,25 @@ namespace ThirdPersonController
             float t = Mathf.InverseLerp(crowdSlowdownStart, crowdSlowdownFull, crowdCount);
             float multiplier = Mathf.Lerp(1f, maxCrowdUpdateMultiplier, t);
             return interval * multiplier;
+        }
+
+        private int CountEstimatedCrowd()
+        {
+            int count = activeInstances.Count - 1;
+            return count > 0 ? count : 0;
+        }
+
+        private void RegisterActiveInstance()
+        {
+            if (!activeInstances.Contains(this))
+            {
+                activeInstances.Add(this);
+            }
+        }
+
+        private void UnregisterActiveInstance()
+        {
+            activeInstances.Remove(this);
         }
 
         private void HandleCooldowns()
@@ -543,22 +764,26 @@ namespace ThirdPersonController
 
             if (isChasing)
             {
-                if (TryEnterCharge(distanceToTarget, readyToAttack))
+                bool allowAdvancedActions = AllowAdvancedActionsInCurrentLod();
+                if (allowAdvancedActions)
                 {
-                    currentState = State.Charge;
-                    return;
-                }
+                    if (TryEnterCharge(distanceToTarget, readyToAttack))
+                    {
+                        currentState = State.Charge;
+                        return;
+                    }
 
-                if (TryEnterDodge(distanceToTarget))
-                {
-                    currentState = State.Dodge;
-                    return;
-                }
+                    if (TryEnterDodge(distanceToTarget))
+                    {
+                        currentState = State.Dodge;
+                        return;
+                    }
 
-                if (TryEnterBlock(distanceToTarget))
-                {
-                    currentState = State.Block;
-                    return;
+                    if (TryEnterBlock(distanceToTarget))
+                    {
+                        currentState = State.Block;
+                        return;
+                    }
                 }
 
                 if (distanceToTarget <= desiredAttackRange)
@@ -620,7 +845,7 @@ namespace ThirdPersonController
         {
             if (patrolPoints.Length == 0) return;
 
-            agent.isStopped = false;
+            SetAgentStoppedSafe(false);
 
             agent.speed = patrolSpeed;
 
@@ -652,7 +877,7 @@ namespace ThirdPersonController
 
         private void Chase()
         {
-            agent.isStopped = false;
+            SetAgentStoppedSafe(false);
             agent.speed = chaseSpeed;
             if (currentTarget == null)
             {
@@ -793,7 +1018,7 @@ namespace ThirdPersonController
                 return;
             }
 
-            agent.isStopped = false;
+            SetAgentStoppedSafe(false);
             agent.speed = Mathf.Max(chaseSpeed, chaseSpeed * 1.35f);
             agent.SetDestination(dodgeDestination);
             dodgeTimer -= Time.deltaTime;
@@ -823,7 +1048,7 @@ namespace ThirdPersonController
                 return;
             }
 
-            agent.isStopped = true;
+            SetAgentStoppedSafe(true);
             FaceCurrentTarget();
             blockTimer -= Time.deltaTime;
             if (blockTimer <= 0f)
@@ -870,12 +1095,12 @@ namespace ThirdPersonController
 
             if (chargeTimer > dashDuration)
             {
-                agent.isStopped = true;
+                SetAgentStoppedSafe(true);
                 FaceCurrentTarget();
             }
             else
             {
-                agent.isStopped = false;
+                SetAgentStoppedSafe(false);
                 agent.speed = Mathf.Max(chaseSpeed, chargeSpeed);
                 if (currentTarget != null)
                 {
@@ -929,7 +1154,7 @@ namespace ThirdPersonController
                 return;
             }
 
-            agent.isStopped = false;
+            SetAgentStoppedSafe(false);
             agent.speed = Mathf.Max(patrolSpeed, chaseSpeed * 0.9f);
             UpdateFleeDestination();
             agent.SetDestination(fleeDestination);
@@ -1006,7 +1231,7 @@ namespace ThirdPersonController
                 return;
             }
 
-            agent.isStopped = true;
+            SetAgentStoppedSafe(true);
 
             // Rotate to face player
             if (currentTarget != null)
@@ -1042,7 +1267,7 @@ namespace ThirdPersonController
 
         private void Circle()
         {
-            agent.isStopped = false;
+            SetAgentStoppedSafe(false);
             agent.speed = chaseSpeed * 0.85f;
 
             if (currentTarget == null)
@@ -1194,7 +1419,15 @@ namespace ThirdPersonController
 
         private void SpawnProjectile(Transform origin, Vector3 direction)
         {
-            GameObject projectileObj = Instantiate(currentPattern.projectilePrefab, origin.position, Quaternion.LookRotation(direction));
+            GameObject projectileObj = ObjectPoolManager.Spawn(
+                currentPattern.projectilePrefab,
+                origin.position,
+                Quaternion.LookRotation(direction));
+            if (projectileObj == null)
+            {
+                return;
+            }
+
             EnemyProjectile projectile = projectileObj.GetComponent<EnemyProjectile>();
             if (projectile != null)
             {
@@ -1534,13 +1767,18 @@ namespace ThirdPersonController
                 return;
             }
 
+            float lodMultiplier = GetLodAnimationIntervalMultiplier(currentUpdateLod);
             if (player != null)
             {
                 Transform target = currentTarget != null ? currentTarget : player;
                 float distance = target != null ? Vector3.Distance(transform.position, target.position) : 0f;
-                if (distance >= farUpdateDistance)
+                bool shouldThrottle = distance >= farUpdateDistance || currentUpdateLod != UpdateLodTier.Full;
+                if (shouldThrottle)
                 {
-                    nextAnimationTime = Time.time + Mathf.Max(0.02f, farAnimationUpdateInterval);
+                    float baseInterval = distance >= farUpdateDistance
+                        ? farAnimationUpdateInterval
+                        : Mathf.Max(0.02f, nearUpdateInterval);
+                    nextAnimationTime = Time.time + Mathf.Max(0.02f, baseInterval * lodMultiplier);
                 }
                 else
                 {
@@ -1549,7 +1787,7 @@ namespace ThirdPersonController
             }
             else
             {
-                nextAnimationTime = Time.time;
+                nextAnimationTime = Time.time + Mathf.Max(0.02f, farAnimationUpdateInterval * lodMultiplier);
             }
 
             float moveSpeed = chaseSpeed > 0.01f ? agent.velocity.magnitude / chaseSpeed : 0f;
@@ -1631,13 +1869,13 @@ namespace ThirdPersonController
             {
                 CancelTransientActions();
                 ReleaseAttackToken();
-                agent.isStopped = true;
+                SetAgentStoppedSafe(true);
             }
             else
             {
                 if (!isStunned)
                 {
-                    agent.isStopped = false;
+                    SetAgentStoppedSafe(false);
                 }
             }
         }
@@ -1653,7 +1891,7 @@ namespace ThirdPersonController
             isStunned = true;
             CancelTransientActions();
             ReleaseAttackToken();
-            agent.isStopped = true;
+            SetAgentStoppedSafe(true);
         }
         
         public void SetStunned(bool stunned)
@@ -1663,13 +1901,13 @@ namespace ThirdPersonController
             {
                 CancelTransientActions();
                 ReleaseAttackToken();
-                agent.isStopped = true;
+                SetAgentStoppedSafe(true);
             }
             else
             {
                 if (!isSuppressed)
                 {
-                    agent.isStopped = false;
+                    SetAgentStoppedSafe(false);
                 }
             }
         }
@@ -1725,6 +1963,11 @@ namespace ThirdPersonController
             debugHitsAppliedCount = 0;
             debugTokenAcquireSuccessCount = 0;
             debugTokenAcquireFailCount = 0;
+            currentUpdateLod = UpdateLodTier.Full;
+            debugUpdateLod = currentUpdateLod.ToString();
+            debugBatchDecisionSkipped = false;
+            decisionBatchOffset = GetStableBatchOffset();
+            nextMinimalTargetRescanTime = 0f;
             nextDecisionTime = Time.time + Random.Range(0f, Mathf.Max(0.02f, aiUpdateInterval));
             nextAnimationTime = Time.time + Random.Range(0f, Mathf.Max(0.02f, farAnimationUpdateInterval));
         }

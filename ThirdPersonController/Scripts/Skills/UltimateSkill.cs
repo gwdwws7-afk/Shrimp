@@ -135,8 +135,8 @@ namespace ThirdPersonController
                     continue;
                 }
 
-                EnemyHealth enemyHealth = hitCollider.GetComponent<EnemyHealth>();
-                EnemyAI enemyAI = hitCollider.GetComponent<EnemyAI>();
+                EnemyHealth enemyHealth = ResolveEnemyHealth(hitCollider);
+                EnemyAI enemyAI = ResolveEnemyAI(hitCollider);
 
                 if (enemyHealth != null)
                 {
@@ -147,6 +147,7 @@ namespace ThirdPersonController
                         source = caster,
                         sourceType = DamageSourceType.PlayerSkill,
                         damage = adjustedDamage,
+                        skillCategory = category,
                         elementType = ResolveSkillElement(caster),
                         category = damageCategory,
                         knockback = adjustedKnockback,
@@ -172,7 +173,11 @@ namespace ThirdPersonController
                         // 命中后追加眩晕控制
                         if (enemyAI != null)
                         {
-                            enemyAI.ApplyStun(stunDuration);
+                            float scaledStunDuration = stunDuration * GetEnemyControlMultiplier(enemyHealth);
+                            if (scaledStunDuration > 0.01f)
+                            {
+                                enemyAI.ApplyStun(scaledStunDuration);
+                            }
                         }
                     }
                 }

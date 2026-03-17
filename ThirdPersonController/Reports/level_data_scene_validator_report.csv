@@ -1,0 +1,11 @@
+level_id,level_asset,scene_name,scene_path,scene_exists,in_build_settings,status,issues,fixed,unresolved,note
+LEVEL_01,Assets/GameDesign/Data/LevelData_Level01.asset,Level_01_TrenchRift,Assets/Scenes/Level_01_TrenchRift.unity,1,1,Ok,0,0,0,
+LEVEL_02,Assets/GameDesign/Data/LevelData_Level02.asset,Level_02_WreckedStation,Assets/Scenes/Level_02_WreckedStation.unity,1,1,Ok,0,0,0,
+LEVEL_03,Assets/GameDesign/Data/LevelData_Level03.asset,Level_03_ThermalVents,Assets/Scenes/Level_03_ThermalVents.unity,1,1,Ok,0,0,0,
+LEVEL_04,Assets/GameDesign/Data/LevelData_Level04.asset,Level_04_CoralGrove,Assets/Scenes/Level_04_CoralGrove.unity,1,1,Ok,0,0,0,
+LEVEL_05,Assets/GameDesign/Data/LevelData_Level05.asset,Level_05_SunkenCity,Assets/Scenes/Level_05_SunkenCity.unity,1,1,Ok,0,0,0,
+LEVEL_06,Assets/GameDesign/Data/LevelData_Level06.asset,Level_06_BlackTidePipes,Assets/Scenes/Level_06_BlackTidePipes.unity,1,1,Ok,0,0,0,
+LEVEL_07,Assets/GameDesign/Data/LevelData_Level07.asset,Level_07_AbyssHangar,Assets/Scenes/Level_07_AbyssHangar.unity,1,1,Ok,0,0,0,
+LEVEL_08,Assets/GameDesign/Data/LevelData_Level08.asset,Level_08_MoltenRift,Assets/Scenes/Level_08_MoltenRift.unity,1,1,Ok,0,0,0,
+LEVEL_09,Assets/GameDesign/Data/LevelData_Level09.asset,Level_09_StillTideSanctum,Assets/Scenes/Level_09_StillTideSanctum.unity,1,1,Ok,0,0,0,
+LEVEL_10,Assets/GameDesign/Data/LevelData_Level10.asset,Level_10_HiveCore,Assets/Scenes/Level_10_HiveCore.unity,1,1,Ok,0,0,0,

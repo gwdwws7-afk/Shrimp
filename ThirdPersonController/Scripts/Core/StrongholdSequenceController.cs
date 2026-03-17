@@ -64,6 +64,15 @@ namespace ThirdPersonController
             BindStrongholds(true);
         }
 
+        public void ConfigureBossGate(bool deferUntilBoss, BossSpawnPoint spawnPoint)
+        {
+            BindBoss(false);
+            deferCompletionUntilBoss = deferUntilBoss;
+            bossSpawnPoint = spawnPoint;
+            waitingForBoss = false;
+            BindBoss(true);
+        }
+
         private void BindStrongholds(bool bind)
         {
             if (strongholds == null)

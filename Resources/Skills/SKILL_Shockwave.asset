@@ -17,9 +17,9 @@ MonoBehaviour:
   icon: {fileID: 0}
   keyBinding: 0
   category: 1
-  cooldown: 9
-  staminaCost: 18
-  damage: 42
+  cooldown: 10
+  staminaCost: 16
+  damage: 36
   range: 5
   effectDuration: 2
   castDuration: 0.5
@@ -55,5 +55,5 @@ MonoBehaviour:
   impactScale: 0.4
   coneAngle: 90
   coneRange: 8
-  stunDuration: 1.6
-  knockbackForce: 12
+  stunDuration: 1.4
+  knockbackForce: 10.5

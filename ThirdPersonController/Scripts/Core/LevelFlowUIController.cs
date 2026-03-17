@@ -16,6 +16,7 @@ namespace ThirdPersonController
 
         [Header("Prep")]
         public bool pauseDuringPrep = true;
+        public string startActionName = "MenuConfirm";
         public KeyCode startKey = KeyCode.Return;
         public string startButtonLabel = "Start Battle";
         public string startHintLabel = "Press Enter to Start";
@@ -24,6 +25,8 @@ namespace ThirdPersonController
 
         [Header("Result")]
         public bool pauseDuringResult = true;
+        public string continueActionName = "MenuConfirm";
+        public string retryActionName = "MenuRetry";
         public KeyCode continueKey = KeyCode.Return;
         public KeyCode retryKey = KeyCode.R;
         public string continueLabel = "继续";
@@ -112,15 +115,10 @@ namespace ThirdPersonController
 
         private void Update()
         {
-            bool startPressed = inputHandler != null
-                ? inputHandler.WasUnifiedKeyPressedThisFrame(startKey)
-                : PlayerInputHandler.ReadUnifiedKeyDown(startKey);
-            bool continuePressed = inputHandler != null
-                ? inputHandler.WasUnifiedKeyPressedThisFrame(continueKey)
-                : PlayerInputHandler.ReadUnifiedKeyDown(continueKey);
-            bool retryPressed = inputHandler != null
-                ? inputHandler.WasUnifiedKeyPressedThisFrame(retryKey)
-                : PlayerInputHandler.ReadUnifiedKeyDown(retryKey);
+            PlayerInputHandler handler = ResolveInputHandler();
+            bool startPressed = handler != null && handler.WasActionPressedThisFrame(startActionName, startKey);
+            bool continuePressed = handler != null && handler.WasActionPressedThisFrame(continueActionName, continueKey);
+            bool retryPressed = handler != null && handler.WasActionPressedThisFrame(retryActionName, retryKey);
 
             if (showPrep)
             {
@@ -407,7 +405,7 @@ namespace ThirdPersonController
             GUILayout.EndHorizontal();
 
             GUILayout.Space(4f);
-            GUILayout.Label(startHintLabel, smallStyle);
+            GUILayout.Label(GetStartHintLabel(), smallStyle);
             GUILayout.EndArea();
         }
 
@@ -460,7 +458,7 @@ namespace ThirdPersonController
             GUILayout.EndHorizontal();
 
             GUILayout.Space(8f);
-            GUILayout.Label("回车: 继续   R: 重试", smallStyle);
+            GUILayout.Label(GetResultHintLabel(), smallStyle);
             GUILayout.EndArea();
         }
 
@@ -546,6 +544,55 @@ namespace ThirdPersonController
             {
                 fontSize = 16
             };
+        }
+
+        private PlayerInputHandler ResolveInputHandler()
+        {
+            if (inputHandler != null)
+            {
+                return inputHandler;
+            }
+
+            inputHandler = PlayerInputHandler.ResolveActiveInstance();
+            return inputHandler;
+        }
+
+        private string GetStartHintLabel()
+        {
+            PlayerInputHandler handler = ResolveInputHandler();
+            string binding = handler != null
+                ? handler.GetActionBindingLabel(startActionName, startKey)
+                : PlayerInputHandler.GetFriendlyKeyLabel(startKey);
+
+            if (string.IsNullOrEmpty(binding))
+            {
+                return startHintLabel;
+            }
+
+            return $"Press {binding} to Start";
+        }
+
+        private string GetResultHintLabel()
+        {
+            PlayerInputHandler handler = ResolveInputHandler();
+            string continueBinding = handler != null
+                ? handler.GetActionBindingLabel(continueActionName, continueKey)
+                : PlayerInputHandler.GetFriendlyKeyLabel(continueKey);
+            string retryBinding = handler != null
+                ? handler.GetActionBindingLabel(retryActionName, retryKey)
+                : PlayerInputHandler.GetFriendlyKeyLabel(retryKey);
+
+            if (string.IsNullOrEmpty(continueBinding))
+            {
+                continueBinding = PlayerInputHandler.GetFriendlyKeyLabel(continueKey);
+            }
+
+            if (string.IsNullOrEmpty(retryBinding))
+            {
+                retryBinding = PlayerInputHandler.GetFriendlyKeyLabel(retryKey);
+            }
+
+            return $"{continueBinding}: 继续   {retryBinding}: 重试";
         }
     }
 }

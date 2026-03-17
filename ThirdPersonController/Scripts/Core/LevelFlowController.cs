@@ -14,6 +14,7 @@ namespace ThirdPersonController
         public int levelId = 1;
 
         [Header("Input")]
+        public string menuActionName = "MenuCancel";
         public KeyCode menuKey = KeyCode.Escape;
         public PlayerInputHandler inputHandler;
 
@@ -156,9 +157,8 @@ namespace ThirdPersonController
 
         private void Update()
         {
-            bool menuPressed = inputHandler != null
-                ? inputHandler.WasUnifiedKeyPressedThisFrame(menuKey)
-                : PlayerInputHandler.ReadUnifiedKeyDown(menuKey);
+            PlayerInputHandler handler = ResolveInputHandler();
+            bool menuPressed = handler != null && handler.WasActionPressedThisFrame(menuActionName, menuKey);
 
             if (menuPressed)
             {
@@ -411,6 +411,17 @@ namespace ThirdPersonController
                 GameObject rewardsObject = new GameObject("ComboMomentumRewards");
                 comboRewards = rewardsObject.AddComponent<ComboMomentumRewardSystem>();
             }
+        }
+
+        private PlayerInputHandler ResolveInputHandler()
+        {
+            if (inputHandler != null)
+            {
+                return inputHandler;
+            }
+
+            inputHandler = PlayerInputHandler.ResolveActiveInstance();
+            return inputHandler;
         }
 
         private void EnsureLighting()

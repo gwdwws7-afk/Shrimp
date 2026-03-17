@@ -542,6 +542,7 @@ GameObject:
   - component: {fileID: 2774565791061537586}
   - component: {fileID: 1234567890123456789}
   - component: {fileID: 5168819464407403950}
+  - component: {fileID: 6067512886205274181}
   m_Layer: 0
   m_Name: ENM_Starman_01
   m_TagString: Untagged
@@ -652,6 +653,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 50
   deathDelay: 2
+  hitStunDuration: 0.2
   hitEffect: {fileID: 0}
   heavyHitEffect: {fileID: 0}
   knockdownEffect: {fileID: 0}
@@ -662,6 +664,12 @@ MonoBehaviour:
   dropChance: 0.3
   enemyType: 0
   expReward: 1
+  resistPhysical: 0
+  resistHeat: 0
+  resistElectric: 0
+  resistToxin: 0
+  resistCorrosion: 0
+  defense: 0
 --- !u!114 &2774565791061537586
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -707,6 +715,67 @@ MonoBehaviour:
   knockdownTrigger: Knockdown
   useCrowdCoordinator: 1
   ringStandoffDistance: 3
+  canDodge: 0
+  dodgeChance: 0.1
+  canBlock: 0
+  blockChance: 0.1
+  canCharge: 0
+  chargeSpeed: 10
+  chargeWindup: 0.5
+  canFlee: 0
+  fleeHealthThreshold: 0.2
+  dodgeDistance: 2.4
+  dodgeDuration: 0.28
+  dodgeCooldown: 2.2
+  blockDuration: 0.45
+  blockCooldown: 2.8
+  blockDefenseBonus: 6
+  chargeChance: 0.2
+  chargeMinDistance: 1.8
+  chargeMaxDistance: 4.2
+  chargeDuration: 0.45
+  chargeCooldown: 3.5
+  fleeDistance: 4.8
+  fleeDuration: 1.1
+  fleeCooldown: 6
+  useAttackPatterns: 0
+  availablePatterns: []
+  attackPatterns: []
+  aiUpdateInterval: 0.08
+  aiUpdateJitter: 0.02
+  nearUpdateInterval: 0.05
+  farUpdateInterval: 0.18
+  nearUpdateDistance: 8
+  farUpdateDistance: 18
+  farAnimationUpdateInterval: 0.2
+  enableDistanceLod: 1
+  lodFullDistance: 9
+  lodSimplifiedDistance: 22
+  simplifiedDecisionIntervalMultiplier: 1.4
+  minimalDecisionIntervalMultiplier: 2.4
+  simplifiedAnimationIntervalMultiplier: 1.5
+  minimalAnimationIntervalMultiplier: 2.8
+  minimalTargetRescanInterval: 0.35
+  disableAdvancedActionsInMinimal: 1
+  enableBatchDecisionTick: 1
+  simplifiedBatchModulo: 2
+  minimalBatchModulo: 4
+  scaleDecisionIntervalWithCrowd: 1
+  crowdSlowdownStart: 12
+  crowdSlowdownFull: 40
+  maxCrowdUpdateMultiplier: 2
+  maxDecisionInterval: 0.25
+  debugCurrentState: Patrol
+  debugStateElapsed: 0
+  debugLastDecisionInterval: 0
+  debugLastDistanceToTarget: 0
+  debugDecisionCount: 0
+  debugAttackSequenceCount: 0
+  debugHitsAppliedCount: 0
+  debugTokenAcquireSuccessCount: 0
+  debugTokenAcquireFailCount: 0
+  debugUpdateLod: Full
+  debugBatchDecisionSkipped: 0
 --- !u!114 &1234567890123456789
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -751,6 +820,26 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6067512886205274181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5352883075750062607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03df1be736c54b1989c75236ab679312, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  archetype: {fileID: 11400000, guid: 3df7c976ac8d42a688bad0f7e43e0948, type: 2}
+  applyOnStart: 1
+  applyOnSpawned: 1
+  applyHealth: 1
+  applyAI: 1
+  applyCrowd: 1
+  applyHitReaction: 1
+  applyNavMesh: 1
 --- !u!1 &6292574076160478580
 GameObject:
   m_ObjectHideFlags: 0

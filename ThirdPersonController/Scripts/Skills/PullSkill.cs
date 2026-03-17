@@ -70,12 +70,20 @@ namespace ThirdPersonController
                     continue;
                 }
 
-                EnemyHealth enemyHealth = hitCollider.GetComponent<EnemyHealth>();
-                Rigidbody enemyRb = hitCollider.GetComponent<Rigidbody>();
-                EnemyAI enemyAI = hitCollider.GetComponent<EnemyAI>();
+                EnemyHealth enemyHealth = ResolveEnemyHealth(hitCollider);
+                Rigidbody enemyRb = hitCollider.attachedRigidbody != null
+                    ? hitCollider.attachedRigidbody
+                    : hitCollider.GetComponentInParent<Rigidbody>();
+                EnemyAI enemyAI = ResolveEnemyAI(hitCollider);
                 
                 if (enemyHealth != null && enemyRb != null)
                 {
+                    float displacementScale = GetEnemyDisplacementMultiplier(enemyHealth);
+                    if (displacementScale <= 0.01f)
+                    {
+                        continue;
+                    }
+
                     // 牵引期间临时关闭敌人 AI
                     if (enemyAI != null) enemyAI.enabled = false;
                     
@@ -85,11 +93,17 @@ namespace ThirdPersonController
                     float forceMultiplier = 1f - (distance / adjustedRadius); // 距离越近，牵引力越强
                     
                     // 施加牵引与上抛冲量
-                    enemyRb.AddForce(pullDirection * pullForce * forceMultiplier + Vector3.up * liftHeight, ForceMode.Impulse);
+                    enemyRb.AddForce(
+                        pullDirection * pullForce * forceMultiplier * displacementScale
+                        + Vector3.up * liftHeight * displacementScale,
+                        ForceMode.Impulse);
                     
                     // 开始监听落地并结算二段伤害
-                    caster.GetComponent<MonoBehaviour>().StartCoroutine(
-                        HandleLanding(hitCollider.gameObject, enemyHealth, enemyAI, caster));
+                    MonoBehaviour runner = caster.GetComponent<MonoBehaviour>();
+                    if (runner != null)
+                    {
+                        runner.StartCoroutine(HandleLanding(hitCollider.gameObject, enemyHealth, enemyAI, caster));
+                    }
                 }
             }
             
@@ -133,6 +147,7 @@ namespace ThirdPersonController
                         source = caster,
                         sourceType = DamageSourceType.PlayerSkill,
                         damage = adjustedDamage,
+                        skillCategory = category,
                         elementType = ResolveSkillElement(caster),
                         category = damageCategory,
                         knockback = adjustedKnockback,

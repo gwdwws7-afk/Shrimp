@@ -32,6 +32,7 @@ namespace ThirdPersonController
         public Transform source;
         public DamageSourceType sourceType;
         public int damage;
+        public SkillCategory skillCategory;
         public DamageElementType elementType;
         public DamageCategory category;
         public float knockback;
@@ -66,17 +67,25 @@ namespace ThirdPersonController
                 bossTemplate.RegisterBreakValue(context.breakValue);
             }
 
+            BossController bossController = enemyHealth.GetComponent<BossController>();
+            if (bossController != null && context.breakValue > 0f)
+            {
+                bossController.RegisterBreakValue(context.breakValue);
+            }
+
             int damageAfterElement = ApplyElementResistance(context.damage, context.elementType, enemyHealth);
-            int damageWithBossModifiers = ApplyBossModifiers(damageAfterElement, context, enemyHealth);
+            int damageAfterSkillTuning = ApplySkillVsEnemyDamageTuning(damageAfterElement, context, enemyHealth);
+            int damageWithBossModifiers = ApplyBossModifiers(damageAfterSkillTuning, context, enemyHealth);
             int finalDamage = ApplyDefense(damageWithBossModifiers, enemyHealth.defense, context.sourceType);
             if (finalDamage <= 0)
             {
                 return false;
             }
 
+            float finalKnockback = ApplySkillVsEnemyKnockbackTuning(context.knockback, context, enemyHealth);
             int beforeHealth = enemyHealth.CurrentHealth;
             enemyHealth.RegisterDamageSource(context.sourceType, context.isHeavyAttack);
-            enemyHealth.TakeDamage(finalDamage, context.damageOrigin, context.knockback);
+            enemyHealth.TakeDamage(finalDamage, context.damageOrigin, finalKnockback);
             if (enemyHealth.CurrentHealth >= beforeHealth)
             {
                 return false;
@@ -114,6 +123,40 @@ namespace ThirdPersonController
             return true;
         }
 
+        private static int ApplySkillVsEnemyDamageTuning(int damage, DamageContext context, EnemyHealth enemyHealth)
+        {
+            if (damage <= 0 || enemyHealth == null || context.sourceType != DamageSourceType.PlayerSkill)
+            {
+                return damage;
+            }
+
+            float multiplier = SkillEnemyInteractionTuning.GetDamageMultiplier(
+                context.skillCategory,
+                context.category,
+                enemyHealth.enemyType);
+
+            if (Mathf.Approximately(multiplier, 1f))
+            {
+                return damage;
+            }
+
+            return Mathf.Max(1, Mathf.RoundToInt(damage * multiplier));
+        }
+
+        private static float ApplySkillVsEnemyKnockbackTuning(float knockback, DamageContext context, EnemyHealth enemyHealth)
+        {
+            if (knockback <= 0f || enemyHealth == null || context.sourceType != DamageSourceType.PlayerSkill)
+            {
+                return knockback;
+            }
+
+            float multiplier = SkillEnemyInteractionTuning.GetKnockbackMultiplier(
+                context.skillCategory,
+                enemyHealth.enemyType);
+
+            return Mathf.Max(0f, knockback * multiplier);
+        }
+
         private static int ApplyElementResistance(int damage, DamageElementType elementType, EnemyHealth enemyHealth)
         {
             if (damage <= 0 || enemyHealth == null)
@@ -134,21 +177,33 @@ namespace ThirdPersonController
                 return damage;
             }
 
-            BossCombatTemplate boss = enemyHealth.GetComponent<BossCombatTemplate>();
-            if (boss == null)
-            {
-                return damage;
-            }
-
             float multiplier = 1f;
-            if (boss.IsBreakWindowActive)
+            BossCombatTemplate boss = enemyHealth.GetComponent<BossCombatTemplate>();
+            if (boss != null)
             {
-                multiplier *= boss.breakWindowDamageMultiplier;
+                if (boss.IsBreakWindowActive)
+                {
+                    multiplier *= boss.breakWindowDamageMultiplier;
+                }
+
+                if (context.hasHitPoint && boss.IsWeakPointHit(context.hitPoint))
+                {
+                    multiplier *= boss.weakPointDamageMultiplier;
+                }
             }
 
-            if (context.hasHitPoint && boss.IsWeakPointHit(context.hitPoint))
+            BossController bossController = enemyHealth.GetComponent<BossController>();
+            if (bossController != null)
             {
-                multiplier *= boss.weakPointDamageMultiplier;
+                if (bossController.IsBreakWindowActive)
+                {
+                    multiplier *= bossController.breakWindowDamageMultiplier;
+                }
+
+                if (bossController.IsWeaknessElement(context.elementType))
+                {
+                    multiplier *= bossController.GetWeaknessMultiplier();
+                }
             }
 
             if (multiplier <= 1f)

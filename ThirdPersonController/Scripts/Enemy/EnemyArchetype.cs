@@ -87,6 +87,20 @@ namespace ThirdPersonController
         public bool useCrowdCoordinator = true;
         public float ringStandoffDistance = 2.4f;
 
+        [Header("Performance LOD (P3)")]
+        public bool enableDistanceLod = true;
+        public float lodFullDistance = 9f;
+        public float lodSimplifiedDistance = 22f;
+        public float simplifiedDecisionIntervalMultiplier = 1.4f;
+        public float minimalDecisionIntervalMultiplier = 2.4f;
+        public float simplifiedAnimationIntervalMultiplier = 1.5f;
+        public float minimalAnimationIntervalMultiplier = 2.8f;
+        public float minimalTargetRescanInterval = 0.35f;
+        public bool disableAdvancedActionsInMinimal = true;
+        public bool enableBatchDecisionTick = true;
+        public int simplifiedBatchModulo = 2;
+        public int minimalBatchModulo = 4;
+
         [Header("NavMesh Agent")]
         public bool overrideAgentSettings = true;
         public float agentSpeed = 3.5f;

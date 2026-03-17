@@ -15,11 +15,11 @@ MonoBehaviour:
   archetypeId: elite
   displayName: 深渊精英
   enemyType: 3
-  maxHealth: 260
+  maxHealth: 235
   hitStunDuration: 0.18
-  defense: 2
+  defense: 3
   expReward: 10
-  dropChance: 0.45
+  dropChance: 0.42
   resistPhysical: 0.1
   resistHeat: 0.1
   resistElectric: 0.1
@@ -29,15 +29,15 @@ MonoBehaviour:
   attackRange: 2.4
   fieldOfView: 150
   patrolSpeed: 2.6
-  chaseSpeed: 5.2
+  chaseSpeed: 5.6
   rotationSpeed: 7.5
-  stoppingDistance: 1.2
-  attackCooldown: 1.2
-  attackDamage: 18
+  stoppingDistance: 1
+  attackCooldown: 1.15
+  attackDamage: 19
   attackKnockback: 4
-  attackWindup: 0.3
+  attackWindup: 0.24
   attackActiveTime: 0.13
-  attackRecovery: 0.4
+  attackRecovery: 0.34
   attackHitRadius: 1.25
   attackHitAngle: 140
   useAttackPatterns: 1
@@ -45,13 +45,13 @@ MonoBehaviour:
   - patternId: elite_strike
     patternName: Strike
     priority: 0
-    weight: 0.6
-    damage: 18
+    weight: 0.5
+    damage: 19
     range: 2.4
     minRange: 0
-    cooldown: 1.1
-    windup: 0.28
-    knockback: 3.6
+    cooldown: 1
+    windup: 0.25
+    knockback: 3.8
     isRanged: 0
     projectilePrefab: {fileID: 0}
     projectileSpeed: 12
@@ -78,11 +78,11 @@ MonoBehaviour:
     patternName: Rush
     priority: 0
     weight: 0.3
-    damage: 22
+    damage: 23
     range: 2.8
     minRange: 1.4
-    cooldown: 1.6
-    windup: 0.4
+    cooldown: 1.5
+    windup: 0.34
     knockback: 4.8
     isRanged: 0
     projectilePrefab: {fileID: 0}
@@ -109,11 +109,11 @@ MonoBehaviour:
   - patternId: elite_spit
     patternName: Spit
     priority: 1
-    weight: 0.1
-    damage: 14
+    weight: 0.2
+    damage: 15
     range: 6
     minRange: 3.5
-    cooldown: 2.2
+    cooldown: 2
     windup: 0.5
     knockback: 1.6
     isRanged: 1
@@ -141,27 +141,38 @@ MonoBehaviour:
   canDodge: 1
   dodgeChance: 0.3
   canBlock: 1
-  blockChance: 0.25
+  blockChance: 0.28
   canCharge: 1
-  chargeSpeed: 11.5
-  chargeWindup: 0.35
+  chargeSpeed: 12.2
+  chargeWindup: 0.3
   canFlee: 0
   fleeHealthThreshold: 0.2
+  dodgeDistance: 2.6
+  dodgeDuration: 0.24
+  dodgeCooldown: 1.9
+  blockDuration: 0.58
+  blockCooldown: 2.4
+  blockDefenseBonus: 8
+  chargeChance: 0.29
+  chargeMinDistance: 1.8
+  chargeMaxDistance: 5.0
+  chargeDuration: 0.4
+  chargeCooldown: 2.8
   useCrowdCoordinator: 1
-  ringStandoffDistance: 2.1
+  ringStandoffDistance: 1.8
   overrideAgentSettings: 1
-  agentSpeed: 4.2
+  agentSpeed: 4.4
   agentAcceleration: 9
   agentAngularSpeed: 400
   agentStoppingDistance: 1.3
   agentRadius: 0.46
   agentHeight: 1.9
   overrideHitReaction: 1
-  knockbackThreshold: 2.6
-  knockdownThreshold: 7.2
+  knockbackThreshold: 2.4
+  knockdownThreshold: 6.8
   flinchDuration: 0.18
   knockbackDuration: 0.23
   knockbackDistance: 1
   knockdownDuration: 0.33
   knockdownDistance: 2.2
-  knockdownRecoverTime: 0.55
+  knockdownRecoverTime: 0.5

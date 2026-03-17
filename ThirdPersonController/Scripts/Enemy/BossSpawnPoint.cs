@@ -15,7 +15,9 @@ namespace ThirdPersonController
 
     public class BossSpawnPoint : MonoBehaviour
     {
-        private const string DefaultBossPrefabPath = "Assets/Prefabs/Enemies/ENM_Starman_01.prefab";
+        private const string DefaultFallbackBossPrefabPath = "Assets/Prefabs/Enemies/ENM_Starman_01.prefab";
+        private const string DefaultEelBossPrefabPath = "Assets/Prefabs/Bosses/BOSS_Eel_Controller.prefab";
+        private const string DefaultGuardianBossPrefabPath = "Assets/Prefabs/Bosses/BOSS_Guardian_Controller.prefab";
 
         [Header("Spawn")]
         public GameObject bossPrefab;
@@ -56,6 +58,7 @@ namespace ThirdPersonController
 
         private void Start()
         {
+            TryAssignDefaultPrefab();
             if (spawnOnStart)
             {
                 SpawnBoss();
@@ -67,9 +70,26 @@ namespace ThirdPersonController
 #if UNITY_EDITOR
             if (bossPrefab == null)
             {
-                bossPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(DefaultBossPrefabPath);
+                string preferredPath = ResolveDefaultPrefabPathByPrototype();
+                bossPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(preferredPath);
+                if (bossPrefab == null && !string.Equals(preferredPath, DefaultFallbackBossPrefabPath))
+                {
+                    bossPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(DefaultFallbackBossPrefabPath);
+                }
             }
 #endif
+        }
+
+        private string ResolveDefaultPrefabPathByPrototype()
+        {
+            switch (prototype)
+            {
+                case BossPrototypeType.Guardian:
+                    return DefaultGuardianBossPrefabPath;
+                case BossPrototypeType.Eel:
+                default:
+                    return DefaultEelBossPrefabPath;
+            }
         }
 
         public void SpawnBoss()
@@ -102,6 +122,20 @@ namespace ThirdPersonController
                 ai.attackKnockback = knockback;
             }
 
+            UI_BossHealthBar ui = bossHealthBar != null ? bossHealthBar : EnsureBossHealthUI();
+            BossController controller = spawnedBoss.GetComponent<BossController>();
+            if (controller != null)
+            {
+                ConfigureBossController(controller);
+                DisablePrototypeTemplateWhenControllerMode(spawnedBoss);
+                if (ui != null)
+                {
+                    ui.SetupBoss(controller);
+                }
+
+                return;
+            }
+
             BossCombatTemplate template = spawnedBoss.GetComponent<BossCombatTemplate>();
             if (template == null)
             {
@@ -112,10 +146,42 @@ namespace ThirdPersonController
 
             AttachPrototype(spawnedBoss);
 
-            UI_BossHealthBar ui = bossHealthBar != null ? bossHealthBar : EnsureBossHealthUI();
             if (ui != null)
             {
                 ui.SetupBoss(template);
+            }
+        }
+
+        private void ConfigureBossController(BossController controller)
+        {
+            if (controller == null)
+            {
+                return;
+            }
+
+            controller.health = cachedHealth;
+            controller.ai = spawnedBoss != null ? spawnedBoss.GetComponent<EnemyAI>() : null;
+            if (controller.animator == null && spawnedBoss != null)
+            {
+                controller.animator = spawnedBoss.GetComponent<Animator>();
+            }
+
+            controller.maxHealth = maxHealth;
+            controller.currentPhase = 1;
+            controller.enabled = true;
+        }
+
+        private static void DisablePrototypeTemplateWhenControllerMode(GameObject bossObject)
+        {
+            if (bossObject == null)
+            {
+                return;
+            }
+
+            BossCombatTemplate template = bossObject.GetComponent<BossCombatTemplate>();
+            if (template != null)
+            {
+                template.enabled = false;
             }
         }
 

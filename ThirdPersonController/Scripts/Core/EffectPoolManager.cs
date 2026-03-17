@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 namespace ThirdPersonController
@@ -27,7 +26,18 @@ namespace ThirdPersonController
 
             EnsureInstance();
             GameObject obj = ObjectPoolManager.Spawn(prefab, position, rotation);
-            Instance.StartCoroutine(DespawnAfter(obj, duration));
+            if (obj == null)
+            {
+                return;
+            }
+
+            PooledTimedDespawn autoDespawn = obj.GetComponent<PooledTimedDespawn>();
+            if (autoDespawn == null)
+            {
+                autoDespawn = obj.AddComponent<PooledTimedDespawn>();
+            }
+
+            autoDespawn.Arm(duration);
         }
 
         private static void EnsureInstance()
@@ -41,19 +51,5 @@ namespace ThirdPersonController
             Instance = manager.AddComponent<EffectPoolManager>();
         }
 
-        private static IEnumerator DespawnAfter(GameObject obj, float delay)
-        {
-            if (obj == null)
-            {
-                yield break;
-            }
-
-            if (delay > 0f)
-            {
-                yield return new WaitForSeconds(delay);
-            }
-
-            ObjectPoolManager.Despawn(obj);
-        }
     }
 }

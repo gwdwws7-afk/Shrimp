@@ -548,6 +548,88 @@ namespace ThirdPersonController
             return stats.ApplySkillStaminaCost(staminaCost);
         }
 
+        protected EnemyHealth ResolveEnemyHealth(Collider target)
+        {
+            if (target == null)
+            {
+                return null;
+            }
+
+            EnemyHealth enemyHealth = target.GetComponent<EnemyHealth>();
+            if (enemyHealth != null)
+            {
+                return enemyHealth;
+            }
+
+            enemyHealth = target.GetComponentInParent<EnemyHealth>();
+            if (enemyHealth != null)
+            {
+                return enemyHealth;
+            }
+
+            if (target.attachedRigidbody != null)
+            {
+                enemyHealth = target.attachedRigidbody.GetComponent<EnemyHealth>();
+                if (enemyHealth != null)
+                {
+                    return enemyHealth;
+                }
+            }
+
+            return null;
+        }
+
+        protected EnemyAI ResolveEnemyAI(Collider target)
+        {
+            if (target == null)
+            {
+                return null;
+            }
+
+            EnemyAI enemyAI = target.GetComponent<EnemyAI>();
+            if (enemyAI != null)
+            {
+                return enemyAI;
+            }
+
+            enemyAI = target.GetComponentInParent<EnemyAI>();
+            if (enemyAI != null)
+            {
+                return enemyAI;
+            }
+
+            if (target.attachedRigidbody != null)
+            {
+                enemyAI = target.attachedRigidbody.GetComponent<EnemyAI>();
+                if (enemyAI != null)
+                {
+                    return enemyAI;
+                }
+            }
+
+            return null;
+        }
+
+        protected float GetEnemyControlMultiplier(EnemyHealth enemyHealth)
+        {
+            if (enemyHealth == null)
+            {
+                return 1f;
+            }
+
+            return SkillEnemyInteractionTuning.GetControlMultiplier(category, enemyHealth.enemyType);
+        }
+
+        protected float GetEnemyDisplacementMultiplier(EnemyHealth enemyHealth)
+        {
+            if (enemyHealth == null)
+            {
+                return 1f;
+            }
+
+            return SkillEnemyInteractionTuning.GetDisplacementMultiplier(category, enemyHealth.enemyType);
+        }
+
         private PlayerStatsController GetStatsController(Transform caster)
         {
             if (caster == null)

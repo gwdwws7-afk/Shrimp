@@ -18,8 +18,11 @@ namespace ThirdPersonController
         public float spawnHeight = 0.5f;
 
         [Header("Input")]
+        public string spawnActionName = "DebugSpawnerWave";
+        public string stressSpawnActionName = "DebugSpawnerStress";
+        public string clearActionName = "DebugSpawnerClear";
         public KeyCode spawnKey = KeyCode.G;
-        public KeyCode stressSpawnKey = KeyCode.H;
+        public KeyCode stressSpawnKey = KeyCode.F8;
         public KeyCode clearKey = KeyCode.Delete;
 
         [Header("Debug")]
@@ -43,36 +46,64 @@ namespace ThirdPersonController
 
             if (showDebugInfo)
             {
-                Debug.Log("[Spawner] G=spawn wave, H=spawn 50, Delete=clear enemies.");
+                string spawnBinding = ResolveBindingLabel(spawnActionName, spawnKey);
+                string stressBinding = ResolveBindingLabel(stressSpawnActionName, stressSpawnKey);
+                string clearBinding = ResolveBindingLabel(clearActionName, clearKey);
+                Debug.Log($"[Spawner] {spawnBinding}=spawn wave, {stressBinding}=spawn 50, {clearBinding}=clear enemies.");
             }
         }
 
         private void Update()
         {
-            bool spawnPressed = inputHandler != null
-                ? inputHandler.WasUnifiedKeyPressedThisFrame(spawnKey)
-                : PlayerInputHandler.ReadUnifiedKeyDown(spawnKey);
+            PlayerInputHandler handler = ResolveInputHandler();
+            bool spawnPressed = handler != null && handler.WasActionPressedThisFrame(spawnActionName, spawnKey);
             if (spawnPressed)
             {
                 SpawnEnemies(spawnCount);
             }
 
-            bool stressPressed = inputHandler != null
-                ? inputHandler.WasUnifiedKeyPressedThisFrame(stressSpawnKey)
-                : PlayerInputHandler.ReadUnifiedKeyDown(stressSpawnKey);
+            bool stressPressed = handler != null && handler.WasActionPressedThisFrame(stressSpawnActionName, stressSpawnKey);
             if (stressPressed)
             {
                 SpawnEnemies(50);
                 Debug.Log("[Spawner] Spawned 50 enemies for stress test.");
             }
 
-            bool clearPressed = inputHandler != null
-                ? inputHandler.WasUnifiedKeyPressedThisFrame(clearKey)
-                : PlayerInputHandler.ReadUnifiedKeyDown(clearKey);
+            bool clearPressed = handler != null && handler.WasActionPressedThisFrame(clearActionName, clearKey);
             if (clearPressed)
             {
                 ClearAllEnemies();
             }
+        }
+
+        private PlayerInputHandler ResolveInputHandler()
+        {
+            if (inputHandler != null)
+            {
+                return inputHandler;
+            }
+
+            inputHandler = PlayerInputHandler.ResolveActiveInstance();
+            return inputHandler;
+        }
+
+        private string ResolveBindingLabel(string actionName, KeyCode fallbackKey)
+        {
+            PlayerInputHandler handler = ResolveInputHandler();
+            if (handler == null)
+            {
+                return PlayerInputHandler.GetFriendlyKeyLabel(fallbackKey);
+            }
+
+            if (!handler.AreDebugHotkeysEnabled())
+            {
+                return "Disabled";
+            }
+
+            string binding = handler.GetActionBindingLabel(actionName, fallbackKey, includeGamepad: false);
+            return string.IsNullOrEmpty(binding)
+                ? PlayerInputHandler.GetFriendlyKeyLabel(fallbackKey)
+                : binding;
         }
 
         private void SpawnEnemies(int count)

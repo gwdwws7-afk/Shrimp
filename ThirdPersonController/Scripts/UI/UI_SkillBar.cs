@@ -21,8 +21,13 @@ namespace ThirdPersonController
         [Header("技能槽位")]
         public SkillSlot[] skillSlots = new SkillSlot[6];  // 六个主动技能槽位（与按键一一对应）
         
-        [Header("按键绑定")]
-        public string[] keyBindings = new string[6] { "Q", "W", "E", "R", "T", "F" };
+        [Header("按键文案回退")]
+        public string[] keyBindings = new string[6] { "Q", "W", "C", "R", "T", "F" };
+        public bool useDynamicInputHints = true;
+        public bool includeGamepadOnSkillHints = false;
+        public float inputHintRefreshInterval = 0.25f;
+        public string[] skillActionNames = new string[6] { "Skill1", "Skill2", "Skill3", "Skill4", "Skill5", "Skill6" };
+        public PlayerInputHandler inputHandler;
         
         [Header("视觉效果")]
         public Color normalColor = Color.white;
@@ -42,27 +47,21 @@ namespace ThirdPersonController
         [Header("Attack Input")]
         public Text attackInputHintText;
         public string attackInputHintLabel = "A: 左键  B: 右键";
+        public string attackActionName = "Attack";
+        public string heavyAttackActionName = "HeavyAttack";
+        public KeyCode attackFallbackKey = KeyCode.Mouse0;
+        public KeyCode heavyAttackFallbackKey = KeyCode.Mouse1;
+        public bool includeGamepadOnAttackHint = true;
 
         public SkillManager skillManager;
         private Texture2D fallbackSkillIconTexture;
         private Sprite fallbackSkillIcon;
+        private float nextInputHintRefreshTime;
         
         private void Start()
         {
-            // 初始化每个槽位的按键提示文本。
-            for (int i = 0; i < skillSlots.Length && i < keyBindings.Length; i++)
-            {
-                if (skillSlots[i].keyText != null)
-                {
-                    skillSlots[i].keyText.text = keyBindings[i];
-                }
-            }
-
             EnsureAttackInputHint();
-            if (attackInputHintText != null)
-            {
-                attackInputHintText.text = attackInputHintLabel;
-            }
+            RefreshInputHints(force: true);
             
             // 监听技能释放与冷却完成事件。
             GameEvents.OnSkillUsed += OnSkillUsed;
@@ -76,6 +75,12 @@ namespace ThirdPersonController
 
         private void Update()
         {
+            if (Time.unscaledTime >= nextInputHintRefreshTime)
+            {
+                RefreshInputHints();
+                nextInputHintRefreshTime = Time.unscaledTime + Mathf.Max(0.05f, inputHintRefreshInterval);
+            }
+
             UpdateFromManager();
         }
         
@@ -308,6 +313,115 @@ namespace ThirdPersonController
             hintRect.sizeDelta = new Vector2(240f, 20f);
 
             attackInputHintText = hintText;
+        }
+
+        private void RefreshInputHints(bool force = false)
+        {
+            PlayerInputHandler handler = ResolveInputHandler();
+            if (handler == null && !force)
+            {
+                return;
+            }
+
+            for (int i = 0; i < skillSlots.Length; i++)
+            {
+                if (skillSlots[i].keyText == null)
+                {
+                    continue;
+                }
+
+                skillSlots[i].keyText.text = ResolveSkillBindingLabel(handler, i);
+            }
+
+            EnsureAttackInputHint();
+            if (attackInputHintText != null)
+            {
+                attackInputHintText.text = BuildAttackInputHintLabel(handler);
+            }
+        }
+
+        private PlayerInputHandler ResolveInputHandler()
+        {
+            if (inputHandler != null)
+            {
+                return inputHandler;
+            }
+
+            inputHandler = PlayerInputHandler.ResolveActiveInstance();
+            return inputHandler;
+        }
+
+        private string ResolveSkillBindingLabel(PlayerInputHandler handler, int slotIndex)
+        {
+            string actionName = skillActionNames != null && slotIndex >= 0 && slotIndex < skillActionNames.Length
+                ? skillActionNames[slotIndex]
+                : string.Empty;
+            KeyCode fallbackKey = GetDefaultSkillFallbackKey(slotIndex);
+
+            if (useDynamicInputHints && handler != null)
+            {
+                string actionBinding = handler.GetActionBindingLabel(actionName, fallbackKey, includeGamepadOnSkillHints);
+                if (!string.IsNullOrEmpty(actionBinding))
+                {
+                    return actionBinding;
+                }
+            }
+
+            if (keyBindings != null && slotIndex >= 0 && slotIndex < keyBindings.Length && !string.IsNullOrWhiteSpace(keyBindings[slotIndex]))
+            {
+                return keyBindings[slotIndex];
+            }
+
+            return PlayerInputHandler.GetFriendlyKeyLabel(fallbackKey);
+        }
+
+        private string BuildAttackInputHintLabel(PlayerInputHandler handler)
+        {
+            if (!useDynamicInputHints || handler == null)
+            {
+                return attackInputHintLabel;
+            }
+
+            string lightLabel = handler.GetActionBindingLabel(attackActionName, attackFallbackKey, includeGamepadOnAttackHint);
+            string heavyLabel = handler.GetActionBindingLabel(heavyAttackActionName, heavyAttackFallbackKey, includeGamepadOnAttackHint);
+
+            if (string.IsNullOrEmpty(lightLabel))
+            {
+                lightLabel = PlayerInputHandler.GetFriendlyKeyLabel(attackFallbackKey);
+            }
+
+            if (string.IsNullOrEmpty(heavyLabel))
+            {
+                heavyLabel = PlayerInputHandler.GetFriendlyKeyLabel(heavyAttackFallbackKey);
+            }
+
+            if (string.IsNullOrEmpty(lightLabel) && string.IsNullOrEmpty(heavyLabel))
+            {
+                return attackInputHintLabel;
+            }
+
+            return $"轻击: {lightLabel}  重击: {heavyLabel}";
+        }
+
+        private static KeyCode GetDefaultSkillFallbackKey(int slotIndex)
+        {
+            switch (slotIndex)
+            {
+                case 0:
+                    return KeyCode.Q;
+                case 1:
+                    return KeyCode.W;
+                case 2:
+                    return KeyCode.C;
+                case 3:
+                    return KeyCode.R;
+                case 4:
+                    return KeyCode.T;
+                case 5:
+                    return KeyCode.F;
+                default:
+                    return KeyCode.None;
+            }
         }
 
         private Color GetCategoryColor(SkillCategory category)
