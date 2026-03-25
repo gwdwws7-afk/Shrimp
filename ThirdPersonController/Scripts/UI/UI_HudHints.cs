@@ -29,10 +29,28 @@ namespace ThirdPersonController
         public float width = 240f;
         public float padding = 10f;
         public float lineHeight = 18f;
+        public float hintRefreshInterval = 0.25f;
 
         [Header("Hints")]
         public string title = "操作提示";
         public List<string> hints = new List<string>();
+
+        private readonly List<string> cachedDisplayHints = new List<string>();
+        private bool hintsDirty = true;
+        private float nextHintRefreshTime = 0f;
+        private PlayerInputHandler subscribedInputHandler;
+
+        private void OnEnable()
+        {
+            BindInputHandlerEvents();
+            MarkHintsDirty();
+            RebuildDisplayHints();
+        }
+
+        private void OnDisable()
+        {
+            UnbindInputHandlerEvents();
+        }
 
         private void Update()
         {
@@ -42,6 +60,12 @@ namespace ThirdPersonController
             if (allowToggle && togglePressed)
             {
                 show = !show;
+            }
+
+            BindInputHandlerEvents();
+            if (hintsDirty || Time.unscaledTime >= nextHintRefreshTime)
+            {
+                RebuildDisplayHints();
             }
         }
 
@@ -63,20 +87,37 @@ namespace ThirdPersonController
                 return;
             }
 
-            List<string> displayHints = BuildDisplayHints();
-            int count = displayHints.Count;
+            if (hintsDirty)
+            {
+                RebuildDisplayHints();
+            }
+
+            int count = cachedDisplayHints.Count;
             float height = padding * 2f + lineHeight * Mathf.Max(1, count + 1);
             Rect panel = BuildPanelRect(width, height);
 
             GUI.Box(panel, string.Empty);
             GUILayout.BeginArea(panel);
             GUILayout.Space(padding * 0.5f);
-            GUILayout.Label(title, HeaderStyle());
-            for (int i = 0; i < displayHints.Count; i++)
+            GUILayout.Label(Localize("ui.hud_hints.title", title), HeaderStyle());
+            for (int i = 0; i < cachedDisplayHints.Count; i++)
             {
-                GUILayout.Label(displayHints[i], HintStyle());
+                GUILayout.Label(cachedDisplayHints[i], HintStyle());
             }
             GUILayout.EndArea();
+        }
+
+        private void RebuildDisplayHints()
+        {
+            cachedDisplayHints.Clear();
+            List<string> displayHints = BuildDisplayHints();
+            if (displayHints != null && displayHints.Count > 0)
+            {
+                cachedDisplayHints.AddRange(displayHints);
+            }
+
+            hintsDirty = false;
+            nextHintRefreshTime = Time.unscaledTime + Mathf.Max(0.05f, hintRefreshInterval);
         }
 
         private List<string> BuildDisplayHints()
@@ -90,9 +131,17 @@ namespace ThirdPersonController
                 string slot2Label = ResolveActionLabel("QuickSlot2", KeyCode.Alpha2, includeGamepad: false);
                 string slot3Label = ResolveActionLabel("QuickSlot3", KeyCode.Alpha3, includeGamepad: false);
 
-                displayHints.Add($"{economyLabel} 补给/商店");
-                displayHints.Add($"{slot1Label}/{slot2Label}/{slot3Label} 快捷使用");
-                displayHints.Add($"{talentLabel} 天赋/装备");
+                displayHints.Add(string.Format(
+                    Localize("ui.hud_hints.economy_format", "{0} 补给/商店"),
+                    economyLabel));
+                displayHints.Add(string.Format(
+                    Localize("ui.hud_hints.quick_slots_format", "{0}/{1}/{2} 快捷使用"),
+                    slot1Label,
+                    slot2Label,
+                    slot3Label));
+                displayHints.Add(string.Format(
+                    Localize("ui.hud_hints.talent_format", "{0} 天赋/装备"),
+                    talentLabel));
             }
 
             if (hints != null)
@@ -108,10 +157,53 @@ namespace ThirdPersonController
 
             if (displayHints.Count == 0)
             {
-                displayHints.Add("暂无提示");
+                displayHints.Add(Localize("ui.hud_hints.none", "暂无提示"));
             }
 
             return displayHints;
+        }
+
+        private void BindInputHandlerEvents()
+        {
+            PlayerInputHandler handler = ResolveInputHandler();
+            if (subscribedInputHandler == handler)
+            {
+                return;
+            }
+
+            if (subscribedInputHandler != null)
+            {
+                subscribedInputHandler.OnPromptDeviceChanged -= HandlePromptDeviceChanged;
+            }
+
+            subscribedInputHandler = handler;
+            if (subscribedInputHandler != null)
+            {
+                subscribedInputHandler.OnPromptDeviceChanged += HandlePromptDeviceChanged;
+            }
+
+            MarkHintsDirty();
+        }
+
+        private void UnbindInputHandlerEvents()
+        {
+            if (subscribedInputHandler != null)
+            {
+                subscribedInputHandler.OnPromptDeviceChanged -= HandlePromptDeviceChanged;
+            }
+
+            subscribedInputHandler = null;
+        }
+
+        private void HandlePromptDeviceChanged(InputPromptDevice _)
+        {
+            MarkHintsDirty();
+            RebuildDisplayHints();
+        }
+
+        private void MarkHintsDirty()
+        {
+            hintsDirty = true;
         }
 
         private string ResolveActionLabel(string actionName, KeyCode fallbackKey, bool includeGamepad = true)
@@ -170,6 +262,17 @@ namespace ThirdPersonController
                 fontSize = 12,
                 alignment = TextAnchor.UpperLeft
             };
+        }
+
+        private static string Localize(string key, string fallback)
+        {
+            LocalizationService service = LocalizationService.Instance;
+            if (service != null)
+            {
+                return service.Get(key, fallback);
+            }
+
+            return fallback;
         }
     }
 }

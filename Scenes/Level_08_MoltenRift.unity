@@ -2214,7 +2214,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f4e5061728394a5b6c7d8e901a2b3c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bossPrefab: {fileID: 5352883075750062607, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}
+  bossPrefab: {fileID: 4012917662158444434, guid: cc67baee8fa4f6b4c9a1ad9f250226c2, type: 3}
   prototype: 0
   bossName: Boss_MoltenNarwhal
   spawnOnStart: 0
@@ -2224,6 +2224,49 @@ MonoBehaviour:
   expReward: 320
   baseDamage: 36
   knockback: 7
+  encounterProfile: {fileID: 11400000, guid: ec2fef20aae80954e98d0fef23270b45, type: 2}
+  applyEncounterProfile: 0
+  logEncounterProfileApply: 0
+  overrideEncounterTuning: 0
+  phase2HealthThreshold: 0.66
+  phase3HealthThreshold: 0.33
+  breakWindowDuration: 4
+  breakWindowCooldown: 12
+  breakWindowDamageMultiplier: 1.6
+  staggerMax: 120
+  staggerPerDamage: 1
+  attackInterval: 3.2
+  decisionInterval: 0.78
+  queuedAttackLimit: 3
+  immediateRepeatPenalty: 0.32
+  enablePostBreakPunishWindow: 1
+  postBreakPunishDuration: 5
+  postBreakAttackIntervalMultiplier: 0.75
+  postBreakDecisionIntervalMultiplier: 0.82
+  postBreakChaseSpeedMultiplier: 1.15
+  enablePhaseComboChain: 1
+  phase2ComboChance: 0.45
+  phase3ComboChance: 0.65
+  comboStartDelay: 0.08
+  comboRepeatPenalty: 0.35
+  enableInterruptRecoveryGate: 1
+  interruptRecoveryDuration: 0.2
+  interruptedAttackCooldownScale: 0.45
+  enableTimePressure: 1
+  timePressureDelay: 75
+  timePressureRampDuration: 60
+  maxTimePressureDamageMultiplier: 1.35
+  maxTimePressureSpeedMultiplier: 1.2
+  enablePhaseTransitionOpeners: 1
+  phase2TransitionOpenerId: 
+  phase3TransitionOpenerId: 
+  enablePhaseTransitionOpenerRetry: 1
+  phaseTransitionOpenerRetryDelay: 0.12
+  phaseTransitionOpenerMaxRetries: 3
+  enablePhase3SpecialPriorityWindow: 1
+  phase3SpecialPriorityDuration: 6
+  phase3SpecialPriorityWeightMultiplier: 1.7
+  forceSpecialQueueDuringPhase3Priority: 1
   bossHealthBar: {fileID: 0}
 --- !u!1 &1010105436
 GameObject:
@@ -3506,6 +3549,7 @@ MonoBehaviour:
   heavyAttackFallbackKey: 324
   includeGamepadOnAttackHint: 1
   skillManager: {fileID: 0}
+  debugLastInputHintRefreshUnscaledTime: -1
 --- !u!1 &1373681579
 GameObject:
   m_ObjectHideFlags: 0
@@ -5791,7 +5835,7 @@ MonoBehaviour:
     shuffleSpawnPoints: 1
     groups:
     - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
-      count: 30
+      count: 47
       spawnIntervalOverride: -1
       archetypeOverride: {fileID: 0}
     eliteTrigger:
@@ -5840,7 +5884,7 @@ MonoBehaviour:
     shuffleSpawnPoints: 1
     groups:
     - prefab: {fileID: 100000, guid: 941a3772ef6a494f8b72da70bc73e335, type: 3}
-      count: 36
+      count: 53
       spawnIntervalOverride: -1
       archetypeOverride: {fileID: 0}
     eliteTrigger:
@@ -6103,6 +6147,8 @@ MonoBehaviour:
   chapterData: {fileID: 11400000, guid: b4e5f6a7c8d9e0f1a2b3c4d5e6f7a8b9, type: 2}
   mainMenuSceneName: MainMenu
   levelId: 108
+  suppressSceneLoadForTests: 0
+  suppressSaveForTests: 0
   menuActionName: MenuCancel
   menuKey: 27
   inputHandler: {fileID: 0}

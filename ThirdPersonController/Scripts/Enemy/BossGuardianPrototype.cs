@@ -13,10 +13,15 @@ namespace ThirdPersonController
         [Min(0f)] public float aftershockDelay = 0.2f;
         [Range(0f, 1f)] public float aftershockDamageMultiplier = 0.55f;
         [Min(1f)] public float overloadSecondPulseRadiusMultiplier = 1.15f;
+        public bool enableWhiffPunishWindow = true;
+        [Min(0f)] public float shieldMissPunishDuration = 1.2f;
+        [Min(0f)] public float overloadWhiffPunishDuration = 1.35f;
 
         [Header("Debug")]
         [SerializeField] private int debugLastPulseCount = 0;
+        [SerializeField] private bool debugLastPunishWindowTriggered = false;
         public int DebugLastPulseCount => debugLastPulseCount;
+        public bool DebugLastPunishWindowTriggered => debugLastPunishWindowTriggered;
 
         private void Reset()
         {
@@ -135,6 +140,7 @@ namespace ThirdPersonController
             }
 
             debugLastPulseCount = 0;
+            debugLastPunishWindowTriggered = false;
             BeginSkillExecution(skill);
 
             if (skill.windup > 0f)
@@ -161,13 +167,19 @@ namespace ThirdPersonController
                 case "guard_sweep":
                 {
                     float range = skill.id == "guard_sweep" ? 5f : 4.8f;
-                    if (ApplyConePulse(range, 110f, damage, knockback))
+                    bool firstHit = ApplyConePulse(range, 110f, damage, knockback);
+                    if (firstHit)
                     {
                         if (currentPhase == BossCombatPhase.Phase2 && skill.id == "guard_sweep")
                         {
                             yield return new WaitForSeconds(0.12f);
                             ApplyConePulse(range, 130f, Mathf.RoundToInt(damage * 0.65f), knockback * 0.8f);
                         }
+                    }
+                    else if (enableWhiffPunishWindow)
+                    {
+                        TriggerPunishWindow(shieldMissPunishDuration);
+                        debugLastPunishWindowTriggered = true;
                     }
                     if (skill.active > 0f)
                     {
@@ -196,7 +208,7 @@ namespace ThirdPersonController
                 }
                 case "guard_overload":
                 {
-                    ApplyRadiusPulse(6.5f, damage, knockback * 1.2f);
+                    bool firstHit = ApplyRadiusPulse(6.5f, damage, knockback * 1.2f);
                     if (aftershockDelay > 0f)
                     {
                         yield return new WaitForSeconds(aftershockDelay);
@@ -204,7 +216,12 @@ namespace ThirdPersonController
 
                     float secondRadius = 6.5f * Mathf.Max(1f, overloadSecondPulseRadiusMultiplier);
                     int secondPulseDamage = Mathf.Max(1, Mathf.RoundToInt(damage * Mathf.Max(0.2f, aftershockDamageMultiplier)));
-                    ApplyRadiusPulse(secondRadius, secondPulseDamage, knockback);
+                    bool secondHit = ApplyRadiusPulse(secondRadius, secondPulseDamage, knockback);
+                    if (!firstHit && !secondHit && enableWhiffPunishWindow)
+                    {
+                        TriggerPunishWindow(overloadWhiffPunishDuration);
+                        debugLastPunishWindowTriggered = true;
+                    }
                     if (skill.active > 0f)
                     {
                         yield return new WaitForSeconds(skill.active);

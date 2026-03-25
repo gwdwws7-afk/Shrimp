@@ -84,7 +84,7 @@ namespace ThirdPersonController
                         continue;
                     }
 
-                    // 牵引期间临时关闭敌人 AI
+                    // 牵引期间关闭敌人 AI，避免反向寻路干扰位移
                     if (enemyAI != null) enemyAI.enabled = false;
                     
                     // 计算牵引方向与距离衰减

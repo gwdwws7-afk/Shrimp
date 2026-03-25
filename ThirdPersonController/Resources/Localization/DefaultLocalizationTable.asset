@@ -1,0 +1,405 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 443e56de5500bdf46820ff91204f1314, type: 3}
+  m_Name: DefaultLocalizationTable
+  m_EditorClassIdentifier: 
+  entries:
+  - key: boss.break_window
+    zhCN: "\u942E\u64AE\u69FB\u7ED0\u6940\u5F5B"
+    enUS: Break Window
+  - key: boss.defeated
+    zhCN: "\u9996\u5DF2\u51FB"
+    enUS: BOSS DEFEATED!
+  - key: boss.phase_format
+    zhCN: "\u9636\u6BB5 {0}\uFF1A{1}\uFF01"
+    enUS: 'PHASE {0}: {1}!'
+  - key: boss.phase2
+    zhCN: "\u9996\u8FDB\u5165\u4E8C\u9636"
+    enUS: Boss Phase 2
+  - key: boss.skill_format
+    zhCN: "\u9996\u9886\u6280\u80FD\uFF1A{0}"
+    enUS: 'Boss Skill: {0}'
+  - key: ui.level.complete_title
+    zhCN: "\u934F\u51B2\u5D31\u7039\u5C7E\u579A"
+    enUS: LEVEL COMPLETE!
+  - key: ui.level.exp_format
+    zhCN: "+{0} \u7ECF\u9A8C"
+    enUS: +{0} EXP
+  - key: ui.level.failed_title
+    zhCN: "\u934F\u51B2\u5D31\u6FB6\u8FAB\u89E6"
+    enUS: LEVEL FAILED
+  - key: ui.level.menu.exit_to_main
+    zhCN: "\u8FD4\u56DE\u4E3B\u83DC"
+    enUS: Exit to Main Menu
+  - key: ui.level.menu.resume
+    zhCN: "\u7EE7\u7EED"
+    enUS: Resume
+  - key: ui.level.pearls_format
+    zhCN: "+{0} \u73CD\u73E0"
+    enUS: +{0} Pearls
+  - key: ui.level.time_format
+    zhCN: "\u7528\u65F6\uFF1A{0:00}:{1:00}"
+    enUS: 'Time: {0:00}:{1:00}'
+  - key: ui.level.times_up
+    zhCN: "\u65F6\u95F4\u5230\uFF01"
+    enUS: Time's Up!
+  - key: ui.stronghold.info
+    zhCN: "\u6DC7\u2103\u4F05"
+    enUS: Info
+  - key: ui.stronghold.remaining_format
+    zhCN: "\u9353\u2540\u7D91 {0}"
+    enUS: Remaining {0}
+  - key: ui.stronghold.remaining_ratio_format
+    zhCN: "\u9353\u2540\u7D91 {0}/{1}"
+    enUS: Remaining {0}/{1}
+  - key: ui.stronghold.status.cleared
+    zhCN: "\u93B9\uE1BE\u5063\u5A13\u5474\u6ACE"
+    enUS: Stronghold Cleared
+  - key: ui.stronghold.status.started
+    zhCN: "\u6218\u6597"
+    enUS: Stronghold Battle Started
+  - key: ui.stronghold.status.wave_completed
+    zhCN: "\u6CE2 {0} \u5B8C\u6210"
+    enUS: Wave {0} Completed
+  - key: ui.stronghold.status.wave_started
+    zhCN: "\u6CE2 {0}"
+    enUS: Wave {0} Started
+  - key: ui.stronghold.title
+    zhCN: "\u63A8\u8FDB"
+    enUS: Stronghold Progress
+  - key: ui.stronghold.wave_format
+    zhCN: "\u6CE2 {0}/{1} \xB7 {2}"
+    enUS: Wave {0}/{1} - {2}
+  - key: ui.wave.announcer.boss_default
+    zhCN: "\u68E3\u682D\uE56B\u95AC\uE162\u4EA3"
+    enUS: Boss Encounter
+  - key: ui.wave.announcer.boss_tag
+    zhCN: "\u9996"
+    enUS: BOSS
+  - key: ui.wave.announcer.default_wave_title_format
+    zhCN: ?{0} ?
+    enUS: Wave {0}
+  - key: ui.wave.announcer.wave_format
+    zhCN: ?{0} ?
+    enUS: WAVE {0}
+  - key: ui.main_menu.start_game_button
+    zhCN: "\u59CB\u6E38"
+    enUS: Start Game
+  - key: ui.main_menu.quit_button
+    zhCN: "\u95AB\u20AC\u9351?"
+    enUS: Quit
+  - key: ui.main_menu.next_level_reward_preview
+    zhCN: "\u4E0B\u4E00\u5173\u52B1"
+    enUS: Next Level Reward Preview
+  - key: ui.main_menu.preview_difficulty_format
+    zhCN: "\u96BE\u5EA6\uFF1A{0}  |  \u63A8\u8350\u7B49\u7EA7 {1}"
+    enUS: 'Difficulty: {0}  |  Recommended Level {1}'
+  - key: ui.main_menu.preview_base_credits_format
+    zhCN: "\u57FA\u7840\u79EF\u5206\u5956\u52B1\uFF1A{0}"
+    enUS: 'Base Credits Reward: {0}'
+  - key: ui.main_menu.select_level
+    zhCN: "\u9009\u62E9\u5173\u5361"
+    enUS: Select Level
+  - key: ui.main_menu.level_locked_format
+    zhCN: "{0}\uFF08{1}\uFF09"
+    enUS: '{0} ({1})'
+  - key: ui.main_menu.locked_level_label
+    zhCN: ??
+    enUS: Locked
+  - key: ui.main_menu.press_to_start_format
+    zhCN: "\u93B8?{0} \u5BEE\u20AC\u6FEE?"
+    enUS: Press {0} to Start
+  - key: ui.quest.stage_format
+    zhCN: "{0}\uFF08{1}/{2}\uFF09"
+    enUS: '{0} ({1}/{2})'
+  - key: ui.quest.type.kill_enemies
+    zhCN: "\u51FB\u6740 {0} \u540D\u654C"
+    enUS: Kill {0} enemies
+  - key: ui.quest.type.kill_enemy_type
+    zhCN: "\u51FB\u6740 {0} \u540D {1}"
+    enUS: Kill {0} {1}
+  - key: ui.quest.type.survive_seconds
+    zhCN: "\u9422\u71B7\u74E8 {0} \u7EC9?"
+    enUS: Survive {0} seconds
+  - key: ui.quest.type.protect_seconds
+    zhCN: "\u6DC7\u6FC7\u59E2\u9429\uE1BD\u7223 {0} \u7EC9?"
+    enUS: Protect target for {0} seconds
+  - key: ui.quest.type.complete_waves
+    zhCN: "\u5B8C\u6210 {0}"
+    enUS: Complete {0} waves
+  - key: ui.quest.type.clear_stronghold
+    zhCN: "\u6E05\u9664\u8BE5\u636E"
+    enUS: Clear the stronghold
+  - key: ui.quest.type.complete_wave_events
+    zhCN: "\u7039\u5C7E\u579A {0} \u5A06\u2103\u5C1D\u5A06\u2032\u7C28\u6D60?"
+    enUS: Complete {0} wave events
+  - key: ui.quest.type.complete_wave_events_of_type
+    zhCN: "\u7039\u5C7E\u579A {0} \u5A06?{1} \u6D5C\u5B29\u6B22"
+    enUS: Complete {0} {1} events
+  - key: ui.quest.type.boss_breaks
+    zhCN: "\u89E6\u53D1 {0} \u6B21\u9886\u7834"
+    enUS: Trigger {0} boss breaks
+  - key: ui.quest.type.boss_breaks_with_id
+    zhCN: "\u7459\uFE40\u5F42 {0} \u5A06\uFFE0\uE6FB\u68F0\u55D9\u726C\u95C3\u8BE7\u7D19{1}\u951B?"
+    enUS: Trigger {0} boss breaks ({1})
+  - key: ui.quest.type.defeat_boss
+    zhCN: "\u51FB\u8D25\u9996"
+    enUS: Defeat the boss
+  - key: ui.quest.type.defeat_boss_id
+    zhCN: "\u51FB\u8D25 {0}"
+    enUS: Defeat {0}
+  - key: ui.quest.type.collect_items
+    zhCN: "\u93C0\u5815\u6CE6 {0} \u6D93\uE046\u58BF\u935D?"
+    enUS: Collect {0} items
+  - key: ui.quest.type.reach_marked_location
+    zhCN: "\u5230\u8FBE\u6807\u8BB0\u5730\u70B9"
+    enUS: Reach the marked location
+  - key: ui.quest.type.reach_combo
+    zhCN: "\u6748\u70AC\u579A {0} \u6769\u70B2\u56AE"
+    enUS: Reach {0} combo
+  - key: ui.quest.progress.time_format
+    zhCN: "\u8FDB\u5EA6 {0}/{1}"
+    enUS: '{0}/{1}s'
+  - key: ui.quest.progress.count_format
+    zhCN: "\u8FDB\u5EA6 {0}/{1}"
+    enUS: '{0}/{1}'
+  - key: ui.quest.title
+    zhCN: "\u4EFB\u52A1\u8FFD\u8E2A"
+    enUS: Quest Tracker
+  - key: ui.quest.fallback.entry_format
+    zhCN: "\u3010{0}\u3011{1}"
+    enUS: '{0} - {1}'
+  - key: ui.talent.title
+    zhCN: "\u6210\u957F"
+    enUS: Progression
+  - key: ui.talent.close_hint_format
+    zhCN: "{0} \u5173\u95ED"
+    enUS: Press {0} to Close
+  - key: ui.talent.equipment.title
+    zhCN: "\u88C5"
+    enUS: Equipment
+  - key: ui.talent.equipment.missing_system
+    zhCN: "\u672A\u627E\u5230\u88C5\u5907\u7CFB\u7EDF\u3002"
+    enUS: Equipment system not found.
+  - key: ui.talent.equipment.empty_slot
+    zhCN: "\u951B\u5822\u2516\u951B?"
+    enUS: (Empty)
+  - key: ui.talent.equipment.slot_format
+    zhCN: "\u59B2\u6212\u7D85 {0}: {1}"
+    enUS: 'Slot {0}: {1}'
+  - key: ui.talent.equipment.select
+    zhCN: "\u9009\u62E9"
+    enUS: Select
+  - key: ui.talent.equipment.unequip
+    zhCN: "\u9357\u9550\u7B05"
+    enUS: Unequip
+  - key: ui.talent.inventory.title
+    zhCN: "\u80CC\u5305"
+    enUS: Inventory
+  - key: ui.talent.inventory.empty
+    zhCN: "\u6682\u65E0\u73CD\u73E0"
+    enUS: No pearls available.
+  - key: ui.talent.inventory.equip
+    zhCN: "\u88C5"
+    enUS: Equip
+  - key: ui.talent.tree.title
+    zhCN: "\u5929\u8D4B"
+    enUS: Talents
+  - key: ui.talent.tree.missing_data
+    zhCN: "\u672A\u627E\u5230\u5929\u8D4B\u6811\u6570\u636E\u3002"
+    enUS: Talent tree data not found.
+  - key: ui.talent.tree.available_points_format
+    zhCN: "\u53EF\u7528\u70B9\u6570\uFF1A{0}"
+    enUS: 'Available Points: {0}'
+  - key: ui.talent.branch.offense
+    zhCN: "\u8FDB\u653B"
+    enUS: Offense
+  - key: ui.talent.branch.control
+    zhCN: "\u63A7\u5236"
+    enUS: Control
+  - key: ui.talent.branch.survival
+    zhCN: "\u9422\u71B7\u74E8"
+    enUS: Survival
+  - key: ui.talent.status.unlocked
+    zhCN: "\u5DF2\u89E3"
+    enUS: Unlocked
+  - key: ui.talent.status.locked
+    zhCN: ??
+    enUS: Locked
+  - key: ui.talent.unlock
+    zhCN: "\u89E3\u9501"
+    enUS: Unlock
+  - key: ui.economy_overlay.bind_slot_format
+    zhCN: "\u7ED1\u5B9A {0}"
+    enUS: Bind {0}
+  - key: ui.economy_overlay.buy_button_format
+    zhCN: "\u7490\uE15D\u62F1 ({0})"
+    enUS: Buy ({0})
+  - key: ui.economy_overlay.catalog_empty
+    zhCN: "\u6682\u65E0\u6D88\u54C1"
+    enUS: No consumables available.
+  - key: ui.economy_overlay.catalog_title
+    zhCN: "\u6D88\u54C1"
+    enUS: Consumables
+  - key: ui.economy_overlay.clear_button
+    zhCN: "\u6E05\u7A7A"
+    enUS: Clear
+  - key: ui.economy_overlay.close_hint_format
+    zhCN: "{0} \u5173\u95ED"
+    enUS: Press {0} to Close
+  - key: ui.economy_overlay.credits_format
+    zhCN: "\u79EF\u5206\uFF1A{0}"
+    enUS: 'Credits: {0}'
+  - key: ui.economy_overlay.quick_slot_entry_format
+    zhCN: "\u59B2\u6212\u7D85{0}: {1} x{2}"
+    enUS: '{0}: {1} x{2}'
+  - key: ui.economy_overlay.quick_slot_hint_default
+    zhCN: 1/2/3
+    enUS: 1/2/3
+  - key: ui.economy_overlay.quick_slots_missing
+    zhCN: "\u672A\u627E\u5230\u5FEB\u6377\u680F\u7EC4\u4EF6\u3002"
+    enUS: Quick-slot component not found.
+  - key: ui.economy_overlay.quick_slots_title_format
+    zhCN: "\u8E47\uE0A3\u5D4E\u6D63\u8DE8\u6564 ({0})"
+    enUS: Quick Use ({0})
+  - key: ui.economy_overlay.title
+    zhCN: "\u6DC7\u2103\u4F05"
+    enUS: Info
+  - key: ui.economy_overlay.use_button
+    zhCN: "\u6D63\u8DE8\u6564"
+    enUS: Use
+  - key: ui.hud_hints.economy_format
+    zhCN: "{0} \u741B\u30E7\u7CB0/\u935F\u55D7\u7C35"
+    enUS: '{0} Supply/Shop'
+  - key: ui.hud_hints.none
+    zhCN: "\u6682\u65E0\u63D0\u793A"
+    enUS: No hints.
+  - key: ui.hud_hints.quick_slots_format
+    zhCN: "{0}/{1}/{2} \u8E47\uE0A3\u5D4E\u6D63\u8DE8\u6564"
+    enUS: '{0}/{1}/{2} Quick Use'
+  - key: ui.hud_hints.talent_format
+    zhCN: "{0} \u5929\u8D4B/\u88C5"
+    enUS: '{0} Talent/Equipment'
+  - key: ui.hud_hints.title
+    zhCN: "\u64CD\u4F5C\u63D0\u793A"
+    enUS: Controls
+  - key: ui.level_flow.objective.clear_strongholds
+    zhCN: "\u6E05\u9664\u6709\u636E"
+    enUS: Clear all strongholds
+  - key: ui.level_flow.objective.complete_quests_format
+    zhCN: "\u7039\u5C7E\u579A {0} \u6D93\uE043\u6362\u9354?"
+    enUS: Complete {0} quests
+  - key: ui.level_flow.objective.none
+    zhCN: "\u65E0\u5916\u76EE"
+    enUS: No extra objectives
+  - key: ui.level_flow.objective.score_target_format
+    zhCN: "\u76EE\u6807\u5206\u6570\uFF1A{0}"
+    enUS: 'Score Target: {0}'
+  - key: ui.level_flow.objective.time_limit_minutes_format
+    zhCN: "\u9650\u65F6\uFF1A{0} \u5206\u949F"
+    enUS: 'Time Limit: {0} min'
+  - key: ui.level_flow.prep.missing_talent_overlay
+    zhCN: "\u672A\u627E\u5230\u5929\u8D4B/\u88C5\u5907\u9762\u677F\u3002"
+    enUS: Talent/Equipment panel not found.
+  - key: ui.level_flow.prep.start_button
+    zhCN: "\u59CB\u6218"
+    enUS: Start Battle
+  - key: ui.level_flow.prep.start_hint
+    zhCN: "\u93B8?Enter \u5BEE\u20AC\u6FEE?"
+    enUS: Press Enter to Start
+  - key: ui.level_flow.prep.start_hint_format
+    zhCN: "\u93B8?{0} \u5BEE\u20AC\u6FEE?"
+    enUS: Press {0} to Start
+  - key: ui.level_flow.result.combo_format
+    zhCN: "\u93C8\u20AC\u6942\u6A3F\u7E5B\u9351\u4F19\u7D30{0}"
+    enUS: 'Max Combo: {0}'
+  - key: ui.level_flow.result.continue_button
+    zhCN: "\u7EE7\u7EED"
+    enUS: Continue
+  - key: ui.level_flow.result.credits_format
+    zhCN: "+{0} \u7EC9\uE21A\u578E"
+    enUS: +{0} Credits
+  - key: ui.level_flow.result.defeat_title
+    zhCN: "\u934F\u51B2\u5D31\u6FB6\u8FAB\u89E6"
+    enUS: Level Failed
+  - key: ui.level_flow.result.hint_format
+    zhCN: "{0}: \u7EE7\u7EED   {1}: \u91CD\u8BD5"
+    enUS: '{0}: Continue   {1}: Retry'
+  - key: ui.level_flow.result.kills_format
+    zhCN: "\u51FB\u6740\uFF1A{0}"
+    enUS: 'Kills: {0}'
+  - key: ui.level_flow.result.pearls_format
+    zhCN: "+{0} \u73CD\u73E0"
+    enUS: +{0} Pearls
+  - key: ui.level_flow.result.progress_title
+    zhCN: "\u8FDB\u5EA6"
+    enUS: Progress
+  - key: ui.level_flow.result.retry_button
+    zhCN: "\u91CD\u8BD5"
+    enUS: Retry
+  - key: ui.level_flow.result.rewards_title
+    zhCN: "\u6FC2\u6827\u59F3"
+    enUS: Rewards
+  - key: ui.level_flow.result.stats_title
+    zhCN: "\u7EDF"
+    enUS: Stats
+  - key: ui.level_flow.result.talent_points_format
+    zhCN: "+{0} \u5929\u8D4B"
+    enUS: +{0} Talent Points
+  - key: ui.level_flow.result.time_format
+    zhCN: "\u7528\u65F6\uFF1A{0}"
+    enUS: 'Time: {0}'
+  - key: ui.level_flow.result.victory_title
+    zhCN: "\u934F\u51B2\u5D31\u7039\u5C7E\u579A"
+    enUS: Level Complete
+  - key: ui.level_flow.route.control
+    zhCN: "\u63A7\u5236"
+    enUS: Control
+  - key: ui.level_flow.route.current_format
+    zhCN: "\u5F53\u524D\uFF1A{0}"
+    enUS: 'Current: {0}'
+  - key: ui.level_flow.route.label
+    zhCN: "\u93B4\u6130\u66B1\u74BA\uE21C\u568E"
+    enUS: Progress Route
+  - key: ui.level_flow.route.offense
+    zhCN: "\u8FDB\u653B"
+    enUS: Offense
+  - key: ui.level_flow.route.survival
+    zhCN: "\u9422\u71B7\u74E8"
+    enUS: Survival
+  - key: ui.main_menu.language.label
+    zhCN: "\u7487\uE161\u2588"
+    enUS: Language
+  - key: ui.main_menu.language.zh_button
+    zhCN: "\u7EE0\u20AC\u6D63\u64B2\u8151\u93C2?"
+    enUS: Simplified Chinese
+  - key: ui.main_menu.language.en_button
+    zhCN: "\u947B\u8FA8\u6783"
+    enUS: English
+  - key: ui.skill_bar.legend.crowd_control
+    zhCN: "\u7FA4\u63A7"
+    enUS: Crowd Control
+  - key: ui.skill_bar.legend.burst
+    zhCN: "\u7206\u53D1"
+    enUS: Burst
+  - key: ui.skill_bar.legend.mobility
+    zhCN: "\u4F4D\u79FB"
+    enUS: Mobility
+  - key: ui.skill_bar.legend.gather
+    zhCN: "\u805A\u602A"
+    enUS: Gather
+  - key: ui.skill_bar.attack_hint_default
+    zhCN: "\u8F7B\u51FB: \u5DE6\u952E  \u91CD\u51FB: \u53F3\u952E"
+    enUS: 'Light: LMB  Heavy: RMB'
+  - key: ui.skill_bar.attack_hint_format
+    zhCN: "\u8F7B\u51FB: {0}  \u91CD\u51FB: {1}"
+    enUS: 'Light: {0}  Heavy: {1}'

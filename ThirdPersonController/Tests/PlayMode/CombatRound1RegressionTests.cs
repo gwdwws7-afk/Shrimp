@@ -10,6 +10,7 @@ namespace ThirdPersonController.Tests
     {
         private GameObject runtimeRoot;
         private ScriptableObject runtimeSkill;
+        private ScriptableObject runtimeSkillSecondary;
 
         [TearDown]
         public void TearDown()
@@ -20,6 +21,12 @@ namespace ThirdPersonController.Tests
             {
                 Object.DestroyImmediate(runtimeSkill);
                 runtimeSkill = null;
+            }
+
+            if (runtimeSkillSecondary != null)
+            {
+                Object.DestroyImmediate(runtimeSkillSecondary);
+                runtimeSkillSecondary = null;
             }
 
             if (runtimeRoot != null)
@@ -252,6 +259,111 @@ namespace ThirdPersonController.Tests
             Assert.IsFalse(testSkill.isReady, "Skill should be consumed when PlayerInputHandler reports slot press.");
             Assert.Greater(testSkill.cooldownTimer, 0f, "Skill cooldown should start after bridged input cast.");
             Assert.AreEqual(PlayerActionState.Skill, actionController.CurrentState, "Action controller should enter skill state from input bridge.");
+        }
+
+        [Test]
+        public void SkillManager_ResourceAudit_CountsMissingSkillAssets()
+        {
+            runtimeRoot = new GameObject("Round2_SkillResourceAudit");
+            SkillManager skillManager = runtimeRoot.AddComponent<SkillManager>();
+            skillManager.autoLoadFromResources = false;
+            skillManager.skills = new SkillBase[6];
+
+            TestSkill missing = CreateTestSkill("MissingResSkill", staminaCost: 5f, cooldown: 3f, preConsumeDrain: 0f);
+            runtimeSkill = missing;
+
+            TestSkill complete = CreateTestSkill("CompleteResSkill", staminaCost: 5f, cooldown: 3f, preConsumeDrain: 0f);
+            runtimeSkillSecondary = complete;
+
+            Texture2D tex = new Texture2D(1, 1, TextureFormat.RGBA32, false);
+            tex.SetPixel(0, 0, Color.white);
+            tex.Apply(false, false);
+            Sprite sprite = Sprite.Create(tex, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
+            AudioClip clip = AudioClip.Create("dummy", 128, 1, 44100, false);
+
+            complete.icon = sprite;
+            complete.castSound = clip;
+            complete.effectPrefab = runtimeRoot;
+
+            skillManager.skills[0] = missing;
+            skillManager.skills[1] = complete;
+
+            skillManager.RefreshSkillResourceAudit();
+
+            Assert.AreEqual(1, skillManager.MissingAnyResourceSkillCount, "Only one skill should have resource gaps.");
+            Assert.AreEqual(1, skillManager.MissingIconSkillCount, "Only missing skill should count toward icon gap.");
+            Assert.AreEqual(1, skillManager.MissingAudioSkillCount, "Only missing skill should count toward audio gap.");
+            Assert.AreEqual(1, skillManager.MissingFxSkillCount, "Only missing skill should count toward fx gap.");
+
+            Object.DestroyImmediate(sprite);
+            Object.DestroyImmediate(tex);
+            Object.DestroyImmediate(clip);
+        }
+
+        [UnityTest]
+        public IEnumerator SkillManager_Update_AdvancesCooldownAndRestoresReadyState()
+        {
+            runtimeRoot = new GameObject("Round2_CooldownUpdate");
+            SkillManager skillManager = runtimeRoot.AddComponent<SkillManager>();
+            skillManager.autoLoadFromResources = false;
+            skillManager.skills = new SkillBase[6];
+
+            TestSkill skill = CreateTestSkill("CooldownTickSkill", staminaCost: 5f, cooldown: 0.05f, preConsumeDrain: 0f);
+            runtimeSkill = skill;
+            skill.isReady = false;
+            skill.cooldownDuration = 0.05f;
+            skill.cooldownTimer = 0.03f;
+            skillManager.skills[0] = skill;
+
+            yield return null;
+            float afterOneFrame = skill.cooldownTimer;
+            Assert.Less(afterOneFrame, 0.03f, "SkillManager.Update should tick cooldown each frame.");
+
+            yield return new WaitForSeconds(0.08f);
+            Assert.IsTrue(skill.isReady, "Cooldown tick should eventually restore ready state.");
+            Assert.AreEqual(0f, skill.cooldownTimer, 0.001f, "Cooldown timer should clamp to zero when ready.");
+        }
+
+        [Test]
+        public void SkillManager_GetSkillIcon_WhenMissing_ReturnsRuntimeFallback()
+        {
+            runtimeRoot = new GameObject("Round2_IconFallback");
+            SkillManager skillManager = runtimeRoot.AddComponent<SkillManager>();
+            skillManager.autoLoadFromResources = false;
+            skillManager.skills = new SkillBase[6];
+
+            TestSkill skill = CreateTestSkill("IconFallbackSkill", staminaCost: 5f, cooldown: 3f, preConsumeDrain: 0f);
+            runtimeSkill = skill;
+            skill.icon = null;
+            skillManager.skills[0] = skill;
+
+            Sprite first = skillManager.GetSkillIcon(0);
+            Sprite second = skillManager.GetSkillIcon(0);
+
+            Assert.NotNull(first, "SkillManager should provide runtime fallback icon when asset icon is missing.");
+            Assert.AreSame(first, second, "Fallback icon should be reused instead of recreating per call.");
+            Assert.AreEqual("SkillManagerFallbackIcon", first.name);
+        }
+
+        [Test]
+        public void SkillBase_ResolveClipForPlayback_UsesFallbackWhenAudioMissing()
+        {
+            TestSkill skill = CreateTestSkill("AudioFallbackSkill", staminaCost: 5f, cooldown: 3f, preConsumeDrain: 0f);
+            runtimeSkill = skill;
+
+            MethodInfo resolveMethod = typeof(SkillBase).GetMethod("ResolveClipForPlayback", BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.NotNull(resolveMethod, "Expected internal clip resolver for audio fallback.");
+
+            System.Type cueType = resolveMethod.GetParameters()[1].ParameterType;
+            object castCue = System.Enum.ToObject(cueType, 0);
+
+            skill.useFallbackAudioWhenMissing = true;
+            AudioClip fallbackClip = (AudioClip)resolveMethod.Invoke(skill, new object[] { null, castCue });
+            Assert.NotNull(fallbackClip, "Missing audio should resolve to generated fallback clip when enabled.");
+
+            skill.useFallbackAudioWhenMissing = false;
+            AudioClip disabledClip = (AudioClip)resolveMethod.Invoke(skill, new object[] { null, castCue });
+            Assert.IsNull(disabledClip, "Fallback audio should not be generated when feature is disabled.");
         }
 
         [Test]

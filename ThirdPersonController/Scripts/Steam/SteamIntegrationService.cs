@@ -6,6 +6,21 @@ using Steamworks;
 
 namespace ThirdPersonController
 {
+    [Serializable]
+    public struct SteamRuntimeStatus
+    {
+        public bool steamEnabledByConfig;
+        public bool clientInitialized;
+        public bool cloudAvailable;
+        public bool stubMode;
+        public bool runtimeValid;
+        public bool realBackendRequired;
+        public bool realBackendReady;
+        public bool appIdValid;
+        public string backend;
+        public string validationMessage;
+    }
+
     public interface ISteamClient
     {
         bool IsInitialized { get; }
@@ -29,11 +44,25 @@ namespace ThirdPersonController
         public bool enableSteam = true;
         public bool logWhenUnavailable = true;
         public uint appId = 480;
+        public bool requireRealBackend = false;
+        public bool strictAppIdValidation = true;
+        public bool requireCloudWhenSteamEnabled = false;
+        public bool reportRuntimeDiagnostics = true;
 
         private ISteamClient client = new NullSteamClient(false);
+        private SteamRuntimeStatus lastRuntimeStatus;
+        private bool runtimeStatusInitialized;
+        [SerializeField] private string debugRuntimeValidationMessage = string.Empty;
+        [SerializeField] private int debugRuntimeValidationFailureCount = 0;
+
+        public string LastRuntimeValidationMessage => debugRuntimeValidationMessage;
+        public int RuntimeValidationFailureCount => debugRuntimeValidationFailureCount;
 
         public bool IsInitialized => client != null && client.IsInitialized;
         public bool IsCloudAvailable => client != null && client.IsCloudAvailable;
+        public bool IsStubMode => client is NullSteamClient;
+        public bool IsRuntimeValid => runtimeStatusInitialized ? lastRuntimeStatus.runtimeValid : BuildRuntimeStatus().runtimeValid;
+        public event Action<SteamRuntimeStatus> OnRuntimeStatusChanged;
 
         protected override void OnAwake()
         {
@@ -43,6 +72,7 @@ namespace ThirdPersonController
         private void Update()
         {
             client?.RunCallbacks();
+            RefreshRuntimeStatus();
         }
 
         protected override void OnDestroy()
@@ -60,6 +90,39 @@ namespace ThirdPersonController
             client = new NullSteamClient(logWhenUnavailable);
 #endif
             client.Initialize();
+            RefreshRuntimeStatus(force: true);
+        }
+
+        public void ApplyConfig(SteamIntegrationConfig config, bool reinitializeClient = true)
+        {
+            if (config == null)
+            {
+                return;
+            }
+
+            bool changed = enableSteam != config.enableSteam
+                || logWhenUnavailable != config.logWhenUnavailable
+                || appId != config.appId
+                || requireRealBackend != config.requireRealBackend
+                || strictAppIdValidation != config.strictAppIdValidation
+                || requireCloudWhenSteamEnabled != config.requireCloudWhenSteamEnabled
+                || reportRuntimeDiagnostics != config.reportRuntimeDiagnostics;
+
+            enableSteam = config.enableSteam;
+            logWhenUnavailable = config.logWhenUnavailable;
+            appId = config.appId;
+            requireRealBackend = config.requireRealBackend;
+            strictAppIdValidation = config.strictAppIdValidation;
+            requireCloudWhenSteamEnabled = config.requireCloudWhenSteamEnabled;
+            reportRuntimeDiagnostics = config.reportRuntimeDiagnostics;
+
+            if (changed && reinitializeClient)
+            {
+                InitializeClient();
+                return;
+            }
+
+            RefreshRuntimeStatus(force: true);
         }
 
         public void UnlockAchievement(string achievementId)
@@ -101,6 +164,133 @@ namespace ThirdPersonController
         {
             return client != null ? client.GetCloudFileTimestamp(fileName) : 0L;
         }
+
+        public SteamRuntimeStatus GetRuntimeStatus()
+        {
+            return BuildRuntimeStatus();
+        }
+
+        public void RefreshRuntimeStatus(bool force = false)
+        {
+            SteamRuntimeStatus status = BuildRuntimeStatus();
+            bool messageChanged = !runtimeStatusInitialized
+                || !string.Equals(lastRuntimeStatus.validationMessage, status.validationMessage, StringComparison.Ordinal);
+            if (!force && runtimeStatusInitialized && AreSameStatus(lastRuntimeStatus, status))
+            {
+                return;
+            }
+
+            if (!status.runtimeValid && messageChanged)
+            {
+                debugRuntimeValidationFailureCount++;
+                if (reportRuntimeDiagnostics)
+                {
+                    Debug.LogWarning($"[Steam] Runtime validation failed: {status.validationMessage}");
+                }
+            }
+
+            debugRuntimeValidationMessage = status.validationMessage ?? string.Empty;
+            lastRuntimeStatus = status;
+            runtimeStatusInitialized = true;
+            OnRuntimeStatusChanged?.Invoke(status);
+        }
+
+        private SteamRuntimeStatus BuildRuntimeStatus()
+        {
+            SteamRuntimeStatus status = new SteamRuntimeStatus
+            {
+                steamEnabledByConfig = enableSteam,
+                clientInitialized = IsInitialized,
+                cloudAvailable = IsCloudAvailable,
+                stubMode = IsStubMode,
+                runtimeValid = true,
+                realBackendRequired = requireRealBackend,
+                realBackendReady = !IsStubMode,
+                appIdValid = !strictAppIdValidation || appId != 0u,
+                backend = ResolveBackendName(client)
+            };
+
+            ValidateRuntimeStatus(ref status);
+            return status;
+        }
+
+        private void ValidateRuntimeStatus(ref SteamRuntimeStatus status)
+        {
+            if (!status.steamEnabledByConfig)
+            {
+                status.runtimeValid = true;
+                status.validationMessage = "Steam disabled by config.";
+                return;
+            }
+
+            if (!status.appIdValid)
+            {
+                status.runtimeValid = false;
+                status.validationMessage = "Invalid Steam AppID (0).";
+                return;
+            }
+
+            if (status.realBackendRequired && !status.realBackendReady)
+            {
+                status.runtimeValid = false;
+                status.validationMessage = "Real backend required but runtime is using stub backend.";
+                return;
+            }
+
+            if (requireCloudWhenSteamEnabled && !status.cloudAvailable)
+            {
+                status.runtimeValid = false;
+                status.validationMessage = "Cloud save required but unavailable in current runtime.";
+                return;
+            }
+
+            if (!status.stubMode && !status.clientInitialized)
+            {
+                status.runtimeValid = false;
+                status.validationMessage = "Steam backend selected but client is not initialized.";
+                return;
+            }
+
+            status.runtimeValid = true;
+            status.validationMessage = status.stubMode
+                ? "Running in stub compatibility mode."
+                : "Steam runtime ready.";
+        }
+
+        private static bool AreSameStatus(SteamRuntimeStatus a, SteamRuntimeStatus b)
+        {
+            return a.steamEnabledByConfig == b.steamEnabledByConfig
+                && a.clientInitialized == b.clientInitialized
+                && a.cloudAvailable == b.cloudAvailable
+                && a.stubMode == b.stubMode
+                && a.runtimeValid == b.runtimeValid
+                && a.realBackendRequired == b.realBackendRequired
+                && a.realBackendReady == b.realBackendReady
+                && a.appIdValid == b.appIdValid
+                && string.Equals(a.backend, b.backend, StringComparison.Ordinal)
+                && string.Equals(a.validationMessage, b.validationMessage, StringComparison.Ordinal);
+        }
+
+        private static string ResolveBackendName(ISteamClient steamClient)
+        {
+            if (steamClient == null)
+            {
+                return "None";
+            }
+
+            Type type = steamClient.GetType();
+            if (type == null || string.IsNullOrEmpty(type.Name))
+            {
+                return "Unknown";
+            }
+
+            if (type == typeof(NullSteamClient))
+            {
+                return "Stub";
+            }
+
+            return type.Name;
+        }
     }
 
     internal class NullSteamClient : ISteamClient
@@ -121,7 +311,7 @@ namespace ThirdPersonController
             if (logWhenUnavailable && !logged)
             {
                 logged = true;
-                Debug.Log("[Steam] Steamworks not enabled. Running in stub mode.");
+                Debug.Log("[Steam] Steamworks unavailable. Using local compatibility backend.");
             }
         }
 

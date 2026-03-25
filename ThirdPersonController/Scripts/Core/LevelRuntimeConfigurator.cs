@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ThirdPersonController
 {
@@ -110,12 +111,12 @@ namespace ThirdPersonController
         {
             if (levelFlow == null)
             {
-                levelFlow = FindObjectOfType<LevelFlowController>();
+                levelFlow = FindComponentInOwningScene<LevelFlowController>();
             }
 
             if (sequenceController == null)
             {
-                sequenceController = FindObjectOfType<StrongholdSequenceController>();
+                sequenceController = FindComponentInOwningScene<StrongholdSequenceController>();
             }
 
             if (questSystem == null)
@@ -162,7 +163,7 @@ namespace ThirdPersonController
 
             if (bossSpawnPoint == null)
             {
-                bossSpawnPoint = FindObjectOfType<BossSpawnPoint>();
+                bossSpawnPoint = FindComponentInOwningScene<BossSpawnPoint>();
             }
         }
 
@@ -481,7 +482,7 @@ namespace ThirdPersonController
 
             if (bossSpawnPoint == null)
             {
-                bossSpawnPoint = FindObjectOfType<BossSpawnPoint>();
+                bossSpawnPoint = FindComponentInOwningScene<BossSpawnPoint>();
             }
 
             if (bossSpawnPoint == null)
@@ -498,10 +499,59 @@ namespace ThirdPersonController
             bossSpawnPoint.scaleMultiplier = Mathf.Max(0.1f, levelData.bossScaleMultiplier);
             bossSpawnPoint.spawnOffset = levelData.bossSpawnOffset;
             bossSpawnPoint.spawnOnStart = false;
+            bossSpawnPoint.overrideEncounterTuning = levelData.overrideBossEncounterTuning;
+            if (levelData.overrideBossEncounterTuning)
+            {
+                bossSpawnPoint.phase2HealthThreshold = levelData.bossPhase2HealthThreshold;
+                bossSpawnPoint.phase3HealthThreshold = levelData.bossPhase3HealthThreshold;
+                bossSpawnPoint.breakWindowDuration = levelData.bossBreakWindowDuration;
+                bossSpawnPoint.breakWindowCooldown = levelData.bossBreakWindowCooldown;
+                bossSpawnPoint.breakWindowDamageMultiplier = levelData.bossBreakWindowDamageMultiplier;
+                bossSpawnPoint.staggerMax = levelData.bossStaggerMax;
+                bossSpawnPoint.staggerPerDamage = levelData.bossStaggerPerDamage;
+                bossSpawnPoint.attackInterval = levelData.bossAttackInterval;
+                bossSpawnPoint.decisionInterval = levelData.bossDecisionInterval;
+                bossSpawnPoint.queuedAttackLimit = levelData.bossQueuedAttackLimit;
+                bossSpawnPoint.immediateRepeatPenalty = levelData.bossImmediateRepeatPenalty;
+                bossSpawnPoint.enablePostBreakPunishWindow = levelData.bossEnablePostBreakPunishWindow;
+                bossSpawnPoint.postBreakPunishDuration = levelData.bossPostBreakPunishDuration;
+                bossSpawnPoint.postBreakAttackIntervalMultiplier = levelData.bossPostBreakAttackIntervalMultiplier;
+                bossSpawnPoint.postBreakDecisionIntervalMultiplier = levelData.bossPostBreakDecisionIntervalMultiplier;
+                bossSpawnPoint.postBreakChaseSpeedMultiplier = levelData.bossPostBreakChaseSpeedMultiplier;
+                bossSpawnPoint.enablePhaseComboChain = levelData.bossEnablePhaseComboChain;
+                bossSpawnPoint.phase2ComboChance = levelData.bossPhase2ComboChance;
+                bossSpawnPoint.phase3ComboChance = levelData.bossPhase3ComboChance;
+                bossSpawnPoint.comboStartDelay = levelData.bossComboStartDelay;
+                bossSpawnPoint.comboRepeatPenalty = levelData.bossComboRepeatPenalty;
+                bossSpawnPoint.enableInterruptRecoveryGate = levelData.bossEnableInterruptRecoveryGate;
+                bossSpawnPoint.interruptRecoveryDuration = levelData.bossInterruptRecoveryDuration;
+                bossSpawnPoint.interruptedAttackCooldownScale = levelData.bossInterruptedAttackCooldownScale;
+                bossSpawnPoint.enableTimePressure = levelData.bossEnableTimePressure;
+                bossSpawnPoint.timePressureDelay = levelData.bossTimePressureDelay;
+                bossSpawnPoint.timePressureRampDuration = levelData.bossTimePressureRampDuration;
+                bossSpawnPoint.maxTimePressureDamageMultiplier = levelData.bossMaxTimePressureDamageMultiplier;
+                bossSpawnPoint.maxTimePressureSpeedMultiplier = levelData.bossMaxTimePressureSpeedMultiplier;
+                bossSpawnPoint.enablePhaseTransitionOpeners = levelData.bossEnablePhaseTransitionOpeners;
+                bossSpawnPoint.phase2TransitionOpenerId = levelData.bossPhase2TransitionOpenerId;
+                bossSpawnPoint.phase3TransitionOpenerId = levelData.bossPhase3TransitionOpenerId;
+                bossSpawnPoint.enablePhaseTransitionOpenerRetry = levelData.bossEnablePhaseTransitionOpenerRetry;
+                bossSpawnPoint.phaseTransitionOpenerRetryDelay = levelData.bossPhaseTransitionOpenerRetryDelay;
+                bossSpawnPoint.phaseTransitionOpenerMaxRetries = levelData.bossPhaseTransitionOpenerMaxRetries;
+                bossSpawnPoint.enablePhaseTransitionFollowupChain = levelData.bossEnablePhaseTransitionFollowupChain;
+                bossSpawnPoint.phase2TransitionFollowupId = levelData.bossPhase2TransitionFollowupId;
+                bossSpawnPoint.phase3TransitionFollowupId = levelData.bossPhase3TransitionFollowupId;
+                bossSpawnPoint.enablePhaseTransitionFollowupRetry = levelData.bossEnablePhaseTransitionFollowupRetry;
+                bossSpawnPoint.phaseTransitionFollowupRetryDelay = levelData.bossPhaseTransitionFollowupRetryDelay;
+                bossSpawnPoint.phaseTransitionFollowupMaxRetries = levelData.bossPhaseTransitionFollowupMaxRetries;
+                bossSpawnPoint.enablePhase3SpecialPriorityWindow = levelData.bossEnablePhase3SpecialPriorityWindow;
+                bossSpawnPoint.phase3SpecialPriorityDuration = levelData.bossPhase3SpecialPriorityDuration;
+                bossSpawnPoint.phase3SpecialPriorityWeightMultiplier = levelData.bossPhase3SpecialPriorityWeightMultiplier;
+                bossSpawnPoint.forceSpecialQueueDuringPhase3Priority = levelData.bossForceSpecialQueueDuringPhase3Priority;
+            }
 
             if (sequenceController == null)
             {
-                sequenceController = FindObjectOfType<StrongholdSequenceController>();
+                sequenceController = FindComponentInOwningScene<StrongholdSequenceController>();
             }
 
             if (sequenceController != null)
@@ -521,7 +571,7 @@ namespace ThirdPersonController
                 return;
             }
 
-            StrongholdController[] allStrongholds = FindObjectsOfType<StrongholdController>();
+            StrongholdController[] allStrongholds = FindComponentsInOwningScene<StrongholdController>();
             Dictionary<string, StrongholdController> lookup = new Dictionary<string, StrongholdController>();
             for (int i = 0; i < allStrongholds.Length; i++)
             {
@@ -575,6 +625,51 @@ namespace ThirdPersonController
             }
         }
 
+        private T FindComponentInOwningScene<T>() where T : Component
+        {
+            Scene owningScene = gameObject != null ? gameObject.scene : default;
+            T[] all = FindObjectsOfType<T>(true);
+            for (int i = 0; i < all.Length; i++)
+            {
+                T component = all[i];
+                if (component == null)
+                {
+                    continue;
+                }
+
+                if (owningScene.IsValid() && component.gameObject.scene != owningScene)
+                {
+                    continue;
+                }
+
+                return component;
+            }
+
+            return null;
+        }
+
+        private T[] FindComponentsInOwningScene<T>() where T : Component
+        {
+            Scene owningScene = gameObject != null ? gameObject.scene : default;
+            T[] all = FindObjectsOfType<T>(true);
+            if (!owningScene.IsValid())
+            {
+                return all;
+            }
+
+            List<T> filtered = new List<T>(all.Length);
+            for (int i = 0; i < all.Length; i++)
+            {
+                T component = all[i];
+                if (component != null && component.gameObject.scene == owningScene)
+                {
+                    filtered.Add(component);
+                }
+            }
+
+            return filtered.ToArray();
+        }
+
         private void ConfigureStrongholdOverrides()
         {
             if (levelData == null || levelData.strongholdOverrides == null || levelData.strongholdOverrides.Count == 0)
@@ -582,7 +677,7 @@ namespace ThirdPersonController
                 return;
             }
 
-            StrongholdController[] allStrongholds = FindObjectsOfType<StrongholdController>();
+            StrongholdController[] allStrongholds = FindComponentsInOwningScene<StrongholdController>();
             Dictionary<string, StrongholdController> lookup = new Dictionary<string, StrongholdController>();
             for (int i = 0; i < allStrongholds.Length; i++)
             {
@@ -1062,11 +1157,23 @@ namespace ThirdPersonController
                         targetEnemyType = stage.targetEnemyType,
                         targetTime = stage.targetTime,
                         targetLocationId = stage.targetLocationId,
+                        targetStrongholdId = stage.targetStrongholdId,
+                        targetBossId = stage.targetBossId,
+                        matchAnyWaveEventType = stage.matchAnyWaveEventType,
+                        targetWaveEventType = stage.targetWaveEventType,
                         useTimeLimit = stage.useTimeLimit,
                         timeLimit = stage.timeLimit
                     });
                 }
             }
+
+            QuestReward sourceReward = quest.reward ?? new QuestReward();
+            List<string> sourceItemIds = sourceReward.itemIds != null
+                ? sourceReward.itemIds
+                : new List<string>();
+            List<string> sourceNextQuestIds = quest.nextQuestIds != null
+                ? quest.nextQuestIds
+                : new List<string>();
 
             return new QuestData
             {
@@ -1078,8 +1185,12 @@ namespace ThirdPersonController
                 targetEnemyType = quest.targetEnemyType,
                 targetTime = quest.targetTime,
                 targetLocationId = quest.targetLocationId,
+                targetStrongholdId = quest.targetStrongholdId,
+                targetBossId = quest.targetBossId,
+                matchAnyWaveEventType = quest.matchAnyWaveEventType,
+                targetWaveEventType = quest.targetWaveEventType,
                 stages = stages,
-                nextQuestIds = new List<string>(quest.nextQuestIds),
+                nextQuestIds = new List<string>(sourceNextQuestIds),
                 autoStartNextQuests = quest.autoStartNextQuests,
                 timeLimit = quest.timeLimit,
                 failOnPlayerDeath = quest.failOnPlayerDeath,
@@ -1087,13 +1198,14 @@ namespace ThirdPersonController
                 failOnDefenseTargetDestroyed = quest.failOnDefenseTargetDestroyed,
                 reward = new QuestReward
                 {
-                    exp = quest.reward.exp,
-                    pearls = quest.reward.pearls,
-                    credits = quest.reward.credits,
-                    itemIds = new List<string>(quest.reward.itemIds)
+                    exp = sourceReward.exp,
+                    pearls = sourceReward.pearls,
+                    credits = sourceReward.credits,
+                    itemIds = new List<string>(sourceItemIds)
                 },
                 difficultyRating = quest.difficultyRating,
-                isOptional = quest.isOptional
+                isOptional = quest.isOptional,
+                rewardTier = quest.rewardTier
             };
         }
     }

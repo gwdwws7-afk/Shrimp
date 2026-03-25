@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="3" result="Passed" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-03-18 06:47:55Z" end-time="2026-03-18 06:47:55Z" duration="0.0767233">
+  <test-suite type="TestSuite" id="1000" name="Shrimp" fullname="Shrimp" runstate="Runnable" testcasecount="83" result="Passed" start-time="2026-03-18 06:47:55Z" end-time="2026-03-18 06:47:55Z" duration="0.076723" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties />
+    <test-suite type="Assembly" id="1100" name="ThirdPersonController.PlayModeTests.dll" fullname="C:/test/Shrimp/Library/ScriptAssemblies/ThirdPersonController.PlayModeTests.dll" runstate="Runnable" testcasecount="83" result="Passed" start-time="2026-03-18 06:47:55Z" end-time="2026-03-18 06:47:55Z" duration="0.067035" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="15328" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+      </properties>
+      <test-suite type="TestSuite" id="1101" name="ThirdPersonController" fullname="ThirdPersonController" runstate="Runnable" testcasecount="83" result="Passed" start-time="2026-03-18 06:47:55Z" end-time="2026-03-18 06:47:55Z" duration="0.065955" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1102" name="Tests" fullname="ThirdPersonController.Tests" runstate="Runnable" testcasecount="83" result="Passed" start-time="2026-03-18 06:47:55Z" end-time="2026-03-18 06:47:55Z" duration="0.065266" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1017" name="BossSpawnPointRound2Tests" fullname="ThirdPersonController.Tests.BossSpawnPointRound2Tests" classname="ThirdPersonController.Tests.BossSpawnPointRound2Tests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-03-18 06:47:55Z" end-time="2026-03-18 06:47:55Z" duration="0.062446" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1020" name="SpawnBoss_ControllerPath_OverrideEncounterTuning_PropagatesDepthFields" fullname="ThirdPersonController.Tests.BossSpawnPointRound2Tests.SpawnBoss_ControllerPath_OverrideEncounterTuning_PropagatesDepthFields" methodname="SpawnBoss_ControllerPath_OverrideEncounterTuning_PropagatesDepthFields" classname="ThirdPersonController.Tests.BossSpawnPointRound2Tests" runstate="Runnable" seed="33474292" result="Passed" start-time="2026-03-18 06:47:55Z" end-time="2026-03-18 06:47:55Z" duration="0.041903" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1018" name="SpawnBoss_WithBossControllerPrefab_UsesControllerPath" fullname="ThirdPersonController.Tests.BossSpawnPointRound2Tests.SpawnBoss_WithBossControllerPrefab_UsesControllerPath" methodname="SpawnBoss_WithBossControllerPrefab_UsesControllerPath" classname="ThirdPersonController.Tests.BossSpawnPointRound2Tests" runstate="Runnable" seed="1386318899" result="Passed" start-time="2026-03-18 06:47:55Z" end-time="2026-03-18 06:47:55Z" duration="0.003224" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1019" name="SpawnBoss_WithoutBossController_FallsBackToPrototypeTemplatePath" fullname="ThirdPersonController.Tests.BossSpawnPointRound2Tests.SpawnBoss_WithoutBossController_FallsBackToPrototypeTemplatePath" methodname="SpawnBoss_WithoutBossController_FallsBackToPrototypeTemplatePath" classname="ThirdPersonController.Tests.BossSpawnPointRound2Tests" runstate="Runnable" seed="14938097" result="Passed" start-time="2026-03-18 06:47:55Z" end-time="2026-03-18 06:47:55Z" duration="0.003402" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

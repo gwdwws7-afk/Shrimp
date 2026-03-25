@@ -1,0 +1,10 @@
+layer,module,key,issue_type,total,localized,status,note
+Coverage,UI_MainMenu,ui.main_menu.,ModuleCoverage,12,12,Ok,coverage_ok
+Coverage,UI_LevelFlow,ui.level_flow.,ModuleCoverage,28,28,Ok,coverage_ok
+Coverage,UI_HudHints,ui.hud_hints.,ModuleCoverage,5,5,Ok,coverage_ok
+Coverage,UI_SkillBar,ui.skill_bar.,ModuleCoverage,6,6,Ok,coverage_ok
+Coverage,UI_Quest,ui.quest.,ModuleCoverage,20,20,Ok,coverage_ok
+Coverage,UI_Talent,ui.talent.,ModuleCoverage,20,20,Ok,coverage_ok
+Coverage,UI_Economy,ui.economy_overlay.,ModuleCoverage,13,13,Ok,coverage_ok
+Coverage,Boss,boss.,ModuleCoverage,5,5,Ok,coverage_ok
+AuditIssue,Global,,None,0,0,Ok,no_issues

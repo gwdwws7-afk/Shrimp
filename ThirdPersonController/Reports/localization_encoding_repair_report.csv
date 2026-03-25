@@ -1,0 +1,132 @@
+key,status,old_zh,new_zh,note
+boss.break_window,Kept,鐮撮槻绐楀彛,鐮撮槻绐楀彛,clean
+boss.defeated,Kept,首已击,首已击,clean
+boss.phase_format,Kept,阶段 {0}：{1}！,阶段 {0}：{1}！,clean
+boss.phase2,Kept,首进入二阶,首进入二阶,clean
+boss.skill_format,Kept,首领技能：{0},首领技能：{0},clean
+ui.level.complete_title,Kept,鍏冲崱瀹屾垚,鍏冲崱瀹屾垚,clean
+ui.level.exp_format,Kept,+{0} 经验,+{0} 经验,clean
+ui.level.failed_title,Kept,鍏冲崱澶辫触,鍏冲崱澶辫触,clean
+ui.level.menu.exit_to_main,Kept,返回主菜,返回主菜,clean
+ui.level.menu.resume,Kept,继续,继续,clean
+ui.level.pearls_format,Kept,+{0} 珍珠,+{0} 珍珠,clean
+ui.level.time_format,Kept,用时：{0:00}:{1:00},用时：{0:00}:{1:00},clean
+ui.level.times_up,Kept,时间到！,时间到！,clean
+ui.stronghold.info,Kept,淇℃伅,淇℃伅,clean
+ui.stronghold.remaining_format,Kept,鍓╀綑 {0},鍓╀綑 {0},clean
+ui.stronghold.remaining_ratio_format,Kept,鍓╀綑 {0}/{1},鍓╀綑 {0}/{1},clean
+ui.stronghold.status.cleared,Kept,鎹偣娓呴櫎,鎹偣娓呴櫎,clean
+ui.stronghold.status.started,Kept,战斗,战斗,clean
+ui.stronghold.status.wave_completed,Kept,波 {0} 完成,波 {0} 完成,clean
+ui.stronghold.status.wave_started,Kept,波 {0},波 {0},clean
+ui.stronghold.title,Kept,推进,推进,clean
+ui.stronghold.wave_format,Kept,波 {0}/{1} · {2},波 {0}/{1} · {2},clean
+ui.wave.announcer.boss_default,Kept,棣栭閬亣,棣栭閬亣,suspicious_not_changed
+ui.wave.announcer.boss_tag,Kept,首,首,clean
+ui.wave.announcer.default_wave_title_format,Kept,?{0} ?,?{0} ?,clean
+ui.wave.announcer.wave_format,Kept,?{0} ?,?{0} ?,clean
+ui.main_menu.start_game_button,Kept,始游,始游,clean
+ui.main_menu.quit_button,Kept,閫€鍑?,閫€鍑?,suspicious_not_changed
+ui.main_menu.next_level_reward_preview,Kept,下一关励,下一关励,clean
+ui.main_menu.preview_difficulty_format,Kept,难度：{0}  |  推荐等级 {1},难度：{0}  |  推荐等级 {1},clean
+ui.main_menu.preview_base_credits_format,Kept,基础积分奖励：{0},基础积分奖励：{0},clean
+ui.main_menu.select_level,Kept,选择关卡,选择关卡,clean
+ui.main_menu.level_locked_format,Kept,{0}（{1}）,{0}（{1}）,clean
+ui.main_menu.locked_level_label,Kept,??,??,clean
+ui.main_menu.press_to_start_format,Kept,鎸?{0} 寮€濮?,鎸?{0} 寮€濮?,suspicious_not_changed
+ui.quest.stage_format,Kept,{0}（{1}/{2}）,{0}（{1}/{2}）,clean
+ui.quest.type.kill_enemies,Kept,击杀 {0} 名敌,击杀 {0} 名敌,clean
+ui.quest.type.kill_enemy_type,Kept,击杀 {0} 名 {1},击杀 {0} 名 {1},clean
+ui.quest.type.survive_seconds,Kept,鐢熷瓨 {0} 绉?,鐢熷瓨 {0} 绉?,suspicious_not_changed
+ui.quest.type.protect_seconds,Kept,淇濇姢鐩爣 {0} 绉?,淇濇姢鐩爣 {0} 绉?,suspicious_not_changed
+ui.quest.type.complete_waves,Kept,完成 {0},完成 {0},clean
+ui.quest.type.clear_stronghold,Kept,清除该据,清除该据,clean
+ui.quest.type.complete_wave_events,Kept,瀹屾垚 {0} 娆℃尝娆′簨浠?,瀹屾垚 {0} 娆℃尝娆′簨浠?,suspicious_not_changed
+ui.quest.type.complete_wave_events_of_type,Kept,瀹屾垚 {0} 娆?{1} 浜嬩欢,瀹屾垚 {0} 娆?{1} 浜嬩欢,suspicious_not_changed
+ui.quest.type.boss_breaks,Kept,触发 {0} 次领破,触发 {0} 次领破,clean
+ui.quest.type.boss_breaks_with_id,Kept,瑙﹀彂 {0} 娆￠棰嗙牬闃诧紙{1}锛?,瑙﹀彂 {0} 娆￠棰嗙牬闃诧紙{1}锛?,suspicious_not_changed
+ui.quest.type.defeat_boss,Kept,击败首,击败首,clean
+ui.quest.type.defeat_boss_id,Kept,击败 {0},击败 {0},clean
+ui.quest.type.collect_items,Kept,鏀堕泦 {0} 涓墿鍝?,鏀堕泦 {0} 涓墿鍝?,suspicious_not_changed
+ui.quest.type.reach_marked_location,Kept,到达标记地点,到达标记地点,clean
+ui.quest.type.reach_combo,Kept,杈炬垚 {0} 杩炲嚮,杈炬垚 {0} 杩炲嚮,clean
+ui.quest.progress.time_format,Kept,进度 {0}/{1},进度 {0}/{1},clean
+ui.quest.progress.count_format,Kept,进度 {0}/{1},进度 {0}/{1},clean
+ui.quest.title,Kept,任务追踪,任务追踪,clean
+ui.quest.fallback.entry_format,Kept,【{0}】{1},【{0}】{1},clean
+ui.talent.title,Kept,成长,成长,clean
+ui.talent.close_hint_format,Kept,{0} 关闭,{0} 关闭,clean
+ui.talent.equipment.title,Kept,装,装,clean
+ui.talent.equipment.missing_system,Kept,未找到装备系统。,未找到装备系统。,clean
+ui.talent.equipment.empty_slot,Kept,锛堢┖锛?,锛堢┖锛?,suspicious_not_changed
+ui.talent.equipment.slot_format,Kept,妲戒綅 {0}: {1},妲戒綅 {0}: {1},clean
+ui.talent.equipment.select,Kept,选择,选择,clean
+ui.talent.equipment.unequip,Kept,鍗镐笅,鍗镐笅,clean
+ui.talent.inventory.title,Kept,背包,背包,clean
+ui.talent.inventory.empty,Kept,暂无珍珠,暂无珍珠,clean
+ui.talent.inventory.equip,Kept,装,装,clean
+ui.talent.tree.title,Kept,天赋,天赋,clean
+ui.talent.tree.missing_data,Kept,未找到天赋树数据。,未找到天赋树数据。,clean
+ui.talent.tree.available_points_format,Kept,可用点数：{0},可用点数：{0},clean
+ui.talent.branch.offense,Kept,进攻,进攻,clean
+ui.talent.branch.control,Kept,控制,控制,clean
+ui.talent.branch.survival,Kept,鐢熷瓨,鐢熷瓨,clean
+ui.talent.status.unlocked,Kept,已解,已解,clean
+ui.talent.status.locked,Kept,??,??,clean
+ui.talent.unlock,Kept,解锁,解锁,clean
+ui.economy_overlay.bind_slot_format,Kept,绑定 {0},绑定 {0},clean
+ui.economy_overlay.buy_button_format,Kept,璐拱 ({0}),璐拱 ({0}),clean
+ui.economy_overlay.catalog_empty,Kept,暂无消品,暂无消品,clean
+ui.economy_overlay.catalog_title,Kept,消品,消品,clean
+ui.economy_overlay.clear_button,Kept,清空,清空,clean
+ui.economy_overlay.close_hint_format,Kept,{0} 关闭,{0} 关闭,clean
+ui.economy_overlay.credits_format,Kept,积分：{0},积分：{0},clean
+ui.economy_overlay.quick_slot_entry_format,Kept,妲戒綅{0}: {1} x{2},妲戒綅{0}: {1} x{2},clean
+ui.economy_overlay.quick_slot_hint_default,Kept,1/2/3,1/2/3,clean
+ui.economy_overlay.quick_slots_missing,Kept,未找到快捷栏组件。,未找到快捷栏组件。,clean
+ui.economy_overlay.quick_slots_title_format,Kept,蹇嵎浣跨敤 ({0}),蹇嵎浣跨敤 ({0}),clean
+ui.economy_overlay.title,Kept,淇℃伅,淇℃伅,clean
+ui.economy_overlay.use_button,Kept,浣跨敤,浣跨敤,clean
+ui.hud_hints.economy_format,Kept,{0} 琛ョ粰/鍟嗗簵,{0} 琛ョ粰/鍟嗗簵,clean
+ui.hud_hints.none,Kept,暂无提示,暂无提示,clean
+ui.hud_hints.quick_slots_format,Kept,{0}/{1}/{2} 蹇嵎浣跨敤,{0}/{1}/{2} 蹇嵎浣跨敤,clean
+ui.hud_hints.talent_format,Kept,{0} 天赋/装,{0} 天赋/装,clean
+ui.hud_hints.title,Kept,操作提示,操作提示,clean
+ui.level_flow.objective.clear_strongholds,Kept,清除有据,清除有据,clean
+ui.level_flow.objective.complete_quests_format,Kept,瀹屾垚 {0} 涓换鍔?,瀹屾垚 {0} 涓换鍔?,suspicious_not_changed
+ui.level_flow.objective.none,Kept,无外目,无外目,clean
+ui.level_flow.objective.score_target_format,Kept,目标分数：{0},目标分数：{0},clean
+ui.level_flow.objective.time_limit_minutes_format,Kept,限时：{0} 分钟,限时：{0} 分钟,clean
+ui.level_flow.prep.missing_talent_overlay,Kept,未找到天赋/装备面板。,未找到天赋/装备面板。,clean
+ui.level_flow.prep.start_button,Kept,始战,始战,clean
+ui.level_flow.prep.start_hint,Kept,鎸?Enter 寮€濮?,鎸?Enter 寮€濮?,suspicious_not_changed
+ui.level_flow.prep.start_hint_format,Kept,鎸?{0} 寮€濮?,鎸?{0} 寮€濮?,suspicious_not_changed
+ui.level_flow.result.combo_format,Kept,鏈€楂樿繛鍑伙細{0},鏈€楂樿繛鍑伙細{0},clean
+ui.level_flow.result.continue_button,Kept,继续,继续,clean
+ui.level_flow.result.credits_format,Kept,+{0} 绉垎,+{0} 绉垎,clean
+ui.level_flow.result.defeat_title,Kept,鍏冲崱澶辫触,鍏冲崱澶辫触,clean
+ui.level_flow.result.hint_format,Kept,{0}: 继续   {1}: 重试,{0}: 继续   {1}: 重试,clean
+ui.level_flow.result.kills_format,Kept,击杀：{0},击杀：{0},clean
+ui.level_flow.result.pearls_format,Kept,+{0} 珍珠,+{0} 珍珠,clean
+ui.level_flow.result.progress_title,Kept,进度,进度,clean
+ui.level_flow.result.retry_button,Kept,重试,重试,clean
+ui.level_flow.result.rewards_title,Kept,濂栧姳,濂栧姳,clean
+ui.level_flow.result.stats_title,Kept,统,统,clean
+ui.level_flow.result.talent_points_format,Kept,+{0} 天赋,+{0} 天赋,clean
+ui.level_flow.result.time_format,Kept,用时：{0},用时：{0},clean
+ui.level_flow.result.victory_title,Kept,鍏冲崱瀹屾垚,鍏冲崱瀹屾垚,clean
+ui.level_flow.route.control,Kept,控制,控制,clean
+ui.level_flow.route.current_format,Kept,当前：{0},当前：{0},clean
+ui.level_flow.route.label,Kept,鎴愰暱璺嚎,鎴愰暱璺嚎,clean
+ui.level_flow.route.offense,Kept,进攻,进攻,clean
+ui.level_flow.route.survival,Kept,鐢熷瓨,鐢熷瓨,clean
+ui.main_menu.language.label,Kept,璇█,璇█,clean
+ui.main_menu.language.zh_button,Kept,绠€浣撲腑鏂?,绠€浣撲腑鏂?,suspicious_not_changed
+ui.main_menu.language.en_button,Kept,鑻辨枃,鑻辨枃,clean
+ui.skill_bar.legend.crowd_control,Kept,群控,群控,clean
+ui.skill_bar.legend.burst,Kept,爆发,爆发,clean
+ui.skill_bar.legend.mobility,Kept,位移,位移,clean
+ui.skill_bar.legend.gather,Kept,聚怪,聚怪,clean
+ui.skill_bar.attack_hint_default,Kept,轻击: 左键  重击: 右键,轻击: 左键  重击: 右键,clean
+ui.skill_bar.attack_hint_format,Kept,轻击: {0}  重击: {1},轻击: {0}  重击: {1},clean
+summary,count,130,0,done

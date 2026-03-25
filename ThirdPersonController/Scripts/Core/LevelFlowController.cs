@@ -13,6 +13,10 @@ namespace ThirdPersonController
         public string mainMenuSceneName = "MainMenu";
         public int levelId = 1;
 
+        [Header("Test Hooks")]
+        public bool suppressSceneLoadForTests = false;
+        public bool suppressSaveForTests = false;
+
         [Header("Input")]
         public string menuActionName = "MenuCancel";
         public KeyCode menuKey = KeyCode.Escape;
@@ -52,6 +56,9 @@ namespace ThirdPersonController
         private bool levelStarted;
         private bool levelEnded;
         private bool levelCompleted;
+        private string debugLastRequestedScene = string.Empty;
+        private int debugSaveRequestCount;
+        private int debugSceneRequestCount;
 
         private void Awake()
         {
@@ -179,7 +186,7 @@ namespace ThirdPersonController
         private void HandleTimeUp()
         {
             levelEnded = true;
-            GameEvents.ShowMessage("Time's Up!", 3f);
+            GameEvents.ShowMessage(Localize("ui.level.times_up", "Time's Up!"), 3f);
             GameEvents.GameOver(false);
         }
 
@@ -209,12 +216,12 @@ namespace ThirdPersonController
             GUILayout.Label(levelTitle, titleStyle);
             GUILayout.Space(20f);
 
-            if (GUILayout.Button("Resume", buttonStyle))
+            if (GUILayout.Button(Localize("ui.level.menu.resume", "Resume"), buttonStyle))
             {
                 CloseMenu();
             }
 
-            if (GUILayout.Button("Exit to Main Menu", buttonStyle))
+            if (GUILayout.Button(Localize("ui.level.menu.exit_to_main", "Exit to Main Menu"), buttonStyle))
             {
                 ExitToMenu();
             }
@@ -254,12 +261,14 @@ namespace ThirdPersonController
         {
             menuOpen = false;
             Time.timeScale = 1f;
-            
-            if (SaveManager.Instance != null)
+
+            debugSaveRequestCount++;
+            if (!suppressSaveForTests && SaveManager.Instance != null)
             {
                 SaveManager.Instance.SaveGame();
             }
-            SceneManager.LoadScene(mainMenuSceneName);
+
+            RequestSceneLoad(mainMenuSceneName);
         }
 
         public void BeginFromPrep()
@@ -271,7 +280,7 @@ namespace ThirdPersonController
         {
             menuOpen = false;
             Time.timeScale = 1f;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            RequestSceneLoad(SceneManager.GetActiveScene().name);
         }
 
         public void ExitToMenu(bool markComplete)
@@ -286,6 +295,9 @@ namespace ThirdPersonController
 
         public bool IsLevelStarted => levelStarted;
         public bool IsLevelEnded => levelEnded;
+        public string DebugLastRequestedScene => debugLastRequestedScene;
+        public int DebugSaveRequestCount => debugSaveRequestCount;
+        public int DebugSceneRequestCount => debugSceneRequestCount;
 
         private void OnDestroy()
         {
@@ -422,6 +434,29 @@ namespace ThirdPersonController
 
             inputHandler = PlayerInputHandler.ResolveActiveInstance();
             return inputHandler;
+        }
+
+        private static string Localize(string key, string fallback)
+        {
+            LocalizationService service = LocalizationService.Instance;
+            if (service != null)
+            {
+                return service.Get(key, fallback);
+            }
+
+            return fallback;
+        }
+
+        private void RequestSceneLoad(string sceneName)
+        {
+            debugSceneRequestCount++;
+            debugLastRequestedScene = sceneName ?? string.Empty;
+            if (suppressSceneLoadForTests)
+            {
+                return;
+            }
+
+            SceneManager.LoadScene(sceneName);
         }
 
         private void EnsureLighting()

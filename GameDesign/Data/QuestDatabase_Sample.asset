@@ -1024,6 +1024,20 @@ MonoBehaviour:
       targetWaveEventType: 2
       useTimeLimit: 0
       timeLimit: 0
+    - stageId: l08_defeat_boss
+      title: Defeat the Rift Boss
+      description: Defeat the molten narwhal to secure the rift.
+      questType: 11
+      targetCount: 1
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      targetStrongholdId: 
+      targetBossId: Boss_MoltenNarwhal
+      matchAnyWaveEventType: 1
+      targetWaveEventType: 0
+      useTimeLimit: 0
+      timeLimit: 0
     nextQuestIds: []
     autoStartNextQuests: 1
     timeLimit: 0
@@ -1092,6 +1106,20 @@ MonoBehaviour:
       targetBossId: 
       matchAnyWaveEventType: 0
       targetWaveEventType: 2
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l09_defeat_boss
+      title: Defeat the Sanctum Boss
+      description: Defeat the mirror tidemancer to end the resonance.
+      questType: 11
+      targetCount: 1
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      targetStrongholdId: 
+      targetBossId: Boss_MirrorTidemancer
+      matchAnyWaveEventType: 1
+      targetWaveEventType: 0
       useTimeLimit: 0
       timeLimit: 0
     nextQuestIds: []
@@ -1174,6 +1202,20 @@ MonoBehaviour:
       targetLocationId: 
       targetStrongholdId: Stronghold_02
       targetBossId: 
+      matchAnyWaveEventType: 1
+      targetWaveEventType: 0
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l10_defeat_hive_core
+      title: Defeat the Hive Core
+      description: Defeat the hive core boss to complete the assault.
+      questType: 11
+      targetCount: 1
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      targetStrongholdId: 
+      targetBossId: Boss_HiveCore
       matchAnyWaveEventType: 1
       targetWaveEventType: 0
       useTimeLimit: 0

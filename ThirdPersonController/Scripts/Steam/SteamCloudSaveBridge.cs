@@ -20,19 +20,46 @@ namespace ThirdPersonController
         public bool onlyIfLocalMissing = true;
         public bool uploadOnSave = true;
         public bool uploadSettings = false;
+        public bool applySettingsAfterPull = true;
         public string saveFileName = "savegame.dat";
         public string settingsFileName = "settings.dat";
         public float uploadCooldown = 1.5f;
         public bool logDecisions = true;
 
+        [Header("Debug (Runtime)")]
+        [SerializeField] private int debugLastPullDownloadedCount;
+        [SerializeField] private int debugLastPushUploadedCount;
+        [SerializeField] private string debugLastSyncOperation = "";
+
         private SteamIntegrationService steam;
         private SaveManager saveManager;
         private float nextUploadTime;
+
+        public int LastPullDownloadedCount => debugLastPullDownloadedCount;
+        public int LastPushUploadedCount => debugLastPushUploadedCount;
+        public string LastSyncOperation => debugLastSyncOperation;
 
         private void Awake()
         {
             steam = SteamIntegrationService.Instance;
             saveManager = SaveManager.Instance;
+        }
+
+        public void ApplyConfig(SteamIntegrationConfig config)
+        {
+            if (config == null)
+            {
+                return;
+            }
+
+            enableCloudSaves = config.enableCloudSaves;
+            pullOnStart = config.pullCloudOnStart;
+            priority = config.cloudPriority;
+            onlyIfLocalMissing = config.cloudOnlyIfLocalMissing;
+            uploadOnSave = config.uploadCloudOnSave;
+            uploadSettings = config.uploadSettings;
+            applySettingsAfterPull = config.applySettingsAfterPull;
+            uploadCooldown = Mathf.Max(0.1f, config.cloudUploadCooldown);
         }
 
         private void Start()
@@ -95,6 +122,9 @@ namespace ThirdPersonController
 
         public void TryPullFromCloud()
         {
+            debugLastPullDownloadedCount = 0;
+            debugLastSyncOperation = "PullSkipped";
+
             if (!enableCloudSaves || steam == null || !steam.IsCloudAvailable)
             {
                 return;
@@ -110,15 +140,26 @@ namespace ThirdPersonController
                 return;
             }
 
-            ResolveSync(saveFileName, saveManager.SaveFilePath);
+            debugLastSyncOperation = "Pull";
+            ResolveSync(saveFileName, saveManager.SaveFilePath, countPullDownloads: true);
+            bool pulledSettings = false;
             if (uploadSettings && !string.IsNullOrEmpty(saveManager.SettingsFilePath))
             {
-                ResolveSync(settingsFileName, saveManager.SettingsFilePath);
+                ResolveSync(settingsFileName, saveManager.SettingsFilePath, countPullDownloads: true);
+                pulledSettings = true;
+            }
+
+            if (pulledSettings && applySettingsAfterPull)
+            {
+                saveManager.LoadSettings();
             }
         }
 
         public void PushToCloud()
         {
+            debugLastPushUploadedCount = 0;
+            debugLastSyncOperation = "PushSkipped";
+
             if (!enableCloudSaves || steam == null || !steam.IsCloudAvailable)
             {
                 return;
@@ -129,14 +170,22 @@ namespace ThirdPersonController
                 return;
             }
 
-            UploadFileIfExists(saveManager.SaveFilePath, saveFileName);
+            debugLastSyncOperation = "Push";
+            if (UploadFileIfExists(saveManager.SaveFilePath, saveFileName))
+            {
+                debugLastPushUploadedCount++;
+            }
+
             if (uploadSettings && !string.IsNullOrEmpty(saveManager.SettingsFilePath))
             {
-                UploadFileIfExists(saveManager.SettingsFilePath, settingsFileName);
+                if (UploadFileIfExists(saveManager.SettingsFilePath, settingsFileName))
+                {
+                    debugLastPushUploadedCount++;
+                }
             }
         }
 
-        private void ResolveSync(string cloudFileName, string localPath)
+        private void ResolveSync(string cloudFileName, string localPath, bool countPullDownloads)
         {
             if (string.IsNullOrEmpty(cloudFileName) || string.IsNullOrEmpty(localPath))
             {
@@ -154,7 +203,10 @@ namespace ThirdPersonController
             if (!localExists && cloudExists)
             {
                 LogDecision($"Cloud -> Local ({cloudFileName})", localPath);
-                DownloadFileIfExists(cloudFileName, localPath);
+                if (DownloadFileIfExists(cloudFileName, localPath) && countPullDownloads)
+                {
+                    debugLastPullDownloadedCount++;
+                }
                 return;
             }
 
@@ -169,19 +221,22 @@ namespace ThirdPersonController
             {
                 case CloudSavePriority.CloudPreferred:
                     LogDecision($"CloudPreferred -> Local ({cloudFileName})", localPath);
-                    DownloadFileIfExists(cloudFileName, localPath);
+                    if (DownloadFileIfExists(cloudFileName, localPath) && countPullDownloads)
+                    {
+                        debugLastPullDownloadedCount++;
+                    }
                     break;
                 case CloudSavePriority.LocalPreferred:
                     LogDecision($"LocalPreferred -> Cloud ({cloudFileName})", localPath);
                     UploadFileIfExists(localPath, cloudFileName);
                     break;
                 default:
-                    ResolveNewest(cloudFileName, localPath);
+                    ResolveNewest(cloudFileName, localPath, countPullDownloads);
                     break;
             }
         }
 
-        private void ResolveNewest(string cloudFileName, string localPath)
+        private void ResolveNewest(string cloudFileName, string localPath, bool countPullDownloads)
         {
             long cloudTimestamp = steam.GetCloudFileTimestamp(cloudFileName);
             long localTimestamp = GetLocalTimestamp(localPath);
@@ -194,7 +249,10 @@ namespace ThirdPersonController
             if (cloudTimestamp > localTimestamp)
             {
                 LogDecision($"Newest -> Cloud ({cloudFileName})", localPath);
-                DownloadFileIfExists(cloudFileName, localPath);
+                if (DownloadFileIfExists(cloudFileName, localPath) && countPullDownloads)
+                {
+                    debugLastPullDownloadedCount++;
+                }
             }
             else if (localTimestamp > cloudTimestamp)
             {
@@ -214,43 +272,43 @@ namespace ThirdPersonController
             return new System.DateTimeOffset(utc).ToUnixTimeSeconds();
         }
 
-        private void UploadFileIfExists(string path, string cloudFileName)
+        private bool UploadFileIfExists(string path, string cloudFileName)
         {
             if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(cloudFileName))
             {
-                return;
+                return false;
             }
 
             if (!File.Exists(path))
             {
-                return;
+                return false;
             }
 
             byte[] data = File.ReadAllBytes(path);
             if (data == null || data.Length == 0)
             {
-                return;
+                return false;
             }
 
-            steam.WriteCloudFile(cloudFileName, data);
+            return steam.WriteCloudFile(cloudFileName, data);
         }
 
-        private void DownloadFileIfExists(string cloudFileName, string localPath)
+        private bool DownloadFileIfExists(string cloudFileName, string localPath)
         {
             if (string.IsNullOrEmpty(cloudFileName) || string.IsNullOrEmpty(localPath))
             {
-                return;
+                return false;
             }
 
             if (!steam.CloudFileExists(cloudFileName))
             {
-                return;
+                return false;
             }
 
             byte[] data = steam.ReadCloudFile(cloudFileName);
             if (data == null || data.Length == 0)
             {
-                return;
+                return false;
             }
 
             string directory = Path.GetDirectoryName(localPath);
@@ -260,6 +318,7 @@ namespace ThirdPersonController
             }
 
             File.WriteAllBytes(localPath, data);
+            return true;
         }
 
         private void LogDecision(string message, string localPath)

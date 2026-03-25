@@ -100,6 +100,7 @@ namespace ThirdPersonController
         public float sensitivity = 1f;
         public bool fullscreen = true;
         public int resolutionIndex = 0;
+        public int localizationLanguage = (int)LocalizationLanguage.SimplifiedChinese;
         
 // 存档配置项，用于驱动模块行为并保持可调性。
         public string saveTime = "";
@@ -121,10 +122,20 @@ namespace ThirdPersonController
         [Header("存档设置")]
         public bool encryptSave = true;
         public string encryptionKey = "AbyssHunter2026"; // 运行时配置项，用于驱动模块行为并保持可调性。
+
+        [Header("测试路径覆盖")]
+        public string overrideSavePathForTests = "";
+        public string overrideSettingsPathForTests = "";
         
 // 存档配置项，用于驱动模块行为并保持可调性。
-        private string SavePath => Application.persistentDataPath + "/savegame.dat";
-        private string SettingsPath => Application.persistentDataPath + "/settings.dat";
+        private string SavePath =>
+            string.IsNullOrWhiteSpace(overrideSavePathForTests)
+                ? Path.Combine(Application.persistentDataPath, "savegame.dat")
+                : overrideSavePathForTests;
+        private string SettingsPath =>
+            string.IsNullOrWhiteSpace(overrideSettingsPathForTests)
+                ? Path.Combine(Application.persistentDataPath, "settings.dat")
+                : overrideSettingsPathForTests;
 
         public string SaveFilePath => SavePath;
         public string SettingsFilePath => SettingsPath;
@@ -134,6 +145,18 @@ namespace ThirdPersonController
         
 // 运行时状态标记，用于快速分支判定与流程保护。
         public bool HasLoadedSave => CurrentData != null;
+
+        public void ConfigureTestStoragePaths(string savePath, string settingsPath)
+        {
+            overrideSavePathForTests = savePath ?? string.Empty;
+            overrideSettingsPathForTests = settingsPath ?? string.Empty;
+        }
+
+        public void ClearTestStoragePaths()
+        {
+            overrideSavePathForTests = string.Empty;
+            overrideSettingsPathForTests = string.Empty;
+        }
         
 // 存档配置项，用于驱动模块行为并保持可调性。
         public System.Action OnSaveCompleted;
@@ -145,6 +168,7 @@ namespace ThirdPersonController
             CurrentData = new GameData();
             EnsureProgressionLists();
             LoadSettings(); // 围绕 加载 执行该步骤，用于保证流程状态与后续分支一致。
+            SyncLocalizationFromService();
         }
         
         #region 保存游戏
@@ -169,14 +193,14 @@ namespace ThirdPersonController
                 }
                 
 // 围绕 存档 执行该步骤，用于保证流程状态与后续分支一致。
-                File.WriteAllText(SavePath, json);
+                WriteTextAtomically(SavePath, json);
                 
-                Debug.Log($"[Save] 游戏已保存: {SavePath}");
+                Debug.Log($"[Save] Game saved: {SavePath}");
                 OnSaveCompleted?.Invoke();
             }
             catch (Exception e)
             {
-                Debug.LogError($"[Save] 保存游戏失败: {e.Message}");
+                Debug.LogError($"[Save] Save game failed: {e.Message}");
             }
         }
         
@@ -186,7 +210,7 @@ namespace ThirdPersonController
         public void AutoSave()
         {
             SaveGame();
-            Debug.Log("💾 自动保存完成");
+            Debug.Log("[Save] Auto-save completed.");
         }
         
         /// <summary>
@@ -224,34 +248,25 @@ namespace ThirdPersonController
         {
             try
             {
-                if (!File.Exists(SavePath))
+                if (!TryLoadGameDataFromStorage(SavePath, encryptSave, out GameData loadedData, out bool loadedFromBackup))
                 {
-                    Debug.Log("[Save] Save file not found. Creating new game data.");
+                    Debug.Log("[Save] Save file missing or invalid. Creating new game data.");
                     CurrentData = new GameData();
                     EnsureProgressionLists();
                     return false;
                 }
-                
-// 围绕 存档 执行该步骤，用于保证流程状态与后续分支一致。
-                string json = File.ReadAllText(SavePath);
-                
-// 围绕 存档 执行该步骤，用于保证流程状态与后续分支一致。
-                if (encryptSave)
-                {
-                    json = DecryptString(json, encryptionKey);
-                }
-                
-// 围绕 游戏 执行该步骤，用于保持上下文语义一致。
-                CurrentData = JsonUtility.FromJson<GameData>(json);
+
+                CurrentData = loadedData;
                 EnsureProgressionLists();
-                
-                Debug.Log($"[Save] 游戏已加载: {CurrentData.saveTime}");
+
+                string sourcePath = loadedFromBackup ? GetBackupPath(SavePath) : SavePath;
+                Debug.Log($"[Save] Game loaded: {CurrentData.saveTime} ({sourcePath})");
                 OnLoadCompleted?.Invoke();
                 return true;
             }
             catch (Exception e)
             {
-                Debug.LogError($"[Save] 加载游戏失败: {e.Message}");
+                Debug.LogError($"[Save] Load game failed: {e.Message}");
                 CurrentData = new GameData();
                 EnsureProgressionLists();
                 return false;
@@ -296,16 +311,17 @@ namespace ThirdPersonController
                 CurrentData.masterVolume = AudioManager.Instance?.masterVolume ?? 1f;
                 CurrentData.musicVolume = AudioManager.Instance?.musicVolume ?? 0.7f;
                 CurrentData.sfxVolume = AudioManager.Instance?.sfxVolume ?? 0.8f;
+                SyncLocalizationFromService();
                 
 // 围绕 string 执行该步骤，用于保证流程状态与后续分支一致。
                 string json = JsonUtility.ToJson(CurrentData);
-                File.WriteAllText(SettingsPath, json);
+                WriteTextAtomically(SettingsPath, json);
                 
-                Debug.Log($"[Save] 设置已保存: {SettingsPath}");
+                Debug.Log($"[Save] Settings saved: {SettingsPath}");
             }
             catch (Exception e)
             {
-                Debug.LogError($"[Save] 保存设置失败: {e.Message}");
+                Debug.LogError($"[Save] Save settings failed: {e.Message}");
             }
         }
         
@@ -316,15 +332,12 @@ namespace ThirdPersonController
         {
             try
             {
-                if (!File.Exists(SettingsPath))
+                if (!TryLoadGameDataFromStorage(SettingsPath, false, out GameData settings, out bool loadedFromBackup))
                 {
-                    Debug.Log("[Save] Settings file not found. Using defaults.");
+                    Debug.Log("[Save] Settings file missing or invalid. Using defaults.");
                     return;
                 }
-                
-                string json = File.ReadAllText(SettingsPath);
-                GameData settings = JsonUtility.FromJson<GameData>(json);
-                
+
 // 围绕 CurrentData 执行该步骤，用于保持上下文语义一致。
                 CurrentData.masterVolume = settings.masterVolume;
                 CurrentData.musicVolume = settings.musicVolume;
@@ -332,12 +345,21 @@ namespace ThirdPersonController
                 CurrentData.sensitivity = settings.sensitivity;
                 CurrentData.fullscreen = settings.fullscreen;
                 CurrentData.resolutionIndex = settings.resolutionIndex;
-                
-                Debug.Log("[Save] Loaded local settings.");
+                CurrentData.localizationLanguage = settings.localizationLanguage;
+                ApplyLocalizationFromData();
+
+                if (loadedFromBackup)
+                {
+                    Debug.LogWarning($"[Save] Loaded settings from backup: {GetBackupPath(SettingsPath)}");
+                }
+                else
+                {
+                    Debug.Log("[Save] Loaded local settings.");
+                }
             }
             catch (Exception e)
             {
-                Debug.LogError($"[Save] 加载设置失败: {e.Message}");
+                Debug.LogError($"[Save] Load settings failed: {e.Message}");
             }
         }
         
@@ -362,7 +384,7 @@ namespace ThirdPersonController
             }
             catch (Exception e)
             {
-                Debug.LogError($"[Save] 删除存档失败: {e.Message}");
+                Debug.LogError($"[Save] Delete save failed: {e.Message}");
             }
         }
         
@@ -433,6 +455,173 @@ namespace ThirdPersonController
         }
         
         #endregion
+
+        private static void EnsureParentDirectoryExists(string filePath)
+        {
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                return;
+            }
+
+            string directory = Path.GetDirectoryName(filePath);
+            if (string.IsNullOrWhiteSpace(directory))
+            {
+                return;
+            }
+
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+        }
+
+        private static string GetBackupPath(string filePath)
+        {
+            return string.IsNullOrWhiteSpace(filePath) ? string.Empty : $"{filePath}.bak";
+        }
+
+        private static string GetTempPath(string filePath)
+        {
+            return string.IsNullOrWhiteSpace(filePath) ? string.Empty : $"{filePath}.tmp";
+        }
+
+        private static void WriteTextAtomically(string destinationPath, string content)
+        {
+            if (string.IsNullOrWhiteSpace(destinationPath))
+            {
+                throw new ArgumentException("Destination path is required for atomic write.", nameof(destinationPath));
+            }
+
+            EnsureParentDirectoryExists(destinationPath);
+            string tempPath = GetTempPath(destinationPath);
+            string backupPath = GetBackupPath(destinationPath);
+
+            try
+            {
+                File.WriteAllText(tempPath, content);
+
+                if (File.Exists(destinationPath))
+                {
+                    try
+                    {
+                        File.Replace(tempPath, destinationPath, backupPath, true);
+                        return;
+                    }
+                    catch (Exception)
+                    {
+                        TryCopyAsBackup(destinationPath, backupPath);
+                        File.Delete(destinationPath);
+                    }
+                }
+
+                File.Move(tempPath, destinationPath);
+            }
+            finally
+            {
+                if (!string.IsNullOrWhiteSpace(tempPath) && File.Exists(tempPath))
+                {
+                    try
+                    {
+                        File.Delete(tempPath);
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+        }
+
+        private static void TryCopyAsBackup(string sourcePath, string backupPath)
+        {
+            if (string.IsNullOrWhiteSpace(sourcePath) || string.IsNullOrWhiteSpace(backupPath))
+            {
+                return;
+            }
+
+            if (!File.Exists(sourcePath))
+            {
+                return;
+            }
+
+            try
+            {
+                EnsureParentDirectoryExists(backupPath);
+                File.Copy(sourcePath, backupPath, true);
+            }
+            catch
+            {
+            }
+        }
+
+        private bool TryLoadGameDataFromStorage(string primaryPath, bool encrypted, out GameData loadedData, out bool loadedFromBackup)
+        {
+            loadedData = null;
+            loadedFromBackup = false;
+
+            if (TryReadTextFile(primaryPath, out string primaryContent)
+                && TryParseGameData(primaryContent, encrypted, out loadedData))
+            {
+                return true;
+            }
+
+            string backupPath = GetBackupPath(primaryPath);
+            if (TryReadTextFile(backupPath, out string backupContent)
+                && TryParseGameData(backupContent, encrypted, out loadedData))
+            {
+                loadedFromBackup = true;
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool TryParseGameData(string rawContent, bool encrypted, out GameData parsedData)
+        {
+            parsedData = null;
+            if (string.IsNullOrWhiteSpace(rawContent))
+            {
+                return false;
+            }
+
+            string decoded = encrypted ? DecryptString(rawContent, encryptionKey) : rawContent;
+            if (string.IsNullOrWhiteSpace(decoded))
+            {
+                return false;
+            }
+
+            try
+            {
+                parsedData = JsonUtility.FromJson<GameData>(decoded);
+            }
+            catch
+            {
+                parsedData = null;
+                return false;
+            }
+
+            return parsedData != null;
+        }
+
+        private static bool TryReadTextFile(string filePath, out string content)
+        {
+            content = string.Empty;
+            if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
+            {
+                return false;
+            }
+
+            try
+            {
+                content = File.ReadAllText(filePath);
+            }
+            catch
+            {
+                content = string.Empty;
+                return false;
+            }
+
+            return !string.IsNullOrWhiteSpace(content);
+        }
         
         #region 调试
         
@@ -517,6 +706,45 @@ namespace ThirdPersonController
             {
                 CurrentData.activeProgressionRoute = "Offense";
             }
+        }
+
+        private void SyncLocalizationFromService()
+        {
+            if (CurrentData == null)
+            {
+                return;
+            }
+
+            LocalizationService localizationService = LocalizationService.Instance;
+            if (localizationService == null)
+            {
+                return;
+            }
+
+            CurrentData.localizationLanguage = (int)localizationService.CurrentLanguage;
+        }
+
+        private void ApplyLocalizationFromData()
+        {
+            if (CurrentData == null)
+            {
+                return;
+            }
+
+            LocalizationService localizationService = LocalizationService.Instance;
+            if (localizationService == null)
+            {
+                return;
+            }
+
+            int languageRaw = CurrentData.localizationLanguage;
+            if (!Enum.IsDefined(typeof(LocalizationLanguage), languageRaw))
+            {
+                CurrentData.localizationLanguage = (int)localizationService.CurrentLanguage;
+                return;
+            }
+
+            localizationService.SetLanguage((LocalizationLanguage)languageRaw);
         }
         
         #endregion

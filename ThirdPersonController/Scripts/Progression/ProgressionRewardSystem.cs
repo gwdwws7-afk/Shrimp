@@ -53,7 +53,7 @@ namespace ThirdPersonController
             while (killsSinceLastPoint >= killsPerPoint)
             {
                 killsSinceLastPoint -= killsPerPoint;
-                GrantTalentPoints(pointsPerMilestone, "获得天赋点!");
+                GrantTalentPoints(pointsPerMilestone, "获得天赋点");
             }
 
             SaveProgress();
@@ -66,7 +66,7 @@ namespace ThirdPersonController
                 return;
             }
 
-            GrantTalentPoints(pointsPerStageClear, "关卡奖励天赋点!");
+            GrantTalentPoints(pointsPerStageClear, "关卡奖励天赋点");
             SaveProgress();
         }
 

@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: LevelData_Level06
   m_EditorClassIdentifier: 
   levelId: LEVEL_06
-  levelName: 黑潮管道网
-  description: 关闭黑潮管道网，守住净化阀并拦截寄生列车。
+  levelName: "\u699B\u621E\u7586\u7EE0\uFFE0\u4EBE\u7F03?"
+  description: "\u934F\u62BD\u68F4\u699B\u621E\u7586\u7EE0\uFFE0\u4EBE\u7F03\u622F\u7D1D\u7039\u581C\u7D87\u9351\u20AC\u9356\u682D\u69BE\u9A9E\u8235\u5AE4\u93B4\uE044\u760E\u9422\u71B7\u57AA\u675E\uFE3A\u20AC?"
   chapterId: 1
   difficulty: 1
   recommendedLevel: 6
@@ -44,33 +44,85 @@ MonoBehaviour:
       events:
       - name: Hold Point
         eventType: 2
-        holdDuration: 10
-        holdRadius: 6
+        triggerDelay: 0.4
+        triggerOnRemaining: -1
+        duration: 0
+        spawnInterval: 0
+        spawnRadius: 0
+        useReinforcementPoints: 1
+        spawnCount: 0
         archetypeOverride: {fileID: 11400000, guid: a06db0f69c764af7bdd821d48c1bfa54, type: 2}
+        holdRadius: 6
+        holdDuration: 10
+        holdDecayRate: 1
+        showHoldMarker: 1
+        spawnDefenseTarget: 1
+        defenseTargetHealth: 0
+        failOnTargetDestroyed: 1
+        assignTargetToSpawnedEnemies: 1
     - waveIndex: 1
       replaceEvents: 1
       events:
       - name: Protect Target
         eventType: 3
-        defenseTargetHealth: 320
+        triggerDelay: 0.4
+        triggerOnRemaining: -1
+        duration: 0
+        spawnInterval: 0
+        spawnRadius: 0
+        useReinforcementPoints: 1
         spawnCount: 5
         archetypeOverride: {fileID: 11400000, guid: 928b955f2e00431381d3312948f53fcb, type: 2}
+        holdRadius: 0
+        holdDuration: 0
+        holdDecayRate: 1
+        showHoldMarker: 1
+        spawnDefenseTarget: 1
+        defenseTargetHealth: 320
+        failOnTargetDestroyed: 1
+        assignTargetToSpawnedEnemies: 1
     - waveIndex: 2
       replaceEvents: 1
       events:
       - name: Reinforcement
         eventType: 0
+        triggerDelay: 0.4
         triggerOnRemaining: 5
+        duration: 0
+        spawnInterval: 0
+        spawnRadius: 0
+        useReinforcementPoints: 1
         spawnCount: 5
         archetypeOverride: {fileID: 11400000, guid: a059d58600154f13bd410369ea8cf924, type: 2}
+        holdRadius: 0
+        holdDuration: 0
+        holdDecayRate: 1
+        showHoldMarker: 1
+        spawnDefenseTarget: 1
+        defenseTargetHealth: 0
+        failOnTargetDestroyed: 1
+        assignTargetToSpawnedEnemies: 1
     - waveIndex: 3
       replaceEvents: 1
       events:
       - name: Chase
         eventType: 1
+        triggerDelay: 0.4
+        triggerOnRemaining: -1
         duration: 10
+        spawnInterval: 0
+        spawnRadius: 0
+        useReinforcementPoints: 1
         spawnCount: 2
         archetypeOverride: {fileID: 11400000, guid: a059d58600154f13bd410369ea8cf924, type: 2}
+        holdRadius: 0
+        holdDuration: 0
+        holdDecayRate: 1
+        showHoldMarker: 1
+        spawnDefenseTarget: 1
+        defenseTargetHealth: 0
+        failOnTargetDestroyed: 1
+        assignTargetToSpawnedEnemies: 1
   - strongholdId: Stronghold_02
     waves:
     - waveIndex: 0
@@ -78,41 +130,106 @@ MonoBehaviour:
       events:
       - name: Reinforcement
         eventType: 0
+        triggerDelay: 0.4
         triggerOnRemaining: 6
+        duration: 0
+        spawnInterval: 0
+        spawnRadius: 0
+        useReinforcementPoints: 1
         spawnCount: 5
         archetypeOverride: {fileID: 11400000, guid: a059d58600154f13bd410369ea8cf924, type: 2}
+        holdRadius: 0
+        holdDuration: 0
+        holdDecayRate: 1
+        showHoldMarker: 1
+        spawnDefenseTarget: 1
+        defenseTargetHealth: 0
+        failOnTargetDestroyed: 1
+        assignTargetToSpawnedEnemies: 1
     - waveIndex: 1
       replaceEvents: 1
       events:
       - name: Hold Point
         eventType: 2
-        holdDuration: 12
-        holdRadius: 6
+        triggerDelay: 0.4
+        triggerOnRemaining: -1
+        duration: 0
+        spawnInterval: 0
+        spawnRadius: 0
+        useReinforcementPoints: 1
+        spawnCount: 0
         archetypeOverride: {fileID: 11400000, guid: a06db0f69c764af7bdd821d48c1bfa54, type: 2}
+        holdRadius: 6
+        holdDuration: 12
+        holdDecayRate: 1
+        showHoldMarker: 1
+        spawnDefenseTarget: 1
+        defenseTargetHealth: 0
+        failOnTargetDestroyed: 1
+        assignTargetToSpawnedEnemies: 1
     - waveIndex: 2
       replaceEvents: 1
       events:
       - name: Chase
         eventType: 1
+        triggerDelay: 0.4
+        triggerOnRemaining: -1
         duration: 12
+        spawnInterval: 0
+        spawnRadius: 0
+        useReinforcementPoints: 1
         spawnCount: 2
         archetypeOverride: {fileID: 11400000, guid: a059d58600154f13bd410369ea8cf924, type: 2}
+        holdRadius: 0
+        holdDuration: 0
+        holdDecayRate: 1
+        showHoldMarker: 1
+        spawnDefenseTarget: 1
+        defenseTargetHealth: 0
+        failOnTargetDestroyed: 1
+        assignTargetToSpawnedEnemies: 1
     - waveIndex: 3
       replaceEvents: 1
       events:
       - name: Protect Target
         eventType: 3
-        defenseTargetHealth: 340
+        triggerDelay: 0.4
+        triggerOnRemaining: -1
+        duration: 0
+        spawnInterval: 0
+        spawnRadius: 0
+        useReinforcementPoints: 1
         spawnCount: 6
         archetypeOverride: {fileID: 11400000, guid: 928b955f2e00431381d3312948f53fcb, type: 2}
+        holdRadius: 0
+        holdDuration: 0
+        holdDecayRate: 1
+        showHoldMarker: 1
+        spawnDefenseTarget: 1
+        defenseTargetHealth: 340
+        failOnTargetDestroyed: 1
+        assignTargetToSpawnedEnemies: 1
     - waveIndex: 4
       replaceEvents: 1
       events:
       - name: Reinforcement
         eventType: 0
+        triggerDelay: 0.4
         triggerOnRemaining: 8
+        duration: 0
+        spawnInterval: 0
+        spawnRadius: 0
+        useReinforcementPoints: 1
         spawnCount: 6
         archetypeOverride: {fileID: 11400000, guid: 928b955f2e00431381d3312948f53fcb, type: 2}
+        holdRadius: 0
+        holdDuration: 0
+        holdDecayRate: 1
+        showHoldMarker: 1
+        spawnDefenseTarget: 1
+        defenseTargetHealth: 0
+        failOnTargetDestroyed: 1
+        assignTargetToSpawnedEnemies: 1
   nextLevelId: LEVEL_07
   starsRequired: 1
   unlockCost: 0
@@ -131,3 +248,43 @@ MonoBehaviour:
   bossKnockback: 6.5
   bossScaleMultiplier: 2.25
   bossSpawnOffset: {x: 0, y: 0, z: 0}
+  overrideBossEncounterTuning: 1
+  bossPhase2HealthThreshold: 0.65
+  bossPhase3HealthThreshold: 0.33
+  bossBreakWindowDuration: 4.6
+  bossBreakWindowCooldown: 10.4
+  bossBreakWindowDamageMultiplier: 1.7
+  bossStaggerMax: 132
+  bossStaggerPerDamage: 1.2
+  bossAttackInterval: 2.87
+  bossDecisionInterval: 0.68
+  bossQueuedAttackLimit: 3
+  bossImmediateRepeatPenalty: 0.29
+  bossEnablePostBreakPunishWindow: 1
+  bossPostBreakPunishDuration: 5.4
+  bossPostBreakAttackIntervalMultiplier: 0.7
+  bossPostBreakDecisionIntervalMultiplier: 0.79
+  bossPostBreakChaseSpeedMultiplier: 1.21
+  bossEnablePhaseComboChain: 1
+  bossPhase2ComboChance: 0.52
+  bossPhase3ComboChance: 0.7
+  bossComboStartDelay: 0.1
+  bossComboRepeatPenalty: 0.29
+  bossEnableInterruptRecoveryGate: 1
+  bossInterruptRecoveryDuration: 0.2
+  bossInterruptedAttackCooldownScale: 0.44
+  bossEnableTimePressure: 1
+  bossTimePressureDelay: 59.57
+  bossTimePressureRampDuration: 50
+  bossMaxTimePressureDamageMultiplier: 1.39
+  bossMaxTimePressureSpeedMultiplier: 1.23
+  bossEnablePhaseTransitionOpeners: 1
+  bossPhase2TransitionOpenerId: 
+  bossEnablePhaseTransitionOpenerRetry: 1
+  bossPhaseTransitionOpenerRetryDelay: 0.12
+  bossPhaseTransitionOpenerMaxRetries: 3
+  bossEnablePhase3SpecialPriorityWindow: 1
+  bossPhase3SpecialPriorityDuration: 6
+  bossPhase3SpecialPriorityWeightMultiplier: 1.7
+  bossForceSpecialQueueDuringPhase3Priority: 1
+

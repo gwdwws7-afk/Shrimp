@@ -1,0 +1,10 @@
+check_id,status,value,note
+file.exists.GameEvents.cs,Ok,Assets/ThirdPersonController/Scripts/Core/GameEvents.cs,source_found
+file.exists.AudioManager.cs,Ok,Assets/ThirdPersonController/Scripts/Core/AudioManager.cs,source_found
+file.exists.ScreenEffectManager.cs,Ok,Assets/ThirdPersonController/Scripts/Core/ScreenEffectManager.cs,source_found
+events.required_declared,Ok,Assets/ThirdPersonController/Scripts/Core/GameEvents.cs,Core combat feedback events are declared.
+audio.required_subscriptions,Ok,Assets/ThirdPersonController/Scripts/Core/AudioManager.cs,AudioManager subscribes/unsubscribes all required combat feedback events.
+audio.required_handlers,Ok,Assets/ThirdPersonController/Scripts/Core/AudioManager.cs,AudioManager has handlers for all required feedback events.
+audio.priority_path,Ok,Assets/ThirdPersonController/Scripts/Core/AudioManager.cs,Audio high-priority playback path is available for key events.
+vfx.required_subscriptions,Ok,Assets/ThirdPersonController/Scripts/Core/ScreenEffectManager.cs,ScreenEffectManager subscribes/unsubscribes all required visual feedback events.
+vfx.required_handlers,Ok,Assets/ThirdPersonController/Scripts/Core/ScreenEffectManager.cs,ScreenEffectManager has handlers for required visual feedback events.

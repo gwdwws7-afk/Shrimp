@@ -139,7 +139,8 @@ namespace ThirdPersonController.Tests
                 }
             }
 
-            BossSpawnPoint bossSpawnPoint = FindComponentInScene<BossSpawnPoint>(scene);
+            List<BossSpawnPoint> bossSpawnPoints = FindComponentsInScene<BossSpawnPoint>(scene);
+            BossSpawnPoint bossSpawnPoint = bossSpawnPoints.Count > 0 ? bossSpawnPoints[0] : null;
             if (bossSpawnPoint == null)
             {
                 errors.Add($"[{expectation.sceneName}] Missing BossSpawnPoint.");
@@ -156,9 +157,10 @@ namespace ThirdPersonController.Tests
             {
                 if (expectation.expectBossGate)
                 {
-                    if (sequence.bossSpawnPoint != bossSpawnPoint)
+                    bool pointsToSceneBoss = sequence.bossSpawnPoint != null && bossSpawnPoints.Contains(sequence.bossSpawnPoint);
+                    if (!pointsToSceneBoss)
                     {
-                        errors.Add($"[{expectation.sceneName}] Boss gate enabled but sequence.bossSpawnPoint is not scene BossSpawnPoint.");
+                        errors.Add($"[{expectation.sceneName}] Boss gate enabled but sequence.bossSpawnPoint does not reference any BossSpawnPoint in this scene.");
                     }
                 }
                 else if (sequence.bossSpawnPoint != null)
@@ -204,6 +206,37 @@ namespace ThirdPersonController.Tests
             }
 
             return null;
+        }
+
+        private static List<T> FindComponentsInScene<T>(Scene scene) where T : Component
+        {
+            var result = new List<T>();
+            if (!scene.IsValid() || !scene.isLoaded)
+            {
+                return result;
+            }
+
+            GameObject[] roots = scene.GetRootGameObjects();
+            for (int i = 0; i < roots.Length; i++)
+            {
+                GameObject root = roots[i];
+                if (root == null)
+                {
+                    continue;
+                }
+
+                T[] components = root.GetComponentsInChildren<T>(true);
+                for (int j = 0; j < components.Length; j++)
+                {
+                    T component = components[j];
+                    if (component != null)
+                    {
+                        result.Add(component);
+                    }
+                }
+            }
+
+            return result;
         }
 
         private readonly struct LevelGateExpectation

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-03-19 02:26:06Z" end-time="2026-03-19 02:26:09Z" duration="2.8415135">
+  <test-suite type="TestSuite" id="1000" name="Shrimp" fullname="Shrimp" runstate="Runnable" testcasecount="93" result="Passed" start-time="2026-03-19 02:26:06Z" end-time="2026-03-19 02:26:09Z" duration="2.841514" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties />
+    <test-suite type="Assembly" id="1115" name="ThirdPersonController.PlayModeTests.dll" fullname="C:/test/Shrimp/Library/ScriptAssemblies/ThirdPersonController.PlayModeTests.dll" runstate="Runnable" testcasecount="93" result="Passed" start-time="2026-03-19 02:26:06Z" end-time="2026-03-19 02:26:09Z" duration="2.832559" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="15640" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+      </properties>
+      <test-suite type="TestSuite" id="1116" name="ThirdPersonController" fullname="ThirdPersonController" runstate="Runnable" testcasecount="93" result="Passed" start-time="2026-03-19 02:26:06Z" end-time="2026-03-19 02:26:09Z" duration="2.831625" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1117" name="Tests" fullname="ThirdPersonController.Tests" runstate="Runnable" testcasecount="93" result="Passed" start-time="2026-03-19 02:26:06Z" end-time="2026-03-19 02:26:09Z" duration="2.830753" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1017" name="BossQuestCouplingRegressionTests" fullname="ThirdPersonController.Tests.BossQuestCouplingRegressionTests" classname="ThirdPersonController.Tests.BossQuestCouplingRegressionTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-03-19 02:26:06Z" end-time="2026-03-19 02:26:09Z" duration="2.826778" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1018" name="BossGatedLevels_RequiredQuestChain_ContainsBossObjective" fullname="ThirdPersonController.Tests.BossQuestCouplingRegressionTests.BossGatedLevels_RequiredQuestChain_ContainsBossObjective" methodname="BossGatedLevels_RequiredQuestChain_ContainsBossObjective" classname="ThirdPersonController.Tests.BossQuestCouplingRegressionTests" runstate="Runnable" seed="962810534" result="Passed" start-time="2026-03-19 02:26:06Z" end-time="2026-03-19 02:26:09Z" duration="2.811314" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="Timeout" value="300000" />
+              </properties>
+              <output><![CDATA["Mesh_0" mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh.
+[Input] Binding conflict scan: no duplicate keyboard bindings found.
+[SkillManager] Startup | player=True stamina=True input=True action=True buffer=True timeline=True skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+[PlayerExperienceSystem] Startup | level=1 exp=0/120 maxLevel=50 talentTree=True save=True
+[QuestSystem] Startup | questDb=True exp=True inventory=True pearlDb=False wallet=True available=2 active=2 autoSave=True saveState=True
+[UI_QuestTracker] Startup | questSystem=True container=False itemPrefab=False fallback=True
+[UI_StrongholdWavePanel] Startup | sequence=True canvasGroup=False title=False wave=False remaining=False state=False fallback=True
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp/savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp/savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp/savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp/savegame.dat
+"Mesh_0" mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh.
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[SkillManager] Startup | player=True stamina=True input=True action=True buffer=True timeline=True skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+[PlayerExperienceSystem] Startup | level=1 exp=0/120 maxLevel=50 talentTree=True save=True
+[QuestSystem] Startup | questDb=True exp=True inventory=True pearlDb=False wallet=True available=2 active=2 autoSave=True saveState=True
+[UI_QuestTracker] Startup | questSystem=True container=False itemPrefab=False fallback=True
+[UI_StrongholdWavePanel] Startup | sequence=True canvasGroup=False title=False wave=False remaining=False state=False fallback=True
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp/savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp/savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp/savegame.dat
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[SkillManager] Startup | player=True stamina=True input=True action=True buffer=True timeline=True skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+[PlayerExperienceSystem] Startup | level=1 exp=0/120 maxLevel=50 talentTree=True save=True
+[QuestSystem] Startup | questDb=True exp=True inventory=True pearlDb=False wallet=True available=2 active=2 autoSave=True saveState=True
+[UI_QuestTracker] Startup | questSystem=True container=False itemPrefab=False fallback=True
+[UI_StrongholdWavePanel] Startup | sequence=True canvasGroup=False title=False wave=False remaining=False state=False fallback=True
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp/savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp/savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp/savegame.dat
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

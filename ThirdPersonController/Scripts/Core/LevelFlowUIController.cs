@@ -43,6 +43,7 @@ namespace ThirdPersonController
         private bool showPrep;
         private bool showResult;
         private bool lastVictory;
+        private bool resultActionConsumed;
         private bool previousToggleState = true;
 
         private string levelTitle;
@@ -208,6 +209,7 @@ namespace ThirdPersonController
             lastVictory = isVictory;
             showResult = true;
             showPrep = false;
+            resultActionConsumed = false;
 
             if (pauseDuringResult)
             {
@@ -231,6 +233,12 @@ namespace ThirdPersonController
 
         private void ContinueFromResult()
         {
+            if (!showResult || resultActionConsumed)
+            {
+                return;
+            }
+
+            ConsumeResultAction();
             if (levelFlow != null)
             {
                 levelFlow.ExitToMenu(lastVictory);
@@ -242,6 +250,12 @@ namespace ThirdPersonController
 
         private void RetryFromResult()
         {
+            if (!showResult || resultActionConsumed)
+            {
+                return;
+            }
+
+            ConsumeResultAction();
             if (levelFlow != null)
             {
                 levelFlow.RetryLevel();
@@ -253,11 +267,21 @@ namespace ThirdPersonController
 
         private void HandleGameOver(bool isVictory)
         {
+            if (resultActionConsumed)
+            {
+                return;
+            }
+
             ShowResult(isVictory);
         }
 
         private void HandlePlayerDeath()
         {
+            if (resultActionConsumed)
+            {
+                return;
+            }
+
             ShowResult(false);
         }
 
@@ -314,29 +338,35 @@ namespace ThirdPersonController
             {
                 if (data.strongholds != null && data.strongholds.Count > 0)
                 {
-                    lines.Add("清理全部据点");
+                    lines.Add(Localize("ui.level_flow.objective.clear_strongholds", "清理全部据点"));
                 }
 
                 if (data.quests != null && data.quests.Count > 0)
                 {
-                    lines.Add($"完成 {data.quests.Count} 个任务");
+                    lines.Add(string.Format(
+                        Localize("ui.level_flow.objective.complete_quests_format", "完成 {0} 个任务"),
+                        data.quests.Count));
                 }
 
                 if (data.timeLimit > 0)
                 {
                     int minutes = Mathf.CeilToInt(data.timeLimit / 60f);
-                    lines.Add($"限时: {minutes} 分钟.");
+                    lines.Add(string.Format(
+                        Localize("ui.level_flow.objective.time_limit_minutes_format", "限时: {0} 分钟"),
+                        minutes));
                 }
 
                 if (data.scoreTarget > 0)
                 {
-                    lines.Add($"目标分数: {data.scoreTarget}.");
+                    lines.Add(string.Format(
+                        Localize("ui.level_flow.objective.score_target_format", "目标分数: {0}"),
+                        data.scoreTarget));
                 }
             }
 
             if (lines.Count == 0)
             {
-                return "无额外目标";
+                return Localize("ui.level_flow.objective.none", "无额外目标");
             }
 
             return string.Join("\n", lines);
@@ -390,14 +420,15 @@ namespace ThirdPersonController
             else
             {
                 GUI.Label(new Rect(embedRect.x + 10f, embedRect.y + 10f, embedRect.width - 20f, 20f),
-                    "未找到天赋/装备面板组件。", smallStyle);
+                    Localize("ui.level_flow.prep.missing_talent_overlay", "未找到天赋/装备面板组件。"),
+                    smallStyle);
             }
 
             Rect footerRect = new Rect(panelRect.x, panelRect.y + panelRect.height - 60f, panelRect.width, 50f);
             GUILayout.BeginArea(footerRect);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button(startButtonLabel, buttonStyle, GUILayout.Width(180f), GUILayout.Height(36f)))
+            if (GUILayout.Button(Localize("ui.level_flow.prep.start_button", startButtonLabel), buttonStyle, GUILayout.Width(180f), GUILayout.Height(36f)))
             {
                 StartFromPrep();
             }
@@ -423,35 +454,51 @@ namespace ThirdPersonController
 
             GUILayout.BeginArea(panelRect);
             GUILayout.Space(8f);
-            GUILayout.Label(lastVictory ? victoryTitle : defeatTitle, titleStyle);
+            GUILayout.Label(
+                lastVictory
+                    ? Localize("ui.level_flow.result.victory_title", victoryTitle)
+                    : Localize("ui.level_flow.result.defeat_title", defeatTitle),
+                titleStyle);
             GUILayout.Space(10f);
 
-            GUILayout.Label("奖励", sectionStyle);
-            GUILayout.Label($"+{cachedCredits} 货币", bodyStyle);
-            GUILayout.Label($"+{cachedPearls} 珍珠", bodyStyle);
-            GUILayout.Label($"+{cachedTalentPoints} 天赋点", bodyStyle);
+            GUILayout.Label(Localize("ui.level_flow.result.rewards_title", "奖励"), sectionStyle);
+            GUILayout.Label(
+                string.Format(Localize("ui.level_flow.result.credits_format", "+{0} 货币"), cachedCredits),
+                bodyStyle);
+            GUILayout.Label(
+                string.Format(Localize("ui.level_flow.result.pearls_format", "+{0} 珍珠"), cachedPearls),
+                bodyStyle);
+            GUILayout.Label(
+                string.Format(Localize("ui.level_flow.result.talent_points_format", "+{0} 天赋点"), cachedTalentPoints),
+                bodyStyle);
             GUILayout.Space(10f);
 
-            GUILayout.Label("统计", sectionStyle);
-            GUILayout.Label($"击杀: {cachedKills}", bodyStyle);
-            GUILayout.Label($"最高连击: {cachedCombo}", bodyStyle);
-            GUILayout.Label($"时间: {cachedTime}", bodyStyle);
+            GUILayout.Label(Localize("ui.level_flow.result.stats_title", "统计"), sectionStyle);
+            GUILayout.Label(
+                string.Format(Localize("ui.level_flow.result.kills_format", "击杀: {0}"), cachedKills),
+                bodyStyle);
+            GUILayout.Label(
+                string.Format(Localize("ui.level_flow.result.combo_format", "最高连击: {0}"), cachedCombo),
+                bodyStyle);
+            GUILayout.Label(
+                string.Format(Localize("ui.level_flow.result.time_format", "时间: {0}"), cachedTime),
+                bodyStyle);
             if (!string.IsNullOrEmpty(cachedMilestoneStatus))
             {
                 GUILayout.Space(8f);
-                GUILayout.Label("进度", sectionStyle);
+                GUILayout.Label(Localize("ui.level_flow.result.progress_title", "进度"), sectionStyle);
                 GUILayout.Label(cachedMilestoneStatus, bodyStyle);
             }
 
             GUILayout.FlexibleSpace();
 
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button(continueLabel, buttonStyle, GUILayout.Width(160f), GUILayout.Height(36f)))
+            if (GUILayout.Button(Localize("ui.level_flow.result.continue_button", continueLabel), buttonStyle, GUILayout.Width(160f), GUILayout.Height(36f)))
             {
                 ContinueFromResult();
             }
             GUILayout.Space(12f);
-            if (GUILayout.Button(retryLabel, buttonStyle, GUILayout.Width(140f), GUILayout.Height(36f)))
+            if (GUILayout.Button(Localize("ui.level_flow.result.retry_button", retryLabel), buttonStyle, GUILayout.Width(140f), GUILayout.Height(36f)))
             {
                 RetryFromResult();
             }
@@ -470,24 +517,28 @@ namespace ThirdPersonController
             }
 
             GUILayout.Space(8f);
-            GUILayout.Label(routeLabel, sectionStyle);
+            GUILayout.Label(Localize("ui.level_flow.route.label", routeLabel), sectionStyle);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("进攻", buttonStyle, GUILayout.Width(120f), GUILayout.Height(28f)))
+            if (GUILayout.Button(Localize("ui.level_flow.route.offense", "进攻"), buttonStyle, GUILayout.Width(120f), GUILayout.Height(28f)))
             {
                 longTermProgression.SetActiveRoute(ProgressionRoute.Offense);
             }
-            if (GUILayout.Button("控场", buttonStyle, GUILayout.Width(120f), GUILayout.Height(28f)))
+            if (GUILayout.Button(Localize("ui.level_flow.route.control", "控场"), buttonStyle, GUILayout.Width(120f), GUILayout.Height(28f)))
             {
                 longTermProgression.SetActiveRoute(ProgressionRoute.Control);
             }
-            if (GUILayout.Button("生存", buttonStyle, GUILayout.Width(120f), GUILayout.Height(28f)))
+            if (GUILayout.Button(Localize("ui.level_flow.route.survival", "生存"), buttonStyle, GUILayout.Width(120f), GUILayout.Height(28f)))
             {
                 longTermProgression.SetActiveRoute(ProgressionRoute.Survival);
             }
             GUILayout.EndHorizontal();
 
             GUILayout.Space(2f);
-            GUILayout.Label($"当前: {GetRouteLabel(longTermProgression.activeRoute)}", smallStyle);
+            GUILayout.Label(
+                string.Format(
+                    Localize("ui.level_flow.route.current_format", "当前: {0}"),
+                    GetRouteLabel(longTermProgression.activeRoute)),
+                smallStyle);
         }
 
         private static string GetRouteLabel(ProgressionRoute route)
@@ -495,11 +546,11 @@ namespace ThirdPersonController
             switch (route)
             {
                 case ProgressionRoute.Offense:
-                    return "进攻";
+                    return Localize("ui.level_flow.route.offense", "进攻");
                 case ProgressionRoute.Control:
-                    return "控场";
+                    return Localize("ui.level_flow.route.control", "控场");
                 case ProgressionRoute.Survival:
-                    return "生存";
+                    return Localize("ui.level_flow.route.survival", "生存");
                 default:
                     return route.ToString();
             }
@@ -566,10 +617,12 @@ namespace ThirdPersonController
 
             if (string.IsNullOrEmpty(binding))
             {
-                return startHintLabel;
+                return Localize("ui.level_flow.prep.start_hint", startHintLabel);
             }
 
-            return $"Press {binding} to Start";
+            return string.Format(
+                Localize("ui.level_flow.prep.start_hint_format", "Press {0} to Start"),
+                binding);
         }
 
         private string GetResultHintLabel()
@@ -592,7 +645,35 @@ namespace ThirdPersonController
                 retryBinding = PlayerInputHandler.GetFriendlyKeyLabel(retryKey);
             }
 
-            return $"{continueBinding}: 继续   {retryBinding}: 重试";
+            return string.Format(
+                Localize("ui.level_flow.result.hint_format", "{0}: 继续   {1}: 重试"),
+                continueBinding,
+                retryBinding);
+        }
+
+        private void ConsumeResultAction()
+        {
+            resultActionConsumed = true;
+            showResult = false;
+
+            if (pauseDuringResult)
+            {
+                Time.timeScale = 1f;
+            }
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
+        private static string Localize(string key, string fallback)
+        {
+            LocalizationService service = LocalizationService.Instance;
+            if (service != null)
+            {
+                return service.Get(key, fallback);
+            }
+
+            return fallback;
         }
     }
 }

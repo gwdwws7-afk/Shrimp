@@ -218,14 +218,14 @@ MonoBehaviour:
   attacks:
   - attackId: eel_tail
     attackName: Tail Sweep
-    damage: 82
-    range: 4.8
-    cooldown: 4.2
+    damage: 83.64
+    range: 5.043
+    cooldown: 3.993
     windupTime: 0.32
     activeTime: 0.24
-    recoveryTime: 0.5
+    recoveryTime: 0.485
     knockbackForce: 7.5
-    selectionWeight: 1.2
+    selectionWeight: 1.236
     targetPlayer: 1
     aoe: 0
     aoeRadius: 3
@@ -234,14 +234,14 @@ MonoBehaviour:
     requiresPhase3: 0
   - attackId: eel_charge
     attackName: Piercing Charge
-    damage: 96
-    range: 10.5
-    cooldown: 6.4
-    windupTime: 0.55
+    damage: 104.832
+    range: 11.031
+    cooldown: 5.696
+    windupTime: 0.567
     activeTime: 0.3
-    recoveryTime: 0.68
+    recoveryTime: 0.66
     knockbackForce: 10
-    selectionWeight: 1.05
+    selectionWeight: 1.092
     targetPlayer: 1
     aoe: 0
     aoeRadius: 3
@@ -250,30 +250,30 @@ MonoBehaviour:
     requiresPhase3: 0
   - attackId: eel_vortex
     attackName: Abyss Vortex
-    damage: 74
-    range: 6.5
-    cooldown: 8.6
-    windupTime: 0.72
-    activeTime: 0.36
-    recoveryTime: 0.82
+    damage: 80.808
+    range: 6.63
+    cooldown: 7.654
+    windupTime: 0.771
+    activeTime: 0.371
+    recoveryTime: 0.795
     knockbackForce: 6.5
-    selectionWeight: 0.95
+    selectionWeight: 0.968
     targetPlayer: 0
     aoe: 1
-    aoeRadius: 6.5
+    aoeRadius: 6.825
     isSpecial: 1
     requiresPhase2: 1
     requiresPhase3: 0
   - attackId: eel_devour
     attackName: Devour Bite
-    damage: 134
-    range: 4.6
-    cooldown: 10.8
-    windupTime: 0.8
+    damage: 150.08
+    range: 4.833
+    cooldown: 9.396
+    windupTime: 0.824
     activeTime: 0.22
-    recoveryTime: 0.92
+    recoveryTime: 0.892
     knockbackForce: 12
-    selectionWeight: 0.88
+    selectionWeight: 0.924
     targetPlayer: 1
     aoe: 0
     aoeRadius: 3
@@ -282,11 +282,21 @@ MonoBehaviour:
     requiresPhase3: 1
   attackInterval: 2.8
   decisionInterval: 0.65
+  weightAttacksByDistance: 1
+  inRangeWeightMultiplier: 1.15
+  outOfRangeWeightMultiplier: 0.35
+  enablePostBreakPunishWindow: 1
+  postBreakPunishDuration: 5
+  postBreakAttackIntervalMultiplier: 0.75
+  postBreakDecisionIntervalMultiplier: 0.82
+  postBreakChaseSpeedMultiplier: 1.15
   useAttackQueue: 1
   queuedAttackLimit: 3
   maxSameAttackQueued: 1
   immediateRepeatPenalty: 0.3
   prioritizeSpecialAttacksWhenEnraged: 1
+  scaleDecisionIntervalWithTimePressure: 1
+  minDecisionIntervalMultiplierAtMaxPressure: 0.72
   enableBreakWindow: 1
   staggerMax: 140
   staggerPerDamage: 1
@@ -299,6 +309,11 @@ MonoBehaviour:
   hasWeakness: 1
   weaknessElement: electric
   weaknessMultiplier: 1.7
+  enableTimePressure: 1
+  timePressureDelay: 75
+  timePressureRampDuration: 60
+  maxTimePressureDamageMultiplier: 1.35
+  maxTimePressureSpeedMultiplier: 1.2
   isEnraged: 0
   isInAttack: 0
   isVulnerable: 0
@@ -308,6 +323,10 @@ MonoBehaviour:
   debugQueuedAttackCount: 0
   debugStagger: 0
   debugBreakWindowActive: 0
+  debugTimePressure: 0
+  debugEffectiveDecisionInterval: 0
+  debugLastPlanningDistance: 0
+  debugPostBreakPunishFactor: 0
 --- !u!95 &4198103049160421427 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5168819464407403950, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}

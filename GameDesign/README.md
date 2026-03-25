@@ -1,168 +1,86 @@
-# 🎮 深渊猎手：异种肃清 - 游戏设计文档
+# 深渊猎手：异种肃清 - 设计文档入口
 
-## 📁 文件夹内容
+更新时间: 2026-03-24
 
-| 文件 | 描述 | 用途 |
+## 文档分层
+
+| 层级 | 文档 | 用途 |
 |------|------|------|
-| **GameDesignDocument.md** | 完整游戏策划案 | 游戏整体设计和规划 |
-| **TaskList.md** | 开发任务清单 | 每周具体任务和进度跟踪 |
-| **TechnicalArchitecture.md** | 技术架构文档 | 代码结构和技术实现细节 |
-| **MusouDesignSkill.md** | 无双设计技能包 | 爽感优先的系统与流程落地 |
-| **MusouSkill_ExecutionChecklist.md** | 无双执行清单 | 落地步骤与关键检查 |
-| **MusouSkill_Params.md** | 无双参数表 | 统一配比与节奏配置 |
-| **MusouSkill_QAValidation.md** | 无双QA验证 | 记录与调优模板 |
+| 项目总纲 | `GameDesignDocument.md` | 世界观、核心循环、系统蓝图、里程碑 |
+| 执行计划 | `TaskList.md` | 按优先级拆分到可执行任务与阶段目标 |
+| 技术架构 | `TechnicalArchitecture.md` | 代码结构、模块关系、实现边界 |
+| 方法论库 | `游戏设计/*.md` | MDA/FADT/Lenses/Machinations/Boss/群战评审框架 |
+| 方法论执行 | `游戏设计/08_系统设计卡模板_Shrimp.md`, `游戏设计/09_DDR_设计决策记录簿_Shrimp.md` | 系统评审模板与决策追溯 |
+| 首批系统卡 | `游戏设计/10_系统设计卡_关卡与流程_Shrimp.md`, `游戏设计/11_系统设计卡_Boss系统_Shrimp.md` | 模块级方法论落地样例 |
+| 第二批系统卡 | `游戏设计/12_系统设计卡_技能系统_Shrimp.md`, `游戏设计/13_系统设计卡_UI框架_Shrimp.md` | 模块级方法论落地样例 |
+| 第三批系统卡 | `游戏设计/14_系统设计卡_敌人AI_Shrimp.md`, `游戏设计/15_系统设计卡_敌人类型_Shrimp.md` | 模块级方法论落地样例 |
+| 第四批系统卡 | `游戏设计/16_系统设计卡_任务系统_Shrimp.md`, `游戏设计/17_系统设计卡_经济与成长_Shrimp.md` | 模块级方法论落地样例 |
+| 第五批系统卡 | `游戏设计/18_系统设计卡_多语言_Shrimp.md`, `游戏设计/19_系统设计卡_手柄支持_Shrimp.md` | 模块级方法论落地样例 |
+| 第六批系统卡 | `游戏设计/20_系统设计卡_核心控制_Shrimp.md`, `游戏设计/21_系统设计卡_战斗系统_Shrimp.md` | 模块级方法论落地样例 |
+| 第七批系统卡 | `游戏设计/22_系统设计卡_据点与波次_Shrimp.md`, `游戏设计/23_系统设计卡_Steam功能_Shrimp.md` | 模块级方法论落地样例 |
+| 第八批系统卡 | `游戏设计/24_系统设计卡_本地存档_Shrimp.md`, `游戏设计/25_系统设计卡_音效与特效_Shrimp.md` | 模块级方法论落地样例 |
+| 第九批系统卡 | `游戏设计/26_系统设计卡_性能优化_Shrimp.md`, `游戏设计/27_系统设计卡_美术资产_Shrimp.md` | 模块级方法论落地样例 |
+| 复审汇总 | `游戏设计/28_模块方法论复审汇总_2026-03-24.md` | 全模块方法论复审结果 |
+| 整改包 | `游戏设计/29_音效与特效整改包_P0_Shrimp.md`, `游戏设计/30_美术资产功能优先级矩阵_P0_Shrimp.md` | 低分模块整改执行稿 |
+| 领域专项 | `Steam/*`, `Musou*.md` | Steam 发布、群战参数与 QA 模板 |
 
----
+## 当前状态快照
 
-## 🚀 快速开始
+- 核心回归门禁: 通过（PlayMode Gate Matrix）
+- 全量回归: `total=150 passed=149 failed=0 skipped=1`
+- P3 Boss 深度子集: `25/25` 通过
+- 重点缺口: Boss 内容化、Steam 正式实接、技能/UI/音频资源化
 
-### 1. 查看整体规划
-阅读 `GameDesignDocument.md` 了解：
-- 游戏核心概念和玩法
-- 系统设计方案
-- AI生成管线
-- 开发里程碑
+参考证据:
+- `Assets/ThirdPersonController/Reports/playmode_gate_matrix_summary.md`
+- `Assets/ThirdPersonController/Reports/p3_boss_depth_round4_event_storm_report_2026-03-23.md`
 
-### 2. 查看当前任务
-阅读 `TaskList.md` 了解：
-- Week 1-4 具体任务
-- 每日工作内容
-- 完成标准
+## 推荐阅读路径
 
-### 3. 查看技术实现
-阅读 `TechnicalArchitecture.md` 了解：
-- 系统架构设计
-- 代码示例
-- 数据流图
-- 优化策略
+### 新成员入场（30-45 分钟）
+1. `GameDesignDocument.md`（先看“执行快照”和“系统详细设计”）
+2. `TaskList.md`（看当前阶段与本周目标）
+3. `游戏设计/05_项目级设计落地指南_Shrimp.md`
+4. `游戏设计/06_模块验收矩阵_Shrimp.md`
 
----
+### 设计评审/调参
+1. `游戏设计/00_游戏设计总纲_Universal_Game_Design_Methodology_Skill.md`
+2. `游戏设计/01_MDA_游戏设计分析技能.md`
+3. `游戏设计/04_Machinations_系统与经济设计技能.md`
+4. `游戏设计/07_版本迭代与门禁策略_Shrimp.md`
+5. `游戏设计/08_系统设计卡模板_Shrimp.md`
+6. `游戏设计/09_DDR_设计决策记录簿_Shrimp.md`
+7. `游戏设计/10_系统设计卡_关卡与流程_Shrimp.md`
+8. `游戏设计/11_系统设计卡_Boss系统_Shrimp.md`
+9. `游戏设计/12_系统设计卡_技能系统_Shrimp.md`
+10. `游戏设计/13_系统设计卡_UI框架_Shrimp.md`
+11. `游戏设计/14_系统设计卡_敌人AI_Shrimp.md`
+12. `游戏设计/15_系统设计卡_敌人类型_Shrimp.md`
+13. `游戏设计/16_系统设计卡_任务系统_Shrimp.md`
+14. `游戏设计/17_系统设计卡_经济与成长_Shrimp.md`
+15. `游戏设计/18_系统设计卡_多语言_Shrimp.md`
+16. `游戏设计/19_系统设计卡_手柄支持_Shrimp.md`
+17. `游戏设计/20_系统设计卡_核心控制_Shrimp.md`
+18. `游戏设计/21_系统设计卡_战斗系统_Shrimp.md`
+19. `游戏设计/22_系统设计卡_据点与波次_Shrimp.md`
+20. `游戏设计/23_系统设计卡_Steam功能_Shrimp.md`
+21. `游戏设计/24_系统设计卡_本地存档_Shrimp.md`
+22. `游戏设计/25_系统设计卡_音效与特效_Shrimp.md`
+23. `游戏设计/26_系统设计卡_性能优化_Shrimp.md`
+24. `游戏设计/27_系统设计卡_美术资产_Shrimp.md`
 
-## 📅 开发路线图
+## 文档维护规则
 
-```
-Phase A (内容闭环)
-├── 10关内容与据点事件
-├── 10个独立Boss (3-4技能 + 2阶段)
-└── 任务链分段/失败/引导
+1. 任何模块完成度变化，先更新 `TaskList.md`，再同步 `GameDesignDocument.md`。
+2. 设计结论必须配证据路径（测试、门禁、报表、录像）。
+3. 方法论文档只定义“怎么评估”；项目文档负责“做什么、做到什么算完成”。
+4. 每次大版本迭代至少更新一次“模块验收矩阵”。
+5. 所有 P0/P1 设计变更必须新增或引用一条 `DDR-ID`。
 
-Phase B (系统打磨)
-├── 战斗手感/命中反馈
-├── UI/UX一致性
-└── 100-150敌人@60fps
+## 协作约定
 
-Phase C (Steam发布)
-├── 成就/云存档/卡牌
-├── 手柄适配
-└── 双语本地化
-```
-
----
-
-## 🎯 本周目标 (Week 1)
-
-- [ ] 关卡模板固化（10关结构/事件组合）
-- [ ] 2个Boss原型（3-4技能+2阶段）
-- [ ] 任务链分段模板与引导提示验证
-- [ ] 手柄与双语基础流程检查
-
-**完成标准**: 可跑通2关+2 Boss 的完整流程
-
----
-
-## 💻 技术栈
-
-- **引擎**: Unity 2022.3 LTS
-- **渲染管线**: Built-in (可升级到URP)
-- **脚本**: C#
-- **输入系统**: Legacy Input (旧 Input，已使用)
-- **动画**: Animator
-- **大规模敌人**: Mono + 对象池 + AI 降频（现用），DOTS 规划
-- **物理**: Unity Physics
-- **特效**: ParticleSystem + ScreenEffectManager
-- **UI**: uGUI（现用），UI Toolkit 规划
-- **版本控制**: Git
-
----
-
-## 🤖 AI工具链
-
-| 用途 | 工具 | 费用 |
-|------|------|------|
-| 3D角色生成 | Meshy AI / Tripo3D | ~$50/月 |
-| 场景生成 | Meshy AI | 包含 |
-| 贴图生成 | Stable Diffusion (本地) | 免费 |
-| 音效生成 | ElevenLabs | ~$5/月 |
-| 音乐生成 | Suno / Udio | ~$10/月 |
-| 代码辅助 | GitHub Copilot / Cursor | ~$10/月 |
-
----
-
-## 📊 项目统计
-
-### 已有资源
-- ✅ 第三人称控制器 (完整)
-- ✅ 敌人基础AI (巡逻/追击/攻击 + 节流/令牌策略)
-- ✅ 战斗管线/连击/无双/技能
-- ✅ 据点波次 + 事件型波次
-- ✅ 成长系统(经验/天赋/珍珠)
-- ✅ 战前准备/战后结算
-- ✅ 掉落表系统(珍珠/消耗品/深渊币 + 关卡倍率)
-
-### 待开发
-- 🔲 10关内容 + 10个独立Boss
-- 🔲 Boss机制/特效/音效/UI
-- 🔲 Steam功能(成就/云存档/卡牌)
-- 🔲 手柄完整适配
-- 🔲 双语本地化
-- 🔲 性能目标(100-150敌人@60fps)
-
----
-
-## 📞 协作说明
-
-### Git提交规范
-```
-feat: 添加新功能
-fix: 修复Bug
-docs: 文档更新
-refactor: 重构代码
-perf: 性能优化
-```
-
-### 文件命名规范
-```
-脚本: PlayerCombat.cs, EnemyAI.cs
-预制体: ENM_DeepseaFish_01.prefab / ENM_Angler_01.prefab / ENM_Squid_01.prefab
-材质: Material_1.mat (按角色目录)
-贴图: Meshy_AI_texture_0.png (按角色目录)
-动画: ANM_Player_Attack_01.anim
-```
-
----
-
-## 🎮 游戏特色
-
-1. **割草式战斗** - 单次攻击可击中10+敌人
-2. **AI生成内容** - 所有敌人外观由AI实时生成变异
-3. **深度成长** - 天赋/珍珠/三条流派
-4. **事件型据点** - 援军/追击/保护目标等变体
-5. **每关Boss** - 10关独立Boss压轴
-
----
-
-## 📚 相关链接
-
-- [Unity DOTS文档](https://docs.unity3d.com/Packages/com.unity.entities@1.0/manual/index.html)
-- [Meshy AI](https://www.meshy.ai/)
-- [Tripo3D](https://trio3d.ai/)
-
----
-
-**项目开始日期**: 2026-02-07  
-**目标发布日期**: TBD  
-**目标平台**: PC (Steam)
-
----
-
-*祝开发顺利！*
+- 提交类型: `feat` / `fix` / `docs` / `refactor` / `perf` / `test`
+- 文档变更建议附带:
+  - 变更原因
+  - 影响模块
+  - 验收方式

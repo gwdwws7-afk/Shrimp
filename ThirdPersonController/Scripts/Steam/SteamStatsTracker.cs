@@ -31,6 +31,17 @@ namespace ThirdPersonController
             sessionStartTime = Time.time;
         }
 
+        public void ApplyConfig(SteamIntegrationConfig config)
+        {
+            if (config == null)
+            {
+                return;
+            }
+
+            enableStats = config.enableStats;
+            flushInterval = Mathf.Max(1f, config.statsFlushInterval);
+        }
+
         private void OnEnable()
         {
             GameEvents.OnEnemyKilledDetailed += HandleEnemyKilledDetailed;

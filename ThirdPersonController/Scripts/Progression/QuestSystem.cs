@@ -915,6 +915,11 @@ namespace ThirdPersonController
                 return;
             }
 
+            if (quest.status != QuestStatus.InProgress)
+            {
+                return;
+            }
+
             EnsureRewardReferences();
             quest.status = QuestStatus.Completed;
             EnsureExperienceSystem();

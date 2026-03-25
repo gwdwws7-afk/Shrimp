@@ -266,7 +266,7 @@ namespace ThirdPersonController
         {
             if (!Application.isEditor) return;
             
-            // 编辑器下显示实时耐力调试信息
+            // 编辑器下显示实时耐力状态
             GUILayout.BeginArea(new Rect(10, Screen.height - 60, 200, 50));
             GUILayout.Label($"耐力: {currentStamina:F0}/{maxStamina}");
             GUILayout.Label($"状态: {(isExhausted ? "力竭" : "正常")}");

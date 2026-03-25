@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="19" result="Passed" total="19" passed="19" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.3289039">
+  <test-suite type="TestSuite" id="1000" name="Shrimp" fullname="Shrimp" runstate="Runnable" testcasecount="78" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.328904" total="19" passed="19" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties />
+    <test-suite type="Assembly" id="1095" name="ThirdPersonController.PlayModeTests.dll" fullname="C:/test/Shrimp/Library/ScriptAssemblies/ThirdPersonController.PlayModeTests.dll" runstate="Runnable" testcasecount="78" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.321773" total="19" passed="19" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="18416" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+      </properties>
+      <test-suite type="TestSuite" id="1096" name="ThirdPersonController" fullname="ThirdPersonController" runstate="Runnable" testcasecount="78" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.321026" total="19" passed="19" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1097" name="Tests" fullname="ThirdPersonController.Tests" runstate="Runnable" testcasecount="78" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.320511" total="19" passed="19" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1018" name="CombatRound1RegressionTests" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" testcasecount="19" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.317750" total="19" passed="19" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1022" name="ActionController_SkillInterruptedByDodge_EmitsInterruptEvent" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.ActionController_SkillInterruptedByDodge_EmitsInterruptEvent" methodname="ActionController_SkillInterruptedByDodge_EmitsInterruptEvent" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="1618976865" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.018459" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1034" name="BerserkSkill_OnEnable_AssignsBurstCategoryAndDefenseDuration" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.BerserkSkill_OnEnable_AssignsBurstCategoryAndDefenseDuration" methodname="BerserkSkill_OnEnable_AssignsBurstCategoryAndDefenseDuration" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="1747561007" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.003713" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1023" name="DashAttackSkill_HitGate_PreventsRepeatHitOnSameTargetRoot" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.DashAttackSkill_HitGate_PreventsRepeatHitOnSameTargetRoot" methodname="DashAttackSkill_HitGate_PreventsRepeatHitOnSameTargetRoot" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="796777001" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.004294" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1031" name="DashAttackSkill_OnInterrupted_ClearsHitGateState" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.DashAttackSkill_OnInterrupted_ClearsHitGateState" methodname="DashAttackSkill_OnInterrupted_ClearsHitGateState" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="408765846" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.000728" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1019" name="PlayerCombat_RegisterHit_IncrementsAndCapsCombo" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.PlayerCombat_RegisterHit_IncrementsAndCapsCombo" methodname="PlayerCombat_RegisterHit_IncrementsAndCapsCombo" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="534945456" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.006314" asserts="0">
+              <properties />
+              <output><![CDATA[Berserk mode started for 3.0s.
+]]></output>
+            </test-case>
+            <test-case id="1024" name="PlayerCombat_SkillDamageBuffMultiplier_IsIncludedInMainDamageMultiplier" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.PlayerCombat_SkillDamageBuffMultiplier_IsIncludedInMainDamageMultiplier" methodname="PlayerCombat_SkillDamageBuffMultiplier_IsIncludedInMainDamageMultiplier" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="1208127352" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.001541" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1036" name="PullSkill_OnEnable_AssignsGatherCategory" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.PullSkill_OnEnable_AssignsGatherCategory" methodname="PullSkill_OnEnable_AssignsGatherCategory" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="1252633055" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.000370" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1035" name="ShockwaveSkill_OnEnable_AssignsCrowdControlCategory" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.ShockwaveSkill_OnEnable_AssignsCrowdControlCategory" methodname="ShockwaveSkill_OnEnable_AssignsCrowdControlCategory" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="1818816486" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.000362" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1030" name="SkillBase_ResolveClipForPlayback_UsesFallbackWhenAudioMissing" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.SkillBase_ResolveClipForPlayback_UsesFallbackWhenAudioMissing" methodname="SkillBase_ResolveClipForPlayback_UsesFallbackWhenAudioMissing" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="42073755" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.004526" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1029" name="SkillManager_GetSkillIcon_WhenMissing_ReturnsRuntimeFallback" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.SkillManager_GetSkillIcon_WhenMissing_ReturnsRuntimeFallback" methodname="SkillManager_GetSkillIcon_WhenMissing_ReturnsRuntimeFallback" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="392830816" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.015644" asserts="0">
+              <properties />
+              <output><![CDATA[[SkillManager] Startup | player=True stamina=False input=False action=False buffer=False timeline=False skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+]]></output>
+            </test-case>
+            <test-case id="1026" name="SkillManager_HandleInput_UsesPlayerInputHandlerSkillState" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.SkillManager_HandleInput_UsesPlayerInputHandlerSkillState" methodname="SkillManager_HandleInput_UsesPlayerInputHandlerSkillState" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="475500676" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.019783" asserts="0">
+              <properties />
+              <output><![CDATA[[Input] Binding conflict scan: no duplicate keyboard bindings found.
+[SkillManager] Startup | player=True stamina=True input=True action=True buffer=False timeline=False skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[SkillManager] Cast skill: Round2_InputBridgeSkill
+]]></output>
+            </test-case>
+            <test-case id="1027" name="SkillManager_ResourceAudit_CountsMissingSkillAssets" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.SkillManager_ResourceAudit_CountsMissingSkillAssets" methodname="SkillManager_ResourceAudit_CountsMissingSkillAssets" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="842884741" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.006066" asserts="0">
+              <properties />
+              <output><![CDATA[[SkillManager] Startup | player=True stamina=False input=False action=False buffer=False timeline=False skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+]]></output>
+            </test-case>
+            <test-case id="1025" name="SkillManager_SanitizeLoadedSkillTexts_ReplacesCorruptedNameAndDescription" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.SkillManager_SanitizeLoadedSkillTexts_ReplacesCorruptedNameAndDescription" methodname="SkillManager_SanitizeLoadedSkillTexts_ReplacesCorruptedNameAndDescription" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="833769457" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.004362" asserts="0">
+              <properties />
+              <output><![CDATA[[SkillManager] Startup | player=True stamina=False input=False action=False buffer=False timeline=False skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+]]></output>
+            </test-case>
+            <test-case id="1021" name="SkillManager_TryUseSkill_SuccessConsumesStaminaAndStartsCooldown" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.SkillManager_TryUseSkill_SuccessConsumesStaminaAndStartsCooldown" methodname="SkillManager_TryUseSkill_SuccessConsumesStaminaAndStartsCooldown" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="1091912849" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.009415" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+              <output><![CDATA[[SkillManager] Startup | player=True stamina=True input=False action=True buffer=False timeline=False skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[SkillManager] Cast skill: Round1_SuccessSkill
+]]></output>
+            </test-case>
+            <test-case id="1028" name="SkillManager_Update_AdvancesCooldownAndRestoresReadyState" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.SkillManager_Update_AdvancesCooldownAndRestoresReadyState" methodname="SkillManager_Update_AdvancesCooldownAndRestoresReadyState" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="1787869970" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.084250" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+              <output><![CDATA[[SkillManager] Startup | player=True stamina=False input=False action=False buffer=False timeline=False skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+]]></output>
+            </test-case>
+            <test-case id="1037" name="SkillTimeline_FallbackInvokesImpactAndRecoveryOnce_WithCoarseFrameWait" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.SkillTimeline_FallbackInvokesImpactAndRecoveryOnce_WithCoarseFrameWait" methodname="SkillTimeline_FallbackInvokesImpactAndRecoveryOnce_WithCoarseFrameWait" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="1662807479" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.120960" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+            </test-case>
+            <test-case id="1020" name="Stamina_InsufficientConsume_EntersExhaustionAndBlocksFurtherConsumption" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.Stamina_InsufficientConsume_EntersExhaustionAndBlocksFurtherConsumption" methodname="Stamina_InsufficientConsume_EntersExhaustionAndBlocksFurtherConsumption" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="555193189" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.001794" asserts="0">
+              <properties />
+              <output><![CDATA[Stamina depleted, entered exhaustion state.
+[Stamina] Character is exhausted; stamina cannot be consumed.
+]]></output>
+            </test-case>
+            <test-case id="1032" name="UltimateSkill_OnInterrupted_RestoresTimeScale" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.UltimateSkill_OnInterrupted_RestoresTimeScale" methodname="UltimateSkill_OnInterrupted_RestoresTimeScale" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="712124307" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.000858" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1033" name="WhirlwindSkill_OnInterrupted_ClearsRuntimeReferences" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.WhirlwindSkill_OnInterrupted_ClearsRuntimeReferences" methodname="WhirlwindSkill_OnInterrupted_ClearsRuntimeReferences" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="1052149057" result="Passed" start-time="2026-03-18 05:45:40Z" end-time="2026-03-18 05:45:40Z" duration="0.001230" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

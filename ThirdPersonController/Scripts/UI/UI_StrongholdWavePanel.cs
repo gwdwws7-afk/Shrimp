@@ -145,25 +145,34 @@ namespace ThirdPersonController
 
             if (titleText != null)
             {
-                titleText.text = "据点推进";
+                titleText.text = Localize("ui.stronghold.title", "据点推进");
             }
 
             if (activeStronghold.TryGetWaveStatus(out int waveIndex, out int totalWaves, out int remaining, out int plannedTotal))
             {
                 if (waveText != null)
                 {
-                    waveText.text = $"波次 {waveIndex + 1}/{totalWaves} · {activeStronghold.GetWaveDisplayName(waveIndex)}";
+                    waveText.text = string.Format(
+                        Localize("ui.stronghold.wave_format", "波次 {0}/{1} · {2}"),
+                        waveIndex + 1,
+                        totalWaves,
+                        activeStronghold.GetWaveDisplayName(waveIndex));
                 }
 
                 if (remainingText != null)
                 {
                     if (plannedTotal > 0)
                     {
-                        remainingText.text = $"剩余 {remaining}/{plannedTotal}";
+                        remainingText.text = string.Format(
+                            Localize("ui.stronghold.remaining_ratio_format", "剩余 {0}/{1}"),
+                            remaining,
+                            plannedTotal);
                     }
                     else
                     {
-                        remainingText.text = $"剩余 {remaining}";
+                        remainingText.text = string.Format(
+                            Localize("ui.stronghold.remaining_format", "剩余 {0}"),
+                            remaining);
                     }
                 }
             }
@@ -176,22 +185,22 @@ namespace ThirdPersonController
 
         private void HandleStrongholdStarted(StrongholdController stronghold)
         {
-            ShowStatus("Stronghold battle started");
+            ShowStatus(Localize("ui.stronghold.status.started", "据点战斗开始"));
         }
 
         private void HandleWaveStarted(StrongholdController stronghold, int waveIndex)
         {
-            ShowStatus($"Wave {waveIndex + 1} started");
+            ShowStatus(string.Format(Localize("ui.stronghold.status.wave_started", "波次 {0} 开始"), waveIndex + 1));
         }
 
         private void HandleWaveCompleted(StrongholdController stronghold, int waveIndex)
         {
-            ShowStatus($"Wave {waveIndex + 1} completed");
+            ShowStatus(string.Format(Localize("ui.stronghold.status.wave_completed", "波次 {0} 完成"), waveIndex + 1));
         }
 
         private void HandleStrongholdCompleted(StrongholdController stronghold)
         {
-            ShowStatus("据点清除");
+            ShowStatus(Localize("ui.stronghold.status.cleared", "据点清除"));
         }
 
         private void ShowStatus(string message)
@@ -217,23 +226,33 @@ namespace ThirdPersonController
 
             Rect panelRect = new Rect(fallbackPosition.x, fallbackPosition.y, fallbackWidth, 122f);
             GUILayout.BeginArea(panelRect, GUI.skin.box);
-            GUILayout.Label("据点推进", fallbackTitleStyle);
+            GUILayout.Label(Localize("ui.stronghold.title", "据点推进"), fallbackTitleStyle);
 
             if (hasStronghold && activeStronghold.TryGetWaveStatus(out int waveIndex, out int totalWaves, out int remaining, out int plannedTotal))
             {
-                GUILayout.Label($"波次 {waveIndex + 1}/{totalWaves} · {activeStronghold.GetWaveDisplayName(waveIndex)}", fallbackBodyStyle);
+                GUILayout.Label(
+                    string.Format(
+                        Localize("ui.stronghold.wave_format", "波次 {0}/{1} · {2}"),
+                        waveIndex + 1,
+                        totalWaves,
+                        activeStronghold.GetWaveDisplayName(waveIndex)),
+                    fallbackBodyStyle);
                 if (plannedTotal > 0)
                 {
-                    GUILayout.Label($"剩余 {remaining}/{plannedTotal}", fallbackBodyStyle);
+                    GUILayout.Label(
+                        string.Format(Localize("ui.stronghold.remaining_ratio_format", "剩余 {0}/{1}"), remaining, plannedTotal),
+                        fallbackBodyStyle);
                 }
                 else
                 {
-                    GUILayout.Label($"剩余 {remaining}", fallbackBodyStyle);
+                    GUILayout.Label(
+                        string.Format(Localize("ui.stronghold.remaining_format", "剩余 {0}"), remaining),
+                        fallbackBodyStyle);
                 }
             }
             else
             {
-                GUILayout.Label("信息");
+                GUILayout.Label(Localize("ui.stronghold.info", "信息"));
             }
 
             if (!string.IsNullOrEmpty(statusMessage))
@@ -296,6 +315,17 @@ namespace ThirdPersonController
             startupLogged = true;
             bool fallback = ShouldUseFallbackOverlay();
             Debug.Log($"[UI_StrongholdWavePanel] Startup | sequence={(sequenceController != null)} canvasGroup={(canvasGroup != null)} title={(titleText != null)} wave={(waveText != null)} remaining={(remainingText != null)} state={(stateText != null)} fallback={fallback}");
+        }
+
+        private static string Localize(string key, string fallback)
+        {
+            LocalizationService service = LocalizationService.Instance;
+            if (service != null)
+            {
+                return service.Get(key, fallback);
+            }
+
+            return fallback;
         }
     }
 }

@@ -248,62 +248,62 @@ MonoBehaviour:
   attacks:
   - attackId: guard_slam
     attackName: Shield Slam
-    damage: 92
+    damage: 96.655
     range: 5
-    cooldown: 4.8
-    windupTime: 0.42
-    activeTime: 0.26
+    cooldown: 4.656
+    windupTime: 0.45
+    activeTime: 0.273
     recoveryTime: 0.58
-    knockbackForce: 9
-    selectionWeight: 1.2
+    knockbackForce: 9.27
+    selectionWeight: 1.211
     targetPlayer: 0
     aoe: 1
-    aoeRadius: 5
+    aoeRadius: 5.25
     isSpecial: 0
     requiresPhase2: 0
     requiresPhase3: 0
   - attackId: guard_spray
     attackName: Corrosion Spray
-    damage: 72
+    damage: 79.2
     range: 7
-    cooldown: 6.2
-    windupTime: 0.58
-    activeTime: 0.35
+    cooldown: 5.596
+    windupTime: 0.626
+    activeTime: 0.368
     recoveryTime: 0.78
-    knockbackForce: 6
-    selectionWeight: 1
+    knockbackForce: 6.18
+    selectionWeight: 1.019
     targetPlayer: 0
     aoe: 1
-    aoeRadius: 7
+    aoeRadius: 7.35
     isSpecial: 1
     requiresPhase2: 1
     requiresPhase3: 0
   - attackId: guard_overload
     attackName: Overload Burst
-    damage: 122
+    damage: 134.2
     range: 7.8
-    cooldown: 9.2
-    windupTime: 0.76
-    activeTime: 0.34
+    cooldown: 8.303
+    windupTime: 0.821
+    activeTime: 0.357
     recoveryTime: 0.9
-    knockbackForce: 11.5
-    selectionWeight: 0.92
+    knockbackForce: 11.845
+    selectionWeight: 0.938
     targetPlayer: 0
     aoe: 1
-    aoeRadius: 7.8
+    aoeRadius: 8.19
     isSpecial: 1
     requiresPhase2: 1
     requiresPhase3: 0
   - attackId: guard_blade
     attackName: Blade Sweep
-    damage: 112
-    range: 5.6
-    cooldown: 7.2
-    windupTime: 0.5
-    activeTime: 0.24
+    damage: 125.44
+    range: 5.768
+    cooldown: 6.293
+    windupTime: 0.53
+    activeTime: 0.245
     recoveryTime: 0.7
-    knockbackForce: 10
-    selectionWeight: 0.96
+    knockbackForce: 10.3
+    selectionWeight: 1.008
     targetPlayer: 1
     aoe: 0
     aoeRadius: 3
@@ -312,11 +312,21 @@ MonoBehaviour:
     requiresPhase3: 1
   attackInterval: 3.15
   decisionInterval: 0.75
+  weightAttacksByDistance: 1
+  inRangeWeightMultiplier: 1.15
+  outOfRangeWeightMultiplier: 0.35
+  enablePostBreakPunishWindow: 1
+  postBreakPunishDuration: 5
+  postBreakAttackIntervalMultiplier: 0.75
+  postBreakDecisionIntervalMultiplier: 0.82
+  postBreakChaseSpeedMultiplier: 1.15
   useAttackQueue: 1
   queuedAttackLimit: 3
   maxSameAttackQueued: 1
   immediateRepeatPenalty: 0.28
   prioritizeSpecialAttacksWhenEnraged: 1
+  scaleDecisionIntervalWithTimePressure: 1
+  minDecisionIntervalMultiplierAtMaxPressure: 0.72
   enableBreakWindow: 1
   staggerMax: 165
   staggerPerDamage: 0.95
@@ -329,6 +339,11 @@ MonoBehaviour:
   hasWeakness: 1
   weaknessElement: heat
   weaknessMultiplier: 1.65
+  enableTimePressure: 1
+  timePressureDelay: 75
+  timePressureRampDuration: 60
+  maxTimePressureDamageMultiplier: 1.35
+  maxTimePressureSpeedMultiplier: 1.2
   isEnraged: 0
   isInAttack: 0
   isVulnerable: 0
@@ -338,6 +353,10 @@ MonoBehaviour:
   debugQueuedAttackCount: 0
   debugStagger: 0
   debugBreakWindowActive: 0
+  debugTimePressure: 0
+  debugEffectiveDecisionInterval: 0
+  debugLastPlanningDistance: 0
+  debugPostBreakPunishFactor: 0
 --- !u!95 &7689419411514953749 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5168819464407403950, guid: 1c5e13390be6b1240bd05bdc6f2fe772, type: 3}

@@ -45,18 +45,18 @@ namespace ThirdPersonController
             
             if (titleText != null)
             {
-                titleText.text = "LEVEL COMPLETE!";
+                titleText.text = Localize("ui.level.complete_title", "LEVEL COMPLETE!");
             }
             
             if (expText != null)
             {
-                expText.text = $"+{expEarned} EXP";
+                expText.text = string.Format(Localize("ui.level.exp_format", "+{0} EXP"), expEarned);
                 expText.transform.localScale = Vector3.zero;
             }
             
             if (pearlsText != null)
             {
-                pearlsText.text = $"+{pearlsEarned} Pearls";
+                pearlsText.text = string.Format(Localize("ui.level.pearls_format", "+{0} Pearls"), pearlsEarned);
                 pearlsText.transform.localScale = Vector3.zero;
             }
             
@@ -64,7 +64,7 @@ namespace ThirdPersonController
             {
                 int minutes = Mathf.FloorToInt(timeTaken / 60f);
                 int seconds = Mathf.FloorToInt(timeTaken % 60f);
-                timeText.text = $"Time: {minutes:00}:{seconds:00}";
+                timeText.text = string.Format(Localize("ui.level.time_format", "Time: {0:00}:{1:00}"), minutes, seconds);
                 timeText.transform.localScale = Vector3.zero;
             }
             
@@ -115,7 +115,7 @@ namespace ThirdPersonController
             
             if (titleText != null)
             {
-                titleText.text = "LEVEL FAILED";
+                titleText.text = Localize("ui.level.failed_title", "LEVEL FAILED");
                 titleText.color = Color.red;
             }
             
@@ -130,6 +130,17 @@ namespace ThirdPersonController
             }
             
             panel.SetActive(true);
+        }
+
+        private static string Localize(string key, string fallback)
+        {
+            LocalizationService service = LocalizationService.Instance;
+            if (service != null)
+            {
+                return service.Get(key, fallback);
+            }
+
+            return fallback;
         }
     }
 }

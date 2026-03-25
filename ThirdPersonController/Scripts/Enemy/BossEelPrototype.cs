@@ -12,13 +12,17 @@ namespace ThirdPersonController
         public bool enableRiptideCombo = true;
         [Range(0f, 1f)] public float chainRushFollowupChance = 0.65f;
         [Min(0f)] public float chainRushFollowupDelay = 0.2f;
+        public bool enableChainMissPunishWindow = true;
+        [Min(0f)] public float chainRushMissPunishDuration = 1.35f;
         [Min(0f)] public float vortexPullDistance = 1.6f;
         [Min(0f)] public float vortexPullMaxRange = 9f;
         [Min(1f)] public float devourBreakBonusMultiplier = 1.25f;
 
         [Header("Debug")]
         [SerializeField] private bool debugLastChainFollowupTriggered = false;
+        [SerializeField] private bool debugLastPunishWindowTriggered = false;
         public bool DebugLastChainFollowupTriggered => debugLastChainFollowupTriggered;
+        public bool DebugLastPunishWindowTriggered => debugLastPunishWindowTriggered;
 
         private void Reset()
         {
@@ -137,6 +141,7 @@ namespace ThirdPersonController
             }
 
             debugLastChainFollowupTriggered = false;
+            debugLastPunishWindowTriggered = false;
             BeginSkillExecution(skill);
 
             if (skill.windup > 0f)
@@ -153,8 +158,16 @@ namespace ThirdPersonController
                     yield return DashForward(16f, skill.active, 2.2f, damage, knockback);
                     break;
                 case "eel_chain":
-                    yield return DashForward(19f, skill.active, 2.4f, damage, knockback * 1.1f);
+                {
+                    bool chainHit = false;
+                    yield return DashForward(19f, skill.active, 2.4f, damage, knockback * 1.1f, hit => chainHit = hit);
+                    if (!chainHit && currentPhase == BossCombatPhase.Phase2 && enableChainMissPunishWindow)
+                    {
+                        TriggerPunishWindow(chainRushMissPunishDuration);
+                        debugLastPunishWindowTriggered = true;
+                    }
                     break;
+                }
                 case "eel_tail":
                 case "eel_tail_over":
                 {

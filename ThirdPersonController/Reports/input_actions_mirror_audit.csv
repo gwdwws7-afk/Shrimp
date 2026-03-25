@@ -1,0 +1,42 @@
+﻿action,device,runtime_has,asset_has,status,note
+Move,Keyboard,1,1,OK,
+Move,Mouse,0,0,OK,
+Move,Gamepad,1,0,Skipped,Gamepad binding exists at runtime but is not mirrored in .inputactions.
+Look,Keyboard,0,0,OK,
+Look,Mouse,1,1,OK,
+Look,Gamepad,1,0,Skipped,Gamepad binding exists at runtime but is not mirrored in .inputactions.
+Jump,Keyboard,1,1,OK,
+Jump,Mouse,0,0,OK,
+Jump,Gamepad,1,0,Skipped,Gamepad binding exists at runtime but is not mirrored in .inputactions.
+Sprint,Keyboard,1,1,OK,
+Sprint,Mouse,0,0,OK,
+Sprint,Gamepad,1,0,Skipped,Gamepad binding exists at runtime but is not mirrored in .inputactions.
+Crouch,Keyboard,1,1,OK,
+Crouch,Mouse,0,0,OK,
+Crouch,Gamepad,1,0,Skipped,Gamepad binding exists at runtime but is not mirrored in .inputactions.
+Attack,Keyboard,0,0,OK,
+Attack,Mouse,1,1,OK,
+Attack,Gamepad,1,0,Skipped,Gamepad binding exists at runtime but is not mirrored in .inputactions.
+HeavyAttack,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+Interact,Keyboard,1,1,OK,
+Interact,Mouse,0,0,OK,
+Interact,Gamepad,1,0,Skipped,Gamepad binding exists at runtime but is not mirrored in .inputactions.
+Block,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+Dodge,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+Musou,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+Skill1,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+Skill2,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+Skill3,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+Skill4,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+Skill5,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+Skill6,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+QuickSlot1,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+QuickSlot2,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+QuickSlot3,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+MenuConfirm,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+MenuRetry,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+MenuCancel,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+QuitMenu,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+ToggleEconomy,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+ToggleTalent,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.
+ToggleHints,*,1,0,Skipped,Action exists at runtime but is outside current .inputactions mirror scope.

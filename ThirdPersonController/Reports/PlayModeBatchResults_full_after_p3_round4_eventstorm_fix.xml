@@ -1,0 +1,1154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="150" result="Passed" total="150" passed="149" failed="0" inconclusive="0" skipped="1" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-03-23 14:46:41Z" end-time="2026-03-23 14:47:53Z" duration="72.6041451">
+  <test-suite type="TestSuite" id="1000" name="Shrimp" fullname="Shrimp" runstate="Runnable" testcasecount="150" result="Passed" start-time="2026-03-23 14:46:41Z" end-time="2026-03-23 14:47:53Z" duration="72.604145" total="150" passed="149" failed="0" inconclusive="0" skipped="1" asserts="0">
+    <properties />
+    <test-suite type="Assembly" id="1178" name="ThirdPersonController.PlayModeTests.dll" fullname="C:/test/Shrimp/Library/ScriptAssemblies/ThirdPersonController.PlayModeTests.dll" runstate="Runnable" testcasecount="150" result="Passed" start-time="2026-03-23 14:46:41Z" end-time="2026-03-23 14:47:53Z" duration="72.593423" total="150" passed="149" failed="0" inconclusive="0" skipped="1" asserts="0">
+      <properties>
+        <property name="_PID" value="12372" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+      </properties>
+      <test-suite type="TestSuite" id="1179" name="ThirdPersonController" fullname="ThirdPersonController" runstate="Runnable" testcasecount="150" result="Passed" start-time="2026-03-23 14:46:41Z" end-time="2026-03-23 14:47:53Z" duration="72.592139" total="150" passed="149" failed="0" inconclusive="0" skipped="1" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1180" name="Tests" fullname="ThirdPersonController.Tests" runstate="Runnable" testcasecount="150" result="Passed" start-time="2026-03-23 14:46:41Z" end-time="2026-03-23 14:47:53Z" duration="72.591329" total="150" passed="149" failed="0" inconclusive="0" skipped="1" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1001" name="BossCombatDepthRegressionTests" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" testcasecount="20" result="Passed" start-time="2026-03-23 14:46:41Z" end-time="2026-03-23 14:46:42Z" duration="0.932734" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1002" name="BossCombatTemplate_SelectSkill_PrefersInRangeSkill" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossCombatTemplate_SelectSkill_PrefersInRangeSkill" methodname="BossCombatTemplate_SelectSkill_PrefersInRangeSkill" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="433000434" result="Passed" start-time="2026-03-23 14:46:41Z" end-time="2026-03-23 14:46:41Z" duration="0.037274" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1013" name="BossController_AttackPlanning_DistanceWeightingAvoidsOutOfRangeSpam" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossController_AttackPlanning_DistanceWeightingAvoidsOutOfRangeSpam" methodname="BossController_AttackPlanning_DistanceWeightingAvoidsOutOfRangeSpam" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="194613031" result="Passed" start-time="2026-03-23 14:46:41Z" end-time="2026-03-23 14:46:41Z" duration="0.018065" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1018" name="BossController_AttackTimeline_LowFpsCoarseStep_CompletesSingleCycle" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossController_AttackTimeline_LowFpsCoarseStep_CompletesSingleCycle" methodname="BossController_AttackTimeline_LowFpsCoarseStep_CompletesSingleCycle" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="2026532605" result="Passed" start-time="2026-03-23 14:46:41Z" end-time="2026-03-23 14:46:41Z" duration="0.168800" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1012" name="BossController_BreakAndQueue_RespectCoreRules" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossController_BreakAndQueue_RespectCoreRules" methodname="BossController_BreakAndQueue_RespectCoreRules" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="443194633" result="Passed" start-time="2026-03-23 14:46:41Z" end-time="2026-03-23 14:46:41Z" duration="0.003217" asserts="0">
+              <properties />
+              <output><![CDATA[[Steam] Achievement unlocked: breaker
+]]></output>
+            </test-case>
+            <test-case id="1015" name="BossController_BreakWindowEnd_PostBreakPunish_SeedsImmediateReengageTimers" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossController_BreakWindowEnd_PostBreakPunish_SeedsImmediateReengageTimers" methodname="BossController_BreakWindowEnd_PostBreakPunish_SeedsImmediateReengageTimers" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="370116037" result="Passed" start-time="2026-03-23 14:46:41Z" end-time="2026-03-23 14:46:41Z" duration="0.006991" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1017" name="BossController_EffectiveDecisionInterval_ScalesWithTimePressure" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossController_EffectiveDecisionInterval_ScalesWithTimePressure" methodname="BossController_EffectiveDecisionInterval_ScalesWithTimePressure" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="1127438525" result="Passed" start-time="2026-03-23 14:46:41Z" end-time="2026-03-23 14:46:41Z" duration="0.002762" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1020" name="BossController_InterruptRecoveryGate_BlocksImmediateRestartAfterStun" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossController_InterruptRecoveryGate_BlocksImmediateRestartAfterStun" methodname="BossController_InterruptRecoveryGate_BlocksImmediateRestartAfterStun" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="647317068" result="Passed" start-time="2026-03-23 14:46:41Z" end-time="2026-03-23 14:46:41Z" duration="0.305182" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1019" name="BossController_Phase2ComboChain_QueuesFollowupAfterOpener" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossController_Phase2ComboChain_QueuesFollowupAfterOpener" methodname="BossController_Phase2ComboChain_QueuesFollowupAfterOpener" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="1291622339" result="Passed" start-time="2026-03-23 14:46:41Z" end-time="2026-03-23 14:46:42Z" duration="0.321867" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1011" name="BossController_Phase3PriorityWindow_ForcesSpecialAttackQueue" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossController_Phase3PriorityWindow_ForcesSpecialAttackQueue" methodname="BossController_Phase3PriorityWindow_ForcesSpecialAttackQueue" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="2082553376" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:42Z" duration="0.001271" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1007" name="BossController_PhaseTransition_AdvancesWithHealthThresholds" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossController_PhaseTransition_AdvancesWithHealthThresholds" methodname="BossController_PhaseTransition_AdvancesWithHealthThresholds" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="356823996" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:42Z" duration="0.003503" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1008" name="BossController_PhaseTransition_QueuesConfiguredOpenerAttack" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossController_PhaseTransition_QueuesConfiguredOpenerAttack" methodname="BossController_PhaseTransition_QueuesConfiguredOpenerAttack" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="232356520" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:42Z" duration="0.001295" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1010" name="BossController_PhaseTransitionOpenerRetry_ExhaustsRetriesUnderCoarseDelta_AndClearsPendingState" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossController_PhaseTransitionOpenerRetry_ExhaustsRetriesUnderCoarseDelta_AndClearsPendingState" methodname="BossController_PhaseTransitionOpenerRetry_ExhaustsRetriesUnderCoarseDelta_AndClearsPendingState" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="914144573" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:42Z" duration="0.001630" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1009" name="BossController_PhaseTransitionOpenerRetry_QueuesWhenInitialCooldownBlocksImmediateQueue" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossController_PhaseTransitionOpenerRetry_QueuesWhenInitialCooldownBlocksImmediateQueue" methodname="BossController_PhaseTransitionOpenerRetry_QueuesWhenInitialCooldownBlocksImmediateQueue" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="700973641" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:42Z" duration="0.002496" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1014" name="BossController_PostBreakPunish_ModifiesIntervalsAndChaseSpeed" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossController_PostBreakPunish_ModifiesIntervalsAndChaseSpeed" methodname="BossController_PostBreakPunish_ModifiesIntervalsAndChaseSpeed" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="925664436" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:42Z" duration="0.002349" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1016" name="BossController_TimePressure_RampsDamageAndSpeedWithFightDuration" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossController_TimePressure_RampsDamageAndSpeedWithFightDuration" methodname="BossController_TimePressure_RampsDamageAndSpeedWithFightDuration" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="2095329237" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:42Z" duration="0.001757" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1005" name="BossEelPrototype_ChainRushMiss_OpensPunishWindowInPhase2" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossEelPrototype_ChainRushMiss_OpensPunishWindowInPhase2" methodname="BossEelPrototype_ChainRushMiss_OpensPunishWindowInPhase2" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="1563383086" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:42Z" duration="0.003825" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1003" name="BossEelPrototype_VortexSkill_PullsPlayerCloser" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossEelPrototype_VortexSkill_PullsPlayerCloser" methodname="BossEelPrototype_VortexSkill_PullsPlayerCloser" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="1176526112" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:42Z" duration="0.004076" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1004" name="BossGuardianPrototype_Overload_TriggersMultiPulse" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossGuardianPrototype_Overload_TriggersMultiPulse" methodname="BossGuardianPrototype_Overload_TriggersMultiPulse" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="1170274898" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:42Z" duration="0.003105" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1006" name="BossGuardianPrototype_ShieldWhiff_PunishWindowAmplifiesBreakPressure" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossGuardianPrototype_ShieldWhiff_PunishWindowAmplifiesBreakPressure" methodname="BossGuardianPrototype_ShieldWhiff_PunishWindowAmplifiesBreakPressure" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="230646286" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:42Z" duration="0.002380" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1021" name="BossSpawnPoint_EncounterTuning_AppliesToSpawnedController" fullname="ThirdPersonController.Tests.BossCombatDepthRegressionTests.BossSpawnPoint_EncounterTuning_AppliesToSpawnedController" methodname="BossSpawnPoint_EncounterTuning_AppliesToSpawnedController" classname="ThirdPersonController.Tests.BossCombatDepthRegressionTests" runstate="Runnable" seed="1474435307" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:42Z" duration="0.017830" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1022" name="BossEncounterClosureRegressionTests" fullname="ThirdPersonController.Tests.BossEncounterClosureRegressionTests" classname="ThirdPersonController.Tests.BossEncounterClosureRegressionTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:42Z" duration="0.022647" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1024" name="StrongholdSequence_BossDefeatedFirst_CompletesAfterStrongholdChain" fullname="ThirdPersonController.Tests.BossEncounterClosureRegressionTests.StrongholdSequence_BossDefeatedFirst_CompletesAfterStrongholdChain" methodname="StrongholdSequence_BossDefeatedFirst_CompletesAfterStrongholdChain" classname="ThirdPersonController.Tests.BossEncounterClosureRegressionTests" runstate="Runnable" seed="1087499191" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:42Z" duration="0.009998" asserts="0">
+              <properties />
+              <output><![CDATA[[Steam] Achievement unlocked: silent_sanctum
+[Steam] Achievement unlocked: glass_cannon
+]]></output>
+            </test-case>
+            <test-case id="1025" name="StrongholdSequence_BossDefeatEventStorm_CompletesOnlyOnce" fullname="ThirdPersonController.Tests.BossEncounterClosureRegressionTests.StrongholdSequence_BossDefeatEventStorm_CompletesOnlyOnce" methodname="StrongholdSequence_BossDefeatEventStorm_CompletesOnlyOnce" classname="ThirdPersonController.Tests.BossEncounterClosureRegressionTests" runstate="Runnable" seed="1608930264" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:42Z" duration="0.004486" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1023" name="StrongholdSequence_BossGate_WaitsForBossBeforeCompletion" fullname="ThirdPersonController.Tests.BossEncounterClosureRegressionTests.StrongholdSequence_BossGate_WaitsForBossBeforeCompletion" methodname="StrongholdSequence_BossGate_WaitsForBossBeforeCompletion" classname="ThirdPersonController.Tests.BossEncounterClosureRegressionTests" runstate="Runnable" seed="759538800" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:42Z" duration="0.003556" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+[Steam] Achievement unlocked: abyss_core
+]]></output>
+            </test-case>
+            <test-case id="1026" name="StrongholdSequence_ConfigureBossGate_RebindsWithoutDuplicateHandlers" fullname="ThirdPersonController.Tests.BossEncounterClosureRegressionTests.StrongholdSequence_ConfigureBossGate_RebindsWithoutDuplicateHandlers" methodname="StrongholdSequence_ConfigureBossGate_RebindsWithoutDuplicateHandlers" classname="ThirdPersonController.Tests.BossEncounterClosureRegressionTests" runstate="Runnable" seed="547558511" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:42Z" duration="0.001088" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1027" name="StrongholdSequence_ConfigureStrongholds_RebindsWithoutDuplicateHandlers" fullname="ThirdPersonController.Tests.BossEncounterClosureRegressionTests.StrongholdSequence_ConfigureStrongholds_RebindsWithoutDuplicateHandlers" methodname="StrongholdSequence_ConfigureStrongholds_RebindsWithoutDuplicateHandlers" classname="ThirdPersonController.Tests.BossEncounterClosureRegressionTests" runstate="Runnable" seed="782712241" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:42Z" duration="0.001315" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1028" name="BossLevel10GateRegressionTests" fullname="ThirdPersonController.Tests.BossLevel10GateRegressionTests" classname="ThirdPersonController.Tests.BossLevel10GateRegressionTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:45Z" duration="3.327327" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1031" name="Level08And09Scenes_BossGateAndEncounterTuning_AreRuntimeAligned" fullname="ThirdPersonController.Tests.BossLevel10GateRegressionTests.Level08And09Scenes_BossGateAndEncounterTuning_AreRuntimeAligned" methodname="Level08And09Scenes_BossGateAndEncounterTuning_AreRuntimeAligned" classname="ThirdPersonController.Tests.BossLevel10GateRegressionTests" runstate="Runnable" seed="1634954242" result="Passed" start-time="2026-03-23 14:46:42Z" end-time="2026-03-23 14:46:44Z" duration="2.243667" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+              <output><![CDATA["Mesh_0" mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh.
+[Input] Binding conflict scan: no duplicate keyboard bindings found.
+[SkillManager] Startup | player=True stamina=True input=True action=True buffer=True timeline=True skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+[PlayerExperienceSystem] Startup | level=1 exp=0/120 maxLevel=50 talentTree=True save=True
+[QuestSystem] Startup | questDb=True exp=True inventory=True pearlDb=False wallet=True available=2 active=2 autoSave=True saveState=True
+[UI_QuestTracker] Startup | questSystem=True container=False itemPrefab=False fallback=True
+[UI_StrongholdWavePanel] Startup | sequence=True canvasGroup=False title=False wave=False remaining=False state=False fallback=True
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+"Mesh_0" mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh.
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[SkillManager] Startup | player=True stamina=True input=True action=True buffer=True timeline=True skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+[PlayerExperienceSystem] Startup | level=1 exp=0/120 maxLevel=50 talentTree=True save=True
+[QuestSystem] Startup | questDb=True exp=True inventory=True pearlDb=False wallet=True available=2 active=2 autoSave=True saveState=True
+[UI_QuestTracker] Startup | questSystem=True container=False itemPrefab=False fallback=True
+[UI_StrongholdWavePanel] Startup | sequence=True canvasGroup=False title=False wave=False remaining=False state=False fallback=True
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+]]></output>
+            </test-case>
+            <test-case id="1033" name="Level08To10SceneSwitch_BossDefeatEventStorm_ResolvesSingleCompletion" fullname="ThirdPersonController.Tests.BossLevel10GateRegressionTests.Level08To10SceneSwitch_BossDefeatEventStorm_ResolvesSingleCompletion" methodname="Level08To10SceneSwitch_BossDefeatEventStorm_ResolvesSingleCompletion" classname="ThirdPersonController.Tests.BossLevel10GateRegressionTests" runstate="Runnable" seed="749953853" result="Passed" start-time="2026-03-23 14:46:44Z" end-time="2026-03-23 14:46:45Z" duration="0.843311" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+            </test-case>
+            <test-case id="1032" name="Level08To10SceneSwitchAndReentry_BossGateBinding_RemainsSingle" fullname="ThirdPersonController.Tests.BossLevel10GateRegressionTests.Level08To10SceneSwitchAndReentry_BossGateBinding_RemainsSingle" methodname="Level08To10SceneSwitchAndReentry_BossGateBinding_RemainsSingle" classname="ThirdPersonController.Tests.BossLevel10GateRegressionTests" runstate="Runnable" seed="1212598764" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.181027" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+              <output><![CDATA[<color=#0099bc><b>DOTWEEN ► </b></color>Tween startup failed (NULL target/property - ): the tween will now be killed ► The object of type 'CanvasGroup' has been destroyed but you are still trying to access it.
+Your script should either check if it is null or you should not destroy the object.
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[SkillManager] Startup | player=True stamina=True input=True action=True buffer=True timeline=True skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+[PlayerExperienceSystem] Startup | level=1 exp=0/120 maxLevel=50 talentTree=True save=True
+[QuestSystem] Startup | questDb=True exp=True inventory=True pearlDb=False wallet=True available=2 active=2 autoSave=True saveState=True
+[UI_QuestTracker] Startup | questSystem=True container=False itemPrefab=False fallback=True
+[UI_StrongholdWavePanel] Startup | sequence=True canvasGroup=False title=False wave=False remaining=False state=False fallback=True
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[SkillManager] Startup | player=True stamina=True input=True action=True buffer=True timeline=True skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+[PlayerExperienceSystem] Startup | level=1 exp=0/120 maxLevel=50 talentTree=True save=True
+[QuestSystem] Startup | questDb=True exp=True inventory=True pearlDb=False wallet=True available=2 active=2 autoSave=True saveState=True
+[UI_QuestTracker] Startup | questSystem=True container=False itemPrefab=False fallback=True
+[UI_StrongholdWavePanel] Startup | sequence=True canvasGroup=False title=False wave=False remaining=False state=False fallback=True
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[SkillManager] Startup | player=True stamina=True input=True action=True buffer=True timeline=True skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+[PlayerExperienceSystem] Startup | level=1 exp=0/120 maxLevel=50 talentTree=True save=True
+[QuestSystem] Startup | questDb=True exp=True inventory=True pearlDb=False wallet=True available=2 active=2 autoSave=True saveState=True
+[UI_QuestTracker] Startup | questSystem=True container=False itemPrefab=False fallback=True
+[UI_StrongholdWavePanel] Startup | sequence=True canvasGroup=False title=False wave=False remaining=False state=False fallback=True
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[SkillManager] Startup | player=True stamina=True input=True action=True buffer=True timeline=True skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+[PlayerExperienceSystem] Startup | level=1 exp=0/120 maxLevel=50 talentTree=True save=True
+[QuestSystem] Startup | questDb=True exp=True inventory=True pearlDb=False wallet=True available=2 active=2 autoSave=True saveState=True
+[UI_QuestTracker] Startup | questSystem=True container=False itemPrefab=False fallback=True
+[UI_StrongholdWavePanel] Startup | sequence=True canvasGroup=False title=False wave=False remaining=False state=False fallback=True
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+]]></output>
+            </test-case>
+            <test-case id="1030" name="Level10Scene_BossGateChain_IsWiredForStrongholdThenBossFlow" fullname="ThirdPersonController.Tests.BossLevel10GateRegressionTests.Level10Scene_BossGateChain_IsWiredForStrongholdThenBossFlow" methodname="Level10Scene_BossGateChain_IsWiredForStrongholdThenBossFlow" classname="ThirdPersonController.Tests.BossLevel10GateRegressionTests" runstate="Runnable" seed="366428494" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.046078" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+              <output><![CDATA[[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[SkillManager] Startup | player=True stamina=True input=True action=True buffer=True timeline=True skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+[PlayerExperienceSystem] Startup | level=1 exp=0/120 maxLevel=50 talentTree=True save=True
+[QuestSystem] Startup | questDb=True exp=True inventory=True pearlDb=False wallet=True available=2 active=2 autoSave=True saveState=True
+[UI_QuestTracker] Startup | questSystem=True container=False itemPrefab=False fallback=True
+[UI_StrongholdWavePanel] Startup | sequence=True canvasGroup=False title=False wave=False remaining=False state=False fallback=True
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+]]></output>
+            </test-case>
+            <test-case id="1029" name="LevelRuntimeConfigurator_RuntimeBossGateWiring_BindsSingleDefeatHandler" fullname="ThirdPersonController.Tests.BossLevel10GateRegressionTests.LevelRuntimeConfigurator_RuntimeBossGateWiring_BindsSingleDefeatHandler" methodname="LevelRuntimeConfigurator_RuntimeBossGateWiring_BindsSingleDefeatHandler" classname="ThirdPersonController.Tests.BossLevel10GateRegressionTests" runstate="Runnable" seed="1591294794" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.006682" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1034" name="BossP0CompositeGateTests" fullname="ThirdPersonController.Tests.BossP0CompositeGateTests" classname="ThirdPersonController.Tests.BossP0CompositeGateTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.005198" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <output><![CDATA[[QuestSystem] Startup | questDb=False exp=False inventory=False pearlDb=False wallet=True available=0 active=0 autoSave=True saveState=True
+[UI_QuestTracker] Startup | questSystem=True container=False itemPrefab=False fallback=True
+[UI_StrongholdWavePanel] Startup | sequence=False canvasGroup=False title=False wave=False remaining=False state=False fallback=True
+]]></output>
+            <test-case id="1035" name="BossController_P0Composite_PhaseBreakQueueAndTimePressure_StayConsistent" fullname="ThirdPersonController.Tests.BossP0CompositeGateTests.BossController_P0Composite_PhaseBreakQueueAndTimePressure_StayConsistent" methodname="BossController_P0Composite_PhaseBreakQueueAndTimePressure_StayConsistent" classname="ThirdPersonController.Tests.BossP0CompositeGateTests" runstate="Runnable" seed="169789576" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.002934" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1036" name="BossQuestCouplingRegressionTests" fullname="ThirdPersonController.Tests.BossQuestCouplingRegressionTests" classname="ThirdPersonController.Tests.BossQuestCouplingRegressionTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.155403" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1037" name="BossGatedLevels_RequiredQuestChain_ContainsBossObjective" fullname="ThirdPersonController.Tests.BossQuestCouplingRegressionTests.BossGatedLevels_RequiredQuestChain_ContainsBossObjective" methodname="BossGatedLevels_RequiredQuestChain_ContainsBossObjective" classname="ThirdPersonController.Tests.BossQuestCouplingRegressionTests" runstate="Runnable" seed="1071640646" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.153632" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="Timeout" value="300000" />
+              </properties>
+              <output><![CDATA[[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[SkillManager] Startup | player=True stamina=True input=True action=True buffer=True timeline=True skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+[PlayerExperienceSystem] Startup | level=1 exp=0/120 maxLevel=50 talentTree=True save=True
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[SkillManager] Startup | player=True stamina=True input=True action=True buffer=True timeline=True skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+[PlayerExperienceSystem] Startup | level=1 exp=0/120 maxLevel=50 talentTree=True save=True
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[SkillManager] Startup | player=True stamina=True input=True action=True buffer=True timeline=True skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+[PlayerExperienceSystem] Startup | level=1 exp=0/120 maxLevel=50 talentTree=True save=True
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1038" name="BossResultFlowClosureRegressionTests" fullname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" classname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" runstate="Runnable" testcasecount="17" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.074804" total="17" passed="17" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1046" name="LevelFlowUI_ContinueFromResult_DefeatDoesNotMarkLevelComplete" fullname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests.LevelFlowUI_ContinueFromResult_DefeatDoesNotMarkLevelComplete" methodname="LevelFlowUI_ContinueFromResult_DefeatDoesNotMarkLevelComplete" classname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" runstate="Runnable" seed="1287963220" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.005283" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1045" name="LevelFlowUI_ContinueFromResult_IgnoresLateTerminalEventsAfterActionConsumed" fullname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests.LevelFlowUI_ContinueFromResult_IgnoresLateTerminalEventsAfterActionConsumed" methodname="LevelFlowUI_ContinueFromResult_IgnoresLateTerminalEventsAfterActionConsumed" classname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" runstate="Runnable" seed="112628245" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.003955" asserts="0">
+              <properties />
+              <output><![CDATA[[Steam] Achievement unlocked: into_trench
+]]></output>
+            </test-case>
+            <test-case id="1054" name="LevelFlowUI_ContinueFromResult_PauseEnabled_RestoresTimeAndCursor_WhenSceneLoadSuppressed" fullname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests.LevelFlowUI_ContinueFromResult_PauseEnabled_RestoresTimeAndCursor_WhenSceneLoadSuppressed" methodname="LevelFlowUI_ContinueFromResult_PauseEnabled_RestoresTimeAndCursor_WhenSceneLoadSuppressed" classname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" runstate="Runnable" seed="890647583" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.003122" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1044" name="LevelFlowUI_ContinueFromResult_VictoryMarksLevelCompleteOnlyOnce" fullname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests.LevelFlowUI_ContinueFromResult_VictoryMarksLevelCompleteOnlyOnce" methodname="LevelFlowUI_ContinueFromResult_VictoryMarksLevelCompleteOnlyOnce" classname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" runstate="Runnable" seed="317682761" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.002892" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1049" name="LevelFlowUI_ContinueFromResult_WritesSaveToIsolatedPath" fullname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests.LevelFlowUI_ContinueFromResult_WritesSaveToIsolatedPath" methodname="LevelFlowUI_ContinueFromResult_WritesSaveToIsolatedPath" classname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" runstate="Runnable" seed="411043705" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.023351" asserts="0">
+              <properties />
+              <output><![CDATA[[Save] 游戏已保存: C:\Users\ADMINI~1\AppData\Local\Temp\shrimp-boss-result-2bdef9943c3a4c5eb34f53b7946d3f72\savegame.dat
+]]></output>
+            </test-case>
+            <test-case id="1052" name="LevelFlowUI_ResultActions_ReopenPanel_ResetsOneShotGate" fullname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests.LevelFlowUI_ResultActions_ReopenPanel_ResetsOneShotGate" methodname="LevelFlowUI_ResultActions_ReopenPanel_ResetsOneShotGate" classname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" runstate="Runnable" seed="686665745" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.003396" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1051" name="LevelFlowUI_ResultActions_WhenPanelClosed_AreIgnored" fullname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests.LevelFlowUI_ResultActions_WhenPanelClosed_AreIgnored" methodname="LevelFlowUI_ResultActions_WhenPanelClosed_AreIgnored" classname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" runstate="Runnable" seed="1958900033" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.002850" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1040" name="LevelFlowUI_ResultHint_FallsBackToFriendlyKeysWithoutInputHandler" fullname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests.LevelFlowUI_ResultHint_FallsBackToFriendlyKeysWithoutInputHandler" methodname="LevelFlowUI_ResultHint_FallsBackToFriendlyKeysWithoutInputHandler" classname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" runstate="Runnable" seed="891793777" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.001486" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1039" name="LevelFlowUI_ResultHint_UsesUnifiedActionLabels" fullname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests.LevelFlowUI_ResultHint_UsesUnifiedActionLabels" methodname="LevelFlowUI_ResultHint_UsesUnifiedActionLabels" classname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" runstate="Runnable" seed="738467742" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.004106" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1043" name="LevelFlowUI_ResultState_EventStorm_DoesNotOverrideOutcomeOrRecacheSnapshot" fullname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests.LevelFlowUI_ResultState_EventStorm_DoesNotOverrideOutcomeOrRecacheSnapshot" methodname="LevelFlowUI_ResultState_EventStorm_DoesNotOverrideOutcomeOrRecacheSnapshot" classname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" runstate="Runnable" seed="322948032" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.004017" asserts="0">
+              <properties />
+              <output><![CDATA[[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+]]></output>
+            </test-case>
+            <test-case id="1041" name="LevelFlowUI_ResultState_GameOverThenPlayerDeath_KeepsInitialVictoryState" fullname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests.LevelFlowUI_ResultState_GameOverThenPlayerDeath_KeepsInitialVictoryState" methodname="LevelFlowUI_ResultState_GameOverThenPlayerDeath_KeepsInitialVictoryState" classname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" runstate="Runnable" seed="1321839953" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.001009" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1042" name="LevelFlowUI_ResultState_PlayerDeathThenGameOver_KeepsInitialDefeatState" fullname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests.LevelFlowUI_ResultState_PlayerDeathThenGameOver_KeepsInitialDefeatState" methodname="LevelFlowUI_ResultState_PlayerDeathThenGameOver_KeepsInitialDefeatState" classname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" runstate="Runnable" seed="1862190792" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.000908" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1050" name="LevelFlowUI_RetryFromResult_DoesNotWriteSaveToIsolatedPath" fullname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests.LevelFlowUI_RetryFromResult_DoesNotWriteSaveToIsolatedPath" methodname="LevelFlowUI_RetryFromResult_DoesNotWriteSaveToIsolatedPath" classname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" runstate="Runnable" seed="1541359307" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.003883" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1047" name="LevelFlowUI_RetryFromResult_IgnoresLateTerminalEventsAfterActionConsumed" fullname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests.LevelFlowUI_RetryFromResult_IgnoresLateTerminalEventsAfterActionConsumed" methodname="LevelFlowUI_RetryFromResult_IgnoresLateTerminalEventsAfterActionConsumed" classname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" runstate="Runnable" seed="1683210665" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.003102" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1055" name="LevelFlowUI_RetryFromResult_PauseEnabled_RestoresTimeAndCursor_WhenSceneLoadSuppressed" fullname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests.LevelFlowUI_RetryFromResult_PauseEnabled_RestoresTimeAndCursor_WhenSceneLoadSuppressed" methodname="LevelFlowUI_RetryFromResult_PauseEnabled_RestoresTimeAndCursor_WhenSceneLoadSuppressed" classname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" runstate="Runnable" seed="1901568207" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.002977" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1048" name="LevelFlowUI_RetryFromResult_ReloadsActiveSceneWithoutCompletion" fullname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests.LevelFlowUI_RetryFromResult_ReloadsActiveSceneWithoutCompletion" methodname="LevelFlowUI_RetryFromResult_ReloadsActiveSceneWithoutCompletion" classname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" runstate="Runnable" seed="1336746664" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.003198" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1053" name="LevelFlowUI_ShowResult_PauseEnabled_FreezesTimeAndUnlocksCursor" fullname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests.LevelFlowUI_ShowResult_PauseEnabled_FreezesTimeAndUnlocksCursor" methodname="LevelFlowUI_ShowResult_PauseEnabled_FreezesTimeAndUnlocksCursor" classname="ThirdPersonController.Tests.BossResultFlowClosureRegressionTests" runstate="Runnable" seed="536314595" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.002050" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1056" name="BossSceneLocalBindingRegressionTests" fullname="ThirdPersonController.Tests.BossSceneLocalBindingRegressionTests" classname="ThirdPersonController.Tests.BossSceneLocalBindingRegressionTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.111388" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1057" name="RuntimeConfigurator_BindsBossSpawnPoint_FromOwnScene_WhenMultipleBossScenesLoaded" fullname="ThirdPersonController.Tests.BossSceneLocalBindingRegressionTests.RuntimeConfigurator_BindsBossSpawnPoint_FromOwnScene_WhenMultipleBossScenesLoaded" methodname="RuntimeConfigurator_BindsBossSpawnPoint_FromOwnScene_WhenMultipleBossScenesLoaded" classname="ThirdPersonController.Tests.BossSceneLocalBindingRegressionTests" runstate="Runnable" seed="134969222" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.108437" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="Timeout" value="300000" />
+              </properties>
+              <output><![CDATA[[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[SkillManager] Startup | player=True stamina=True input=True action=True buffer=True timeline=True skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+[PlayerExperienceSystem] Startup | level=1 exp=0/120 maxLevel=50 talentTree=True save=True
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+Duplicating NavMeshSurface does not duplicate the referenced navmesh data
+There can be only one active Event System.
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1058" name="BossSpawnPointRound2Tests" fullname="ThirdPersonController.Tests.BossSpawnPointRound2Tests" classname="ThirdPersonController.Tests.BossSpawnPointRound2Tests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.011221" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1061" name="SpawnBoss_ControllerPath_OverrideEncounterTuning_PropagatesDepthFields" fullname="ThirdPersonController.Tests.BossSpawnPointRound2Tests.SpawnBoss_ControllerPath_OverrideEncounterTuning_PropagatesDepthFields" methodname="SpawnBoss_ControllerPath_OverrideEncounterTuning_PropagatesDepthFields" classname="ThirdPersonController.Tests.BossSpawnPointRound2Tests" runstate="Runnable" seed="783163737" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.003695" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1059" name="SpawnBoss_WithBossControllerPrefab_UsesControllerPath" fullname="ThirdPersonController.Tests.BossSpawnPointRound2Tests.SpawnBoss_WithBossControllerPrefab_UsesControllerPath" methodname="SpawnBoss_WithBossControllerPrefab_UsesControllerPath" classname="ThirdPersonController.Tests.BossSpawnPointRound2Tests" runstate="Runnable" seed="1613329077" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.002613" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1060" name="SpawnBoss_WithoutBossController_FallsBackToPrototypeTemplatePath" fullname="ThirdPersonController.Tests.BossSpawnPointRound2Tests.SpawnBoss_WithoutBossController_FallsBackToPrototypeTemplatePath" methodname="SpawnBoss_WithoutBossController_FallsBackToPrototypeTemplatePath" classname="ThirdPersonController.Tests.BossSpawnPointRound2Tests" runstate="Runnable" seed="211569663" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.002927" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1062" name="CombatRound1RegressionTests" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" testcasecount="19" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:46Z" duration="0.274304" total="19" passed="19" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1066" name="ActionController_SkillInterruptedByDodge_EmitsInterruptEvent" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.ActionController_SkillInterruptedByDodge_EmitsInterruptEvent" methodname="ActionController_SkillInterruptedByDodge_EmitsInterruptEvent" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="1302591079" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.001693" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1078" name="BerserkSkill_OnEnable_AssignsBurstCategoryAndDefenseDuration" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.BerserkSkill_OnEnable_AssignsBurstCategoryAndDefenseDuration" methodname="BerserkSkill_OnEnable_AssignsBurstCategoryAndDefenseDuration" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="1274912791" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.000428" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1067" name="DashAttackSkill_HitGate_PreventsRepeatHitOnSameTargetRoot" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.DashAttackSkill_HitGate_PreventsRepeatHitOnSameTargetRoot" methodname="DashAttackSkill_HitGate_PreventsRepeatHitOnSameTargetRoot" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="1499023980" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.002254" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1075" name="DashAttackSkill_OnInterrupted_ClearsHitGateState" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.DashAttackSkill_OnInterrupted_ClearsHitGateState" methodname="DashAttackSkill_OnInterrupted_ClearsHitGateState" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="1087583920" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.000797" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1063" name="PlayerCombat_RegisterHit_IncrementsAndCapsCombo" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.PlayerCombat_RegisterHit_IncrementsAndCapsCombo" methodname="PlayerCombat_RegisterHit_IncrementsAndCapsCombo" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="1648397649" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.002484" asserts="0">
+              <properties />
+              <output><![CDATA[Berserk mode started for 3.0s.
+]]></output>
+            </test-case>
+            <test-case id="1068" name="PlayerCombat_SkillDamageBuffMultiplier_IsIncludedInMainDamageMultiplier" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.PlayerCombat_SkillDamageBuffMultiplier_IsIncludedInMainDamageMultiplier" methodname="PlayerCombat_SkillDamageBuffMultiplier_IsIncludedInMainDamageMultiplier" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="832765329" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.000842" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1080" name="PullSkill_OnEnable_AssignsGatherCategory" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.PullSkill_OnEnable_AssignsGatherCategory" methodname="PullSkill_OnEnable_AssignsGatherCategory" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="6965278" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.000314" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1079" name="ShockwaveSkill_OnEnable_AssignsCrowdControlCategory" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.ShockwaveSkill_OnEnable_AssignsCrowdControlCategory" methodname="ShockwaveSkill_OnEnable_AssignsCrowdControlCategory" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="69666499" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.000261" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1074" name="SkillBase_ResolveClipForPlayback_UsesFallbackWhenAudioMissing" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.SkillBase_ResolveClipForPlayback_UsesFallbackWhenAudioMissing" methodname="SkillBase_ResolveClipForPlayback_UsesFallbackWhenAudioMissing" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="2001887955" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.004071" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1073" name="SkillManager_GetSkillIcon_WhenMissing_ReturnsRuntimeFallback" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.SkillManager_GetSkillIcon_WhenMissing_ReturnsRuntimeFallback" methodname="SkillManager_GetSkillIcon_WhenMissing_ReturnsRuntimeFallback" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="1314325938" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.006266" asserts="0">
+              <properties />
+              <output><![CDATA[[SkillManager] Startup | player=True stamina=False input=False action=False buffer=False timeline=False skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+]]></output>
+            </test-case>
+            <test-case id="1070" name="SkillManager_HandleInput_UsesPlayerInputHandlerSkillState" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.SkillManager_HandleInput_UsesPlayerInputHandlerSkillState" methodname="SkillManager_HandleInput_UsesPlayerInputHandlerSkillState" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="1191408176" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.007914" asserts="0">
+              <properties />
+              <output><![CDATA[[SkillManager] Startup | player=True stamina=True input=True action=True buffer=False timeline=False skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[SkillManager] Cast skill: Round2_InputBridgeSkill
+]]></output>
+            </test-case>
+            <test-case id="1071" name="SkillManager_ResourceAudit_CountsMissingSkillAssets" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.SkillManager_ResourceAudit_CountsMissingSkillAssets" methodname="SkillManager_ResourceAudit_CountsMissingSkillAssets" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="803740796" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.006271" asserts="0">
+              <properties />
+              <output><![CDATA[[SkillManager] Startup | player=True stamina=False input=False action=False buffer=False timeline=False skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+]]></output>
+            </test-case>
+            <test-case id="1069" name="SkillManager_SanitizeLoadedSkillTexts_ReplacesCorruptedNameAndDescription" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.SkillManager_SanitizeLoadedSkillTexts_ReplacesCorruptedNameAndDescription" methodname="SkillManager_SanitizeLoadedSkillTexts_ReplacesCorruptedNameAndDescription" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="334971141" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.005408" asserts="0">
+              <properties />
+              <output><![CDATA[[SkillManager] Startup | player=True stamina=False input=False action=False buffer=False timeline=False skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+]]></output>
+            </test-case>
+            <test-case id="1065" name="SkillManager_TryUseSkill_SuccessConsumesStaminaAndStartsCooldown" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.SkillManager_TryUseSkill_SuccessConsumesStaminaAndStartsCooldown" methodname="SkillManager_TryUseSkill_SuccessConsumesStaminaAndStartsCooldown" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="985558046" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.013130" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+              <output><![CDATA[[SkillManager] Startup | player=True stamina=True input=False action=True buffer=False timeline=False skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[SkillManager] Cast skill: Round1_SuccessSkill
+]]></output>
+            </test-case>
+            <test-case id="1072" name="SkillManager_Update_AdvancesCooldownAndRestoresReadyState" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.SkillManager_Update_AdvancesCooldownAndRestoresReadyState" methodname="SkillManager_Update_AdvancesCooldownAndRestoresReadyState" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="1312746404" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:45Z" duration="0.089008" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+              <output><![CDATA[[SkillManager] Startup | player=True stamina=False input=False action=False buffer=False timeline=False skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+]]></output>
+            </test-case>
+            <test-case id="1081" name="SkillTimeline_FallbackInvokesImpactAndRecoveryOnce_WithCoarseFrameWait" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.SkillTimeline_FallbackInvokesImpactAndRecoveryOnce_WithCoarseFrameWait" methodname="SkillTimeline_FallbackInvokesImpactAndRecoveryOnce_WithCoarseFrameWait" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="1980422618" result="Passed" start-time="2026-03-23 14:46:45Z" end-time="2026-03-23 14:46:46Z" duration="0.123350" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+            </test-case>
+            <test-case id="1064" name="Stamina_InsufficientConsume_EntersExhaustionAndBlocksFurtherConsumption" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.Stamina_InsufficientConsume_EntersExhaustionAndBlocksFurtherConsumption" methodname="Stamina_InsufficientConsume_EntersExhaustionAndBlocksFurtherConsumption" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="429727043" result="Passed" start-time="2026-03-23 14:46:46Z" end-time="2026-03-23 14:46:46Z" duration="0.002050" asserts="0">
+              <properties />
+              <output><![CDATA[Stamina depleted, entered exhaustion state.
+[Stamina] Character is exhausted; stamina cannot be consumed.
+]]></output>
+            </test-case>
+            <test-case id="1076" name="UltimateSkill_OnInterrupted_RestoresTimeScale" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.UltimateSkill_OnInterrupted_RestoresTimeScale" methodname="UltimateSkill_OnInterrupted_RestoresTimeScale" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="161402280" result="Passed" start-time="2026-03-23 14:46:46Z" end-time="2026-03-23 14:46:46Z" duration="0.000904" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1077" name="WhirlwindSkill_OnInterrupted_ClearsRuntimeReferences" fullname="ThirdPersonController.Tests.CombatRound1RegressionTests.WhirlwindSkill_OnInterrupted_ClearsRuntimeReferences" methodname="WhirlwindSkill_OnInterrupted_ClearsRuntimeReferences" classname="ThirdPersonController.Tests.CombatRound1RegressionTests" runstate="Runnable" seed="215025311" result="Passed" start-time="2026-03-23 14:46:46Z" end-time="2026-03-23 14:46:46Z" duration="0.001622" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1082" name="EnemyAIP0P1RegressionTests" fullname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" classname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" runstate="Runnable" testcasecount="17" result="Passed" start-time="2026-03-23 14:46:46Z" end-time="2026-03-23 14:46:49Z" duration="3.829548" total="17" passed="17" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1086" name="EnemyAI_ApplyStun_ClearsTransientActionsAndToken" fullname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests.EnemyAI_ApplyStun_ClearsTransientActionsAndToken" methodname="EnemyAI_ApplyStun_ClearsTransientActionsAndToken" classname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" runstate="Runnable" seed="1966909520" result="Passed" start-time="2026-03-23 14:46:46Z" end-time="2026-03-23 14:46:46Z" duration="0.002518" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1087" name="EnemyAI_InterruptionStorm_ReleasesTokenAndRestoresControlState" fullname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests.EnemyAI_InterruptionStorm_ReleasesTokenAndRestoresControlState" methodname="EnemyAI_InterruptionStorm_ReleasesTokenAndRestoresControlState" classname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" runstate="Runnable" seed="1533493333" result="Passed" start-time="2026-03-23 14:46:46Z" end-time="2026-03-23 14:46:46Z" duration="0.004145" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1097" name="EnemyAI_LowFpsJitter_DecisionIntervalIsClampedAndAIStaysResponsive" fullname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests.EnemyAI_LowFpsJitter_DecisionIntervalIsClampedAndAIStaysResponsive" methodname="EnemyAI_LowFpsJitter_DecisionIntervalIsClampedAndAIStaysResponsive" classname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" runstate="Runnable" seed="1809836172" result="Passed" start-time="2026-03-23 14:46:46Z" end-time="2026-03-23 14:46:49Z" duration="3.753754" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+Animator is not playing an AnimatorController
+Animator is not playing an AnimatorController
+Animator is not playing an AnimatorController
+Animator is not playing an AnimatorController
+Animator is not playing an AnimatorController
+]]></output>
+            </test-case>
+            <test-case id="1096" name="EnemyAI_PerformanceLod_ResolvesFullSimplifiedMinimalByDistance" fullname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests.EnemyAI_PerformanceLod_ResolvesFullSimplifiedMinimalByDistance" methodname="EnemyAI_PerformanceLod_ResolvesFullSimplifiedMinimalByDistance" classname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" runstate="Runnable" seed="1998689438" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.001794" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1085" name="EnemyAI_UpdateState_CanEnterBlockWhenConfigured" fullname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests.EnemyAI_UpdateState_CanEnterBlockWhenConfigured" methodname="EnemyAI_UpdateState_CanEnterBlockWhenConfigured" classname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" runstate="Runnable" seed="1325779305" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.002304" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1084" name="EnemyAI_UpdateState_CanEnterChargeWhenConfigured" fullname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests.EnemyAI_UpdateState_CanEnterChargeWhenConfigured" methodname="EnemyAI_UpdateState_CanEnterChargeWhenConfigured" classname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" runstate="Runnable" seed="525393635" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.001980" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1083" name="EnemyAI_UpdateState_LowHealthFleeHasPriority" fullname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests.EnemyAI_UpdateState_LowHealthFleeHasPriority" methodname="EnemyAI_UpdateState_LowHealthFleeHasPriority" classname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" runstate="Runnable" seed="1575555154" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.001955" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1091" name="EnemyCrowdCoordinator_BurstContention_AllQueuedAttackersEventuallyReceiveToken" fullname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests.EnemyCrowdCoordinator_BurstContention_AllQueuedAttackersEventuallyReceiveToken" methodname="EnemyCrowdCoordinator_BurstContention_AllQueuedAttackersEventuallyReceiveToken" classname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" runstate="Runnable" seed="1697667264" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.003942" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1089" name="EnemyCrowdCoordinator_FairTokenQueue_GrantsInFifoOrder" fullname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests.EnemyCrowdCoordinator_FairTokenQueue_GrantsInFifoOrder" methodname="EnemyCrowdCoordinator_FairTokenQueue_GrantsInFifoOrder" classname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" runstate="Runnable" seed="531474529" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.002568" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1092" name="EnemyCrowdCoordinator_GetRingPosition_AvoidsHardStackWhenSlotsSaturated" fullname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests.EnemyCrowdCoordinator_GetRingPosition_AvoidsHardStackWhenSlotsSaturated" methodname="EnemyCrowdCoordinator_GetRingPosition_AvoidsHardStackWhenSlotsSaturated" classname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" runstate="Runnable" seed="1080510983" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.003258" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1094" name="EnemyCrowdCoordinator_GetRingPosition_HeavyContentionMaintainsPairwiseSeparation" fullname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests.EnemyCrowdCoordinator_GetRingPosition_HeavyContentionMaintainsPairwiseSeparation" methodname="EnemyCrowdCoordinator_GetRingPosition_HeavyContentionMaintainsPairwiseSeparation" classname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" runstate="Runnable" seed="1407437323" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.006555" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1095" name="EnemyCrowdCoordinator_GetRingPosition_SaturatedLayersKeepRangedOutsideMelee" fullname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests.EnemyCrowdCoordinator_GetRingPosition_SaturatedLayersKeepRangedOutsideMelee" methodname="EnemyCrowdCoordinator_GetRingPosition_SaturatedLayersKeepRangedOutsideMelee" classname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" runstate="Runnable" seed="572786075" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.006800" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1093" name="EnemyCrowdCoordinator_GetRingPosition_SplitsMeleeAndRangedLayers" fullname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests.EnemyCrowdCoordinator_GetRingPosition_SplitsMeleeAndRangedLayers" methodname="EnemyCrowdCoordinator_GetRingPosition_SplitsMeleeAndRangedLayers" classname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" runstate="Runnable" seed="1758140304" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.002193" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1088" name="EnemyCrowdCoordinator_TracksTokenGrantRejectAndUtilization" fullname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests.EnemyCrowdCoordinator_TracksTokenGrantRejectAndUtilization" methodname="EnemyCrowdCoordinator_TracksTokenGrantRejectAndUtilization" classname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" runstate="Runnable" seed="1309042287" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.002065" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1090" name="EnemyCrowdCoordinator_UnregisterQueuedEnemy_DoesNotBlockQueueProgress" fullname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests.EnemyCrowdCoordinator_UnregisterQueuedEnemy_DoesNotBlockQueueProgress" methodname="EnemyCrowdCoordinator_UnregisterQueuedEnemy_DoesNotBlockQueueProgress" classname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" runstate="Runnable" seed="1014813936" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.002590" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1098" name="EnemyCrowdCoordinator_WaveSwitch_MassUnregisterReregister_NoStaleQueueAndNoStarvation" fullname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests.EnemyCrowdCoordinator_WaveSwitch_MassUnregisterReregister_NoStaleQueueAndNoStarvation" methodname="EnemyCrowdCoordinator_WaveSwitch_MassUnregisterReregister_NoStaleQueueAndNoStarvation" classname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" runstate="Runnable" seed="1685458007" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.023356" asserts="0">
+              <properties />
+              <output><![CDATA[Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+Failed to create agent because there is no valid NavMesh
+]]></output>
+            </test-case>
+            <test-case id="1099" name="EnemyProjectile_LifetimeExpiry_DespawnsToPool" fullname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests.EnemyProjectile_LifetimeExpiry_DespawnsToPool" methodname="EnemyProjectile_LifetimeExpiry_DespawnsToPool" classname="ThirdPersonController.Tests.EnemyAIP0P1RegressionTests" runstate="Runnable" seed="895395212" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.003871" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1100" name="EnemyAIP3StressRegressionTests" fullname="ThirdPersonController.Tests.EnemyAIP3StressRegressionTests" classname="ThirdPersonController.Tests.EnemyAIP3StressRegressionTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.043928" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1101" name="EnemyPerformanceMetricsSampler_BeginEndStep_ExportsCsv" fullname="ThirdPersonController.Tests.EnemyAIP3StressRegressionTests.EnemyPerformanceMetricsSampler_BeginEndStep_ExportsCsv" methodname="EnemyPerformanceMetricsSampler_BeginEndStep_ExportsCsv" classname="ThirdPersonController.Tests.EnemyAIP3StressRegressionTests" runstate="Runnable" seed="607857216" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.029098" asserts="0">
+              <properties />
+              <output><![CDATA[[EnemyPerf] CSV exported: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\enemy_ai_p3_metrics_test_f02a8995e40a455f862217000215f3c3.csv
+]]></output>
+            </test-case>
+            <test-case id="1102" name="EnemyPerformanceStressHarness_DefaultStepsContain100And150Targets" fullname="ThirdPersonController.Tests.EnemyAIP3StressRegressionTests.EnemyPerformanceStressHarness_DefaultStepsContain100And150Targets" methodname="EnemyPerformanceStressHarness_DefaultStepsContain100And150Targets" classname="ThirdPersonController.Tests.EnemyAIP3StressRegressionTests" runstate="Runnable" seed="886117974" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.001852" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1103" name="EnemyPerformanceStressHarness_LongRunPreset_ConfiguresLongLabelsAndRepeats" fullname="ThirdPersonController.Tests.EnemyAIP3StressRegressionTests.EnemyPerformanceStressHarness_LongRunPreset_ConfiguresLongLabelsAndRepeats" methodname="EnemyPerformanceStressHarness_LongRunPreset_ConfiguresLongLabelsAndRepeats" classname="ThirdPersonController.Tests.EnemyAIP3StressRegressionTests" runstate="Runnable" seed="1584377836" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.001437" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1104" name="EnemyPerformanceStressHarness_SpawnAndClear_MatchesTargetCount" fullname="ThirdPersonController.Tests.EnemyAIP3StressRegressionTests.EnemyPerformanceStressHarness_SpawnAndClear_MatchesTargetCount" methodname="EnemyPerformanceStressHarness_SpawnAndClear_MatchesTargetCount" classname="ThirdPersonController.Tests.EnemyAIP3StressRegressionTests" runstate="Runnable" seed="1579557586" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.008307" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1105" name="EnemyAIP4AcceptanceTests" fullname="ThirdPersonController.Tests.EnemyAIP4AcceptanceTests" classname="ThirdPersonController.Tests.EnemyAIP4AcceptanceTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:47:53Z" duration="63.080859" total="2" passed="1" failed="0" inconclusive="0" skipped="1" asserts="0">
+            <properties />
+            <test-case id="1107" name="P4_RealScene_LongRun_StressHarness_ExportsMetricsCsv" fullname="ThirdPersonController.Tests.EnemyAIP4AcceptanceTests.P4_RealScene_LongRun_StressHarness_ExportsMetricsCsv" methodname="P4_RealScene_LongRun_StressHarness_ExportsMetricsCsv" classname="ThirdPersonController.Tests.EnemyAIP4AcceptanceTests" runstate="Explicit" seed="92380637" result="Skipped" label="Explicit" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:46:49Z" duration="0.000344" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="_SKIPREASON" value="Manual long-run acceptance for real-device coverage." />
+                <property name="Timeout" value="1800000" />
+              </properties>
+              <reason>
+                <message><![CDATA[Manual long-run acceptance for real-device coverage.]]></message>
+              </reason>
+            </test-case>
+            <test-case id="1106" name="P4_RealScene_StressHarness_ExportsMetricsCsv" fullname="ThirdPersonController.Tests.EnemyAIP4AcceptanceTests.P4_RealScene_StressHarness_ExportsMetricsCsv" methodname="P4_RealScene_StressHarness_ExportsMetricsCsv" classname="ThirdPersonController.Tests.EnemyAIP4AcceptanceTests" runstate="Runnable" seed="1685651556" result="Passed" start-time="2026-03-23 14:46:49Z" end-time="2026-03-23 14:47:53Z" duration="63.074623" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="Timeout" value="300000" />
+              </properties>
+              <output><![CDATA[[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[SkillManager] Startup | player=True stamina=True input=True action=True buffer=True timeline=True skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+[PlayerExperienceSystem] Startup | level=1 exp=0/120 maxLevel=50 talentTree=True save=True
+[QuestSystem] Startup | questDb=True exp=True inventory=True pearlDb=False wallet=True available=2 active=2 autoSave=True saveState=True
+[UI_QuestTracker] Startup | questSystem=True container=False itemPrefab=False fallback=True
+[UI_StrongholdWavePanel] Startup | sequence=True canvasGroup=False title=False wave=False remaining=False state=False fallback=True
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[Save] 游戏已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[EnemyPerfHarness] F9=run stress steps, F10=clear enemies.
+[EnemyPerfHarness] step=P3_100 spawned=2, active=100
+Failed to create agent because it is not close enough to the NavMesh
+Failed to create agent because it is not close enough to the NavMesh
+Failed to create agent because it is not close enough to the NavMesh
+Failed to create agent because it is not close enough to the NavMesh
+Failed to create agent because it is not close enough to the NavMesh
+Failed to create agent because it is not close enough to the NavMesh
+[EnemyPerf] P3_100 target=100 avgFrame=2.194ms p95=4.648ms p99=6.77ms avgFPS=455.882 gcAvg=0B/frame aiAvg=414.026/s enemiesAvg=106
+Failed to create agent because it is not close enough to the NavMesh
+[EnemyPerfHarness] step=P3_150 spawned=1, active=150
+Failed to create agent because it is not close enough to the NavMesh
+[Steam] Achievement unlocked: reinforcements_denied
+[EnemyPerf] P3_150 target=150 avgFrame=2.613ms p95=5.47ms p99=6.236ms avgFPS=382.772 gcAvg=0B/frame aiAvg=591.266/s enemiesAvg=151
+[EnemyPerf] CSV exported: C:/test/Shrimp/Assets\ThirdPersonController\Reports\enemy_ai_p3_stress_metrics.csv
+[P4Acceptance] Metrics exported: C:/test/Shrimp/Assets\ThirdPersonController\Reports\enemy_ai_p3_stress_metrics.csv
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1108" name="EnemyTypeP0RegressionTests" fullname="ThirdPersonController.Tests.EnemyTypeP0RegressionTests" classname="ThirdPersonController.Tests.EnemyTypeP0RegressionTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.016343" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1109" name="EnemyArchetypeConfigurator_ApplyArchetype_AppliesCoreFieldsToComponents" fullname="ThirdPersonController.Tests.EnemyTypeP0RegressionTests.EnemyArchetypeConfigurator_ApplyArchetype_AppliesCoreFieldsToComponents" methodname="EnemyArchetypeConfigurator_ApplyArchetype_AppliesCoreFieldsToComponents" classname="ThirdPersonController.Tests.EnemyTypeP0RegressionTests" runstate="Runnable" seed="1717346979" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.002837" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1113" name="EnemyArchetypeValidation_ReportsEmptyDuplicateAndUnsupportedIds" fullname="ThirdPersonController.Tests.EnemyTypeP0RegressionTests.EnemyArchetypeValidation_ReportsEmptyDuplicateAndUnsupportedIds" methodname="EnemyArchetypeValidation_ReportsEmptyDuplicateAndUnsupportedIds" classname="ThirdPersonController.Tests.EnemyTypeP0RegressionTests" runstate="Runnable" seed="1086395063" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.003326" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1112" name="IntensityWaveDirector_AdjustSpawnCount_UsesPrefabConfiguratorArchetype" fullname="ThirdPersonController.Tests.EnemyTypeP0RegressionTests.IntensityWaveDirector_AdjustSpawnCount_UsesPrefabConfiguratorArchetype" methodname="IntensityWaveDirector_AdjustSpawnCount_UsesPrefabConfiguratorArchetype" classname="ThirdPersonController.Tests.EnemyTypeP0RegressionTests" runstate="Runnable" seed="1611842686" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.000899" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1110" name="StrongholdController_SpawnEnemyAtPosition_AppliesArchetypeOverride" fullname="ThirdPersonController.Tests.EnemyTypeP0RegressionTests.StrongholdController_SpawnEnemyAtPosition_AppliesArchetypeOverride" methodname="StrongholdController_SpawnEnemyAtPosition_AppliesArchetypeOverride" classname="ThirdPersonController.Tests.EnemyTypeP0RegressionTests" runstate="Runnable" seed="1289837578" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.001996" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1111" name="WaveArchetypeProfile_GetMultiplier_UsesNormalizedIdAndFallback" fullname="ThirdPersonController.Tests.EnemyTypeP0RegressionTests.WaveArchetypeProfile_GetMultiplier_UsesNormalizedIdAndFallback" methodname="WaveArchetypeProfile_GetMultiplier_UsesNormalizedIdAndFallback" classname="ThirdPersonController.Tests.EnemyTypeP0RegressionTests" runstate="Runnable" seed="453275961" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.000305" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1114" name="EnemyTypeP1RegressionTests" fullname="ThirdPersonController.Tests.EnemyTypeP1RegressionTests" classname="ThirdPersonController.Tests.EnemyTypeP1RegressionTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.012362" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1119" name="EnemyArchetypeValidation_RecommendedEnemyTypeMismatch_IsReported" fullname="ThirdPersonController.Tests.EnemyTypeP1RegressionTests.EnemyArchetypeValidation_RecommendedEnemyTypeMismatch_IsReported" methodname="EnemyArchetypeValidation_RecommendedEnemyTypeMismatch_IsReported" classname="ThirdPersonController.Tests.EnemyTypeP1RegressionTests" runstate="Runnable" seed="492623324" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.000827" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1116" name="EnemyTypeBindingValidation_BossPrefab_ExemptWhenIgnoreBossEnabled" fullname="ThirdPersonController.Tests.EnemyTypeP1RegressionTests.EnemyTypeBindingValidation_BossPrefab_ExemptWhenIgnoreBossEnabled" methodname="EnemyTypeBindingValidation_BossPrefab_ExemptWhenIgnoreBossEnabled" classname="ThirdPersonController.Tests.EnemyTypeP1RegressionTests" runstate="Runnable" seed="1608146982" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.001708" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1115" name="EnemyTypeBindingValidation_PrefabWithoutConfigurator_ReportsError" fullname="ThirdPersonController.Tests.EnemyTypeP1RegressionTests.EnemyTypeBindingValidation_PrefabWithoutConfigurator_ReportsError" methodname="EnemyTypeBindingValidation_PrefabWithoutConfigurator_ReportsError" classname="ThirdPersonController.Tests.EnemyTypeP1RegressionTests" runstate="Runnable" seed="1210105805" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.000608" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1117" name="EnemyTypeBindingValidation_UnsupportedArchetypeAndTypeMismatch_ReportedAsWarnings" fullname="ThirdPersonController.Tests.EnemyTypeP1RegressionTests.EnemyTypeBindingValidation_UnsupportedArchetypeAndTypeMismatch_ReportedAsWarnings" methodname="EnemyTypeBindingValidation_UnsupportedArchetypeAndTypeMismatch_ReportedAsWarnings" classname="ThirdPersonController.Tests.EnemyTypeP1RegressionTests" runstate="Runnable" seed="24865521" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.000760" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1118" name="EnemyTypeBindingValidation_WaveGroupWithOverride_DoesNotRequirePrefabConfigurator" fullname="ThirdPersonController.Tests.EnemyTypeP1RegressionTests.EnemyTypeBindingValidation_WaveGroupWithOverride_DoesNotRequirePrefabConfigurator" methodname="EnemyTypeBindingValidation_WaveGroupWithOverride_DoesNotRequirePrefabConfigurator" classname="ThirdPersonController.Tests.EnemyTypeP1RegressionTests" runstate="Runnable" seed="1618717041" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.000699" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1120" name="GrowthEconomyP5RegressionTests" fullname="ThirdPersonController.Tests.GrowthEconomyP5RegressionTests" classname="ThirdPersonController.Tests.GrowthEconomyP5RegressionTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.011421" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1121" name="EconomyService_P5QuestAdjust_FallsBackToIdentity_WhenChapterAndStrongholdMissing" fullname="ThirdPersonController.Tests.GrowthEconomyP5RegressionTests.EconomyService_P5QuestAdjust_FallsBackToIdentity_WhenChapterAndStrongholdMissing" methodname="EconomyService_P5QuestAdjust_FallsBackToIdentity_WhenChapterAndStrongholdMissing" classname="ThirdPersonController.Tests.GrowthEconomyP5RegressionTests" runstate="Runnable" seed="2132346820" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.002338" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1123" name="QuestSystem_P5CompleteQuest_UsesLastStrongholdId_ForRewardRouting" fullname="ThirdPersonController.Tests.GrowthEconomyP5RegressionTests.QuestSystem_P5CompleteQuest_UsesLastStrongholdId_ForRewardRouting" methodname="QuestSystem_P5CompleteQuest_UsesLastStrongholdId_ForRewardRouting" classname="ThirdPersonController.Tests.GrowthEconomyP5RegressionTests" runstate="Runnable" seed="1898011507" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.003248" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1122" name="ShopManager_P5Purchase_WhenInventoryAtMax_RefundsWallet" fullname="ThirdPersonController.Tests.GrowthEconomyP5RegressionTests.ShopManager_P5Purchase_WhenInventoryAtMax_RefundsWallet" methodname="ShopManager_P5Purchase_WhenInventoryAtMax_RefundsWallet" classname="ThirdPersonController.Tests.GrowthEconomyP5RegressionTests" runstate="Runnable" seed="1360850073" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.001968" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1124" name="InputHintConsistencyP0RegressionTests" fullname="ThirdPersonController.Tests.InputHintConsistencyP0RegressionTests" classname="ThirdPersonController.Tests.InputHintConsistencyP0RegressionTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.021170" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1125" name="MainMenuController_P0Subtitle_UsesUnifiedActionBindingLabel" fullname="ThirdPersonController.Tests.InputHintConsistencyP0RegressionTests.MainMenuController_P0Subtitle_UsesUnifiedActionBindingLabel" methodname="MainMenuController_P0Subtitle_UsesUnifiedActionBindingLabel" classname="ThirdPersonController.Tests.InputHintConsistencyP0RegressionTests" runstate="Runnable" seed="1361144319" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.003027" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1126" name="UIHudHints_P0DisplayHints_UseSameActionLabelsAsInputLayer" fullname="ThirdPersonController.Tests.InputHintConsistencyP0RegressionTests.UIHudHints_P0DisplayHints_UseSameActionLabelsAsInputLayer" methodname="UIHudHints_P0DisplayHints_UseSameActionLabelsAsInputLayer" classname="ThirdPersonController.Tests.InputHintConsistencyP0RegressionTests" runstate="Runnable" seed="1538336549" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.005491" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1127" name="UISkillBar_P0BindingLabels_StayConsistentWithInputLayer" fullname="ThirdPersonController.Tests.InputHintConsistencyP0RegressionTests.UISkillBar_P0BindingLabels_StayConsistentWithInputLayer" methodname="UISkillBar_P0BindingLabels_StayConsistentWithInputLayer" classname="ThirdPersonController.Tests.InputHintConsistencyP0RegressionTests" runstate="Runnable" seed="1683681114" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.005772" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1128" name="InputProductizationRegressionTests" fullname="ThirdPersonController.Tests.InputProductizationRegressionTests" classname="ThirdPersonController.Tests.InputProductizationRegressionTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.018484" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1130" name="PlayerInputHandler_ActionLabel_ContainsKeyboardAndGamepadForSystemToggles" fullname="ThirdPersonController.Tests.InputProductizationRegressionTests.PlayerInputHandler_ActionLabel_ContainsKeyboardAndGamepadForSystemToggles" methodname="PlayerInputHandler_ActionLabel_ContainsKeyboardAndGamepadForSystemToggles" classname="ThirdPersonController.Tests.InputProductizationRegressionTests" runstate="Runnable" seed="1272258745" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.002172" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1133" name="PlayerInputHandler_ActionLabels_SkillAndAttackHints_AreReadable" fullname="ThirdPersonController.Tests.InputProductizationRegressionTests.PlayerInputHandler_ActionLabels_SkillAndAttackHints_AreReadable" methodname="PlayerInputHandler_ActionLabels_SkillAndAttackHints_AreReadable" classname="ThirdPersonController.Tests.InputProductizationRegressionTests" runstate="Runnable" seed="632334691" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.003708" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1131" name="PlayerInputHandler_CoreCombatActions_HaveGamepadBindings" fullname="ThirdPersonController.Tests.InputProductizationRegressionTests.PlayerInputHandler_CoreCombatActions_HaveGamepadBindings" methodname="PlayerInputHandler_CoreCombatActions_HaveGamepadBindings" classname="ThirdPersonController.Tests.InputProductizationRegressionTests" runstate="Runnable" seed="1828520403" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.001241" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1132" name="PlayerInputHandler_KeyboardAndMouseCoverage_RemainsComplete" fullname="ThirdPersonController.Tests.InputProductizationRegressionTests.PlayerInputHandler_KeyboardAndMouseCoverage_RemainsComplete" methodname="PlayerInputHandler_KeyboardAndMouseCoverage_RemainsComplete" classname="ThirdPersonController.Tests.InputProductizationRegressionTests" runstate="Runnable" seed="1751101032" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.001009" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1129" name="PlayerInputHandler_SystemToggleActions_HaveGamepadHoldBindings" fullname="ThirdPersonController.Tests.InputProductizationRegressionTests.PlayerInputHandler_SystemToggleActions_HaveGamepadHoldBindings" methodname="PlayerInputHandler_SystemToggleActions_HaveGamepadHoldBindings" classname="ThirdPersonController.Tests.InputProductizationRegressionTests" runstate="Runnable" seed="1596774050" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.002092" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1134" name="LevelRuntimeConfiguratorQuestCloneRegressionTests" fullname="ThirdPersonController.Tests.LevelRuntimeConfiguratorQuestCloneRegressionTests" classname="ThirdPersonController.Tests.LevelRuntimeConfiguratorQuestCloneRegressionTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.018535" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1135" name="CloneQuest_PreservesStageAndRootTargetFields" fullname="ThirdPersonController.Tests.LevelRuntimeConfiguratorQuestCloneRegressionTests.CloneQuest_PreservesStageAndRootTargetFields" methodname="CloneQuest_PreservesStageAndRootTargetFields" classname="ThirdPersonController.Tests.LevelRuntimeConfiguratorQuestCloneRegressionTests" runstate="Runnable" seed="952401111" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.004379" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1136" name="ConfigureQuests_ClonedQuestRetainsStageTargetFields" fullname="ThirdPersonController.Tests.LevelRuntimeConfiguratorQuestCloneRegressionTests.ConfigureQuests_ClonedQuestRetainsStageTargetFields" methodname="ConfigureQuests_ClonedQuestRetainsStageTargetFields" classname="ThirdPersonController.Tests.LevelRuntimeConfiguratorQuestCloneRegressionTests" runstate="Runnable" seed="108609638" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.004706" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1137" name="LevelSceneGateTests" fullname="ThirdPersonController.Tests.LevelSceneGateTests" classname="ThirdPersonController.Tests.LevelSceneGateTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.468370" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1138" name="LevelScenes_02To10_CoreWiringGate_Passes" fullname="ThirdPersonController.Tests.LevelSceneGateTests.LevelScenes_02To10_CoreWiringGate_Passes" methodname="LevelScenes_02To10_CoreWiringGate_Passes" classname="ThirdPersonController.Tests.LevelSceneGateTests" runstate="Runnable" seed="871689844" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.460774" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="Timeout" value="300000" />
+              </properties>
+              <output><![CDATA[Duplicating NavMeshSurface does not duplicate the referenced navmesh data
+There can be only one active Event System.
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+Wave override index out of range for Stronghold_01: 4
+Wave override index out of range for Stronghold_01: 4
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+Wave override index out of range for Stronghold_01: 4
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+Duplicating NavMeshSurface does not duplicate the referenced navmesh data
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+Duplicating NavMeshSurface does not duplicate the referenced navmesh data
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+Duplicating NavMeshSurface does not duplicate the referenced navmesh data
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+Duplicating NavMeshSurface does not duplicate the referenced navmesh data
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+Duplicating NavMeshSurface does not duplicate the referenced navmesh data
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+Duplicating NavMeshSurface does not duplicate the referenced navmesh data
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+Duplicating NavMeshSurface does not duplicate the referenced navmesh data
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+Duplicating NavMeshSurface does not duplicate the referenced navmesh data
+[Singleton] Multiple instances of ThirdPersonController.UIManager found. Destroying duplicate.
+[Spawner] G=spawn wave, F8=spawn 50, Delete=clear enemies.
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene.
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1139" name="LocalizationQualityGateTests" fullname="ThirdPersonController.Tests.LocalizationQualityGateTests" classname="ThirdPersonController.Tests.LocalizationQualityGateTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.006680" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1141" name="LocalizationTableAudit_DefaultTable_CoreZhDiffersFromEnglish" fullname="ThirdPersonController.Tests.LocalizationQualityGateTests.LocalizationTableAudit_DefaultTable_CoreZhDiffersFromEnglish" methodname="LocalizationTableAudit_DefaultTable_CoreZhDiffersFromEnglish" classname="ThirdPersonController.Tests.LocalizationQualityGateTests" runstate="Runnable" seed="580535578" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.000867" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1140" name="LocalizationTableAudit_DefaultTable_HasNoBlockingIssues" fullname="ThirdPersonController.Tests.LocalizationQualityGateTests.LocalizationTableAudit_DefaultTable_HasNoBlockingIssues" methodname="LocalizationTableAudit_DefaultTable_HasNoBlockingIssues" classname="ThirdPersonController.Tests.LocalizationQualityGateTests" runstate="Runnable" seed="107559185" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.002627" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1142" name="LocalizationTableAudit_MojibakeSequence_IsReportedAsSuspiciousChineseEncoding" fullname="ThirdPersonController.Tests.LocalizationQualityGateTests.LocalizationTableAudit_MojibakeSequence_IsReportedAsSuspiciousChineseEncoding" methodname="LocalizationTableAudit_MojibakeSequence_IsReportedAsSuspiciousChineseEncoding" classname="ThirdPersonController.Tests.LocalizationQualityGateTests" runstate="Runnable" seed="559205468" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.000550" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1143" name="LocalizationServiceRegressionTests" fullname="ThirdPersonController.Tests.LocalizationServiceRegressionTests" classname="ThirdPersonController.Tests.LocalizationServiceRegressionTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.018168" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1145" name="LocalizationService_DefaultTable_Contains_CoreUiKeys" fullname="ThirdPersonController.Tests.LocalizationServiceRegressionTests.LocalizationService_DefaultTable_Contains_CoreUiKeys" methodname="LocalizationService_DefaultTable_Contains_CoreUiKeys" classname="ThirdPersonController.Tests.LocalizationServiceRegressionTests" runstate="Runnable" seed="449128555" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.000529" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1144" name="LocalizationService_SwitchLanguage_AndFallback_Works" fullname="ThirdPersonController.Tests.LocalizationServiceRegressionTests.LocalizationService_SwitchLanguage_AndFallback_Works" methodname="LocalizationService_SwitchLanguage_AndFallback_Works" classname="ThirdPersonController.Tests.LocalizationServiceRegressionTests" runstate="Runnable" seed="1227893860" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.000848" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1146" name="SaveManager_Settings_PersistLocalizationLanguage" fullname="ThirdPersonController.Tests.LocalizationServiceRegressionTests.SaveManager_Settings_PersistLocalizationLanguage" methodname="SaveManager_Settings_PersistLocalizationLanguage" classname="ThirdPersonController.Tests.LocalizationServiceRegressionTests" runstate="Runnable" seed="512556529" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.013625" asserts="0">
+              <properties />
+              <output><![CDATA[[Singleton] An instance of ThirdPersonController.AudioManager was created.
+[Save] 设置已保存: C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\settings.dat
+[Save] Loaded local settings.
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1147" name="QuestEconomyP0RegressionTests" fullname="ThirdPersonController.Tests.QuestEconomyP0RegressionTests" classname="ThirdPersonController.Tests.QuestEconomyP0RegressionTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.019598" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1151" name="EconomyService_P0LevelAndShopMultipliers_ApplyDifficultyAndExternalMultiplier" fullname="ThirdPersonController.Tests.QuestEconomyP0RegressionTests.EconomyService_P0LevelAndShopMultipliers_ApplyDifficultyAndExternalMultiplier" methodname="EconomyService_P0LevelAndShopMultipliers_ApplyDifficultyAndExternalMultiplier" classname="ThirdPersonController.Tests.QuestEconomyP0RegressionTests" runstate="Runnable" seed="2091286551" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.001737" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1148" name="EconomyService_P0QuestMultipliers_ApplyTypeTierChapterStrongholdAndDifficulty" fullname="ThirdPersonController.Tests.QuestEconomyP0RegressionTests.EconomyService_P0QuestMultipliers_ApplyTypeTierChapterStrongholdAndDifficulty" methodname="EconomyService_P0QuestMultipliers_ApplyTypeTierChapterStrongholdAndDifficulty" classname="ThirdPersonController.Tests.QuestEconomyP0RegressionTests" runstate="Runnable" seed="596754083" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.000498" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1152" name="LevelRewardSystem_P0HandleLevelCompleted_AppliesAdjustedRewardsOnce" fullname="ThirdPersonController.Tests.QuestEconomyP0RegressionTests.LevelRewardSystem_P0HandleLevelCompleted_AppliesAdjustedRewardsOnce" methodname="LevelRewardSystem_P0HandleLevelCompleted_AppliesAdjustedRewardsOnce" classname="ThirdPersonController.Tests.QuestEconomyP0RegressionTests" runstate="Runnable" seed="1705781338" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.002772" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1154" name="LongTermProgressionSystem_P0MilestoneClaim_AppliesRewardsAndPersistsToSave" fullname="ThirdPersonController.Tests.QuestEconomyP0RegressionTests.LongTermProgressionSystem_P0MilestoneClaim_AppliesRewardsAndPersistsToSave" methodname="LongTermProgressionSystem_P0MilestoneClaim_AppliesRewardsAndPersistsToSave" classname="ThirdPersonController.Tests.QuestEconomyP0RegressionTests" runstate="Runnable" seed="224350891" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.002602" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1149" name="QuestSystem_P0CompleteQuest_AppliesEconomyRewardsToExperienceAndWallet" fullname="ThirdPersonController.Tests.QuestEconomyP0RegressionTests.QuestSystem_P0CompleteQuest_AppliesEconomyRewardsToExperienceAndWallet" methodname="QuestSystem_P0CompleteQuest_AppliesEconomyRewardsToExperienceAndWallet" classname="ThirdPersonController.Tests.QuestEconomyP0RegressionTests" runstate="Runnable" seed="438938780" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.001905" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1150" name="QuestSystem_P0RestoreState_RestoresStageClampProgressAndTimerConsistency" fullname="ThirdPersonController.Tests.QuestEconomyP0RegressionTests.QuestSystem_P0RestoreState_RestoresStageClampProgressAndTimerConsistency" methodname="QuestSystem_P0RestoreState_RestoresStageClampProgressAndTimerConsistency" classname="ThirdPersonController.Tests.QuestEconomyP0RegressionTests" runstate="Runnable" seed="451521596" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.001727" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1153" name="ShopManager_P0Purchase_WhenInventoryMissing_DoesNotConsumeCredits" fullname="ThirdPersonController.Tests.QuestEconomyP0RegressionTests.ShopManager_P0Purchase_WhenInventoryMissing_DoesNotConsumeCredits" methodname="ShopManager_P0Purchase_WhenInventoryMissing_DoesNotConsumeCredits" classname="ThirdPersonController.Tests.QuestEconomyP0RegressionTests" runstate="Runnable" seed="626861736" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.000734" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1155" name="SkillBoundaryP1RegressionTests" fullname="ThirdPersonController.Tests.SkillBoundaryP1RegressionTests" classname="ThirdPersonController.Tests.SkillBoundaryP1RegressionTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.020038" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1159" name="DashAttackSkill_OnInterrupted_RestoresMovementAndClearsDashHitGate" fullname="ThirdPersonController.Tests.SkillBoundaryP1RegressionTests.DashAttackSkill_OnInterrupted_RestoresMovementAndClearsDashHitGate" methodname="DashAttackSkill_OnInterrupted_RestoresMovementAndClearsDashHitGate" classname="ThirdPersonController.Tests.SkillBoundaryP1RegressionTests" runstate="Runnable" seed="306235821" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.001845" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1156" name="SkillBase_CooldownLifecycle_TransitionsToReady" fullname="ThirdPersonController.Tests.SkillBoundaryP1RegressionTests.SkillBase_CooldownLifecycle_TransitionsToReady" methodname="SkillBase_CooldownLifecycle_TransitionsToReady" classname="ThirdPersonController.Tests.SkillBoundaryP1RegressionTests" runstate="Runnable" seed="217788377" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.001425" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1158" name="SkillManager_TryUseSkill_ExecutesAndStartsCooldown" fullname="ThirdPersonController.Tests.SkillBoundaryP1RegressionTests.SkillManager_TryUseSkill_ExecutesAndStartsCooldown" methodname="SkillManager_TryUseSkill_ExecutesAndStartsCooldown" classname="ThirdPersonController.Tests.SkillBoundaryP1RegressionTests" runstate="Runnable" seed="263795125" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.004812" asserts="0">
+              <properties />
+              <output><![CDATA[[SkillManager] Startup | player=True stamina=False input=False action=False buffer=False timeline=False skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[SkillManager] Cast skill: P1_TestSkill
+]]></output>
+            </test-case>
+            <test-case id="1157" name="SkillManager_TryUseSkill_InvalidOrEmptySlot_ReturnsFalse" fullname="ThirdPersonController.Tests.SkillBoundaryP1RegressionTests.SkillManager_TryUseSkill_InvalidOrEmptySlot_ReturnsFalse" methodname="SkillManager_TryUseSkill_InvalidOrEmptySlot_ReturnsFalse" classname="ThirdPersonController.Tests.SkillBoundaryP1RegressionTests" runstate="Runnable" seed="919437439" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.003567" asserts="0">
+              <properties />
+              <output><![CDATA[[SkillManager] Startup | player=True stamina=False input=False action=False buffer=False timeline=False skills=6/6 autoLoad=True
+[SkillManager] Resource gap | slot=0 skill=Whirlwind iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=1 skill=Shockwave iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=2 skill=Dash Attack iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=3 skill=Berserk iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=4 skill=Pull iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource gap | slot=5 skill=Ultimate Judgment iconMissing=True audioMissing=True fxMissing=True
+[SkillManager] Resource audit summary | anyGap=6 iconGap=6 audioGap=6 fxGap=6
+[SkillManager] Skill slot 0 is empty.
+]]></output>
+            </test-case>
+            <test-case id="1161" name="Skills_DefaultCategory_AssignedWhenUnset" fullname="ThirdPersonController.Tests.SkillBoundaryP1RegressionTests.Skills_DefaultCategory_AssignedWhenUnset" methodname="Skills_DefaultCategory_AssignedWhenUnset" classname="ThirdPersonController.Tests.SkillBoundaryP1RegressionTests" runstate="Runnable" seed="1913259175" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.000557" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1160" name="UltimateSkill_OnInterrupted_RestoresTimeScale" fullname="ThirdPersonController.Tests.SkillBoundaryP1RegressionTests.UltimateSkill_OnInterrupted_RestoresTimeScale" methodname="UltimateSkill_OnInterrupted_RestoresTimeScale" classname="ThirdPersonController.Tests.SkillBoundaryP1RegressionTests" runstate="Runnable" seed="1055947169" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.000463" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1162" name="SteamCloudSaveBridgeRegressionTests" fullname="ThirdPersonController.Tests.SteamCloudSaveBridgeRegressionTests" classname="ThirdPersonController.Tests.SteamCloudSaveBridgeRegressionTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.041343" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1166" name="SteamCloudSaveBridge_NewestPriority_DownloadsCloudWhenCloudTimestampNewer" fullname="ThirdPersonController.Tests.SteamCloudSaveBridgeRegressionTests.SteamCloudSaveBridge_NewestPriority_DownloadsCloudWhenCloudTimestampNewer" methodname="SteamCloudSaveBridge_NewestPriority_DownloadsCloudWhenCloudTimestampNewer" classname="ThirdPersonController.Tests.SteamCloudSaveBridgeRegressionTests" runstate="Runnable" seed="607301209" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.013680" asserts="0">
+              <properties />
+              <output><![CDATA[[SteamCloud] Newest -> Cloud (savegame.dat) | C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+]]></output>
+            </test-case>
+            <test-case id="1167" name="SteamCloudSaveBridge_NewestPriority_UploadsLocalWhenLocalTimestampNewer" fullname="ThirdPersonController.Tests.SteamCloudSaveBridgeRegressionTests.SteamCloudSaveBridge_NewestPriority_UploadsLocalWhenLocalTimestampNewer" methodname="SteamCloudSaveBridge_NewestPriority_UploadsLocalWhenLocalTimestampNewer" classname="ThirdPersonController.Tests.SteamCloudSaveBridgeRegressionTests" runstate="Runnable" seed="124899891" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.003287" asserts="0">
+              <properties />
+              <output><![CDATA[[SteamCloud] Newest -> Local (savegame.dat) | C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+]]></output>
+            </test-case>
+            <test-case id="1165" name="SteamCloudSaveBridge_PullSettings_AppliesLocalizationLanguage" fullname="ThirdPersonController.Tests.SteamCloudSaveBridgeRegressionTests.SteamCloudSaveBridge_PullSettings_AppliesLocalizationLanguage" methodname="SteamCloudSaveBridge_PullSettings_AppliesLocalizationLanguage" classname="ThirdPersonController.Tests.SteamCloudSaveBridgeRegressionTests" runstate="Runnable" seed="541819989" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.011940" asserts="0">
+              <properties />
+              <output><![CDATA[[SteamCloud] Local -> Cloud (savegame.dat) | C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+[SteamCloud] Cloud -> Local (settings.dat) | C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\settings.dat
+[Save] Loaded local settings.
+]]></output>
+            </test-case>
+            <test-case id="1164" name="SteamCloudSaveBridge_PushToCloud_UploadsLocalSaveFile" fullname="ThirdPersonController.Tests.SteamCloudSaveBridgeRegressionTests.SteamCloudSaveBridge_PushToCloud_UploadsLocalSaveFile" methodname="SteamCloudSaveBridge_PushToCloud_UploadsLocalSaveFile" classname="ThirdPersonController.Tests.SteamCloudSaveBridgeRegressionTests" runstate="Runnable" seed="1422937737" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.002302" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1163" name="SteamCloudSaveBridge_TryPullFromCloud_DownloadsMissingLocalSave" fullname="ThirdPersonController.Tests.SteamCloudSaveBridgeRegressionTests.SteamCloudSaveBridge_TryPullFromCloud_DownloadsMissingLocalSave" methodname="SteamCloudSaveBridge_TryPullFromCloud_DownloadsMissingLocalSave" classname="ThirdPersonController.Tests.SteamCloudSaveBridgeRegressionTests" runstate="Runnable" seed="1921138739" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.002824" asserts="0">
+              <properties />
+              <output><![CDATA[[SteamCloud] Cloud -> Local (savegame.dat) | C:/Users/Administrator/AppData/LocalLow/DefaultCompany/Shrimp\savegame.dat
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1168" name="SteamIntegrationBootstrapRegressionTests" fullname="ThirdPersonController.Tests.SteamIntegrationBootstrapRegressionTests" classname="ThirdPersonController.Tests.SteamIntegrationBootstrapRegressionTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.019567" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1169" name="SteamIntegrationBootstrap_Bootstrap_AppliesResolvedConfigToServiceAndTrackers" fullname="ThirdPersonController.Tests.SteamIntegrationBootstrapRegressionTests.SteamIntegrationBootstrap_Bootstrap_AppliesResolvedConfigToServiceAndTrackers" methodname="SteamIntegrationBootstrap_Bootstrap_AppliesResolvedConfigToServiceAndTrackers" classname="ThirdPersonController.Tests.SteamIntegrationBootstrapRegressionTests" runstate="Runnable" seed="299447010" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.002339" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1170" name="SteamIntegrationConfigRegressionTests" fullname="ThirdPersonController.Tests.SteamIntegrationConfigRegressionTests" classname="ThirdPersonController.Tests.SteamIntegrationConfigRegressionTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.014835" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1171" name="SteamAchievementTracker_ApplyConfig_MapsEnableFlag" fullname="ThirdPersonController.Tests.SteamIntegrationConfigRegressionTests.SteamAchievementTracker_ApplyConfig_MapsEnableFlag" methodname="SteamAchievementTracker_ApplyConfig_MapsEnableFlag" classname="ThirdPersonController.Tests.SteamIntegrationConfigRegressionTests" runstate="Runnable" seed="1660421171" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.002673" asserts="0">
+              <properties />
+              <output><![CDATA[[Steam] Achievement unlocked: pearl_initiate
+]]></output>
+            </test-case>
+            <test-case id="1173" name="SteamCloudSaveBridge_ApplyConfig_MapsCloudSettings" fullname="ThirdPersonController.Tests.SteamIntegrationConfigRegressionTests.SteamCloudSaveBridge_ApplyConfig_MapsCloudSettings" methodname="SteamCloudSaveBridge_ApplyConfig_MapsCloudSettings" classname="ThirdPersonController.Tests.SteamIntegrationConfigRegressionTests" runstate="Runnable" seed="362934719" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.000517" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1172" name="SteamStatsTracker_ApplyConfig_MapsEnableAndFlushInterval" fullname="ThirdPersonController.Tests.SteamIntegrationConfigRegressionTests.SteamStatsTracker_ApplyConfig_MapsEnableAndFlushInterval" methodname="SteamStatsTracker_ApplyConfig_MapsEnableAndFlushInterval" classname="ThirdPersonController.Tests.SteamIntegrationConfigRegressionTests" runstate="Runnable" seed="1824857333" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.000576" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1174" name="SteamIntegrationStatusRegressionTests" fullname="ThirdPersonController.Tests.SteamIntegrationStatusRegressionTests" classname="ThirdPersonController.Tests.SteamIntegrationStatusRegressionTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.010518" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1177" name="SteamIntegrationService_ApplyConfig_UpdatesServiceFlags" fullname="ThirdPersonController.Tests.SteamIntegrationStatusRegressionTests.SteamIntegrationService_ApplyConfig_UpdatesServiceFlags" methodname="SteamIntegrationService_ApplyConfig_UpdatesServiceFlags" classname="ThirdPersonController.Tests.SteamIntegrationStatusRegressionTests" runstate="Runnable" seed="422503557" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.000700" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1176" name="SteamIntegrationService_RefreshRuntimeStatus_EmitsStateChange" fullname="ThirdPersonController.Tests.SteamIntegrationStatusRegressionTests.SteamIntegrationService_RefreshRuntimeStatus_EmitsStateChange" methodname="SteamIntegrationService_RefreshRuntimeStatus_EmitsStateChange" classname="ThirdPersonController.Tests.SteamIntegrationStatusRegressionTests" runstate="Runnable" seed="429079828" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.001197" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1175" name="SteamIntegrationService_RuntimeStatus_MatchesCurrentServiceFlags" fullname="ThirdPersonController.Tests.SteamIntegrationStatusRegressionTests.SteamIntegrationService_RuntimeStatus_MatchesCurrentServiceFlags" methodname="SteamIntegrationService_RuntimeStatus_MatchesCurrentServiceFlags" classname="ThirdPersonController.Tests.SteamIntegrationStatusRegressionTests" runstate="Runnable" seed="224058983" result="Passed" start-time="2026-03-23 14:47:53Z" end-time="2026-03-23 14:47:53Z" duration="0.000888" asserts="0">
+              <properties />
+              <output><![CDATA[[Steam] Steamworks unavailable. Using local compatibility backend.
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

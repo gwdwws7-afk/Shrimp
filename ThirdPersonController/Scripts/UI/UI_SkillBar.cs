@@ -57,10 +57,21 @@ namespace ThirdPersonController
         private Texture2D fallbackSkillIconTexture;
         private Sprite fallbackSkillIcon;
         private float nextInputHintRefreshTime;
+        private bool inputHintsDirty = true;
+        private PlayerInputHandler subscribedInputHandler;
+        [SerializeField] private float debugLastInputHintRefreshUnscaledTime = -1f;
+        public float LastInputHintRefreshUnscaledTime => debugLastInputHintRefreshUnscaledTime;
+
+        private void OnEnable()
+        {
+            BindInputHandlerEvents();
+            MarkInputHintsDirty();
+        }
         
         private void Start()
         {
             EnsureAttackInputHint();
+            BindInputHandlerEvents();
             RefreshInputHints(force: true);
             
             // 监听技能释放与冷却完成事件。
@@ -75,9 +86,10 @@ namespace ThirdPersonController
 
         private void Update()
         {
-            if (Time.unscaledTime >= nextInputHintRefreshTime)
+            BindInputHandlerEvents();
+            if (inputHintsDirty || Time.unscaledTime >= nextInputHintRefreshTime)
             {
-                RefreshInputHints();
+                RefreshInputHints(force: inputHintsDirty);
                 nextInputHintRefreshTime = Time.unscaledTime + Mathf.Max(0.05f, inputHintRefreshInterval);
             }
 
@@ -89,6 +101,7 @@ namespace ThirdPersonController
             // 销毁时解除事件监听。
             GameEvents.OnSkillUsed -= OnSkillUsed;
             GameEvents.OnSkillReady -= OnSkillReady;
+            UnbindInputHandlerEvents();
 
             if (fallbackSkillIcon != null)
             {
@@ -125,10 +138,10 @@ namespace ThirdPersonController
             GUILayout.BeginArea(new Rect(x, y, width, height));
             GUILayout.BeginHorizontal();
 
-            DrawLegendItem("群控", crowdControlColor, style);
-            DrawLegendItem("爆发", burstColor, style);
-            DrawLegendItem("位移", mobilityColor, style);
-            DrawLegendItem("Gather", gatherColor, style);
+            DrawLegendItem(Localize("ui.skill_bar.legend.crowd_control", "群控"), crowdControlColor, style);
+            DrawLegendItem(Localize("ui.skill_bar.legend.burst", "爆发"), burstColor, style);
+            DrawLegendItem(Localize("ui.skill_bar.legend.mobility", "位移"), mobilityColor, style);
+            DrawLegendItem(Localize("ui.skill_bar.legend.gather", "聚怪"), gatherColor, style);
 
             GUILayout.EndHorizontal();
             GUILayout.EndArea();
@@ -325,12 +338,13 @@ namespace ThirdPersonController
 
             for (int i = 0; i < skillSlots.Length; i++)
             {
-                if (skillSlots[i].keyText == null)
+                SkillSlot slot = skillSlots[i];
+                if (slot == null || slot.keyText == null)
                 {
                     continue;
                 }
 
-                skillSlots[i].keyText.text = ResolveSkillBindingLabel(handler, i);
+                slot.keyText.text = ResolveSkillBindingLabel(handler, i);
             }
 
             EnsureAttackInputHint();
@@ -338,6 +352,9 @@ namespace ThirdPersonController
             {
                 attackInputHintText.text = BuildAttackInputHintLabel(handler);
             }
+
+            inputHintsDirty = false;
+            debugLastInputHintRefreshUnscaledTime = Time.unscaledTime;
         }
 
         private PlayerInputHandler ResolveInputHandler()
@@ -349,6 +366,50 @@ namespace ThirdPersonController
 
             inputHandler = PlayerInputHandler.ResolveActiveInstance();
             return inputHandler;
+        }
+
+        private void BindInputHandlerEvents()
+        {
+            PlayerInputHandler handler = ResolveInputHandler();
+            if (subscribedInputHandler == handler)
+            {
+                return;
+            }
+
+            if (subscribedInputHandler != null)
+            {
+                subscribedInputHandler.OnPromptDeviceChanged -= HandlePromptDeviceChanged;
+            }
+
+            subscribedInputHandler = handler;
+            if (subscribedInputHandler != null)
+            {
+                subscribedInputHandler.OnPromptDeviceChanged += HandlePromptDeviceChanged;
+            }
+
+            MarkInputHintsDirty();
+        }
+
+        private void UnbindInputHandlerEvents()
+        {
+            if (subscribedInputHandler != null)
+            {
+                subscribedInputHandler.OnPromptDeviceChanged -= HandlePromptDeviceChanged;
+            }
+
+            subscribedInputHandler = null;
+        }
+
+        private void HandlePromptDeviceChanged(InputPromptDevice _)
+        {
+            MarkInputHintsDirty();
+            RefreshInputHints(force: true);
+            nextInputHintRefreshTime = Time.unscaledTime + Mathf.Max(0.05f, inputHintRefreshInterval);
+        }
+
+        private void MarkInputHintsDirty()
+        {
+            inputHintsDirty = true;
         }
 
         private string ResolveSkillBindingLabel(PlayerInputHandler handler, int slotIndex)
@@ -379,7 +440,7 @@ namespace ThirdPersonController
         {
             if (!useDynamicInputHints || handler == null)
             {
-                return attackInputHintLabel;
+                return Localize("ui.skill_bar.attack_hint_default", attackInputHintLabel);
             }
 
             string lightLabel = handler.GetActionBindingLabel(attackActionName, attackFallbackKey, includeGamepadOnAttackHint);
@@ -397,10 +458,11 @@ namespace ThirdPersonController
 
             if (string.IsNullOrEmpty(lightLabel) && string.IsNullOrEmpty(heavyLabel))
             {
-                return attackInputHintLabel;
+                return Localize("ui.skill_bar.attack_hint_default", attackInputHintLabel);
             }
 
-            return $"轻击: {lightLabel}  重击: {heavyLabel}";
+            string format = Localize("ui.skill_bar.attack_hint_format", "Light: {0}  Heavy: {1}");
+            return string.Format(format, lightLabel, heavyLabel);
         }
 
         private static KeyCode GetDefaultSkillFallbackKey(int slotIndex)
@@ -477,6 +539,17 @@ namespace ThirdPersonController
             GUI.color = color;
             GUILayout.Label(label, style, GUILayout.Width(80));
             GUI.color = previous;
+        }
+
+        private static string Localize(string key, string fallback)
+        {
+            LocalizationService service = LocalizationService.Instance;
+            if (service != null)
+            {
+                return service.Get(key, fallback);
+            }
+
+            return fallback;
         }
         
         #endregion

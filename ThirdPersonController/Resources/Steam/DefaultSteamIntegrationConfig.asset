@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2285de74a3d0c1f42a9e60c0369a8649, type: 3}
+  m_Name: DefaultSteamIntegrationConfig
+  m_EditorClassIdentifier: 
+  enableSteam: 1
+  logWhenUnavailable: 1
+  appId: 480
+  requireRealBackend: 0
+  strictAppIdValidation: 1
+  requireCloudWhenSteamEnabled: 0
+  reportRuntimeDiagnostics: 1
+  enableAchievements: 1
+  enableStats: 1
+  statsFlushInterval: 20
+  enableCloudSaves: 1
+  pullCloudOnStart: 1
+  uploadCloudOnSave: 1
+  uploadSettings: 0
+  applySettingsAfterPull: 1
+  cloudOnlyIfLocalMissing: 1
+  cloudUploadCooldown: 1.5
+  cloudPriority: 2

@@ -32,6 +32,12 @@ namespace ThirdPersonController
         public string subtitleText = "Press Enter to Start";
         public bool showSubtitle = true;
 
+        [Header("Localization")]
+        public bool showLanguageSelector = true;
+        public string languageLabel = "Language";
+        public string simplifiedChineseLabel = "简体中文";
+        public string englishLabel = "English";
+
         private GUIStyle titleStyle;
         private GUIStyle subtitleStyle;
         private GUIStyle buttonStyle;
@@ -108,14 +114,15 @@ namespace ThirdPersonController
                 DrawLevelSelection();
             }
 
+            DrawLanguageSelector();
             GUILayout.FlexibleSpace();
 
-            if (GUILayout.Button("Start Game", buttonStyle))
+            if (GUILayout.Button(Localize("ui.main_menu.start_game_button", "Start Game"), buttonStyle))
             {
                 StartGame();
             }
 
-            if (GUILayout.Button("Quit", buttonStyle))
+            if (GUILayout.Button(Localize("ui.main_menu.quit_button", "Quit"), buttonStyle))
             {
                 QuitGame();
             }
@@ -178,10 +185,19 @@ namespace ThirdPersonController
             }
 
             GUILayout.Space(12f);
-            GUILayout.Label("下一关奖励预览");
+            GUILayout.Label(Localize("ui.main_menu.next_level_reward_preview", "下一关奖励预览"));
             GUILayout.Label($"{nextLevel.levelId} - {nextLevel.levelName}", infoStyle);
-            GUILayout.Label($"难度: {nextLevel.difficulty}  |  推荐等级 {nextLevel.recommendedLevel}", infoStyle);
-            GUILayout.Label($"基础货币奖励: {nextLevel.baseCredits}", infoStyle);
+            GUILayout.Label(
+                string.Format(
+                    Localize("ui.main_menu.preview_difficulty_format", "难度: {0}  |  推荐等级 {1}"),
+                    nextLevel.difficulty,
+                    nextLevel.recommendedLevel),
+                infoStyle);
+            GUILayout.Label(
+                string.Format(
+                    Localize("ui.main_menu.preview_base_credits_format", "基础货币奖励: {0}"),
+                    nextLevel.baseCredits),
+                infoStyle);
         }
 
         private void DrawLevelSelection()
@@ -198,7 +214,7 @@ namespace ThirdPersonController
             LevelData nextLevel = FindNextLevel(chapters, completedLevels);
 
             GUILayout.Space(12f);
-            GUILayout.Label("选择关卡", sectionStyle);
+            GUILayout.Label(Localize("ui.main_menu.select_level", "选择关卡"), sectionStyle);
             levelScroll = GUILayout.BeginScrollView(levelScroll, GUILayout.Height(levelListHeight));
 
             List<LevelData> allLevels = CollectLevels(chapters);
@@ -224,11 +240,50 @@ namespace ThirdPersonController
                 }
                 else
                 {
-                    GUILayout.Label($"{label} ({lockedLevelLabel})", infoStyle);
+                    GUILayout.Label(
+                        string.Format(
+                            Localize("ui.main_menu.level_locked_format", "{0} ({1})"),
+                            label,
+                            GetLockedLevelLabel()),
+                        infoStyle);
                 }
             }
 
             GUILayout.EndScrollView();
+        }
+
+        private void DrawLanguageSelector()
+        {
+            if (!showLanguageSelector || sectionStyle == null || levelButtonStyle == null)
+            {
+                return;
+            }
+
+            GUILayout.Space(12f);
+            GUILayout.Label(Localize("ui.main_menu.language.label", languageLabel), sectionStyle);
+
+            LocalizationLanguage currentLanguage = GetCurrentLanguage();
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button(
+                BuildLanguageButtonLabel(
+                    "ui.main_menu.language.zh_button",
+                    simplifiedChineseLabel,
+                    currentLanguage == LocalizationLanguage.SimplifiedChinese),
+                levelButtonStyle))
+            {
+                SetLanguage(LocalizationLanguage.SimplifiedChinese);
+            }
+
+            if (GUILayout.Button(
+                BuildLanguageButtonLabel(
+                    "ui.main_menu.language.en_button",
+                    englishLabel,
+                    currentLanguage == LocalizationLanguage.English),
+                levelButtonStyle))
+            {
+                SetLanguage(LocalizationLanguage.English);
+            }
+            GUILayout.EndHorizontal();
         }
 
         private bool TryStartProgressionLevel()
@@ -468,7 +523,55 @@ namespace ThirdPersonController
                 return subtitleText;
             }
 
-            return $"Press {binding} to Start";
+            return string.Format(
+                Localize("ui.main_menu.press_to_start_format", "Press {0} to Start"),
+                binding);
+        }
+
+        private LocalizationLanguage GetCurrentLanguage()
+        {
+            LocalizationService service = LocalizationService.Instance;
+            if (service != null)
+            {
+                return service.CurrentLanguage;
+            }
+
+            return LocalizationLanguage.SimplifiedChinese;
+        }
+
+        private void SetLanguage(LocalizationLanguage language)
+        {
+            LocalizationService service = LocalizationService.Instance;
+            if (service == null || service.CurrentLanguage == language)
+            {
+                return;
+            }
+
+            service.SetLanguage(language);
+            SaveManager.Instance?.SaveSettings();
+        }
+
+        private string BuildLanguageButtonLabel(string key, string fallback, bool selected)
+        {
+            string text = Localize(key, fallback);
+            return selected ? string.Format("[{0}]", text) : text;
+        }
+
+        private string GetLockedLevelLabel()
+        {
+            string fallback = string.IsNullOrEmpty(lockedLevelLabel) ? "Locked" : lockedLevelLabel;
+            return Localize("ui.main_menu.locked_level_label", fallback);
+        }
+
+        private static string Localize(string key, string fallback)
+        {
+            LocalizationService service = LocalizationService.Instance;
+            if (service != null)
+            {
+                return service.Get(key, fallback);
+            }
+
+            return fallback;
         }
     }
 }

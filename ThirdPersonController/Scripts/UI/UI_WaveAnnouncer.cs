@@ -56,12 +56,23 @@ namespace ThirdPersonController
             
             if (waveTitleText != null)
             {
-                waveTitleText.text = wave.name;
+                if (!string.IsNullOrWhiteSpace(wave.name))
+                {
+                    waveTitleText.text = wave.name;
+                }
+                else
+                {
+                    waveTitleText.text = string.Format(
+                        Localize("ui.wave.announcer.default_wave_title_format", "Wave {0}"),
+                        waveIndex + 1);
+                }
             }
             
             if (waveNumberText != null)
             {
-                waveNumberText.text = $"WAVE {waveIndex + 1}";
+                waveNumberText.text = string.Format(
+                    Localize("ui.wave.announcer.wave_format", "WAVE {0}"),
+                    waveIndex + 1);
             }
             
             Color waveColor = normalWaveColor;
@@ -88,13 +99,15 @@ namespace ThirdPersonController
         {
             if (waveTitleText != null)
             {
-                waveTitleText.text = bossName;
+                waveTitleText.text = string.IsNullOrWhiteSpace(bossName)
+                    ? Localize("ui.wave.announcer.boss_default", "Boss Encounter")
+                    : bossName;
                 waveTitleText.color = bossWaveColor;
             }
             
             if (waveNumberText != null)
             {
-                waveNumberText.text = "BOSS";
+                waveNumberText.text = Localize("ui.wave.announcer.boss_tag", "BOSS");
                 waveNumberText.color = bossWaveColor;
             }
             
@@ -131,6 +144,17 @@ namespace ThirdPersonController
             }
             
             Show();
+        }
+
+        private static string Localize(string key, string fallback)
+        {
+            LocalizationService service = LocalizationService.Instance;
+            if (service != null)
+            {
+                return service.Get(key, fallback);
+            }
+
+            return fallback;
         }
     }
 }

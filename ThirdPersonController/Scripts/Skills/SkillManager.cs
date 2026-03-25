@@ -39,6 +39,18 @@ namespace ThirdPersonController
         private Transform activeCaster;
         private bool startupLogged;
         private bool resourceAuditLogged;
+        [Header("Debug (Runtime)")]
+        [SerializeField] private int debugMissingAnyResourceSkillCount;
+        [SerializeField] private int debugMissingIconSkillCount;
+        [SerializeField] private int debugMissingAudioSkillCount;
+        [SerializeField] private int debugMissingFxSkillCount;
+        private Texture2D runtimeFallbackIconTexture;
+        private Sprite runtimeFallbackIcon;
+
+        public int MissingAnyResourceSkillCount => debugMissingAnyResourceSkillCount;
+        public int MissingIconSkillCount => debugMissingIconSkillCount;
+        public int MissingAudioSkillCount => debugMissingAudioSkillCount;
+        public int MissingFxSkillCount => debugMissingFxSkillCount;
 
         // 技能释放原点（默认在角色前上方）
         public Vector3 CastOrigin
@@ -94,12 +106,28 @@ namespace ThirdPersonController
                 timelineController.OnTimelineEnded -= HandleTimelineEnded;
             }
         }
+
+        private void OnDestroy()
+        {
+            if (runtimeFallbackIcon != null)
+            {
+                Destroy(runtimeFallbackIcon);
+                runtimeFallbackIcon = null;
+            }
+
+            if (runtimeFallbackIconTexture != null)
+            {
+                Destroy(runtimeFallbackIconTexture);
+                runtimeFallbackIconTexture = null;
+            }
+        }
         
         private void Update()
         {
             EnsureRuntimeReferences();
 
             // 每帧推进所有技能冷却
+            UpdateAllCooldowns();
             
             // 处理技能输入与输入缓冲
             HandleInput();
@@ -154,6 +182,7 @@ namespace ThirdPersonController
             }
 
             SanitizeLoadedSkillTexts();
+            RecalculateSkillResourceAudit();
         }
         
         /// <summary>
@@ -384,8 +413,14 @@ namespace ThirdPersonController
         {
             if (skills == null || index < 0 || index >= skills.Length || skills[index] == null)
                 return null;
-            
-            return skills[index].icon;
+
+            Sprite icon = skills[index].icon;
+            if (icon != null)
+            {
+                return icon;
+            }
+
+            return GetOrCreateFallbackSkillIcon();
         }
         
         /// <summary>
@@ -577,6 +612,11 @@ namespace ThirdPersonController
             }
         }
 
+        public void RefreshSkillResourceAudit()
+        {
+            RecalculateSkillResourceAudit();
+        }
+
         private void SanitizeLoadedSkillTexts()
         {
             if (skills == null || skills.Length == 0)
@@ -646,6 +686,7 @@ namespace ThirdPersonController
 
         private void LogSkillResourceAudit()
         {
+            RecalculateSkillResourceAudit();
             if (skills == null || skills.Length == 0)
             {
                 return;
@@ -672,6 +713,87 @@ namespace ThirdPersonController
                     $"[SkillManager] Resource gap | slot={i} skill={skill.skillName} " +
                     $"iconMissing={missingIcon} audioMissing={missingAudio} fxMissing={missingFx}");
             }
+
+            Debug.Log(
+                $"[SkillManager] Resource audit summary | anyGap={debugMissingAnyResourceSkillCount} " +
+                $"iconGap={debugMissingIconSkillCount} audioGap={debugMissingAudioSkillCount} fxGap={debugMissingFxSkillCount}");
+        }
+
+        private void RecalculateSkillResourceAudit()
+        {
+            debugMissingAnyResourceSkillCount = 0;
+            debugMissingIconSkillCount = 0;
+            debugMissingAudioSkillCount = 0;
+            debugMissingFxSkillCount = 0;
+
+            if (skills == null || skills.Length == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < skills.Length; i++)
+            {
+                SkillBase skill = skills[i];
+                if (skill == null)
+                {
+                    continue;
+                }
+
+                bool missingIcon = skill.icon == null;
+                bool missingAudio = skill.castSound == null && skill.hitSound == null && skill.impactSound == null;
+                bool missingFx = skill.effectPrefab == null && skill.castEffectPrefab == null && skill.impactEffectPrefab == null;
+
+                if (missingIcon)
+                {
+                    debugMissingIconSkillCount++;
+                }
+
+                if (missingAudio)
+                {
+                    debugMissingAudioSkillCount++;
+                }
+
+                if (missingFx)
+                {
+                    debugMissingFxSkillCount++;
+                }
+
+                if (missingIcon || missingAudio || missingFx)
+                {
+                    debugMissingAnyResourceSkillCount++;
+                }
+            }
+        }
+
+        private Sprite GetOrCreateFallbackSkillIcon()
+        {
+            if (runtimeFallbackIcon != null)
+            {
+                return runtimeFallbackIcon;
+            }
+
+            runtimeFallbackIconTexture = new Texture2D(32, 32, TextureFormat.RGBA32, false);
+            runtimeFallbackIconTexture.name = "SkillManagerFallbackIconTexture";
+            runtimeFallbackIconTexture.hideFlags = HideFlags.HideAndDontSave;
+
+            Color[] pixels = new Color[32 * 32];
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                pixels[i] = new Color(0.85f, 0.9f, 1f, 1f);
+            }
+
+            runtimeFallbackIconTexture.SetPixels(pixels);
+            runtimeFallbackIconTexture.Apply(false, false);
+
+            runtimeFallbackIcon = Sprite.Create(
+                runtimeFallbackIconTexture,
+                new Rect(0f, 0f, 32f, 32f),
+                new Vector2(0.5f, 0.5f),
+                32f);
+            runtimeFallbackIcon.name = "SkillManagerFallbackIcon";
+            runtimeFallbackIcon.hideFlags = HideFlags.HideAndDontSave;
+
+            return runtimeFallbackIcon;
         }
     }
 }

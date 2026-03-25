@@ -1,0 +1,4 @@
+﻿"name","fullname","result","duration"
+"MainMenuController_P0Subtitle_UsesUnifiedActionBindingLabel","ThirdPersonController.Tests.InputHintConsistencyP0RegressionTests.MainMenuController_P0Subtitle_UsesUnifiedActionBindingLabel","Passed","0.004292"
+"UIHudHints_P0DisplayHints_UseSameActionLabelsAsInputLayer","ThirdPersonController.Tests.InputHintConsistencyP0RegressionTests.UIHudHints_P0DisplayHints_UseSameActionLabelsAsInputLayer","Passed","0.008667"
+"UISkillBar_P0BindingLabels_StayConsistentWithInputLayer","ThirdPersonController.Tests.InputHintConsistencyP0RegressionTests.UISkillBar_P0BindingLabels_StayConsistentWithInputLayer","Passed","0.008733"

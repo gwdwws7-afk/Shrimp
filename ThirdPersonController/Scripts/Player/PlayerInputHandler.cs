@@ -8,6 +8,13 @@ using UnityEngine.InputSystem.Controls;
 
 namespace ThirdPersonController
 {
+    public enum InputPromptDevice
+    {
+        Unknown = 0,
+        KeyboardMouse = 1,
+        Gamepad = 2
+    }
+
     /// <summary>
     /// Player input handler.
     /// Uses Input Actions when Input System is enabled, falls back to Legacy Input otherwise.
@@ -82,6 +89,9 @@ namespace ThirdPersonController
         public bool MusouPressed { get; private set; }
         public float MouseScrollDelta { get; private set; }
         public float GamepadZoomAxis { get; private set; }
+        public InputPromptDevice CurrentPromptDevice { get; private set; } = InputPromptDevice.KeyboardMouse;
+        public event Action<InputPromptDevice> OnPromptDeviceChanged;
+        [SerializeField] private InputPromptDevice debugPromptDevice = InputPromptDevice.KeyboardMouse;
         private readonly bool[] skillPressedThisFrame = new bool[6];
         private readonly bool[] quickSlotPressedThisFrame = new bool[3];
         private bool inputActionsUnavailableLogged;
@@ -114,6 +124,8 @@ namespace ThirdPersonController
         private void Awake()
         {
             ActiveInstance = this;
+            CurrentPromptDevice = DetermineDefaultPromptDevice();
+            debugPromptDevice = CurrentPromptDevice;
 
 #if ENABLE_INPUT_SYSTEM
             if (!useInputActions)
@@ -341,9 +353,13 @@ namespace ThirdPersonController
 
             InputAction toggleEconomyAction = gameplayActionMap.AddAction("ToggleEconomy", InputActionType.Button);
             toggleEconomyAction.AddBinding("<Keyboard>/y");
+            toggleEconomyAction.AddBinding("<Gamepad>/select")
+                .WithInteraction("Hold(duration=0.35)");
 
             InputAction toggleTalentAction = gameplayActionMap.AddAction("ToggleTalent", InputActionType.Button);
             toggleTalentAction.AddBinding("<Keyboard>/u");
+            toggleTalentAction.AddBinding("<Gamepad>/start")
+                .WithInteraction("Hold(duration=0.35)");
 
             InputAction toggleHintsAction = gameplayActionMap.AddAction("ToggleHints", InputActionType.Button);
             toggleHintsAction.AddBinding("<Keyboard>/h");
@@ -606,6 +622,8 @@ namespace ThirdPersonController
             {
                 GamepadZoomAxis = 0f;
             }
+
+            UpdatePromptDeviceFromInput(rawLook, usingGamepad);
         }
 
         private void HandleCursorToggleInputActions()
@@ -887,7 +905,7 @@ namespace ThirdPersonController
                 InputAction action = FindActionAcrossMaps(actionName);
                 if (action != null)
                 {
-                    string keyboardLabel = GetActionBindingDisplayByDevice(action, "Keyboard");
+                    string keyboardLabel = GetActionBindingDisplayForDesktop(action);
                     string gamepadLabel = includeGamepad ? GetActionBindingDisplayByDevice(action, "Gamepad") : string.Empty;
 
                     if (!string.IsNullOrEmpty(keyboardLabel) && !string.IsNullOrEmpty(gamepadLabel))
@@ -921,6 +939,21 @@ namespace ThirdPersonController
             return fallbackKey != KeyCode.None ? GetFriendlyKeyLabel(fallbackKey) : string.Empty;
         }
 
+        public bool ActionHasGamepadBinding(string actionName)
+        {
+            return ActionHasBindingForDevice(actionName, "Gamepad");
+        }
+
+        public bool ActionHasKeyboardBinding(string actionName)
+        {
+            return ActionHasBindingForDevice(actionName, "Keyboard");
+        }
+
+        public bool ActionHasMouseBinding(string actionName)
+        {
+            return ActionHasBindingForDevice(actionName, "Mouse");
+        }
+
         public bool AreDebugHotkeysEnabled()
         {
 #if ENABLE_INPUT_SYSTEM
@@ -951,6 +984,11 @@ namespace ThirdPersonController
         public float ReadGamepadZoomAxis()
         {
             return GamepadZoomAxis;
+        }
+
+        public void ForcePromptDeviceForTests(InputPromptDevice promptDevice)
+        {
+            SetPromptDevice(promptDevice, forceNotify: true);
         }
 
         public static bool ReadUnifiedKeyDown(KeyCode key)
@@ -997,6 +1035,149 @@ namespace ThirdPersonController
             return 0f;
         }
 
+        private InputPromptDevice DetermineDefaultPromptDevice()
+        {
+#if ENABLE_INPUT_SYSTEM
+            if (Gamepad.current != null)
+            {
+                return InputPromptDevice.Gamepad;
+            }
+#endif
+            return InputPromptDevice.KeyboardMouse;
+        }
+
+        private void SetPromptDevice(InputPromptDevice promptDevice, bool forceNotify = false)
+        {
+            if (promptDevice == InputPromptDevice.Unknown)
+            {
+                return;
+            }
+
+            if (!forceNotify && CurrentPromptDevice == promptDevice)
+            {
+                return;
+            }
+
+            CurrentPromptDevice = promptDevice;
+            debugPromptDevice = promptDevice;
+            OnPromptDeviceChanged?.Invoke(promptDevice);
+        }
+
+#if ENABLE_INPUT_SYSTEM
+        private void UpdatePromptDeviceFromInput(Vector2 rawLook, bool lookUsingGamepad)
+        {
+            InputPromptDevice resolved = InputPromptDevice.Unknown;
+
+            if (AttackPressed || HeavyAttackPressed)
+            {
+                resolved = ResolvePromptDeviceFromAction(AttackPressed ? attackAction : heavyAttackAction);
+            }
+
+            if (resolved == InputPromptDevice.Unknown && (DodgePressed || InteractPressed || MusouPressed))
+            {
+                resolved = ResolvePromptDeviceFromAction(
+                    DodgePressed ? dodgeAction : (InteractPressed ? interactAction : musouAction));
+            }
+
+            if (resolved == InputPromptDevice.Unknown && rawLook.sqrMagnitude > 0.0001f)
+            {
+                resolved = lookUsingGamepad ? InputPromptDevice.Gamepad : InputPromptDevice.KeyboardMouse;
+            }
+
+            if (resolved == InputPromptDevice.Unknown && MoveInput.sqrMagnitude > 0.0001f)
+            {
+                resolved = ResolvePromptDeviceFromAction(moveAction);
+            }
+
+            if (resolved == InputPromptDevice.Unknown)
+            {
+                if (HasGamepadActivity())
+                {
+                    resolved = InputPromptDevice.Gamepad;
+                }
+                else if (HasKeyboardMouseActivity())
+                {
+                    resolved = InputPromptDevice.KeyboardMouse;
+                }
+            }
+
+            if (resolved == InputPromptDevice.Unknown)
+            {
+                resolved = CurrentPromptDevice != InputPromptDevice.Unknown
+                    ? CurrentPromptDevice
+                    : DetermineDefaultPromptDevice();
+            }
+
+            SetPromptDevice(resolved);
+        }
+
+        private static InputPromptDevice ResolvePromptDeviceFromAction(InputAction action)
+        {
+            if (action == null || action.activeControl == null || action.activeControl.device == null)
+            {
+                return InputPromptDevice.Unknown;
+            }
+
+            InputDevice device = action.activeControl.device;
+            if (device is Gamepad)
+            {
+                return InputPromptDevice.Gamepad;
+            }
+
+            if (device is Keyboard || device is Mouse)
+            {
+                return InputPromptDevice.KeyboardMouse;
+            }
+
+            return InputPromptDevice.Unknown;
+        }
+
+        private static bool HasGamepadActivity()
+        {
+            Gamepad gamepad = Gamepad.current;
+            if (gamepad == null)
+            {
+                return false;
+            }
+
+            const float stickThreshold = 0.15f;
+            const float triggerThreshold = 0.15f;
+            return gamepad.leftStick.ReadValue().sqrMagnitude >= stickThreshold * stickThreshold
+                || gamepad.rightStick.ReadValue().sqrMagnitude >= stickThreshold * stickThreshold
+                || gamepad.leftTrigger.ReadValue() >= triggerThreshold
+                || gamepad.rightTrigger.ReadValue() >= triggerThreshold
+                || gamepad.buttonSouth.isPressed
+                || gamepad.buttonNorth.isPressed
+                || gamepad.buttonEast.isPressed
+                || gamepad.buttonWest.isPressed
+                || gamepad.leftShoulder.isPressed
+                || gamepad.rightShoulder.isPressed
+                || gamepad.dpad.up.isPressed
+                || gamepad.dpad.right.isPressed
+                || gamepad.dpad.down.isPressed
+                || gamepad.dpad.left.isPressed;
+        }
+
+        private static bool HasKeyboardMouseActivity()
+        {
+            if (Keyboard.current != null && Keyboard.current.anyKey != null && Keyboard.current.anyKey.isPressed)
+            {
+                return true;
+            }
+
+            if (Mouse.current == null)
+            {
+                return false;
+            }
+
+            return Mouse.current.leftButton.isPressed
+                || Mouse.current.rightButton.isPressed
+                || Mouse.current.middleButton.isPressed
+                || Mouse.current.delta.ReadValue().sqrMagnitude > 0.0001f
+                || Mathf.Abs(Mouse.current.scroll.ReadValue().y) > 0.001f;
+        }
+#endif
+
         public static string GetFriendlyKeyLabel(KeyCode key)
         {
             switch (key)
@@ -1027,6 +1208,29 @@ namespace ThirdPersonController
             return key.ToString();
         }
 
+        private bool ActionHasBindingForDevice(string actionName, string deviceName)
+        {
+#if ENABLE_INPUT_SYSTEM
+            if (string.IsNullOrEmpty(actionName)
+                || string.IsNullOrEmpty(deviceName)
+                || !useInputActions
+                || !EnsureInputActionsReady())
+            {
+                return false;
+            }
+
+            InputAction action = FindActionAcrossMaps(actionName);
+            if (action == null)
+            {
+                return false;
+            }
+
+            return HasBindingForDevice(action, deviceName);
+#else
+            return false;
+#endif
+        }
+
 #if ENABLE_INPUT_SYSTEM
         private string GetActionBindingDisplayByDevice(InputAction action, string deviceName)
         {
@@ -1038,7 +1242,7 @@ namespace ThirdPersonController
             for (int i = 0; i < action.bindings.Count; i++)
             {
                 InputBinding binding = action.bindings[i];
-                if (binding.isComposite || binding.isPartOfComposite)
+                if (binding.isComposite)
                 {
                     continue;
                 }
@@ -1057,6 +1261,54 @@ namespace ThirdPersonController
             }
 
             return string.Empty;
+        }
+
+        private string GetActionBindingDisplayForDesktop(InputAction action)
+        {
+            if (action == null)
+            {
+                return string.Empty;
+            }
+
+            string keyboardDisplay = GetActionBindingDisplayByDevice(action, "Keyboard");
+            if (!string.IsNullOrEmpty(keyboardDisplay))
+            {
+                return keyboardDisplay;
+            }
+
+            // Mouse-only actions (e.g. Attack/HeavyAttack) should still be treated as desktop prompts.
+            return GetActionBindingDisplayByDevice(action, "Mouse");
+        }
+
+        private static bool HasBindingForDevice(InputAction action, string deviceName)
+        {
+            if (action == null || string.IsNullOrEmpty(deviceName))
+            {
+                return false;
+            }
+
+            for (int i = 0; i < action.bindings.Count; i++)
+            {
+                InputBinding binding = action.bindings[i];
+                if (binding.isComposite)
+                {
+                    continue;
+                }
+
+                string defaultPath = binding.path;
+                string overridePath = binding.overridePath;
+                bool defaultMatch = !string.IsNullOrEmpty(defaultPath)
+                    && defaultPath.IndexOf($"<{deviceName}>", StringComparison.OrdinalIgnoreCase) >= 0;
+                bool overrideMatch = !string.IsNullOrEmpty(overridePath)
+                    && overridePath.IndexOf($"<{deviceName}>", StringComparison.OrdinalIgnoreCase) >= 0;
+
+                if (defaultMatch || overrideMatch)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static bool TryReadInputSystemButton(KeyCode key, out ButtonControl button)

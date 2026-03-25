@@ -56,12 +56,17 @@ namespace ThirdPersonController
 
             int price = GetPrice(itemId);
             int totalPrice = price * quantity;
-            if (wallet == null || !wallet.SpendCredits(totalPrice))
+            if (wallet == null)
             {
                 return false;
             }
 
             if (inventory == null)
+            {
+                return false;
+            }
+
+            if (!wallet.SpendCredits(totalPrice))
             {
                 return false;
             }

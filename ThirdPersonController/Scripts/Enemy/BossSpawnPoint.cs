@@ -33,6 +33,59 @@ namespace ThirdPersonController
         public int baseDamage = 25;
         public float knockback = 6f;
 
+        [Header("Encounter Profile")]
+        public BossEncounterProfile encounterProfile;
+        public bool applyEncounterProfile = true;
+        public bool logEncounterProfileApply = false;
+
+        [Header("Encounter Tuning")]
+        public bool overrideEncounterTuning = false;
+        public float phase2HealthThreshold = 0.66f;
+        public float phase3HealthThreshold = 0.33f;
+        public float breakWindowDuration = 4f;
+        public float breakWindowCooldown = 12f;
+        public float breakWindowDamageMultiplier = 1.6f;
+        public float staggerMax = 120f;
+        public float staggerPerDamage = 1f;
+        public float attackInterval = 3.2f;
+        public float decisionInterval = 0.78f;
+        public int queuedAttackLimit = 3;
+        public float immediateRepeatPenalty = 0.32f;
+        public bool enablePostBreakPunishWindow = true;
+        public float postBreakPunishDuration = 5f;
+        public float postBreakAttackIntervalMultiplier = 0.75f;
+        public float postBreakDecisionIntervalMultiplier = 0.82f;
+        public float postBreakChaseSpeedMultiplier = 1.15f;
+        public bool enablePhaseComboChain = true;
+        public float phase2ComboChance = 0.45f;
+        public float phase3ComboChance = 0.65f;
+        public float comboStartDelay = 0.08f;
+        public float comboRepeatPenalty = 0.35f;
+        public bool enableInterruptRecoveryGate = true;
+        public float interruptRecoveryDuration = 0.2f;
+        public float interruptedAttackCooldownScale = 0.45f;
+        public bool enableTimePressure = true;
+        public float timePressureDelay = 75f;
+        public float timePressureRampDuration = 60f;
+        public float maxTimePressureDamageMultiplier = 1.35f;
+        public float maxTimePressureSpeedMultiplier = 1.2f;
+        public bool enablePhaseTransitionOpeners = true;
+        public string phase2TransitionOpenerId = "";
+        public string phase3TransitionOpenerId = "";
+        public bool enablePhaseTransitionOpenerRetry = true;
+        public float phaseTransitionOpenerRetryDelay = 0.12f;
+        public int phaseTransitionOpenerMaxRetries = 3;
+        public bool enablePhaseTransitionFollowupChain = false;
+        public string phase2TransitionFollowupId = "";
+        public string phase3TransitionFollowupId = "";
+        public bool enablePhaseTransitionFollowupRetry = true;
+        public float phaseTransitionFollowupRetryDelay = 0.12f;
+        public int phaseTransitionFollowupMaxRetries = 2;
+        public bool enablePhase3SpecialPriorityWindow = true;
+        public float phase3SpecialPriorityDuration = 6f;
+        public float phase3SpecialPriorityWeightMultiplier = 1.7f;
+        public bool forceSpecialQueueDuringPhase3Priority = true;
+
         [Header("UI")]
         public UI_BossHealthBar bossHealthBar;
 
@@ -92,12 +145,28 @@ namespace ThirdPersonController
             }
         }
 
+        private void ApplyEncounterProfileIfNeeded()
+        {
+            if (!applyEncounterProfile || encounterProfile == null)
+            {
+                return;
+            }
+
+            encounterProfile.ApplyTo(this);
+            if (logEncounterProfileApply)
+            {
+                Debug.Log($"[BossSpawnPoint] Applied encounter profile '{encounterProfile.name}' to '{name}'.");
+            }
+        }
+
         public void SpawnBoss()
         {
             if (bossPrefab == null || spawnedBoss != null || isDefeated)
             {
                 return;
             }
+
+            ApplyEncounterProfileIfNeeded();
 
             Vector3 spawnPosition = transform.position + spawnOffset;
             spawnedBoss = Instantiate(bossPrefab, spawnPosition, transform.rotation);
@@ -143,6 +212,7 @@ namespace ThirdPersonController
             }
             template.baseDamage = baseDamage;
             template.baseKnockback = knockback;
+            ApplyEncounterTuning(template);
 
             AttachPrototype(spawnedBoss);
 
@@ -168,7 +238,97 @@ namespace ThirdPersonController
 
             controller.maxHealth = maxHealth;
             controller.currentPhase = 1;
+            ApplyEncounterTuning(controller);
             controller.enabled = true;
+        }
+
+        private void ApplyEncounterTuning(BossController controller)
+        {
+            if (!overrideEncounterTuning || controller == null)
+            {
+                return;
+            }
+
+            controller.breakWindowDuration = Mathf.Max(0f, breakWindowDuration);
+            controller.breakWindowCooldown = Mathf.Max(0f, breakWindowCooldown);
+            controller.breakWindowDamageMultiplier = Mathf.Max(1f, breakWindowDamageMultiplier);
+            controller.staggerMax = Mathf.Max(1f, staggerMax);
+            controller.staggerPerDamage = Mathf.Max(0f, staggerPerDamage);
+            controller.attackInterval = Mathf.Max(0f, attackInterval);
+            controller.decisionInterval = Mathf.Max(0.05f, decisionInterval);
+            controller.queuedAttackLimit = Mathf.Max(1, queuedAttackLimit);
+            controller.immediateRepeatPenalty = Mathf.Clamp01(immediateRepeatPenalty);
+            controller.enablePostBreakPunishWindow = enablePostBreakPunishWindow;
+            controller.postBreakPunishDuration = Mathf.Max(0f, postBreakPunishDuration);
+            controller.postBreakAttackIntervalMultiplier = Mathf.Clamp(postBreakAttackIntervalMultiplier, 0.3f, 1f);
+            controller.postBreakDecisionIntervalMultiplier = Mathf.Clamp(postBreakDecisionIntervalMultiplier, 0.3f, 1f);
+            controller.postBreakChaseSpeedMultiplier = Mathf.Max(1f, postBreakChaseSpeedMultiplier);
+            controller.enablePhaseComboChain = enablePhaseComboChain;
+            controller.phase2ComboChance = Mathf.Clamp01(phase2ComboChance);
+            controller.phase3ComboChance = Mathf.Clamp01(phase3ComboChance);
+            controller.comboStartDelay = Mathf.Max(0f, comboStartDelay);
+            controller.comboRepeatPenalty = Mathf.Clamp01(comboRepeatPenalty);
+            controller.enableInterruptRecoveryGate = enableInterruptRecoveryGate;
+            controller.interruptRecoveryDuration = Mathf.Max(0f, interruptRecoveryDuration);
+            controller.interruptedAttackCooldownScale = Mathf.Clamp01(interruptedAttackCooldownScale);
+            controller.enableTimePressure = enableTimePressure;
+            controller.timePressureDelay = Mathf.Max(0f, timePressureDelay);
+            controller.timePressureRampDuration = Mathf.Max(1f, timePressureRampDuration);
+            controller.maxTimePressureDamageMultiplier = Mathf.Max(1f, maxTimePressureDamageMultiplier);
+            controller.maxTimePressureSpeedMultiplier = Mathf.Max(1f, maxTimePressureSpeedMultiplier);
+            controller.enablePhaseTransitionOpeners = enablePhaseTransitionOpeners;
+            controller.phase2TransitionOpenerId = phase2TransitionOpenerId ?? string.Empty;
+            controller.phase3TransitionOpenerId = phase3TransitionOpenerId ?? string.Empty;
+            controller.enablePhaseTransitionOpenerRetry = enablePhaseTransitionOpenerRetry;
+            controller.phaseTransitionOpenerRetryDelay = Mathf.Max(0f, phaseTransitionOpenerRetryDelay);
+            controller.phaseTransitionOpenerMaxRetries = Mathf.Max(0, phaseTransitionOpenerMaxRetries);
+            controller.enablePhaseTransitionFollowupChain = enablePhaseTransitionFollowupChain;
+            controller.phase2TransitionFollowupId = phase2TransitionFollowupId ?? string.Empty;
+            controller.phase3TransitionFollowupId = phase3TransitionFollowupId ?? string.Empty;
+            controller.enablePhaseTransitionFollowupRetry = enablePhaseTransitionFollowupRetry;
+            controller.phaseTransitionFollowupRetryDelay = Mathf.Max(0f, phaseTransitionFollowupRetryDelay);
+            controller.phaseTransitionFollowupMaxRetries = Mathf.Max(0, phaseTransitionFollowupMaxRetries);
+            controller.enablePhase3SpecialPriorityWindow = enablePhase3SpecialPriorityWindow;
+            controller.phase3SpecialPriorityDuration = Mathf.Max(0f, phase3SpecialPriorityDuration);
+            controller.phase3SpecialPriorityWeightMultiplier = Mathf.Max(1f, phase3SpecialPriorityWeightMultiplier);
+            controller.forceSpecialQueueDuringPhase3Priority = forceSpecialQueueDuringPhase3Priority;
+            ApplyPhaseThresholds(controller.phases);
+        }
+
+        private void ApplyEncounterTuning(BossCombatTemplate template)
+        {
+            if (!overrideEncounterTuning || template == null)
+            {
+                return;
+            }
+
+            template.phase2HealthThreshold = Mathf.Clamp(phase2HealthThreshold, 0.1f, 0.95f);
+            template.breakWindowDuration = Mathf.Max(0f, breakWindowDuration);
+            template.breakCooldown = Mathf.Max(0f, breakWindowCooldown);
+            template.breakWindowDamageMultiplier = Mathf.Max(1f, breakWindowDamageMultiplier);
+            template.staggerMax = Mathf.Max(1f, staggerMax);
+            template.staggerPerDamage = Mathf.Max(0f, staggerPerDamage);
+        }
+
+        private void ApplyPhaseThresholds(System.Collections.Generic.List<BossPhase> phases)
+        {
+            if (phases == null || phases.Count == 0)
+            {
+                return;
+            }
+
+            float phase2 = Mathf.Clamp(phase2HealthThreshold, 0.1f, 0.95f);
+            float phase3 = Mathf.Clamp(phase3HealthThreshold, 0.05f, phase2 - 0.05f);
+
+            if (phases.Count > 1 && phases[1] != null)
+            {
+                phases[1].healthPercentThreshold = phase2;
+            }
+
+            if (phases.Count > 2 && phases[2] != null)
+            {
+                phases[2].healthPercentThreshold = phase3;
+            }
         }
 
         private static void DisablePrototypeTemplateWhenControllerMode(GameObject bossObject)
@@ -218,6 +378,13 @@ namespace ThirdPersonController
 
         private UI_BossHealthBar EnsureBossHealthUI()
         {
+            // In batch/headless test runs, creating TMP UI can trigger editor-only importer windows.
+            // Skip dynamic UI creation to keep PlayMode gates deterministic in CI.
+            if (Application.isBatchMode)
+            {
+                return null;
+            }
+
             UI_BossHealthBar existing = FindObjectOfType<UI_BossHealthBar>();
             if (existing != null)
             {

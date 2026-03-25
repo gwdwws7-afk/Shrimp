@@ -3,6 +3,14 @@ using System.Collections.Generic;
 
 namespace ThirdPersonController
 {
+    public enum AudioEventPriority
+    {
+        Low = 0,
+        Normal = 1,
+        High = 2,
+        Critical = 3
+    }
+
     /// <summary>
     /// AudioManager 模块的核心实现，负责统一管理关键运行流程与对外接口。
     /// </summary>
@@ -11,6 +19,7 @@ namespace ThirdPersonController
         [Header("设置")]
         public AudioSource musicSource; // 背景音乐播放通道，保持 BGM 独立控制。
         public AudioSource sfxSource; // 战斗/场景音效通道，承载高频短音。
+        public AudioSource prioritySfxSource; // 关键反馈通道，保证高优先事件可听见。
         public AudioSource uiSource; // UI 交互音效通道，避免与战斗音效抢占。
         public AudioSource voiceSource; // 语音/台词通道，便于单独调节混音。
         
@@ -35,6 +44,7 @@ namespace ThirdPersonController
         public AudioClip[] enemyDeathSounds;
         public AudioClip[] comboSounds;
         public AudioClip berserkStartSound;
+        public AudioClip bossBreakWindowSound;
         public AudioClip[] skillSounds;
         public AudioClip[] footstepSounds;
 
@@ -48,6 +58,14 @@ namespace ThirdPersonController
 // 缓存容器，用于复用对象并减少运行时分配。
         private Queue<AudioSource> sfxPool = new Queue<AudioSource>();
         private const int POOL_SIZE = 10;
+        [SerializeField] private AudioEventPriority debugLastPriority = AudioEventPriority.Normal;
+        [SerializeField] private bool debugLastUsedPriorityChannel = false;
+        [SerializeField] private int debugPlaySfxCallCount = 0;
+        [SerializeField] private string debugLastSfxClipName = string.Empty;
+        public AudioEventPriority LastPlayedPriority => debugLastPriority;
+        public bool LastUsedPriorityChannel => debugLastUsedPriorityChannel;
+        public int DebugPlaySfxCallCount => debugPlaySfxCallCount;
+        public string LastSfxClipName => debugLastSfxClipName;
         
         protected override void OnAwake()
         {
@@ -65,12 +83,16 @@ namespace ThirdPersonController
 
             GameEvents.OnEnemyHit += HandleEnemyHit;
             GameEvents.OnEnemyKilled += HandleEnemyKilled;
+            GameEvents.OnBerserkStateChanged += HandleBerserkStateChanged;
+            GameEvents.OnBossBreakWindowStart += HandleBossBreakWindowStart;
         }
 
         private void OnDisable()
         {
             GameEvents.OnEnemyHit -= HandleEnemyHit;
             GameEvents.OnEnemyKilled -= HandleEnemyKilled;
+            GameEvents.OnBerserkStateChanged -= HandleBerserkStateChanged;
+            GameEvents.OnBossBreakWindowStart -= HandleBossBreakWindowStart;
         }
         
         private void InitializeAudioSources()
@@ -91,6 +113,14 @@ namespace ThirdPersonController
                 sfxObj.transform.SetParent(transform);
                 sfxSource = sfxObj.AddComponent<AudioSource>();
                 sfxSource.playOnAwake = false;
+            }
+
+            if (prioritySfxSource == null)
+            {
+                GameObject priorityObj = new GameObject("Priority SFX Source");
+                priorityObj.transform.SetParent(transform);
+                prioritySfxSource = priorityObj.AddComponent<AudioSource>();
+                prioritySfxSource.playOnAwake = false;
             }
             
             if (uiSource == null)
@@ -180,9 +210,22 @@ namespace ThirdPersonController
         /// <summary>
         /// 播放SFX，触发表现层反馈并保持时序一致。
         /// </summary>
-        public void PlaySFX(AudioClip clip, float volume = 1f, float pitch = 1f)
+        public void PlaySFX(AudioClip clip, float volume = 1f, float pitch = 1f, AudioEventPriority priority = AudioEventPriority.Normal)
         {
             if (clip == null) return;
+            debugPlaySfxCallCount++;
+            debugLastSfxClipName = clip.name ?? string.Empty;
+            debugLastPriority = priority;
+
+            if (priority >= AudioEventPriority.High && prioritySfxSource != null)
+            {
+                debugLastUsedPriorityChannel = true;
+                prioritySfxSource.pitch = pitch;
+                prioritySfxSource.volume = volume * sfxVolume * masterVolume;
+                prioritySfxSource.PlayOneShot(clip);
+                return;
+            }
+            debugLastUsedPriorityChannel = false;
             
             AudioSource source = GetPooledSFXSource();
             source.pitch = pitch;
@@ -196,9 +239,15 @@ namespace ThirdPersonController
         /// <summary>
         /// 播放SFXAt Position，触发表现层反馈并保持时序一致。
         /// </summary>
-        public void PlaySFXAtPosition(AudioClip clip, Vector3 position, float volume = 1f)
+        public void PlaySFXAtPosition(AudioClip clip, Vector3 position, float volume = 1f, AudioEventPriority priority = AudioEventPriority.Normal)
         {
             if (clip == null) return;
+
+            if (priority >= AudioEventPriority.High)
+            {
+                PlaySFX(clip, volume, 1f, priority);
+                return;
+            }
             
             AudioSource.PlayClipAtPoint(clip, position, volume * sfxVolume * masterVolume);
         }
@@ -245,7 +294,10 @@ namespace ThirdPersonController
             }
 
             int index = Random.Range(0, source.Length);
-            PlaySFXAtPosition(source[index], position);
+            AudioEventPriority priority = reactionType == EnemyHitReactionType.Flinch
+                ? AudioEventPriority.Normal
+                : AudioEventPriority.High;
+            PlaySFXAtPosition(source[index], position, 1f, priority);
         }
         
         /// <summary>
@@ -277,7 +329,15 @@ namespace ThirdPersonController
         {
             if (berserkStartSound != null)
             {
-                PlaySFX(berserkStartSound, 1.2f);
+                PlaySFX(berserkStartSound, 1.2f, 1f, AudioEventPriority.High);
+            }
+        }
+
+        public void PlayBossBreakWindowSound()
+        {
+            if (bossBreakWindowSound != null)
+            {
+                PlaySFX(bossBreakWindowSound, 1.1f, 1f, AudioEventPriority.High);
             }
         }
         
@@ -288,7 +348,7 @@ namespace ThirdPersonController
         {
             if (skillSounds.Length == 0 || skillIndex < 0 || skillIndex >= skillSounds.Length) return;
             
-            PlaySFX(skillSounds[skillIndex]);
+            PlaySFX(skillSounds[skillIndex], 1f, 1f, AudioEventPriority.High);
         }
         
         /// <summary>
@@ -323,6 +383,21 @@ namespace ThirdPersonController
         private void HandleEnemyKilled(EnemyType type, Vector3 position, int expReward)
         {
             PlayEnemyDeathSound(position);
+        }
+
+        private void HandleBerserkStateChanged(bool isActive)
+        {
+            if (!isActive)
+            {
+                return;
+            }
+
+            PlayBerserkSound();
+        }
+
+        private void HandleBossBreakWindowStart()
+        {
+            PlayBossBreakWindowSound();
         }
         
         #region 闊抽噺鎺у埗
@@ -366,6 +441,9 @@ namespace ThirdPersonController
             
             if (sfxSource != null)
                 sfxSource.volume = sfxVolume * masterVolume;
+
+            if (prioritySfxSource != null)
+                prioritySfxSource.volume = sfxVolume * masterVolume;
             
             if (uiSource != null)
                 uiSource.volume = uiVolume * masterVolume;

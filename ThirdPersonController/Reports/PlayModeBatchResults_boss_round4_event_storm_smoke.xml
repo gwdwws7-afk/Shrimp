@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-03-23 14:36:58Z" end-time="2026-03-23 14:37:00Z" duration="2.1997355">
+  <test-suite type="TestSuite" id="1000" name="Shrimp" fullname="Shrimp" runstate="Runnable" testcasecount="150" result="Passed" start-time="2026-03-23 14:36:58Z" end-time="2026-03-23 14:37:00Z" duration="2.199736" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties />
+    <test-suite type="Assembly" id="1178" name="ThirdPersonController.PlayModeTests.dll" fullname="C:/test/Shrimp/Library/ScriptAssemblies/ThirdPersonController.PlayModeTests.dll" runstate="Runnable" testcasecount="150" result="Passed" start-time="2026-03-23 14:36:58Z" end-time="2026-03-23 14:37:00Z" duration="2.191793" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="5088" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+      </properties>
+      <test-suite type="TestSuite" id="1179" name="ThirdPersonController" fullname="ThirdPersonController" runstate="Runnable" testcasecount="150" result="Passed" start-time="2026-03-23 14:36:58Z" end-time="2026-03-23 14:37:00Z" duration="2.190873" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1180" name="Tests" fullname="ThirdPersonController.Tests" runstate="Runnable" testcasecount="150" result="Passed" start-time="2026-03-23 14:36:58Z" end-time="2026-03-23 14:37:00Z" duration="2.190094" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1028" name="BossLevel10GateRegressionTests" fullname="ThirdPersonController.Tests.BossLevel10GateRegressionTests" classname="ThirdPersonController.Tests.BossLevel10GateRegressionTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-03-23 14:36:58Z" end-time="2026-03-23 14:37:00Z" duration="2.185925" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1033" name="Level08To10SceneSwitch_BossDefeatEventStorm_ResolvesSingleCompletion" fullname="ThirdPersonController.Tests.BossLevel10GateRegressionTests.Level08To10SceneSwitch_BossDefeatEventStorm_ResolvesSingleCompletion" methodname="Level08To10SceneSwitch_BossDefeatEventStorm_ResolvesSingleCompletion" classname="ThirdPersonController.Tests.BossLevel10GateRegressionTests" runstate="Runnable" seed="219382969" result="Passed" start-time="2026-03-23 14:36:58Z" end-time="2026-03-23 14:37:00Z" duration="2.174759" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+              <output><![CDATA["Mesh_0" mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh.
+"Mesh_0" mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh.
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

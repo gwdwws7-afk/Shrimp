@@ -86,6 +86,13 @@ namespace ThirdPersonController
         public AudioClip castSound;
         public AudioClip hitSound;
         public AudioClip impactSound;
+
+        [Header("运行时兜底")]
+        public bool useFallbackAudioWhenMissing = true;
+        [Range(0f, 1f)]
+        public float fallbackCastAudioVolume = 0.35f;
+        [Range(0f, 1f)]
+        public float fallbackImpactAudioVolume = 0.45f;
         
         // 运行时状态（不参与资源配置序列化）
         [System.NonSerialized]
@@ -98,6 +105,15 @@ namespace ThirdPersonController
 
         [System.NonSerialized]
         protected SkillTimelineController timelineController;
+
+        private enum SkillAudioCue
+        {
+            Cast,
+            Impact
+        }
+
+        private static AudioClip fallbackCastClip;
+        private static AudioClip fallbackImpactClip;
 
         protected virtual void OnEnable()
         {
@@ -211,18 +227,23 @@ namespace ThirdPersonController
         /// <summary>
         /// 播放技能音效（优先走 AudioManager）。
         /// </summary>
-        protected void PlaySound(AudioClip clip, Vector3 position)
+        protected void PlaySound(AudioClip clip, Vector3 position, bool impactCue = false)
         {
-            if (clip != null)
+            AudioClip resolvedClip = ResolveClipForPlayback(
+                clip,
+                impactCue ? SkillAudioCue.Impact : SkillAudioCue.Cast);
+            if (resolvedClip == null)
             {
-                if (AudioManager.Instance != null)
-                {
-                    AudioManager.Instance.PlaySFXAtPosition(clip, position);
-                }
-                else
-                {
-                    AudioSource.PlayClipAtPoint(clip, position);
-                }
+                return;
+            }
+
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFXAtPosition(resolvedClip, position);
+            }
+            else
+            {
+                AudioSource.PlayClipAtPoint(resolvedClip, position);
             }
         }
 
@@ -237,7 +258,7 @@ namespace ThirdPersonController
                 SpawnFallbackBurst(position, rotation, GetTint(castTint), fallbackCastSize);
             }
 
-            PlaySound(castSound, position);
+            PlaySound(castSound, position, false);
         }
 
         protected void PlayImpactFX(Vector3 position, Quaternion rotation)
@@ -253,12 +274,83 @@ namespace ThirdPersonController
             }
 
             AudioClip clip = impactSound != null ? impactSound : hitSound;
-            PlaySound(clip, position);
+            PlaySound(clip, position, true);
 
             if (impactShakeStrength > 0f && ScreenEffectManager.Instance != null)
             {
                 ScreenEffectManager.Instance.ShakeCamera(impactShakeDuration, impactShakeStrength, 10);
             }
+        }
+
+        private AudioClip ResolveClipForPlayback(AudioClip clip, SkillAudioCue cue)
+        {
+            if (clip != null)
+            {
+                return clip;
+            }
+
+            if (!useFallbackAudioWhenMissing)
+            {
+                return null;
+            }
+
+            return GetOrCreateFallbackClip(cue);
+        }
+
+        private AudioClip GetOrCreateFallbackClip(SkillAudioCue cue)
+        {
+            if (cue == SkillAudioCue.Impact)
+            {
+                if (fallbackImpactClip == null)
+                {
+                    fallbackImpactClip = BuildFallbackToneClip(
+                        "SkillFallbackImpact",
+                        320f,
+                        0.09f,
+                        Mathf.Clamp01(fallbackImpactAudioVolume));
+                }
+
+                return fallbackImpactClip;
+            }
+
+            if (fallbackCastClip == null)
+            {
+                fallbackCastClip = BuildFallbackToneClip(
+                    "SkillFallbackCast",
+                    520f,
+                    0.07f,
+                    Mathf.Clamp01(fallbackCastAudioVolume));
+            }
+
+            return fallbackCastClip;
+        }
+
+        private static AudioClip BuildFallbackToneClip(string clipName, float frequency, float lengthSeconds, float amplitude)
+        {
+            const int sampleRate = 22050;
+            int sampleCount = Mathf.Max(64, Mathf.RoundToInt(sampleRate * Mathf.Max(0.02f, lengthSeconds)));
+            float[] samples = new float[sampleCount];
+
+            int fadeStartIndex = Mathf.Clamp(Mathf.RoundToInt(sampleCount * 0.6f), 0, sampleCount - 1);
+            int fadeDenominator = Mathf.Max(1, sampleCount - fadeStartIndex);
+
+            for (int i = 0; i < sampleCount; i++)
+            {
+                float time = i / (float)sampleRate;
+                float envelope = 1f;
+                if (i >= fadeStartIndex)
+                {
+                    float fade = (i - fadeStartIndex) / (float)fadeDenominator;
+                    envelope = Mathf.Lerp(1f, 0f, fade);
+                }
+
+                samples[i] = Mathf.Sin(2f * Mathf.PI * frequency * time) * amplitude * envelope;
+            }
+
+            AudioClip generated = AudioClip.Create(clipName, sampleCount, 1, sampleRate, false);
+            generated.SetData(samples, 0);
+            generated.hideFlags = HideFlags.HideAndDontSave;
+            return generated;
         }
 
         private void SpawnFallbackBurst(Vector3 position, Quaternion rotation, Color tint, float size)

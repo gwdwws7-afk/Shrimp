@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd005b213edb7bb4881e882ccc0e983e, type: 3}
+  m_Name: BossEncounterProfile_Eel_Default
+  m_EditorClassIdentifier: 
+  bossDisplayName: Eel Boss
+  bossIdentityId: eel_identity
+  roleFantasy: Maintain mobility pressure and force directional defensive reads.
+  counterPlayHint: Counter by dodging chain-rush endpoints and retaliating in punish
+    windows.
+  failLearningHint: 'Typical failure: late dodge on chain-rush follow-up.'
+  expectedPhaseCount: 2
+  expectedSkillCount: 3
+  definesBreakRule: 1
+  overrideSpawnStats: 0
+  maxHealth: 3800
+  expReward: 480
+  baseDamage: 32
+  knockback: 6.8
+  overrideEncounterTuning: 0
+  phase2HealthThreshold: 0.66
+  phase3HealthThreshold: 0.33
+  breakWindowDuration: 4.2
+  breakWindowCooldown: 12
+  breakWindowDamageMultiplier: 1.6
+  staggerMax: 128
+  staggerPerDamage: 1
+  attackInterval: 3.15
+  decisionInterval: 0.78
+  queuedAttackLimit: 3
+  immediateRepeatPenalty: 0.34
+  enablePostBreakPunishWindow: 1
+  postBreakPunishDuration: 5.2
+  postBreakAttackIntervalMultiplier: 0.75
+  postBreakDecisionIntervalMultiplier: 0.82
+  postBreakChaseSpeedMultiplier: 1.15
+  enablePhaseComboChain: 1
+  phase2ComboChance: 0.45
+  phase3ComboChance: 0.65
+  comboStartDelay: 0.08
+  comboRepeatPenalty: 0.35
+  enableInterruptRecoveryGate: 1
+  interruptRecoveryDuration: 0.2
+  interruptedAttackCooldownScale: 0.45
+  enableTimePressure: 1
+  timePressureDelay: 75
+  timePressureRampDuration: 60
+  maxTimePressureDamageMultiplier: 1.35
+  maxTimePressureSpeedMultiplier: 1.2
+  enablePhaseTransitionOpeners: 1
+  phase2TransitionOpenerId: eel_vortex
+  phase3TransitionOpenerId: eel_devour
+  enablePhaseTransitionOpenerRetry: 1
+  phaseTransitionOpenerRetryDelay: 0.12
+  phaseTransitionOpenerMaxRetries: 3
+  enablePhaseTransitionFollowupChain: 1
+  phase2TransitionFollowupId: eel_charge
+  phase3TransitionFollowupId: eel_vortex
+  enablePhaseTransitionFollowupRetry: 1
+  phaseTransitionFollowupRetryDelay: 0.12
+  phaseTransitionFollowupMaxRetries: 2
+  enablePhase3SpecialPriorityWindow: 1
+  phase3SpecialPriorityDuration: 6
+  phase3SpecialPriorityWeightMultiplier: 1.7
+  forceSpecialQueueDuringPhase3Priority: 1

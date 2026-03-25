@@ -1,0 +1,13 @@
+layer,source,slot,skill_key,icon_source,audio_source,fx_source,status,fixed_count,gap_count,note
+SkillAsset,Assets/Resources/Skills/SKILL_Berserk.asset,,Skills/SKILL_Berserk,Fallback(SkillManagerIcon),Fallback(SkillBaseTone),Fallback(SkillBaseBurst),Ok,0,0,icon->fallback;audio->fallback;fx->fallback
+SkillAsset,Assets/Resources/Skills/SKILL_DashAttack.asset,,Skills/SKILL_DashAttack,Fallback(SkillManagerIcon),Fallback(SkillBaseTone),Fallback(SkillBaseBurst),Ok,0,0,icon->fallback;audio->fallback;fx->fallback
+SkillAsset,Assets/Resources/Skills/SKILL_Pull.asset,,Skills/SKILL_Pull,Fallback(SkillManagerIcon),Fallback(SkillBaseTone),Fallback(SkillBaseBurst),Ok,0,0,icon->fallback;audio->fallback;fx->fallback
+SkillAsset,Assets/Resources/Skills/SKILL_Shockwave.asset,,Skills/SKILL_Shockwave,Fallback(SkillManagerIcon),Fallback(SkillBaseTone),Fallback(SkillBaseBurst),Ok,0,0,icon->fallback;audio->fallback;fx->fallback
+SkillAsset,Assets/Resources/Skills/SKILL_Ultimate.asset,,Skills/SKILL_Ultimate,Fallback(SkillManagerIcon),Fallback(SkillBaseTone),Fallback(SkillBaseBurst),Ok,0,0,icon->fallback;audio->fallback;fx->fallback
+SkillAsset,Assets/Resources/Skills/SKILL_Whirlwind.asset,,Skills/SKILL_Whirlwind,Fallback(SkillManagerIcon),Fallback(SkillBaseTone),Fallback(SkillBaseBurst),Ok,0,0,icon->fallback;audio->fallback;fx->fallback
+Loadout,Assets/Resources/Skills/DefaultSkillLoadout.asset,0,Skills/SKILL_Whirlwind,N/A,N/A,N/A,Ok,0,0,bound
+Loadout,Assets/Resources/Skills/DefaultSkillLoadout.asset,1,Skills/SKILL_Shockwave,N/A,N/A,N/A,Ok,0,0,bound
+Loadout,Assets/Resources/Skills/DefaultSkillLoadout.asset,2,Skills/SKILL_DashAttack,N/A,N/A,N/A,Ok,0,0,bound
+Loadout,Assets/Resources/Skills/DefaultSkillLoadout.asset,3,Skills/SKILL_Berserk,N/A,N/A,N/A,Ok,0,0,bound
+Loadout,Assets/Resources/Skills/DefaultSkillLoadout.asset,4,Skills/SKILL_Pull,N/A,N/A,N/A,Ok,0,0,bound
+Loadout,Assets/Resources/Skills/DefaultSkillLoadout.asset,5,Skills/SKILL_Ultimate,N/A,N/A,N/A,Ok,0,0,bound

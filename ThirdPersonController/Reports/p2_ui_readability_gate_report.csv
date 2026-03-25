@@ -1,0 +1,4 @@
+﻿"name","fullname","result","duration"
+"UICanvasScaler_DefaultReference_UsesCrossDeviceBaseline","ThirdPersonController.Tests.UICrossDeviceReadabilityRegressionTests.UICanvasScaler_DefaultReference_UsesCrossDeviceBaseline","Passed","0.001238"
+"UIHudHints_ReadabilityBaseline_RemainsInSafeRange","ThirdPersonController.Tests.UICrossDeviceReadabilityRegressionTests.UIHudHints_ReadabilityBaseline_RemainsInSafeRange","Passed","0.005135"
+"UISkillBar_AttackHintText_BaselineIsReadable","ThirdPersonController.Tests.UICrossDeviceReadabilityRegressionTests.UISkillBar_AttackHintText_BaselineIsReadable","Passed","0.002095"

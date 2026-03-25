@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: LevelData_Level03
   m_EditorClassIdentifier: 
   levelId: LEVEL_03
-  levelName: 热泉矿床
-  description: 稳定热泉矿床喷口，保护冷却装置，压制硫爆软体王。
+  levelName: "\u9411\uE15F\u7865\u942D\u57AE\u7C25"
+  description: "\u7ECB\u51B2\u757E\u9411\uE15F\u7865\u942D\u57AE\u7C25\u9360\u5CF0\u5F5B\u951B\u5C7C\u7E5A\u93B6\u3085\u558E\u9357\u78CB\uE5CA\u7F03\uE1C6\u7D1D\u9358\u5B2A\u57D7\u7EAD\uE0A4\u578E\u675E\uE219\u7D8B\u941C\u5B28\u20AC?"
   chapterId: 1
   difficulty: 1
   recommendedLevel: 3
@@ -44,33 +44,85 @@ MonoBehaviour:
       events:
       - name: Reinforcement
         eventType: 0
+        triggerDelay: 0.4
         triggerOnRemaining: 4
+        duration: 0
+        spawnInterval: 0
+        spawnRadius: 0
+        useReinforcementPoints: 1
         spawnCount: 3
         archetypeOverride: {fileID: 11400000, guid: a059d58600154f13bd410369ea8cf924, type: 2}
+        holdRadius: 0
+        holdDuration: 0
+        holdDecayRate: 1
+        showHoldMarker: 1
+        spawnDefenseTarget: 1
+        defenseTargetHealth: 0
+        failOnTargetDestroyed: 1
+        assignTargetToSpawnedEnemies: 1
     - waveIndex: 1
       replaceEvents: 1
       events:
       - name: Hold Point
         eventType: 2
-        holdDuration: 8
-        holdRadius: 5
+        triggerDelay: 0.4
+        triggerOnRemaining: -1
+        duration: 0
+        spawnInterval: 0
+        spawnRadius: 0
+        useReinforcementPoints: 1
+        spawnCount: 0
         archetypeOverride: {fileID: 11400000, guid: a06db0f69c764af7bdd821d48c1bfa54, type: 2}
+        holdRadius: 5
+        holdDuration: 8
+        holdDecayRate: 1
+        showHoldMarker: 1
+        spawnDefenseTarget: 1
+        defenseTargetHealth: 0
+        failOnTargetDestroyed: 1
+        assignTargetToSpawnedEnemies: 1
     - waveIndex: 2
       replaceEvents: 1
       events:
       - name: Chase
         eventType: 1
+        triggerDelay: 0.4
+        triggerOnRemaining: -1
         duration: 8
+        spawnInterval: 0
+        spawnRadius: 0
+        useReinforcementPoints: 1
         spawnCount: 2
         archetypeOverride: {fileID: 11400000, guid: a059d58600154f13bd410369ea8cf924, type: 2}
+        holdRadius: 0
+        holdDuration: 0
+        holdDecayRate: 1
+        showHoldMarker: 1
+        spawnDefenseTarget: 1
+        defenseTargetHealth: 0
+        failOnTargetDestroyed: 1
+        assignTargetToSpawnedEnemies: 1
     - waveIndex: 3
       replaceEvents: 1
       events:
       - name: Protect Target
         eventType: 3
-        defenseTargetHealth: 260
+        triggerDelay: 0.4
+        triggerOnRemaining: -1
+        duration: 0
+        spawnInterval: 0
+        spawnRadius: 0
+        useReinforcementPoints: 1
         spawnCount: 4
         archetypeOverride: {fileID: 11400000, guid: a06db0f69c764af7bdd821d48c1bfa54, type: 2}
+        holdRadius: 0
+        holdDuration: 0
+        holdDecayRate: 1
+        showHoldMarker: 1
+        spawnDefenseTarget: 1
+        defenseTargetHealth: 260
+        failOnTargetDestroyed: 1
+        assignTargetToSpawnedEnemies: 1
   nextLevelId: LEVEL_04
   starsRequired: 1
   unlockCost: 0
@@ -78,8 +130,8 @@ MonoBehaviour:
   basePearls: 3
   baseCredits: 70
   levelRewardMultiplier: 1.05
-  questRewardMultiplier: 1.0
-  dropChanceMultiplier: 1.0
+  questRewardMultiplier: 1
+  dropChanceMultiplier: 1
   sceneName: Level_03_ThermalVents
   overrideBossSettings: 1
   bossName: Boss_SulfurKing
@@ -89,3 +141,43 @@ MonoBehaviour:
   bossKnockback: 6
   bossScaleMultiplier: 2.2
   bossSpawnOffset: {x: 0, y: 0, z: 0}
+  overrideBossEncounterTuning: 1
+  bossPhase2HealthThreshold: 0.7
+  bossPhase3HealthThreshold: 0.38
+  bossBreakWindowDuration: 4
+  bossBreakWindowCooldown: 11
+  bossBreakWindowDamageMultiplier: 1.6
+  bossStaggerMax: 120
+  bossStaggerPerDamage: 1.1
+  bossAttackInterval: 3.41
+  bossDecisionInterval: 0.82
+  bossQueuedAttackLimit: 3
+  bossImmediateRepeatPenalty: 0.35
+  bossEnablePostBreakPunishWindow: 1
+  bossPostBreakPunishDuration: 5
+  bossPostBreakAttackIntervalMultiplier: 0.81
+  bossPostBreakDecisionIntervalMultiplier: 0.87
+  bossPostBreakChaseSpeedMultiplier: 1.1
+  bossEnablePhaseComboChain: 1
+  bossPhase2ComboChance: 0.41
+  bossPhase3ComboChance: 0.58
+  bossComboStartDelay: 0.15
+  bossComboRepeatPenalty: 0.38
+  bossEnableInterruptRecoveryGate: 1
+  bossInterruptRecoveryDuration: 0.27
+  bossInterruptedAttackCooldownScale: 0.57
+  bossEnableTimePressure: 1
+  bossTimePressureDelay: 77
+  bossTimePressureRampDuration: 64
+  bossMaxTimePressureDamageMultiplier: 1.33
+  bossMaxTimePressureSpeedMultiplier: 1.16
+  bossEnablePhaseTransitionOpeners: 1
+  bossPhase2TransitionOpenerId: 
+  bossEnablePhaseTransitionOpenerRetry: 1
+  bossPhaseTransitionOpenerRetryDelay: 0.12
+  bossPhaseTransitionOpenerMaxRetries: 3
+  bossEnablePhase3SpecialPriorityWindow: 1
+  bossPhase3SpecialPriorityDuration: 6
+  bossPhase3SpecialPriorityWeightMultiplier: 1.7
+  bossForceSpecialQueueDuringPhase3Priority: 1
+

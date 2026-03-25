@@ -72,6 +72,11 @@ namespace ThirdPersonController
         public float staggerPerDamage = 1f;
         public string breakTrigger = "Break";
 
+        [Header("Counterplay Window")]
+        public bool enableMissPunishWindow = true;
+        [Min(0f)] public float missPunishWindowDuration = 1.25f;
+        [Min(1f)] public float punishWindowStaggerMultiplier = 1.4f;
+
         [Header("Weak Point")]
         public Transform weakPoint;
         public float weakPointDamageMultiplier = 2f;
@@ -97,12 +102,15 @@ namespace ThirdPersonController
         private float breakCooldownTimer;
         private float breakTimer;
         private float staggerCurrent;
+        private bool punishWindowActive;
+        private float punishWindowTimer;
         private PlayerHealth cachedPlayer;
         private bool suppressNextDamageStagger;
         private string lastSkillId = string.Empty;
         private int repeatedSkillCount = 0;
 
         public bool IsBreakWindowActive => breakWindowActive;
+        public bool IsPunishWindowActive => punishWindowActive;
 
         protected virtual void Awake()
         {
@@ -138,6 +146,7 @@ namespace ThirdPersonController
 
             UpdatePhase();
             UpdateBreakWindow();
+            UpdatePunishWindow();
 
             if (!enableDecisions || breakWindowActive || isExecutingSkill)
             {
@@ -186,7 +195,7 @@ namespace ThirdPersonController
             OnPhaseChanged?.Invoke(currentPhase);
             if (debugMessages)
             {
-                GameEvents.ShowMessage("Boss Phase 2", 2f);
+                GameEvents.ShowMessage(Localize("boss.phase2", "Boss Phase 2"), 2f);
             }
         }
 
@@ -208,7 +217,8 @@ namespace ThirdPersonController
                 return;
             }
 
-            ApplyBreakValue(damage * Mathf.Max(0f, staggerPerDamage));
+            float breakValue = damage * Mathf.Max(0f, staggerPerDamage);
+            ApplyBreakValue(breakValue * GetCurrentPunishBreakMultiplier());
         }
 
         public void RegisterBreakValue(float breakValue)
@@ -224,7 +234,7 @@ namespace ThirdPersonController
             }
 
             suppressNextDamageStagger = true;
-            ApplyBreakValue(breakValue);
+            ApplyBreakValue(breakValue * GetCurrentPunishBreakMultiplier());
         }
 
         private void ApplyBreakValue(float value)
@@ -242,6 +252,7 @@ namespace ThirdPersonController
             breakTimer = 0f;
             staggerCurrent = 0f;
             breakCooldownTimer = breakCooldown;
+            ClosePunishWindow();
 
             if (animator != null && !string.IsNullOrEmpty(breakTrigger))
             {
@@ -257,7 +268,7 @@ namespace ThirdPersonController
             GameEvents.BossBreakWindowStart();
             if (debugMessages)
             {
-                GameEvents.ShowMessage("Break Window", 2f);
+                GameEvents.ShowMessage(Localize("boss.break_window", "Break Window"), 2f);
             }
         }
 
@@ -285,6 +296,56 @@ namespace ThirdPersonController
 
                 OnBreakWindowEnd?.Invoke();
             }
+        }
+
+        protected virtual void UpdatePunishWindow()
+        {
+            if (!punishWindowActive)
+            {
+                return;
+            }
+
+            punishWindowTimer -= Time.deltaTime;
+            if (punishWindowTimer <= 0f)
+            {
+                ClosePunishWindow();
+            }
+        }
+
+        protected void TriggerPunishWindow(float duration = -1f)
+        {
+            if (!enableMissPunishWindow || breakWindowActive)
+            {
+                return;
+            }
+
+            float resolvedDuration = duration >= 0f
+                ? duration
+                : missPunishWindowDuration;
+            resolvedDuration = Mathf.Max(0f, resolvedDuration);
+            if (resolvedDuration <= 0f)
+            {
+                return;
+            }
+
+            punishWindowActive = true;
+            punishWindowTimer = resolvedDuration;
+        }
+
+        protected void ClosePunishWindow()
+        {
+            punishWindowActive = false;
+            punishWindowTimer = 0f;
+        }
+
+        private float GetCurrentPunishBreakMultiplier()
+        {
+            if (!punishWindowActive)
+            {
+                return 1f;
+            }
+
+            return Mathf.Max(1f, punishWindowStaggerMultiplier);
         }
 
         protected virtual BossSkillDefinition SelectSkill()
@@ -439,7 +500,7 @@ namespace ThirdPersonController
 
             if (debugMessages)
             {
-                GameEvents.ShowMessage($"Boss Skill: {skill.name}", 1.5f);
+                GameEvents.ShowMessage(string.Format(Localize("boss.skill_format", "Boss Skill: {0}"), skill.name), 1.5f);
             }
         }
 
@@ -537,7 +598,7 @@ namespace ThirdPersonController
             return distance <= radius;
         }
 
-        protected IEnumerator DashForward(float speed, float duration, float hitRadius, int damage, float knockback)
+        protected IEnumerator DashForward(float speed, float duration, float hitRadius, int damage, float knockback, System.Action<bool> onResolved = null)
         {
             PlayerHealth player = GetPlayer();
             bool hitApplied = false;
@@ -569,6 +630,8 @@ namespace ThirdPersonController
             {
                 ai.enabled = true;
             }
+
+            onResolved?.Invoke(hitApplied);
         }
 
         protected virtual bool IsSkillReady(BossSkillDefinition skill)
@@ -721,6 +784,17 @@ namespace ThirdPersonController
             }
 
             return false;
+        }
+
+        private static string Localize(string key, string fallback)
+        {
+            LocalizationService service = LocalizationService.Instance;
+            if (service != null)
+            {
+                return service.Get(key, fallback);
+            }
+
+            return fallback;
         }
 
         private float GetDistanceToPlayerFlat()

@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd005b213edb7bb4881e882ccc0e983e, type: 3}
+  m_Name: BossEncounterProfile_Guardian_Default
+  m_EditorClassIdentifier: 
+  bossDisplayName: Guardian Boss
+  bossIdentityId: guardian_identity
+  roleFantasy: Anchor the arena with heavy denial and punish mistimed aggression.
+  counterPlayHint: Counter by baiting armored openers and punishing long recoveries.
+  failLearningHint: 'Typical failure: over-commit into armored strike sequence.'
+  expectedPhaseCount: 2
+  expectedSkillCount: 3
+  definesBreakRule: 1
+  overrideSpawnStats: 0
+  maxHealth: 4200
+  expReward: 520
+  baseDamage: 36
+  knockback: 7.5
+  overrideEncounterTuning: 0
+  phase2HealthThreshold: 0.64
+  phase3HealthThreshold: 0.31
+  breakWindowDuration: 3.8
+  breakWindowCooldown: 11
+  breakWindowDamageMultiplier: 1.7
+  staggerMax: 145
+  staggerPerDamage: 0.95
+  attackInterval: 2.9
+  decisionInterval: 0.7
+  queuedAttackLimit: 4
+  immediateRepeatPenalty: 0.4
+  enablePostBreakPunishWindow: 1
+  postBreakPunishDuration: 5.8
+  postBreakAttackIntervalMultiplier: 0.72
+  postBreakDecisionIntervalMultiplier: 0.76
+  postBreakChaseSpeedMultiplier: 1.18
+  enablePhaseComboChain: 1
+  phase2ComboChance: 0.5
+  phase3ComboChance: 0.7
+  comboStartDelay: 0.06
+  comboRepeatPenalty: 0.38
+  enableInterruptRecoveryGate: 1
+  interruptRecoveryDuration: 0.18
+  interruptedAttackCooldownScale: 0.42
+  enableTimePressure: 1
+  timePressureDelay: 70
+  timePressureRampDuration: 55
+  maxTimePressureDamageMultiplier: 1.4
+  maxTimePressureSpeedMultiplier: 1.23
+  enablePhaseTransitionOpeners: 1
+  phase2TransitionOpenerId: guard_spray
+  phase3TransitionOpenerId: guard_blade
+  enablePhaseTransitionOpenerRetry: 1
+  phaseTransitionOpenerRetryDelay: 0.12
+  phaseTransitionOpenerMaxRetries: 3
+  enablePhaseTransitionFollowupChain: 1
+  phase2TransitionFollowupId: guard_overload
+  phase3TransitionFollowupId: guard_spray
+  enablePhaseTransitionFollowupRetry: 1
+  phaseTransitionFollowupRetryDelay: 0.12
+  phaseTransitionFollowupMaxRetries: 2
+  enablePhase3SpecialPriorityWindow: 1
+  phase3SpecialPriorityDuration: 6.5
+  phase3SpecialPriorityWeightMultiplier: 1.8
+  forceSpecialQueueDuringPhase3Priority: 1

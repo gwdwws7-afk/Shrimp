@@ -1,0 +1,14 @@
+check_id,status,value,note
+defines.steam_symbols,Ok,Standalone | STEAMWORKS=True | STEAMWORKS_NET=False,Stub path expected until STEAMWORKS_NET is enabled.
+package.steamworks_net_presence,Ok,manifest=False; packages=False; plugins=False,Steamworks.NET package presence is consistent with current define mode.
+runtime.mode_split,Ok,StubPathCompiled,Stub compile path is active until STEAMWORKS_NET is enabled.
+cloud.priority_enum,Ok,Newest|CloudPreferred|LocalPreferred,All conflict priorities are present.
+cloud.branch_methods,Ok,ResolveSync=True; ResolveNewest=True; Upload=True; Download=True,SteamCloudSaveBridge conflict branch methods are available.
+cloud.branch_regression_tests,Ok,Assets/ThirdPersonController/Tests/PlayMode/SteamCloudSaveBridgeRegressionTests.cs,Conflict branch regression tests are present for pull/push/newest paths.
+config.default_asset_exists,Ok,Assets/ThirdPersonController/Resources/Steam/DefaultSteamIntegrationConfig.asset,Default steam integration config asset is present.
+config.app_id,Ok,480,AppId is configured.
+appid.file_sync,Ok,480,steam_appid.txt is present and consistent with steam config.
+bootstrap.config_wiring,Ok,ResolverField=True; ResolveConfig=True; Bootstrap=True,Bootstrap exposes config resolver override and resolve pipeline.
+config.regression_tests,Ok,Assets/ThirdPersonController/Tests/PlayMode/SteamIntegrationConfigRegressionTests.cs,Config mapping regression tests are present.
+bootstrap.regression_tests,Ok,Assets/ThirdPersonController/Tests/PlayMode/SteamIntegrationBootstrapRegressionTests.cs,Bootstrap config application regression tests are present.
+status.regression_tests,Ok,Assets/ThirdPersonController/Tests/PlayMode/SteamIntegrationStatusRegressionTests.cs,Runtime status regression tests cover stub and real backend branches.

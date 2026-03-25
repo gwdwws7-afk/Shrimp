@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="3" result="Passed" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-03-24 09:58:50Z" end-time="2026-03-24 09:58:50Z" duration="0.0917739">
+  <test-suite type="TestSuite" id="1000" name="Shrimp" fullname="Shrimp" runstate="Runnable" testcasecount="170" result="Passed" start-time="2026-03-24 09:58:50Z" end-time="2026-03-24 09:58:50Z" duration="0.091774" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties />
+    <test-suite type="Assembly" id="1203" name="ThirdPersonController.PlayModeTests.dll" fullname="C:/test/Shrimp/Library/ScriptAssemblies/ThirdPersonController.PlayModeTests.dll" runstate="Runnable" testcasecount="170" result="Passed" start-time="2026-03-24 09:58:50Z" end-time="2026-03-24 09:58:50Z" duration="0.080505" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="27064" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+      </properties>
+      <test-suite type="TestSuite" id="1204" name="ThirdPersonController" fullname="ThirdPersonController" runstate="Runnable" testcasecount="170" result="Passed" start-time="2026-03-24 09:58:50Z" end-time="2026-03-24 09:58:50Z" duration="0.077353" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1205" name="Tests" fullname="ThirdPersonController.Tests" runstate="Runnable" testcasecount="170" result="Passed" start-time="2026-03-24 09:58:50Z" end-time="2026-03-24 09:58:50Z" duration="0.074785" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1199" name="UICrossDeviceReadabilityRegressionTests" fullname="ThirdPersonController.Tests.UICrossDeviceReadabilityRegressionTests" classname="ThirdPersonController.Tests.UICrossDeviceReadabilityRegressionTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-03-24 09:58:50Z" end-time="2026-03-24 09:58:50Z" duration="0.069194" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1202" name="UICanvasScaler_DefaultReference_UsesCrossDeviceBaseline" fullname="ThirdPersonController.Tests.UICrossDeviceReadabilityRegressionTests.UICanvasScaler_DefaultReference_UsesCrossDeviceBaseline" methodname="UICanvasScaler_DefaultReference_UsesCrossDeviceBaseline" classname="ThirdPersonController.Tests.UICrossDeviceReadabilityRegressionTests" runstate="Runnable" seed="651025862" result="Passed" start-time="2026-03-24 09:58:50Z" end-time="2026-03-24 09:58:50Z" duration="0.024084" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1200" name="UIHudHints_ReadabilityBaseline_RemainsInSafeRange" fullname="ThirdPersonController.Tests.UICrossDeviceReadabilityRegressionTests.UIHudHints_ReadabilityBaseline_RemainsInSafeRange" methodname="UIHudHints_ReadabilityBaseline_RemainsInSafeRange" classname="ThirdPersonController.Tests.UICrossDeviceReadabilityRegressionTests" runstate="Runnable" seed="358338127" result="Passed" start-time="2026-03-24 09:58:50Z" end-time="2026-03-24 09:58:50Z" duration="0.008268" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1201" name="UISkillBar_AttackHintText_BaselineIsReadable" fullname="ThirdPersonController.Tests.UICrossDeviceReadabilityRegressionTests.UISkillBar_AttackHintText_BaselineIsReadable" methodname="UISkillBar_AttackHintText_BaselineIsReadable" classname="ThirdPersonController.Tests.UICrossDeviceReadabilityRegressionTests" runstate="Runnable" seed="1555428655" result="Passed" start-time="2026-03-24 09:58:50Z" end-time="2026-03-24 09:58:50Z" duration="0.022807" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

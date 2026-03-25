@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -171,7 +171,11 @@ namespace ThirdPersonController
             if (quest.HasStages)
             {
                 int stageCount = quest.data.stages != null ? quest.data.stages.Count : 0;
-                return $"{quest.data.questName} ({quest.stageIndex + 1}/{stageCount})";
+                return string.Format(
+                    Localize("ui.quest.stage_format", "{0} ({1}/{2})"),
+                    quest.data.questName,
+                    quest.stageIndex + 1,
+                    stageCount);
             }
 
             return quest.data.questName;
@@ -192,35 +196,62 @@ namespace ThirdPersonController
             switch (quest.CurrentType)
             {
                 case QuestType.Kill:
-                    return $"Kill {quest.CurrentTargetCount} enemies";
+                    return string.Format(
+                        Localize("ui.quest.type.kill_enemies", "Kill {0} enemies"),
+                        quest.CurrentTargetCount);
                 case QuestType.KillEnemyType:
-                    return $"Kill {quest.CurrentTargetCount} {quest.CurrentTargetEnemyType}";
+                    return string.Format(
+                        Localize("ui.quest.type.kill_enemy_type", "Kill {0} {1}"),
+                        quest.CurrentTargetCount,
+                        quest.CurrentTargetEnemyType);
                 case QuestType.Survive:
-                    return $"Survive {quest.CurrentTargetTime} seconds";
+                    return string.Format(
+                        Localize("ui.quest.type.survive_seconds", "Survive {0} seconds"),
+                        quest.CurrentTargetTime);
                 case QuestType.Protect:
-                    return $"Protect target for {quest.CurrentTargetTime} seconds";
+                    return string.Format(
+                        Localize("ui.quest.type.protect_seconds", "Protect target for {0} seconds"),
+                        quest.CurrentTargetTime);
                 case QuestType.CompleteWave:
-                    return $"Complete {quest.CurrentTargetCount} waves";
+                    return string.Format(
+                        Localize("ui.quest.type.complete_waves", "Complete {0} waves"),
+                        quest.CurrentTargetCount);
                 case QuestType.CompleteStronghold:
-                    return "Clear the stronghold";
+                    return Localize("ui.quest.type.clear_stronghold", "Clear the stronghold");
                 case QuestType.CompleteWaveEvent:
                     return quest.MatchAnyWaveEventType
-                        ? $"Complete {quest.CurrentTargetCount} wave events"
-                        : $"Complete {quest.CurrentTargetCount} {quest.CurrentTargetWaveEventType} events";
+                        ? string.Format(
+                            Localize("ui.quest.type.complete_wave_events", "Complete {0} wave events"),
+                            quest.CurrentTargetCount)
+                        : string.Format(
+                            Localize("ui.quest.type.complete_wave_events_of_type", "Complete {0} {1} events"),
+                            quest.CurrentTargetCount,
+                            quest.CurrentTargetWaveEventType);
                 case QuestType.BossBreak:
                     return string.IsNullOrEmpty(quest.CurrentTargetBossId)
-                        ? $"Trigger {quest.CurrentTargetCount} boss breaks"
-                        : $"Trigger {quest.CurrentTargetCount} boss breaks ({quest.CurrentTargetBossId})";
+                        ? string.Format(
+                            Localize("ui.quest.type.boss_breaks", "Trigger {0} boss breaks"),
+                            quest.CurrentTargetCount)
+                        : string.Format(
+                            Localize("ui.quest.type.boss_breaks_with_id", "Trigger {0} boss breaks ({1})"),
+                            quest.CurrentTargetCount,
+                            quest.CurrentTargetBossId);
                 case QuestType.BossDefeat:
                     return string.IsNullOrEmpty(quest.CurrentTargetBossId)
-                        ? "Defeat the boss"
-                        : $"Defeat {quest.CurrentTargetBossId}";
+                        ? Localize("ui.quest.type.defeat_boss", "Defeat the boss")
+                        : string.Format(
+                            Localize("ui.quest.type.defeat_boss_id", "Defeat {0}"),
+                            quest.CurrentTargetBossId);
                 case QuestType.Collect:
-                    return $"Collect {quest.CurrentTargetCount} items";
+                    return string.Format(
+                        Localize("ui.quest.type.collect_items", "Collect {0} items"),
+                        quest.CurrentTargetCount);
                 case QuestType.Reach:
-                    return "Reach the marked location";
+                    return Localize("ui.quest.type.reach_marked_location", "Reach the marked location");
                 case QuestType.Combo:
-                    return $"Reach {quest.CurrentTargetCount} combo";
+                    return string.Format(
+                        Localize("ui.quest.type.reach_combo", "Reach {0} combo"),
+                        quest.CurrentTargetCount);
                 default:
                     return quest.data.description;
             }
@@ -237,7 +268,10 @@ namespace ThirdPersonController
             {
                 int current = Mathf.FloorToInt(quest.stageElapsedTime);
                 int target = Mathf.CeilToInt(quest.CurrentTargetTime);
-                return $"{current}/{target}s";
+                return string.Format(
+                    Localize("ui.quest.progress.time_format", "{0}/{1}s"),
+                    current,
+                    target);
             }
 
             int targetCount = quest.CurrentTargetCount;
@@ -246,7 +280,10 @@ namespace ThirdPersonController
                 targetCount = quest.currentProgress;
             }
 
-            return $"{quest.currentProgress}/{targetCount}";
+            return string.Format(
+                Localize("ui.quest.progress.count_format", "{0}/{1}"),
+                quest.currentProgress,
+                targetCount);
         }
         
         private void ClearQuestItems()
@@ -292,7 +329,7 @@ namespace ThirdPersonController
             Rect panelRect = new Rect(fallbackPosition.x, fallbackPosition.y, fallbackWidth, panelHeight);
 
             GUILayout.BeginArea(panelRect, GUI.skin.box);
-            GUILayout.Label("任务追踪", fallbackTitleStyle);
+            GUILayout.Label(Localize("ui.quest.title", "任务追踪"), fallbackTitleStyle);
 
             for (int i = 0; i < visibleCount; i++)
             {
@@ -303,7 +340,12 @@ namespace ThirdPersonController
                 }
 
                 GUILayout.Label(GetQuestDisplayName(quest), fallbackBodyStyle);
-                GUILayout.Label($"{GetQuestProgressText(quest)} · {GetQuestTypeText(quest)}", fallbackBodyStyle);
+                GUILayout.Label(
+                    string.Format(
+                        Localize("ui.quest.fallback.entry_format", "{0} - {1}"),
+                        GetQuestProgressText(quest),
+                        GetQuestTypeText(quest)),
+                    fallbackBodyStyle);
                 if (i < visibleCount - 1)
                 {
                     GUILayout.Space(4f);
@@ -396,6 +438,17 @@ namespace ThirdPersonController
             startupLogged = true;
             bool fallback = ShouldUseFallbackOverlay();
             Debug.Log($"[UI_QuestTracker] Startup | questSystem={(questSystem != null)} container={(questListContainer != null)} itemPrefab={(questItemPrefab != null)} fallback={fallback}");
+        }
+
+        private static string Localize(string key, string fallback)
+        {
+            LocalizationService service = LocalizationService.Instance;
+            if (service != null)
+            {
+                return service.Get(key, fallback);
+            }
+
+            return fallback;
         }
     }
 }

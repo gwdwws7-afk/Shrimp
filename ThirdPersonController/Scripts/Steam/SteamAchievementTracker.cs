@@ -94,6 +94,16 @@ namespace ThirdPersonController
             InitializeCounters();
         }
 
+        public void ApplyConfig(SteamIntegrationConfig config)
+        {
+            if (config == null)
+            {
+                return;
+            }
+
+            enableAchievements = config.enableAchievements;
+        }
+
         private void OnEnable()
         {
             GameEvents.OnLevelStarted += HandleLevelStarted;

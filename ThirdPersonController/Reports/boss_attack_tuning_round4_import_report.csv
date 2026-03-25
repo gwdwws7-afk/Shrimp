@@ -1,0 +1,9 @@
+﻿layer,source,attack_id,status,fixed_count,gap_count,note
+PrefabAttack,Assets/Prefabs/Bosses/BOSS_Guardian_Controller.prefab,guard_slam,Ok,0,0,
+PrefabAttack,Assets/Prefabs/Bosses/BOSS_Guardian_Controller.prefab,guard_spray,Ok,0,0,
+PrefabAttack,Assets/Prefabs/Bosses/BOSS_Guardian_Controller.prefab,guard_overload,Ok,0,0,
+PrefabAttack,Assets/Prefabs/Bosses/BOSS_Guardian_Controller.prefab,guard_blade,Ok,0,0,
+PrefabAttack,Assets/Prefabs/Bosses/BOSS_Eel_Controller.prefab,eel_tail,Ok,0,0,
+PrefabAttack,Assets/Prefabs/Bosses/BOSS_Eel_Controller.prefab,eel_charge,Ok,0,0,
+PrefabAttack,Assets/Prefabs/Bosses/BOSS_Eel_Controller.prefab,eel_vortex,Ok,0,0,
+PrefabAttack,Assets/Prefabs/Bosses/BOSS_Eel_Controller.prefab,eel_devour,Ok,0,0,

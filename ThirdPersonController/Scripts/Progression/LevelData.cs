@@ -75,6 +75,56 @@ namespace ThirdPersonController
         public float bossKnockback = 6f;
         public float bossScaleMultiplier = 2.2f;
         public Vector3 bossSpawnOffset = Vector3.zero;
+
+        [Header("Boss Encounter")]
+        public bool overrideBossEncounterTuning = false;
+        public float bossPhase2HealthThreshold = 0.66f;
+        public float bossPhase3HealthThreshold = 0.33f;
+        public float bossBreakWindowDuration = 4f;
+        public float bossBreakWindowCooldown = 12f;
+        public float bossBreakWindowDamageMultiplier = 1.6f;
+        public float bossStaggerMax = 120f;
+        public float bossStaggerPerDamage = 1f;
+        public float bossAttackInterval = 3.2f;
+        public float bossDecisionInterval = 0.78f;
+        public int bossQueuedAttackLimit = 3;
+        public float bossImmediateRepeatPenalty = 0.32f;
+        public bool bossEnablePostBreakPunishWindow = true;
+        public float bossPostBreakPunishDuration = 5f;
+        public float bossPostBreakAttackIntervalMultiplier = 0.75f;
+        public float bossPostBreakDecisionIntervalMultiplier = 0.82f;
+        public float bossPostBreakChaseSpeedMultiplier = 1.15f;
+        public bool bossEnablePhaseComboChain = true;
+        public float bossPhase2ComboChance = 0.45f;
+        public float bossPhase3ComboChance = 0.65f;
+        public float bossComboStartDelay = 0.08f;
+        public float bossComboRepeatPenalty = 0.35f;
+        public bool bossEnableInterruptRecoveryGate = true;
+        public float bossInterruptRecoveryDuration = 0.2f;
+        public float bossInterruptedAttackCooldownScale = 0.45f;
+        public bool bossEnableTimePressure = true;
+        public float bossTimePressureDelay = 75f;
+        public float bossTimePressureRampDuration = 60f;
+        public float bossMaxTimePressureDamageMultiplier = 1.35f;
+        public float bossMaxTimePressureSpeedMultiplier = 1.2f;
+
+        [Header("Boss Encounter Choreography")]
+        public bool bossEnablePhaseTransitionOpeners = true;
+        public string bossPhase2TransitionOpenerId = "";
+        public string bossPhase3TransitionOpenerId = "";
+        public bool bossEnablePhaseTransitionOpenerRetry = true;
+        public float bossPhaseTransitionOpenerRetryDelay = 0.12f;
+        public int bossPhaseTransitionOpenerMaxRetries = 3;
+        public bool bossEnablePhaseTransitionFollowupChain = false;
+        public string bossPhase2TransitionFollowupId = "";
+        public string bossPhase3TransitionFollowupId = "";
+        public bool bossEnablePhaseTransitionFollowupRetry = true;
+        public float bossPhaseTransitionFollowupRetryDelay = 0.12f;
+        public int bossPhaseTransitionFollowupMaxRetries = 2;
+        public bool bossEnablePhase3SpecialPriorityWindow = true;
+        public float bossPhase3SpecialPriorityDuration = 6f;
+        public float bossPhase3SpecialPriorityWeightMultiplier = 1.7f;
+        public bool bossForceSpecialQueueDuringPhase3Priority = true;
         
         public string GetId()
         {

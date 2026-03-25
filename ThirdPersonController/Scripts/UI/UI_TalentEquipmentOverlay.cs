@@ -115,7 +115,7 @@ namespace ThirdPersonController
         private void DrawPanelContents(bool showFooter)
         {
             GUILayout.Space(6f);
-            GUILayout.Label("成长", HeaderStyle());
+            GUILayout.Label(Localize("ui.talent.title", "成长"), HeaderStyle());
             GUILayout.Space(8f);
 
             GUILayout.BeginHorizontal();
@@ -127,18 +127,22 @@ namespace ThirdPersonController
             if (showFooter)
             {
                 GUILayout.FlexibleSpace();
-                GUILayout.Label($"按 {GetToggleBindingLabel()} 关闭", SmallStyle());
+                GUILayout.Label(
+                    string.Format(
+                        Localize("ui.talent.close_hint_format", "按 {0} 关闭"),
+                        GetToggleBindingLabel()),
+                    SmallStyle());
             }
         }
 
         private void DrawEquipmentPanel()
         {
             GUILayout.BeginVertical(GUILayout.Width(360));
-            GUILayout.Label("装备", SectionStyle());
+            GUILayout.Label(Localize("ui.talent.equipment.title", "装备"), SectionStyle());
 
             if (equipment == null)
             {
-                GUILayout.Label("未找到装备系统。");
+                GUILayout.Label(Localize("ui.talent.equipment.missing_system", "未找到装备系统。"));
                 GUILayout.EndVertical();
                 return;
             }
@@ -147,15 +151,22 @@ namespace ThirdPersonController
             for (int i = 0; i < equipment.equippedPearls.Count; i++)
             {
                 PearlItem pearl = equipment.equippedPearls[i];
-                string name = pearl != null ? pearl.pearlName : "(Empty)";
+                string name = pearl != null
+                    ? pearl.pearlName
+                    : Localize("ui.talent.equipment.empty_slot", "(Empty)");
                 GUILayout.BeginHorizontal();
-                GUILayout.Label($"槽位 {i + 1}: {name}", GUILayout.Width(220));
-                if (GUILayout.Button("选择", GUILayout.Width(60)))
+                GUILayout.Label(
+                    string.Format(
+                        Localize("ui.talent.equipment.slot_format", "槽位 {0}: {1}"),
+                        i + 1,
+                        name),
+                    GUILayout.Width(220));
+                if (GUILayout.Button(Localize("ui.talent.equipment.select", "选择"), GUILayout.Width(60)))
                 {
                     selectedSlot = i;
                 }
 
-                if (pearl != null && GUILayout.Button("卸下", GUILayout.Width(70)))
+                if (pearl != null && GUILayout.Button(Localize("ui.talent.equipment.unequip", "卸下"), GUILayout.Width(70)))
                 {
                     equipment.Unequip(i);
                 }
@@ -163,12 +174,12 @@ namespace ThirdPersonController
             }
 
             GUILayout.Space(10f);
-            GUILayout.Label("背包");
+            GUILayout.Label(Localize("ui.talent.inventory.title", "背包"));
 
             inventoryScroll = GUILayout.BeginScrollView(inventoryScroll, GUILayout.Height(300));
             if (inventory == null || inventory.ownedPearls == null || inventory.ownedPearls.Count == 0)
             {
-                GUILayout.Label("暂无珍珠.");
+                GUILayout.Label(Localize("ui.talent.inventory.empty", "暂无珍珠."));
             }
             else
             {
@@ -182,7 +193,7 @@ namespace ThirdPersonController
 
                     GUILayout.BeginHorizontal();
                     GUILayout.Label(pearl.pearlName, GUILayout.Width(200));
-                    if (GUILayout.Button("装备", GUILayout.Width(80)))
+                    if (GUILayout.Button(Localize("ui.talent.inventory.equip", "装备"), GUILayout.Width(80)))
                     {
                         equipment.Equip(pearl, selectedSlot);
                     }
@@ -197,21 +208,24 @@ namespace ThirdPersonController
         private void DrawTalentPanel()
         {
             GUILayout.BeginVertical();
-            GUILayout.Label("天赋");
+            GUILayout.Label(Localize("ui.talent.tree.title", "天赋"));
 
             if (talentTree == null || talentTree.data == null)
             {
-                GUILayout.Label("未找到天赋树数据.");
+                GUILayout.Label(Localize("ui.talent.tree.missing_data", "未找到天赋树数据."));
                 GUILayout.EndVertical();
                 return;
             }
 
-            GUILayout.Label($"可用点数: {talentTree.availablePoints}");
+            GUILayout.Label(
+                string.Format(
+                    Localize("ui.talent.tree.available_points_format", "可用点数: {0}"),
+                    talentTree.availablePoints));
 
             talentScroll = GUILayout.BeginScrollView(talentScroll, GUILayout.Height(420));
-            DrawTalentBranch("进攻", TalentBranch.Offense);
-            DrawTalentBranch("控场", TalentBranch.Control);
-            DrawTalentBranch("生存", TalentBranch.Survival);
+            DrawTalentBranch(Localize("ui.talent.branch.offense", "进攻"), TalentBranch.Offense);
+            DrawTalentBranch(Localize("ui.talent.branch.control", "控场"), TalentBranch.Control);
+            DrawTalentBranch(Localize("ui.talent.branch.survival", "生存"), TalentBranch.Survival);
             GUILayout.EndScrollView();
 
             GUILayout.EndVertical();
@@ -232,13 +246,15 @@ namespace ThirdPersonController
                 }
 
                 bool unlocked = talentTree.IsUnlocked(node.id);
-                string status = unlocked ? "Unlocked" : "Locked";
+                string status = unlocked
+                    ? Localize("ui.talent.status.unlocked", "Unlocked")
+                    : Localize("ui.talent.status.locked", "Locked");
                 GUILayout.BeginHorizontal();
                 GUILayout.Label($"{node.title} [{status}]", GUILayout.Width(240));
 
                 if (!unlocked && talentTree.CanUnlock(node.id))
                 {
-                    if (GUILayout.Button("解锁", GUILayout.Width(80)))
+                    if (GUILayout.Button(Localize("ui.talent.unlock", "解锁"), GUILayout.Width(80)))
                     {
                         talentTree.Unlock(node.id);
                     }
@@ -289,6 +305,17 @@ namespace ThirdPersonController
             return string.IsNullOrEmpty(binding)
                 ? PlayerInputHandler.GetFriendlyKeyLabel(toggleKey)
                 : binding;
+        }
+
+        private static string Localize(string key, string fallback)
+        {
+            LocalizationService service = LocalizationService.Instance;
+            if (service != null)
+            {
+                return service.Get(key, fallback);
+            }
+
+            return fallback;
         }
     }
 }

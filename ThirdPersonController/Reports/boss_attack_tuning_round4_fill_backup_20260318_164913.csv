@@ -1,0 +1,9 @@
+﻿prefab_path,attack_id,attack_name,damage,cooldown,selection_weight,windup_time,active_time,recovery_time,range,knockback_force,is_special,requires_phase2,requires_phase3,target_player,aoe,aoe_radius,note
+Assets/Prefabs/Bosses/BOSS_Eel_Controller.prefab,eel_charge,Piercing Charge,96,6.4,1.05,0.55,0.3,0.68,10.5,10,true,true,false,true,false,3,
+Assets/Prefabs/Bosses/BOSS_Eel_Controller.prefab,eel_devour,Devour Bite,134,10.8,0.88,0.8,0.22,0.92,4.6,12,true,false,true,true,false,3,
+Assets/Prefabs/Bosses/BOSS_Eel_Controller.prefab,eel_tail,Tail Sweep,82,4.2,1.2,0.32,0.24,0.5,4.8,7.5,false,false,false,true,false,3,
+Assets/Prefabs/Bosses/BOSS_Eel_Controller.prefab,eel_vortex,Abyss Vortex,74,8.6,0.95,0.72,0.36,0.82,6.5,6.5,true,true,false,false,true,6.5,
+Assets/Prefabs/Bosses/BOSS_Guardian_Controller.prefab,guard_blade,Blade Sweep,112,7.2,0.96,0.5,0.24,0.7,5.6,10,true,false,true,true,false,3,
+Assets/Prefabs/Bosses/BOSS_Guardian_Controller.prefab,guard_overload,Overload Burst,122,9.2,0.92,0.76,0.34,0.9,7.8,11.5,true,true,false,false,true,7.8,
+Assets/Prefabs/Bosses/BOSS_Guardian_Controller.prefab,guard_slam,Shield Slam,92,4.8,1.2,0.42,0.26,0.58,5,9,false,false,false,false,true,5,
+Assets/Prefabs/Bosses/BOSS_Guardian_Controller.prefab,guard_spray,Corrosion Spray,72,6.2,1,0.58,0.35,0.78,7,6,true,true,false,false,true,7,

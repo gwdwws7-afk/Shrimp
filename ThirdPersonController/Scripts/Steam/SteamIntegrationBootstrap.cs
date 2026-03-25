@@ -4,6 +4,10 @@ namespace ThirdPersonController
 {
     public static class SteamIntegrationBootstrap
     {
+        private const string ConfigResourcePath = "Steam/DefaultSteamIntegrationConfig";
+
+        internal static System.Func<SteamIntegrationConfig> ConfigResolverOverride;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Bootstrap()
         {
@@ -19,23 +23,43 @@ namespace ThirdPersonController
                 tracker = root.AddComponent<SteamAchievementTracker>();
                 statsTracker = root.AddComponent<SteamStatsTracker>();
                 cloudBridge = root.AddComponent<SteamCloudSaveBridge>();
-                return;
+            }
+            else
+            {
+                if (tracker == null)
+                {
+                    tracker = service.gameObject.AddComponent<SteamAchievementTracker>();
+                }
+
+                if (statsTracker == null)
+                {
+                    statsTracker = service.gameObject.AddComponent<SteamStatsTracker>();
+                }
+
+                if (cloudBridge == null)
+                {
+                    cloudBridge = service.gameObject.AddComponent<SteamCloudSaveBridge>();
+                }
             }
 
-            if (tracker == null)
+            SteamIntegrationConfig config = ResolveConfig();
+            if (config != null)
             {
-                service.gameObject.AddComponent<SteamAchievementTracker>();
+                service.ApplyConfig(config, reinitializeClient: true);
+                tracker?.ApplyConfig(config);
+                statsTracker?.ApplyConfig(config);
+                cloudBridge?.ApplyConfig(config);
+            }
+        }
+
+        private static SteamIntegrationConfig ResolveConfig()
+        {
+            if (ConfigResolverOverride != null)
+            {
+                return ConfigResolverOverride();
             }
 
-            if (statsTracker == null)
-            {
-                service.gameObject.AddComponent<SteamStatsTracker>();
-            }
-
-            if (cloudBridge == null)
-            {
-                service.gameObject.AddComponent<SteamCloudSaveBridge>();
-            }
+            return Resources.Load<SteamIntegrationConfig>(ConfigResourcePath);
         }
     }
 }

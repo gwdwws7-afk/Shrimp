@@ -1,0 +1,4 @@
+level_id,level_asset,scene_name,scene_path,status,blocking_errors,warnings,strongholds,boss_spawn_points,required_quests,level_quests,quest_coupling_score,boss_objective_count,note
+LEVEL_08,Assets/GameDesign/Data/LevelData_Level08.asset,Level_08_MoltenRift,Assets/Scenes/Level_08_MoltenRift.unity,Ok,0,0,2,1,1,2,4,1,
+LEVEL_09,Assets/GameDesign/Data/LevelData_Level09.asset,Level_09_StillTideSanctum,Assets/Scenes/Level_09_StillTideSanctum.unity,Ok,0,0,2,1,1,2,4,1,
+LEVEL_10,Assets/GameDesign/Data/LevelData_Level10.asset,Level_10_HiveCore,Assets/Scenes/Level_10_HiveCore.unity,Ok,0,0,2,1,1,2,5,1,

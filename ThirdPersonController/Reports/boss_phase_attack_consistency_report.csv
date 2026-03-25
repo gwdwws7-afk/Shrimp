@@ -1,0 +1,11 @@
+﻿layer,source,level_id,status,fixed_count,gap_count,note
+Prefab,Assets/Prefabs/Bosses/BOSS_Guardian_Controller.prefab,,Ok,0,0,
+Prefab,Assets/Prefabs/Bosses/BOSS_Eel_Controller.prefab,,Ok,0,0,
+Scene,Assets/Scenes/Level_03_ThermalVents.unity,LEVEL_03,Ok,0,0,
+Scene,Assets/Scenes/Level_04_CoralGrove.unity,LEVEL_04,Ok,0,0,
+Scene,Assets/Scenes/Level_05_SunkenCity.unity,LEVEL_05,Ok,0,0,
+Scene,Assets/Scenes/Level_06_BlackTidePipes.unity,LEVEL_06,Ok,0,0,
+Scene,Assets/Scenes/Level_07_AbyssHangar.unity,LEVEL_07,Ok,0,0,
+Scene,Assets/Scenes/Level_08_MoltenRift.unity,LEVEL_08,Ok,0,0,
+Scene,Assets/Scenes/Level_09_StillTideSanctum.unity,LEVEL_09,Ok,0,0,
+Scene,Assets/Scenes/Level_10_HiveCore.unity,LEVEL_10,Ok,0,0,
