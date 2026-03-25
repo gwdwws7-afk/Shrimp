@@ -1,6 +1,6 @@
 # 深渊猎手：开发任务清单
 
-更新时间: 2026-03-24
+更新时间: 2026-03-25
 当前阶段: 设计文档与内容生产双线收口
 
 ---
@@ -103,3 +103,24 @@
 - [x] 新增 `28_模块方法论复审汇总_2026-03-24.md`（全模块复审结果）
 - [x] 新增 `29_音效与特效整改包_P0_Shrimp.md`（低分模块整改包）
 - [x] 新增 `30_美术资产功能优先级矩阵_P0_Shrimp.md`（低分模块整改包）
+
+## H. 2026-03-25 Round10（Boss P3 Round6）进展
+
+- [x] 完成 Boss P3 Round6 第一轮收口（行为深度 + 边界稳定性）。
+- [x] 新增低帧率抖动回归：`BossController_InterruptRecoveryGate_LowFpsJitter_StillRespectsCounterWindow`。
+- [x] 新增场景切换重绑定风暴回归：`Level08To10SceneSwitch_LowFpsJitter_RebindStorm_BossGateRemainsStable`。
+- [x] 强化编排门禁：新增 post-break punish / interrupt recovery / pressure pacing 规则约束。
+- [x] Boss 定向批次通过：`29/29`。
+- [x] Boss 全子集通过：`63/63`。
+- [x] 证据落档：`Assets/ThirdPersonController/Reports/phaseB_round10_boss_p3_round6_depth_gate_report_2026-03-25.md`。
+- [ ] 下一步：执行一次“全量无过滤 gate matrix”并留最终快照。
+
+## I. 2026-03-25 文档同步（Boss P3 Round6 正式）
+
+- [x] 本轮完成 Boss P3 Round6 行为深度与边界稳定性收口。
+- [x] 新增边界自动化：
+  - `BossController_InterruptRecoveryGate_LowFpsJitter_StillRespectsCounterWindow`
+  - `Level08To10SceneSwitch_LowFpsJitter_RebindStorm_BossGateRemainsStable`
+- [x] 回归结果：Boss 定向 `29/29`，Boss 全子集 `63/63`，P3 Boss Depth 子门禁 `32/32`。
+- [x] 正式证据：`Assets/ThirdPersonController/Reports/phaseB_round10_boss_p3_round6_depth_gate_report_2026-03-25.md`
+- [ ] 后续动作：补跑一次“无过滤全量 Gate Matrix”作为全模块新基线快照。

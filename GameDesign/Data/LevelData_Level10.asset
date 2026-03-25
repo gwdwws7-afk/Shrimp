@@ -288,7 +288,7 @@ MonoBehaviour:
   bossPhase2TransitionFollowupId: eel_vortex
   bossPhase3TransitionFollowupId: eel_charge
   bossEnablePhaseTransitionFollowupRetry: 1
-  bossPhaseTransitionFollowupRetryDelay: 0.1
+  bossPhaseTransitionFollowupRetryDelay: 0.12
   bossPhaseTransitionFollowupMaxRetries: 3
   bossEnablePhase3SpecialPriorityWindow: 1
   bossPhase3SpecialPriorityDuration: 7

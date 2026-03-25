@@ -978,6 +978,81 @@ namespace ThirdPersonController.Tests
             Assert.IsTrue((bool)GetPrivateField(boss, "isInAttack"), "Attack should restart after interrupt recovery gate expires.");
         }
 
+        [UnityTest]
+        public IEnumerator BossController_InterruptRecoveryGate_LowFpsJitter_StillRespectsCounterWindow()
+        {
+            float originalTimeScale = Time.timeScale;
+            try
+            {
+                Time.timeScale = 1f;
+
+                GameObject bossGo = new GameObject("Boss_Controller_InterruptRecovery_LowFpsJitter");
+                createdObjects.Add(bossGo);
+                bossGo.AddComponent<EnemyAI>();
+                bossGo.AddComponent<EnemyHealth>();
+                BossController boss = bossGo.AddComponent<BossController>();
+
+                boss.enableBreakWindow = false;
+                boss.useAttackQueue = true;
+                boss.queuedAttackLimit = 1;
+                boss.attackInterval = 0f;
+                boss.decisionInterval = 999f;
+                boss.enablePhaseComboChain = false;
+                boss.enableInterruptRecoveryGate = true;
+                boss.interruptRecoveryDuration = 0.3f;
+                boss.interruptedAttackCooldownScale = 0f;
+
+                boss.attacks.Clear();
+                boss.attacks.Add(new BossAttack
+                {
+                    attackId = "interrupt_jitter_probe",
+                    attackName = "Interrupt Jitter Probe",
+                    selectionWeight = 1f,
+                    targetPlayer = false,
+                    aoe = false,
+                    cooldown = 0f,
+                    windupTime = 0f,
+                    activeTime = 0.45f,
+                    recoveryTime = 0f
+                });
+
+                SetPrivateField(boss, "attackTimer", 999f);
+                InvokePrivateMethod(boss, "TryEnqueueWeightedAttack");
+                InvokePrivateMethod(boss, "TryStartPlannedAttack");
+                Assert.IsTrue((bool)GetPrivateField(boss, "isInAttack"), "Probe attack should start before interrupt.");
+
+                yield return null;
+                boss.StunBoss(0.03f);
+                Assert.IsFalse((bool)GetPrivateField(boss, "isInAttack"), "Stun should interrupt the active attack.");
+
+                float[] jitterScales = { 0.35f, 0.8f, 0.45f };
+                for (int i = 0; i < jitterScales.Length; i++)
+                {
+                    Time.timeScale = jitterScales[i];
+                    SetPrivateField(boss, "attackTimer", 999f);
+                    InvokePrivateMethod(boss, "TryEnqueueWeightedAttack");
+                    InvokePrivateMethod(boss, "TryStartPlannedAttack");
+                    Assert.IsFalse((bool)GetPrivateField(boss, "isInAttack"),
+                        $"Interrupt recovery should block restart under low-FPS jitter (step {i + 1}).");
+                    yield return new WaitForSecondsRealtime(0.08f);
+                }
+
+                Assert.Greater(boss.DebugInterruptRecoveryTimer, 0f, "Recovery timer should remain active through jitter window.");
+
+                Time.timeScale = 1f;
+                yield return new WaitForSecondsRealtime(0.35f);
+
+                SetPrivateField(boss, "attackTimer", 999f);
+                InvokePrivateMethod(boss, "TryStartPlannedAttack");
+                Assert.IsTrue((bool)GetPrivateField(boss, "isInAttack"),
+                    "Attack should be allowed again after the recovery counter window fully expires.");
+            }
+            finally
+            {
+                Time.timeScale = originalTimeScale;
+            }
+        }
+
         [Test]
         public void BossSpawnPoint_EncounterTuning_AppliesToSpawnedController()
         {

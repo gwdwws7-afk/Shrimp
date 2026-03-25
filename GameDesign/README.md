@@ -1,6 +1,6 @@
 # 深渊猎手：异种肃清 - 设计文档入口
 
-更新时间: 2026-03-24
+更新时间: 2026-03-25
 
 ## 文档分层
 
@@ -27,8 +27,8 @@
 ## 当前状态快照
 
 - 核心回归门禁: 通过（PlayMode Gate Matrix）
-- 全量回归: `total=150 passed=149 failed=0 skipped=1`
-- P3 Boss 深度子集: `25/25` 通过
+- 全量回归: `Boss 子集: total=63 passed=63 failed=0 skipped=0`
+- P3 Boss 深度子集: `32/32` 通过
 - 重点缺口: Boss 内容化、Steam 正式实接、技能/UI/音频资源化
 
 参考证据:
@@ -84,3 +84,27 @@
   - 变更原因
   - 影响模块
   - 验收方式
+
+## 增量快照（2026-03-25 / Round10）
+
+- 本轮主题：Boss P3 Round6（行为深度 + 边界稳定性）。
+- 新增自动化：
+  - `BossController_InterruptRecoveryGate_LowFpsJitter_StillRespectsCounterWindow`
+  - `Level08To10SceneSwitch_LowFpsJitter_RebindStorm_BossGateRemainsStable`
+- 回归结果：
+  - Boss 定向：29/29 通过
+  - Boss 全子集：63/63 通过
+  - P3 Boss Depth 子门禁：32/32 通过
+- 报告：`Assets/ThirdPersonController/Reports/phaseB_round10_boss_p3_round6_depth_gate_report_2026-03-25.md`
+
+说明：本次 gate matrix 快照基于 Boss 过滤批次，不等同于“全量无过滤总览快照”。
+
+## 增量快照（2026-03-25 / Round10 正式同步）
+
+- 本轮主题：Boss P3 Round6 行为深度内容化 + 边界稳定性收口。
+- 新增自动化：
+  - `BossController_InterruptRecoveryGate_LowFpsJitter_StillRespectsCounterWindow`
+  - `Level08To10SceneSwitch_LowFpsJitter_RebindStorm_BossGateRemainsStable`
+- 回归结果：Boss 定向 `29/29`，Boss 全子集 `63/63`，P3 Boss Depth 子门禁 `32/32`。
+- 正式报告：`Assets/ThirdPersonController/Reports/phaseB_round10_boss_p3_round6_depth_gate_report_2026-03-25.md`
+- 备注：Gate Matrix 总览若来自过滤批次，应视作专项快照而非全量发布基线。

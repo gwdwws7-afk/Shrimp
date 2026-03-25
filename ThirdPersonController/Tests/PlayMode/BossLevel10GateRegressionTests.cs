@@ -669,6 +669,144 @@ namespace ThirdPersonController.Tests
             }
         }
 
+        [UnityTest]
+        public IEnumerator Level08To10SceneSwitch_LowFpsJitter_RebindStorm_BossGateRemainsStable()
+        {
+            Scene baselineScene = SceneManager.GetActiveScene();
+            float originalTimeScale = Time.timeScale;
+            bool previousLogEnabled = Debug.unityLogger.logEnabled;
+            Debug.unityLogger.logEnabled = false;
+
+            List<string> errors = new List<string>();
+            SceneCompletionExpectation[] route =
+            {
+                new SceneCompletionExpectation("Level_08_MoltenRift", 108),
+                new SceneCompletionExpectation("Level_09_StillTideSanctum", 109),
+                new SceneCompletionExpectation("Level_10_HiveCore", 110)
+            };
+
+            try
+            {
+                for (int i = 0; i < route.Length; i++)
+                {
+                    SceneCompletionExpectation expectation = route[i];
+                    SceneManager.LoadScene(expectation.sceneName, LoadSceneMode.Additive);
+                    yield return null;
+                    yield return null;
+
+                    Scene scene = SceneManager.GetSceneByName(expectation.sceneName);
+                    if (!scene.IsValid() || !scene.isLoaded)
+                    {
+                        errors.Add($"[{expectation.sceneName}] Scene should be loaded.");
+                        continue;
+                    }
+
+                    LevelFlowController levelFlow = FindComponentInScene<LevelFlowController>(scene);
+                    StrongholdSequenceController sequence = FindComponentInScene<StrongholdSequenceController>(scene);
+                    BossSpawnPoint bossSpawnPoint = FindComponentInScene<BossSpawnPoint>(scene);
+
+                    if (levelFlow == null || sequence == null || bossSpawnPoint == null)
+                    {
+                        errors.Add($"[{expectation.sceneName}] Missing levelFlow/sequence/bossSpawnPoint for low-fps rebind storm test.");
+                    }
+                    else
+                    {
+                        sequence.triggerLevelCompleteOnFinish = false;
+                        sequence.triggerVictoryOnFinish = false;
+
+                        if (sequence.strongholds == null || sequence.strongholds.Count == 0)
+                        {
+                            errors.Add($"[{expectation.sceneName}] sequence.strongholds is empty before rebind storm.");
+                        }
+                        else
+                        {
+                            List<StrongholdController> stableStrongholds = new List<StrongholdController>(sequence.strongholds);
+                            Time.timeScale = (i % 2 == 0) ? 0.4f : 0.55f;
+
+                            for (int storm = 0; storm < 16; storm++)
+                            {
+                                sequence.ConfigureStrongholds(new List<StrongholdController>(stableStrongholds));
+                                sequence.ConfigureBossGate(true, bossSpawnPoint);
+
+                                int bossHandlers = CountBossDefeatHandlers(bossSpawnPoint, sequence);
+                                if (bossHandlers != 1)
+                                {
+                                    errors.Add(
+                                        $"[{expectation.sceneName}] boss defeat handler mismatch after storm iteration {storm + 1}. expected=1 actual={bossHandlers}");
+                                }
+
+                                for (int s = 0; s < stableStrongholds.Count; s++)
+                                {
+                                    StrongholdController stronghold = stableStrongholds[s];
+                                    int handlers = CountStrongholdCompletedHandlers(stronghold, sequence);
+                                    if (handlers != 1)
+                                    {
+                                        errors.Add(
+                                            $"[{expectation.sceneName}] stronghold[{s}] completion handler mismatch after storm iteration {storm + 1}. expected=1 actual={handlers}");
+                                    }
+                                }
+                            }
+
+                            yield return new WaitForSecondsRealtime(0.12f);
+                            bool completedStrongholds = CompleteStrongholdChainForBossGate(sequence, expectation.sceneName, errors);
+                            if (completedStrongholds)
+                            {
+                                bool completedBeforeDefeat = GetSequenceBoolField(sequence, "levelCompleted", expectation.sceneName, errors);
+                                if (completedBeforeDefeat)
+                                {
+                                    errors.Add($"[{expectation.sceneName}] levelCompleted should be false before boss defeat under low-fps jitter.");
+                                }
+
+                                InvokeSequenceBossDefeat(sequence, bossSpawnPoint, expectation.sceneName, errors);
+                                bool completedAfterFirst = GetSequenceBoolField(sequence, "levelCompleted", expectation.sceneName, errors);
+                                if (!completedAfterFirst)
+                                {
+                                    errors.Add($"[{expectation.sceneName}] levelCompleted should turn true after first boss defeat under low-fps jitter.");
+                                }
+
+                                InvokeSequenceBossDefeat(sequence, bossSpawnPoint, expectation.sceneName, errors);
+                                bool completedAfterSecond = GetSequenceBoolField(sequence, "levelCompleted", expectation.sceneName, errors);
+                                if (!completedAfterSecond)
+                                {
+                                    errors.Add($"[{expectation.sceneName}] levelCompleted should remain true after repeated boss defeat under low-fps jitter.");
+                                }
+
+                                if (levelFlow.levelId != expectation.runtimeLevelId)
+                                {
+                                    errors.Add(
+                                        $"[{expectation.sceneName}] levelFlow.levelId mismatch under low-fps jitter. expected={expectation.runtimeLevelId} actual={levelFlow.levelId}");
+                                }
+                            }
+                        }
+                    }
+
+                    Time.timeScale = 1f;
+                    AsyncOperation unload = SceneManager.UnloadSceneAsync(scene);
+                    if (unload != null)
+                    {
+                        while (!unload.isDone)
+                        {
+                            yield return null;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                Debug.unityLogger.logEnabled = previousLogEnabled;
+                Time.timeScale = originalTimeScale;
+                if (baselineScene.IsValid())
+                {
+                    SceneManager.SetActiveScene(baselineScene);
+                }
+            }
+
+            if (errors.Count > 0)
+            {
+                Assert.Fail(string.Join("\n", errors));
+            }
+        }
+
         private static bool GetSequenceBoolField(
             StrongholdSequenceController sequence,
             string fieldName,
@@ -745,6 +883,42 @@ namespace ThirdPersonController.Tests
             }
 
             return true;
+        }
+
+        private static int CountStrongholdCompletedHandlers(StrongholdController stronghold, StrongholdSequenceController sequence)
+        {
+            if (stronghold == null || sequence == null)
+            {
+                return 0;
+            }
+
+            FieldInfo field = typeof(StrongholdController).GetField(
+                "OnStrongholdCompleted",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            if (field == null)
+            {
+                return 0;
+            }
+
+            Delegate callback = field.GetValue(stronghold) as Delegate;
+            if (callback == null)
+            {
+                return 0;
+            }
+
+            int count = 0;
+            Delegate[] delegates = callback.GetInvocationList();
+            for (int i = 0; i < delegates.Length; i++)
+            {
+                Delegate item = delegates[i];
+                if (ReferenceEquals(item.Target, sequence) &&
+                    string.Equals(item.Method.Name, "HandleStrongholdCompleted", StringComparison.Ordinal))
+                {
+                    count++;
+                }
+            }
+
+            return count;
         }
 
         private static int CountBossDefeatHandlers(BossSpawnPoint spawnPoint, StrongholdSequenceController sequence)

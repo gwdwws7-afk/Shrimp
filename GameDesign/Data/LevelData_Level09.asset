@@ -288,8 +288,8 @@ MonoBehaviour:
   bossPhase2TransitionFollowupId: guard_overload
   bossPhase3TransitionFollowupId: guard_spray
   bossEnablePhaseTransitionFollowupRetry: 1
-  bossPhaseTransitionFollowupRetryDelay: 0.12
-  bossPhaseTransitionFollowupMaxRetries: 2
+  bossPhaseTransitionFollowupRetryDelay: 0.14
+  bossPhaseTransitionFollowupMaxRetries: 3
   bossEnablePhase3SpecialPriorityWindow: 1
   bossPhase3SpecialPriorityDuration: 6.3
   bossPhase3SpecialPriorityWeightMultiplier: 1.78

@@ -979,6 +979,14 @@ namespace ThirdPersonController.Editor
                 decisionInterval: levelData.bossDecisionInterval,
                 queuedAttackLimit: levelData.bossQueuedAttackLimit,
                 immediateRepeatPenalty: levelData.bossImmediateRepeatPenalty,
+                enablePostBreakPunishWindow: levelData.bossEnablePostBreakPunishWindow,
+                postBreakPunishDuration: levelData.bossPostBreakPunishDuration,
+                postBreakAttackIntervalMultiplier: levelData.bossPostBreakAttackIntervalMultiplier,
+                postBreakDecisionIntervalMultiplier: levelData.bossPostBreakDecisionIntervalMultiplier,
+                postBreakChaseSpeedMultiplier: levelData.bossPostBreakChaseSpeedMultiplier,
+                enableInterruptRecoveryGate: levelData.bossEnableInterruptRecoveryGate,
+                interruptRecoveryDuration: levelData.bossInterruptRecoveryDuration,
+                interruptedAttackCooldownScale: levelData.bossInterruptedAttackCooldownScale,
                 enablePhaseOpeners: levelData.bossEnablePhaseTransitionOpeners,
                 phase2OpenerId: levelData.bossPhase2TransitionOpenerId,
                 phase3OpenerId: levelData.bossPhase3TransitionOpenerId,
@@ -998,6 +1006,7 @@ namespace ThirdPersonController.Editor
                 phase2ComboChance: levelData.bossPhase2ComboChance,
                 phase3ComboChance: levelData.bossPhase3ComboChance,
                 enableTimePressure: levelData.bossEnableTimePressure,
+                timePressureDelay: levelData.bossTimePressureDelay,
                 timePressureRampDuration: levelData.bossTimePressureRampDuration,
                 maxTimePressureDamageMultiplier: levelData.bossMaxTimePressureDamageMultiplier,
                 maxTimePressureSpeedMultiplier: levelData.bossMaxTimePressureSpeedMultiplier,
@@ -1022,6 +1031,14 @@ namespace ThirdPersonController.Editor
                 decisionInterval: spawnPoint.decisionInterval,
                 queuedAttackLimit: spawnPoint.queuedAttackLimit,
                 immediateRepeatPenalty: spawnPoint.immediateRepeatPenalty,
+                enablePostBreakPunishWindow: spawnPoint.enablePostBreakPunishWindow,
+                postBreakPunishDuration: spawnPoint.postBreakPunishDuration,
+                postBreakAttackIntervalMultiplier: spawnPoint.postBreakAttackIntervalMultiplier,
+                postBreakDecisionIntervalMultiplier: spawnPoint.postBreakDecisionIntervalMultiplier,
+                postBreakChaseSpeedMultiplier: spawnPoint.postBreakChaseSpeedMultiplier,
+                enableInterruptRecoveryGate: spawnPoint.enableInterruptRecoveryGate,
+                interruptRecoveryDuration: spawnPoint.interruptRecoveryDuration,
+                interruptedAttackCooldownScale: spawnPoint.interruptedAttackCooldownScale,
                 enablePhaseOpeners: spawnPoint.enablePhaseTransitionOpeners,
                 phase2OpenerId: spawnPoint.phase2TransitionOpenerId,
                 phase3OpenerId: spawnPoint.phase3TransitionOpenerId,
@@ -1041,6 +1058,7 @@ namespace ThirdPersonController.Editor
                 phase2ComboChance: spawnPoint.phase2ComboChance,
                 phase3ComboChance: spawnPoint.phase3ComboChance,
                 enableTimePressure: spawnPoint.enableTimePressure,
+                timePressureDelay: spawnPoint.timePressureDelay,
                 timePressureRampDuration: spawnPoint.timePressureRampDuration,
                 maxTimePressureDamageMultiplier: spawnPoint.maxTimePressureDamageMultiplier,
                 maxTimePressureSpeedMultiplier: spawnPoint.maxTimePressureSpeedMultiplier,
@@ -1065,6 +1083,14 @@ namespace ThirdPersonController.Editor
                 decisionInterval: controller.decisionInterval,
                 queuedAttackLimit: controller.queuedAttackLimit,
                 immediateRepeatPenalty: controller.immediateRepeatPenalty,
+                enablePostBreakPunishWindow: controller.enablePostBreakPunishWindow,
+                postBreakPunishDuration: controller.postBreakPunishDuration,
+                postBreakAttackIntervalMultiplier: controller.postBreakAttackIntervalMultiplier,
+                postBreakDecisionIntervalMultiplier: controller.postBreakDecisionIntervalMultiplier,
+                postBreakChaseSpeedMultiplier: controller.postBreakChaseSpeedMultiplier,
+                enableInterruptRecoveryGate: controller.enableInterruptRecoveryGate,
+                interruptRecoveryDuration: controller.interruptRecoveryDuration,
+                interruptedAttackCooldownScale: controller.interruptedAttackCooldownScale,
                 enablePhaseOpeners: controller.enablePhaseTransitionOpeners,
                 phase2OpenerId: controller.phase2TransitionOpenerId,
                 phase3OpenerId: controller.phase3TransitionOpenerId,
@@ -1084,6 +1110,7 @@ namespace ThirdPersonController.Editor
                 phase2ComboChance: controller.phase2ComboChance,
                 phase3ComboChance: controller.phase3ComboChance,
                 enableTimePressure: controller.enableTimePressure,
+                timePressureDelay: controller.timePressureDelay,
                 timePressureRampDuration: controller.timePressureRampDuration,
                 maxTimePressureDamageMultiplier: controller.maxTimePressureDamageMultiplier,
                 maxTimePressureSpeedMultiplier: controller.maxTimePressureSpeedMultiplier,
@@ -1101,6 +1128,14 @@ namespace ThirdPersonController.Editor
             float decisionInterval,
             int queuedAttackLimit,
             float immediateRepeatPenalty,
+            bool enablePostBreakPunishWindow,
+            float postBreakPunishDuration,
+            float postBreakAttackIntervalMultiplier,
+            float postBreakDecisionIntervalMultiplier,
+            float postBreakChaseSpeedMultiplier,
+            bool enableInterruptRecoveryGate,
+            float interruptRecoveryDuration,
+            float interruptedAttackCooldownScale,
             bool enablePhaseOpeners,
             string phase2OpenerId,
             string phase3OpenerId,
@@ -1120,6 +1155,7 @@ namespace ThirdPersonController.Editor
             float phase2ComboChance,
             float phase3ComboChance,
             bool enableTimePressure,
+            float timePressureDelay,
             float timePressureRampDuration,
             float maxTimePressureDamageMultiplier,
             float maxTimePressureSpeedMultiplier,
@@ -1168,6 +1204,42 @@ namespace ThirdPersonController.Editor
             if (immediateRepeatPenalty < 0f || immediateRepeatPenalty > 1f)
             {
                 issues.Add(ValidationIssue.Blocking($"{source}.immediateRepeatPenalty must be in [0,1]."));
+            }
+
+            if (enablePostBreakPunishWindow)
+            {
+                if (postBreakPunishDuration <= 0f)
+                {
+                    issues.Add(ValidationIssue.Blocking($"{source}.postBreakPunishDuration must be > 0 when post-break punish is enabled."));
+                }
+
+                if (postBreakAttackIntervalMultiplier < 0.3f || postBreakAttackIntervalMultiplier > 1f)
+                {
+                    issues.Add(ValidationIssue.Blocking($"{source}.postBreakAttackIntervalMultiplier must be in [0.3,1]."));
+                }
+
+                if (postBreakDecisionIntervalMultiplier < 0.3f || postBreakDecisionIntervalMultiplier > 1f)
+                {
+                    issues.Add(ValidationIssue.Blocking($"{source}.postBreakDecisionIntervalMultiplier must be in [0.3,1]."));
+                }
+
+                if (postBreakChaseSpeedMultiplier < 1f)
+                {
+                    issues.Add(ValidationIssue.Blocking($"{source}.postBreakChaseSpeedMultiplier must be >= 1."));
+                }
+            }
+
+            if (enableInterruptRecoveryGate)
+            {
+                if (interruptRecoveryDuration < 0.08f || interruptRecoveryDuration > 2f)
+                {
+                    issues.Add(ValidationIssue.Blocking($"{source}.interruptRecoveryDuration must be in [0.08,2] when interrupt recovery is enabled."));
+                }
+
+                if (interruptedAttackCooldownScale < 0f || interruptedAttackCooldownScale > 1f)
+                {
+                    issues.Add(ValidationIssue.Blocking($"{source}.interruptedAttackCooldownScale must be in [0,1] when interrupt recovery is enabled."));
+                }
             }
 
             if (enablePhaseOpeners)
@@ -1237,14 +1309,30 @@ namespace ThirdPersonController.Editor
 
             if (enableTimePressure)
             {
+                if (timePressureDelay < 15f)
+                {
+                    issues.Add(ValidationIssue.Blocking($"{source}.timePressureDelay must be >= 15 when time pressure is enabled."));
+                }
+
                 if (timePressureRampDuration < 1f)
                 {
                     issues.Add(ValidationIssue.Blocking($"{source}.timePressureRampDuration must be >= 1 when time pressure is enabled."));
                 }
 
+                if (timePressureRampDuration < 20f)
+                {
+                    issues.Add(ValidationIssue.Blocking($"{source}.timePressureRampDuration must be >= 20 for Round6 pressure pacing."));
+                }
+
                 if (maxTimePressureDamageMultiplier < 1f || maxTimePressureSpeedMultiplier < 1f)
                 {
                     issues.Add(ValidationIssue.Blocking($"{source}.time pressure max multipliers must be >= 1."));
+                }
+
+                if (enablePostBreakPunishWindow && timePressureDelay <= postBreakPunishDuration)
+                {
+                    issues.Add(ValidationIssue.Blocking(
+                        $"{source}.timePressureDelay must be greater than postBreakPunishDuration to preserve counter-window readability."));
                 }
             }
         }

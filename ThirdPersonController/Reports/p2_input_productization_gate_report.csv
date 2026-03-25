@@ -1,7 +1,2 @@
 ﻿"name","fullname","result","duration"
-"PlayerInputHandler_ActionLabel_ContainsKeyboardAndGamepadForSystemToggles","ThirdPersonController.Tests.InputProductizationRegressionTests.PlayerInputHandler_ActionLabel_ContainsKeyboardAndGamepadForSystemToggles","Passed","0.003177"
-"PlayerInputHandler_ActionLabels_SkillAndAttackHints_AreReadable","ThirdPersonController.Tests.InputProductizationRegressionTests.PlayerInputHandler_ActionLabels_SkillAndAttackHints_AreReadable","Passed","0.005576"
-"PlayerInputHandler_CoreCombatActions_HaveGamepadBindings","ThirdPersonController.Tests.InputProductizationRegressionTests.PlayerInputHandler_CoreCombatActions_HaveGamepadBindings","Passed","0.002050"
-"PlayerInputHandler_KeyboardAndMouseCoverage_RemainsComplete","ThirdPersonController.Tests.InputProductizationRegressionTests.PlayerInputHandler_KeyboardAndMouseCoverage_RemainsComplete","Passed","0.001931"
-"PlayerInputHandler_PromptDevice_EventFiresOnSwitch","ThirdPersonController.Tests.InputProductizationRegressionTests.PlayerInputHandler_PromptDevice_EventFiresOnSwitch","Passed","0.001338"
-"PlayerInputHandler_SystemToggleActions_HaveGamepadHoldBindings","ThirdPersonController.Tests.InputProductizationRegressionTests.PlayerInputHandler_SystemToggleActions_HaveGamepadHoldBindings","Passed","0.004822"
+"P2 Input Productization Gate (no matches)","","Skipped","0"

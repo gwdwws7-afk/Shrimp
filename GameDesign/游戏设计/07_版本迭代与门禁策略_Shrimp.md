@@ -1,6 +1,6 @@
 # 版本迭代与门禁策略（Shrimp）
 
-更新时间: 2026-03-24
+更新时间: 2026-03-25
 
 ## 1. 目标
 
@@ -80,3 +80,29 @@
 - 关键模块无 blocker 风险
 - 文档、任务、证据三者一致
 - 文档方法论门禁 DG-01~DG-06 全通过
+
+## 7. 迭代执行记录（2026-03-25 / Phase B Round10）
+
+目标：Boss P3 Round6（行为深度内容化 + 边界稳定性收口）。
+
+执行项：
+- 新增低帧率抖动自动化用例（Interrupt Recovery 反制窗口）。
+- 新增场景级重绑定风暴自动化用例（波次切换/强制重配）。
+- 强化 Boss 编排门禁规则（post-break / interrupt / pressure pacing）。
+
+结果：
+- 定向回归：29/29 通过。
+- Boss 全子集：63/63 通过。
+- P3 Boss Depth 子门禁：32/32 通过。
+- Hard Gate：通过。
+
+新增证据：
+- `Assets/ThirdPersonController/Reports/phaseB_round10_boss_p3_round6_depth_gate_report_2026-03-25.md`
+- `Logs/PlayMode_BossP3Round6_targeted.xml`
+- `Logs/PlayMode_BossP3Round6_fullboss.xml`
+
+## 8. 2026-03-25 门禁口径校正（正式）
+
+- Round10 已完成 Boss 深度专项收口：定向 `29/29`、Boss 全子集 `63/63`、P3 子门禁 `32/32`。
+- 本轮新增规则继续遵循“先专项收口，再回归无过滤全量基线”的迭代策略。
+- 口径校正：`playmode_gate_matrix_summary.md` 若为过滤批次生成，必须在文档中显式标注“非全量基线”。

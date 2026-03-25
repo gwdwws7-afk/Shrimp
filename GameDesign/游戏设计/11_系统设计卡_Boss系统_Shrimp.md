@@ -1,6 +1,6 @@
 # 系统设计卡：Boss系统（Shrimp）
 
-更新时间: 2026-03-24
+更新时间: 2026-03-25
 版本: v0.1（文档优化轮）
 Owner: Design/Combat/Boss
 关联 DDR-ID: `DDR-2026-03-24-05`
@@ -123,3 +123,39 @@ Owner: Design/Combat/Boss
 - 当前方法论分数 70，处于“可推进但必须限期补强”区间。
 - 下一轮文档动作: 完成 10 Boss 身份卡与阶段课题表，目标提升到 >= 80。
 
+
+## 2026-03-25 更新记录（Round10 / Boss P3 Round6）
+
+本轮完成：
+
+1. 行为深度与边界收口
+- 低帧率时序抖动下，Interrupt Recovery 反制窗口保持稳定。
+- 场景切换 + 强绑定重配风暴下，Boss Gate 仍保持单处理器、不重复结算。
+
+2. 门禁规则增强
+- 在编排覆盖门禁中增加以下约束：
+  - post-break punish 参数范围约束
+  - interrupt recovery 参数范围约束
+  - time-pressure delay/ramp 的节奏约束
+  - time-pressure 与 counter-window 的可读性约束
+
+3. 配置微调（不改逻辑）
+- Level_08~10：phase transition followup retry 的延迟/重试预算小幅调整。
+
+4. 回归结果
+- 定向（BossCombatDepth + BossLevel10Gate）：29/29 通过
+- Boss 全子集：63/63 通过
+
+证据路径：
+- `Assets/ThirdPersonController/Reports/phaseB_round10_boss_p3_round6_depth_gate_report_2026-03-25.md`
+- `Assets/ThirdPersonController/Reports/p3_boss_depth_gate_report.csv`
+- `Logs/PlayMode_BossP3Round6_targeted.xml`
+- `Logs/PlayMode_BossP3Round6_fullboss.xml`
+
+## 2026-03-25 收口补记（正式）
+
+- 设计卡对应代码验证已补齐“低帧率时序抖动”与“场景切换重绑定风暴”两类高风险边界。
+- 本轮不新增核心机制逻辑，仅做边界稳定性与门禁约束强化（post-break / interrupt / pressure pacing）。
+- 对应验收证据：
+  - `Assets/ThirdPersonController/Reports/phaseB_round10_boss_p3_round6_depth_gate_report_2026-03-25.md`
+  - `Assets/ThirdPersonController/Reports/p3_boss_depth_gate_report.csv`
