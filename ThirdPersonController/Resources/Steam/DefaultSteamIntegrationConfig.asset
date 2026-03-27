@@ -19,6 +19,7 @@ MonoBehaviour:
   strictAppIdValidation: 1
   requireCloudWhenSteamEnabled: 0
   reportRuntimeDiagnostics: 1
+  preferReflectionBackend: 1
   enableAchievements: 1
   enableStats: 1
   statsFlushInterval: 20

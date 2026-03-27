@@ -1,0 +1,11 @@
+﻿level_id,asset_path,stronghold_order_text,stronghold_count_before,stronghold_count_after,override_strongholds_before,override_strongholds_after,csv_rows,synced_waves,missing_archetype_refs,changed,status,note
+"LEVEL_01","Assets/GameDesign/Data/LevelData_Level01.asset","S1 required,S2 required,S3 required",3,3,3,3,14,14,0,0,"Ok","Validation passed."
+"LEVEL_02","Assets/GameDesign/Data/LevelData_Level02.asset","S1 required,S2 required,S3 required",3,3,3,3,15,15,0,0,"Ok","Validation passed."
+"LEVEL_03","Assets/GameDesign/Data/LevelData_Level03.asset","S1 required,S2 required,S3 required",3,3,3,3,12,12,0,0,"Ok","Validation passed."
+"LEVEL_04","Assets/GameDesign/Data/LevelData_Level04.asset","S1 required,S2 required,S3 required",3,3,3,3,15,15,0,0,"Ok","Validation passed."
+"LEVEL_05","Assets/GameDesign/Data/LevelData_Level05.asset","S1 required,S2 required,S3 required",3,3,3,3,14,14,0,0,"Ok","Validation passed."
+"LEVEL_06","Assets/GameDesign/Data/LevelData_Level06.asset","S1 required,S2 required,S3 required",3,3,3,3,14,14,0,0,"Ok","Validation passed."
+"LEVEL_07","Assets/GameDesign/Data/LevelData_Level07.asset","S1 required,S2 required,S3 required",3,3,3,3,14,14,0,0,"Ok","Validation passed."
+"LEVEL_08","Assets/GameDesign/Data/LevelData_Level08.asset","S1 required,S2 required,S3 required",3,3,3,3,14,14,0,0,"Ok","Validation passed."
+"LEVEL_09","Assets/GameDesign/Data/LevelData_Level09.asset","S1 required,S2 required,S3 required",3,3,3,3,14,14,0,0,"Ok","Validation passed."
+"LEVEL_10","Assets/GameDesign/Data/LevelData_Level10.asset","S1 required,S2 required,S3 required",3,3,3,3,14,14,0,0,"Ok","Validation passed."

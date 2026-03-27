@@ -523,6 +523,22 @@ namespace ThirdPersonController.Editor
             profile.expectedPhaseCount = 3;
             profile.expectedSkillCount = 4;
             profile.definesBreakRule = true;
+            profile.requireDistinctPhaseIntents = true;
+            profile.phase1Intent = guardian
+                ? "Occupy frontline space and force lateral reposition before punish."
+                : "Probe with mobility pressure and force direction-based defensive reads.";
+            profile.phase2Intent = guardian
+                ? "Escalate with armor-backed combo branch and punish greedy retaliation."
+                : "Compress reaction window through chained rush follow-ups.";
+            profile.phase3Intent = guardian
+                ? "Convert arena control into closing burst under time pressure."
+                : "Sustain high-speed threat and punish panic movement mistakes.";
+            profile.signaturePunishWindow = guardian
+                ? "Punish after shield-slam recovery and failed spin-chain continuation."
+                : "Punish after vortex endpoint and interrupted devour startup.";
+            profile.antiPatternHint = guardian
+                ? "Do not commit long combo into armored startup."
+                : "Do not chase mid-chain; wait for endpoint punish window.";
             profile.overrideSpawnStats = false;
             profile.maxHealth = guardian ? 4200 : 3800;
             profile.expReward = guardian ? 520 : 480;
@@ -602,6 +618,21 @@ namespace ThirdPersonController.Editor
             string defaultFailHint = guardian
                 ? "Typical failure: over-commit into armored strike sequence."
                 : "Typical failure: late dodge on chain-rush follow-up.";
+            string defaultPhase1Intent = guardian
+                ? "Occupy frontline space and force lateral reposition before punish."
+                : "Probe with mobility pressure and force direction-based defensive reads.";
+            string defaultPhase2Intent = guardian
+                ? "Escalate with armor-backed combo branch and punish greedy retaliation."
+                : "Compress reaction window through chained rush follow-ups.";
+            string defaultPhase3Intent = guardian
+                ? "Convert arena control into closing burst under time pressure."
+                : "Sustain high-speed threat and punish panic movement mistakes.";
+            string defaultPunishWindow = guardian
+                ? "Punish after shield-slam recovery and failed spin-chain continuation."
+                : "Punish after vortex endpoint and interrupted devour startup.";
+            string defaultAntiPattern = guardian
+                ? "Do not commit long combo into armored startup."
+                : "Do not chase mid-chain; wait for endpoint punish window.";
 
             bool changed = false;
             string profileLabel = profile.name;
@@ -726,10 +757,131 @@ namespace ThirdPersonController.Editor
                 }
             }
 
+            if (string.IsNullOrWhiteSpace(profile.phase1Intent))
+            {
+                if (applyFix)
+                {
+                    profile.phase1Intent = defaultPhase1Intent;
+                    changed = true;
+                    fixedCount++;
+                    fixNotes.Add($"{profileLabel}: phase1Intent auto-filled.");
+                }
+                else
+                {
+                    gapNotes.Add($"{profileLabel}: phase1Intent is empty.");
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(profile.phase2Intent))
+            {
+                if (applyFix)
+                {
+                    profile.phase2Intent = defaultPhase2Intent;
+                    changed = true;
+                    fixedCount++;
+                    fixNotes.Add($"{profileLabel}: phase2Intent auto-filled.");
+                }
+                else
+                {
+                    gapNotes.Add($"{profileLabel}: phase2Intent is empty.");
+                }
+            }
+
+            if (profile.expectedPhaseCount >= 3 && string.IsNullOrWhiteSpace(profile.phase3Intent))
+            {
+                if (applyFix)
+                {
+                    profile.phase3Intent = defaultPhase3Intent;
+                    changed = true;
+                    fixedCount++;
+                    fixNotes.Add($"{profileLabel}: phase3Intent auto-filled.");
+                }
+                else
+                {
+                    gapNotes.Add($"{profileLabel}: phase3Intent is empty for expectedPhaseCount >= 3.");
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(profile.signaturePunishWindow))
+            {
+                if (applyFix)
+                {
+                    profile.signaturePunishWindow = defaultPunishWindow;
+                    changed = true;
+                    fixedCount++;
+                    fixNotes.Add($"{profileLabel}: signaturePunishWindow auto-filled.");
+                }
+                else
+                {
+                    gapNotes.Add($"{profileLabel}: signaturePunishWindow is empty.");
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(profile.antiPatternHint))
+            {
+                if (applyFix)
+                {
+                    profile.antiPatternHint = defaultAntiPattern;
+                    changed = true;
+                    fixedCount++;
+                    fixNotes.Add($"{profileLabel}: antiPatternHint auto-filled.");
+                }
+                else
+                {
+                    gapNotes.Add($"{profileLabel}: antiPatternHint is empty.");
+                }
+            }
+
+            if (profile.requireDistinctPhaseIntents && profile.expectedPhaseCount >= 2)
+            {
+                bool phase12Same = IsSameSemanticText(profile.phase1Intent, profile.phase2Intent);
+                if (phase12Same)
+                {
+                    if (applyFix)
+                    {
+                        profile.phase2Intent = defaultPhase2Intent;
+                        changed = true;
+                        fixedCount++;
+                        fixNotes.Add($"{profileLabel}: phase2Intent re-seeded to keep phase intents distinct.");
+                    }
+                    else
+                    {
+                        gapNotes.Add($"{profileLabel}: phase1Intent and phase2Intent are identical.");
+                    }
+                }
+
+                if (profile.expectedPhaseCount >= 3)
+                {
+                    bool phase13Same = IsSameSemanticText(profile.phase1Intent, profile.phase3Intent);
+                    bool phase23Same = IsSameSemanticText(profile.phase2Intent, profile.phase3Intent);
+                    if (phase13Same || phase23Same)
+                    {
+                        if (applyFix)
+                        {
+                            profile.phase3Intent = defaultPhase3Intent;
+                            changed = true;
+                            fixedCount++;
+                            fixNotes.Add($"{profileLabel}: phase3Intent re-seeded to keep phase intents distinct.");
+                        }
+                        else
+                        {
+                            gapNotes.Add($"{profileLabel}: phase3Intent should be distinct from earlier phase intents.");
+                        }
+                    }
+                }
+            }
+
             if (applyFix && changed)
             {
                 EditorUtility.SetDirty(profile);
             }
+        }
+
+        private static bool IsSameSemanticText(string left, string right)
+        {
+            string a = string.IsNullOrWhiteSpace(left) ? string.Empty : left.Trim();
+            string b = string.IsNullOrWhiteSpace(right) ? string.Empty : right.Trim();
+            return string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
         }
 
         private static BossEncounterProfile ResolveDefaultProfileForSpawnPoint(

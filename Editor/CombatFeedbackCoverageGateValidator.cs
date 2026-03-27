@@ -25,6 +25,59 @@ namespace ThirdPersonController.Editor
             public string note;
         }
 
+        private struct FeedbackMappingDefinition
+        {
+            public string id;
+            public string description;
+            public string eventToken;
+            public string audioToken;
+            public string vfxToken;
+        }
+
+        private static readonly FeedbackMappingDefinition[] RequiredMappings =
+        {
+            new FeedbackMappingDefinition
+            {
+                id = "enemy_hit_knockdown",
+                description = "Enemy knockdown hit should route to high-priority audio and screen shake.",
+                eventToken = "OnEnemyHit",
+                audioToken = "EnemyHitReactionType.Knockdown",
+                vfxToken = "EnemyHitReactionType.Knockdown"
+            },
+            new FeedbackMappingDefinition
+            {
+                id = "enemy_hit_knockback",
+                description = "Enemy knockback hit should route to heavy-hit feedback.",
+                eventToken = "OnEnemyHit",
+                audioToken = "EnemyHitReactionType.Knockback",
+                vfxToken = "EnemyHitReactionType.Knockback"
+            },
+            new FeedbackMappingDefinition
+            {
+                id = "enemy_killed",
+                description = "Enemy kill should route to death audio feedback path.",
+                eventToken = "OnEnemyKilled",
+                audioToken = "PlayEnemyDeathSound",
+                vfxToken = ""
+            },
+            new FeedbackMappingDefinition
+            {
+                id = "berserk_state_changed",
+                description = "Berserk state should route to audio cue + berserk screen treatment.",
+                eventToken = "OnBerserkStateChanged",
+                audioToken = "PlayBerserkSound",
+                vfxToken = "EnterBerserkMode"
+            },
+            new FeedbackMappingDefinition
+            {
+                id = "boss_break_window",
+                description = "Boss break window should route to dedicated high-priority audio cue.",
+                eventToken = "OnBossBreakWindowStart",
+                audioToken = "PlayBossBreakWindowSound",
+                vfxToken = ""
+            }
+        };
+
         [MenuItem(ValidateMenuPath)]
         public static void Validate()
         {
@@ -158,6 +211,8 @@ namespace ThirdPersonController.Editor
                 "ScreenEffectManager has handlers for required visual feedback events.",
                 "Missing required ScreenEffectManager handlers");
 
+            EvaluateMappings(rows, ref gapTotal, gameEventsContent, audioContent, screenEffectContent);
+
             string reportPath = WriteCsv(rows);
             AssetDatabase.Refresh();
 
@@ -245,6 +300,64 @@ namespace ThirdPersonController.Editor
                 value = sourcePath,
                 note = ok ? okNote : $"{gapPrefix}: {string.Join(" | ", missing)}"
             });
+        }
+
+        private static void EvaluateMappings(
+            List<ValidationRow> rows,
+            ref int gapTotal,
+            string gameEventsContent,
+            string audioContent,
+            string screenEffectContent)
+        {
+            for (int i = 0; i < RequiredMappings.Length; i++)
+            {
+                FeedbackMappingDefinition mapping = RequiredMappings[i];
+                var missing = new List<string>(4);
+
+                if (!ContainsToken(gameEventsContent, mapping.eventToken))
+                {
+                    missing.Add($"event:{mapping.eventToken}");
+                }
+
+                if (!ContainsToken(audioContent, mapping.audioToken))
+                {
+                    missing.Add($"audio:{mapping.audioToken}");
+                }
+
+                if (!ContainsToken(screenEffectContent, mapping.vfxToken))
+                {
+                    missing.Add($"vfx:{mapping.vfxToken}");
+                }
+
+                bool ok = missing.Count == 0;
+                if (!ok)
+                {
+                    gapTotal++;
+                }
+
+                rows.Add(new ValidationRow
+                {
+                    checkId = $"mapping.{mapping.id}",
+                    status = ok ? "Ok" : "Gap",
+                    value = mapping.description,
+                    note = ok ? "mapping_ok" : $"Missing tokens: {string.Join(" | ", missing)}"
+                });
+            }
+        }
+
+        private static bool ContainsToken(string content, string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                return true;
+            }
+
+            if (string.IsNullOrEmpty(content))
+            {
+                return false;
+            }
+
+            return content.IndexOf(token, StringComparison.Ordinal) >= 0;
         }
 
         private static string WriteCsv(List<ValidationRow> rows)

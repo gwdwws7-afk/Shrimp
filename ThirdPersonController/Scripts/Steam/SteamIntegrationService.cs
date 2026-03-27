@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using UnityEngine;
 #if STEAMWORKS && STEAMWORKS_NET
 using Steamworks;
@@ -48,8 +49,10 @@ namespace ThirdPersonController
         public bool strictAppIdValidation = true;
         public bool requireCloudWhenSteamEnabled = false;
         public bool reportRuntimeDiagnostics = true;
+        public bool preferReflectionBackend = true;
 
         private ISteamClient client = new NullSteamClient(false);
+        private static Func<uint, bool, bool, ISteamClient> reflectionClientFactoryOverride;
         private SteamRuntimeStatus lastRuntimeStatus;
         private bool runtimeStatusInitialized;
         [SerializeField] private string debugRuntimeValidationMessage = string.Empty;
@@ -84,11 +87,17 @@ namespace ThirdPersonController
         public void InitializeClient()
         {
             client?.Shutdown();
+            ISteamClient resolvedClient = null;
 #if STEAMWORKS && STEAMWORKS_NET
-            client = new SteamworksClient(appId, enableSteam, logWhenUnavailable);
-#else
-            client = new NullSteamClient(logWhenUnavailable);
+            resolvedClient = new SteamworksClient(appId, enableSteam, logWhenUnavailable);
 #endif
+
+            if (resolvedClient == null && preferReflectionBackend)
+            {
+                resolvedClient = CreateReflectionClient();
+            }
+
+            client = resolvedClient ?? new NullSteamClient(logWhenUnavailable);
             client.Initialize();
             RefreshRuntimeStatus(force: true);
         }
@@ -106,7 +115,8 @@ namespace ThirdPersonController
                 || requireRealBackend != config.requireRealBackend
                 || strictAppIdValidation != config.strictAppIdValidation
                 || requireCloudWhenSteamEnabled != config.requireCloudWhenSteamEnabled
-                || reportRuntimeDiagnostics != config.reportRuntimeDiagnostics;
+                || reportRuntimeDiagnostics != config.reportRuntimeDiagnostics
+                || preferReflectionBackend != config.preferReflectionBackend;
 
             enableSteam = config.enableSteam;
             logWhenUnavailable = config.logWhenUnavailable;
@@ -115,6 +125,7 @@ namespace ThirdPersonController
             strictAppIdValidation = config.strictAppIdValidation;
             requireCloudWhenSteamEnabled = config.requireCloudWhenSteamEnabled;
             reportRuntimeDiagnostics = config.reportRuntimeDiagnostics;
+            preferReflectionBackend = config.preferReflectionBackend;
 
             if (changed && reinitializeClient)
             {
@@ -291,6 +302,16 @@ namespace ThirdPersonController
 
             return type.Name;
         }
+
+        private ISteamClient CreateReflectionClient()
+        {
+            if (reflectionClientFactoryOverride != null)
+            {
+                return reflectionClientFactoryOverride(appId, enableSteam, logWhenUnavailable);
+            }
+
+            return ReflectionSteamClient.TryCreate(appId, enableSteam, logWhenUnavailable);
+        }
     }
 
     internal class NullSteamClient : ISteamClient
@@ -334,6 +355,480 @@ namespace ThirdPersonController
         public bool WriteCloudFile(string fileName, byte[] data) => false;
 
         public long GetCloudFileTimestamp(string fileName) => 0L;
+    }
+
+    internal class ReflectionSteamClient : ISteamClient
+    {
+        private readonly bool enableSteam;
+        private readonly bool logWhenUnavailable;
+        private readonly MethodInfo steamApiInit;
+        private readonly MethodInfo steamApiRunCallbacks;
+        private readonly MethodInfo steamApiShutdown;
+        private readonly MethodInfo requestCurrentStats;
+        private readonly MethodInfo setAchievement;
+        private readonly MethodInfo setStat;
+        private readonly MethodInfo getStat;
+        private readonly MethodInfo storeStats;
+        private readonly MethodInfo isCloudEnabledForAccount;
+        private readonly MethodInfo isCloudEnabledForApp;
+        private readonly MethodInfo cloudFileExists;
+        private readonly MethodInfo cloudFileRead;
+        private readonly MethodInfo cloudFileWrite;
+        private readonly MethodInfo cloudGetFileSize;
+        private readonly MethodInfo cloudGetFileTimestamp;
+        private bool initialized;
+
+        public bool IsInitialized => initialized;
+        public bool IsCloudAvailable => initialized
+            && InvokeBool(isCloudEnabledForAccount, false)
+            && InvokeBool(isCloudEnabledForApp, false);
+
+        private ReflectionSteamClient(
+            bool enableSteam,
+            bool logWhenUnavailable,
+            MethodInfo steamApiInit,
+            MethodInfo steamApiRunCallbacks,
+            MethodInfo steamApiShutdown,
+            MethodInfo requestCurrentStats,
+            MethodInfo setAchievement,
+            MethodInfo setStat,
+            MethodInfo getStat,
+            MethodInfo storeStats,
+            MethodInfo isCloudEnabledForAccount,
+            MethodInfo isCloudEnabledForApp,
+            MethodInfo cloudFileExists,
+            MethodInfo cloudFileRead,
+            MethodInfo cloudFileWrite,
+            MethodInfo cloudGetFileSize,
+            MethodInfo cloudGetFileTimestamp)
+        {
+            this.enableSteam = enableSteam;
+            this.logWhenUnavailable = logWhenUnavailable;
+            this.steamApiInit = steamApiInit;
+            this.steamApiRunCallbacks = steamApiRunCallbacks;
+            this.steamApiShutdown = steamApiShutdown;
+            this.requestCurrentStats = requestCurrentStats;
+            this.setAchievement = setAchievement;
+            this.setStat = setStat;
+            this.getStat = getStat;
+            this.storeStats = storeStats;
+            this.isCloudEnabledForAccount = isCloudEnabledForAccount;
+            this.isCloudEnabledForApp = isCloudEnabledForApp;
+            this.cloudFileExists = cloudFileExists;
+            this.cloudFileRead = cloudFileRead;
+            this.cloudFileWrite = cloudFileWrite;
+            this.cloudGetFileSize = cloudGetFileSize;
+            this.cloudGetFileTimestamp = cloudGetFileTimestamp;
+        }
+
+        public static ISteamClient TryCreate(uint appId, bool enableSteam, bool logWhenUnavailable)
+        {
+            Type steamApiType = FindType("Steamworks.SteamAPI");
+            Type userStatsType = FindType("Steamworks.SteamUserStats");
+            Type remoteStorageType = FindType("Steamworks.SteamRemoteStorage");
+
+            if (steamApiType == null || userStatsType == null || remoteStorageType == null)
+            {
+                return null;
+            }
+
+            MethodInfo init = steamApiType.GetMethod("Init", BindingFlags.Public | BindingFlags.Static);
+            MethodInfo runCallbacks = steamApiType.GetMethod("RunCallbacks", BindingFlags.Public | BindingFlags.Static);
+            MethodInfo shutdown = steamApiType.GetMethod("Shutdown", BindingFlags.Public | BindingFlags.Static);
+
+            if (init == null || runCallbacks == null || shutdown == null)
+            {
+                return null;
+            }
+
+            MethodInfo requestStats = userStatsType.GetMethod("RequestCurrentStats", BindingFlags.Public | BindingFlags.Static);
+            MethodInfo achievement = userStatsType.GetMethod(
+                "SetAchievement",
+                BindingFlags.Public | BindingFlags.Static,
+                null,
+                new[] { typeof(string) },
+                null);
+            MethodInfo setStat = userStatsType.GetMethod(
+                "SetStat",
+                BindingFlags.Public | BindingFlags.Static,
+                null,
+                new[] { typeof(string), typeof(int) },
+                null);
+            MethodInfo getStat = userStatsType.GetMethod(
+                "GetStat",
+                BindingFlags.Public | BindingFlags.Static,
+                null,
+                new[] { typeof(string), typeof(int).MakeByRefType() },
+                null);
+            MethodInfo storeStats = userStatsType.GetMethod("StoreStats", BindingFlags.Public | BindingFlags.Static);
+
+            MethodInfo cloudAccount = remoteStorageType.GetMethod("IsCloudEnabledForAccount", BindingFlags.Public | BindingFlags.Static);
+            MethodInfo cloudApp = remoteStorageType.GetMethod("IsCloudEnabledForApp", BindingFlags.Public | BindingFlags.Static);
+            MethodInfo fileExists = remoteStorageType.GetMethod(
+                "FileExists",
+                BindingFlags.Public | BindingFlags.Static,
+                null,
+                new[] { typeof(string) },
+                null);
+            MethodInfo fileRead = remoteStorageType.GetMethod(
+                "FileRead",
+                BindingFlags.Public | BindingFlags.Static,
+                null,
+                new[] { typeof(string), typeof(byte[]), typeof(int) },
+                null);
+            MethodInfo fileWrite = remoteStorageType.GetMethod(
+                "FileWrite",
+                BindingFlags.Public | BindingFlags.Static,
+                null,
+                new[] { typeof(string), typeof(byte[]), typeof(int) },
+                null);
+            MethodInfo fileSize = remoteStorageType.GetMethod(
+                "GetFileSize",
+                BindingFlags.Public | BindingFlags.Static,
+                null,
+                new[] { typeof(string) },
+                null);
+            MethodInfo fileTimestamp = remoteStorageType.GetMethod(
+                "GetFileTimestamp",
+                BindingFlags.Public | BindingFlags.Static,
+                null,
+                new[] { typeof(string) },
+                null);
+
+            return new ReflectionSteamClient(
+                enableSteam,
+                logWhenUnavailable,
+                init,
+                runCallbacks,
+                shutdown,
+                requestStats,
+                achievement,
+                setStat,
+                getStat,
+                storeStats,
+                cloudAccount,
+                cloudApp,
+                fileExists,
+                fileRead,
+                fileWrite,
+                fileSize,
+                fileTimestamp);
+        }
+
+        public void Initialize()
+        {
+            if (!enableSteam)
+            {
+                initialized = false;
+                return;
+            }
+
+            bool ok = InvokeBool(steamApiInit, false);
+            initialized = ok;
+            if (!ok)
+            {
+                if (logWhenUnavailable)
+                {
+                    Debug.LogWarning("[Steam] Reflection SteamAPI.Init failed.");
+                }
+                return;
+            }
+
+            try
+            {
+                requestCurrentStats?.Invoke(null, null);
+            }
+            catch
+            {
+            }
+        }
+
+        public void RunCallbacks()
+        {
+            if (!initialized)
+            {
+                return;
+            }
+
+            try
+            {
+                steamApiRunCallbacks?.Invoke(null, null);
+            }
+            catch
+            {
+            }
+        }
+
+        public void Shutdown()
+        {
+            if (!initialized)
+            {
+                return;
+            }
+
+            try
+            {
+                steamApiShutdown?.Invoke(null, null);
+            }
+            catch
+            {
+            }
+
+            initialized = false;
+        }
+
+        public void UnlockAchievement(string achievementId)
+        {
+            if (!initialized || string.IsNullOrWhiteSpace(achievementId) || setAchievement == null)
+            {
+                return;
+            }
+
+            try
+            {
+                setAchievement.Invoke(null, new object[] { achievementId });
+                storeStats?.Invoke(null, null);
+            }
+            catch
+            {
+            }
+        }
+
+        public void SetStat(string statId, int value)
+        {
+            if (!initialized || string.IsNullOrWhiteSpace(statId) || setStat == null)
+            {
+                return;
+            }
+
+            try
+            {
+                setStat.Invoke(null, new object[] { statId, value });
+            }
+            catch
+            {
+            }
+        }
+
+        public void IncrementStat(string statId, int amount)
+        {
+            if (!initialized || string.IsNullOrWhiteSpace(statId) || setStat == null)
+            {
+                return;
+            }
+
+            int nextValue = amount;
+            if (getStat != null)
+            {
+                try
+                {
+                    object[] args = { statId, 0 };
+                    bool gotCurrent = ConvertToBool(getStat.Invoke(null, args));
+                    if (gotCurrent)
+                    {
+                        nextValue = Convert.ToInt32(args[1]) + amount;
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            SetStat(statId, nextValue);
+        }
+
+        public void StoreStats()
+        {
+            if (!initialized || storeStats == null)
+            {
+                return;
+            }
+
+            try
+            {
+                storeStats.Invoke(null, null);
+            }
+            catch
+            {
+            }
+        }
+
+        public bool CloudFileExists(string fileName)
+        {
+            if (!initialized || string.IsNullOrWhiteSpace(fileName) || cloudFileExists == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                return ConvertToBool(cloudFileExists.Invoke(null, new object[] { fileName }));
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public byte[] ReadCloudFile(string fileName)
+        {
+            if (!CloudFileExists(fileName) || cloudFileRead == null || cloudGetFileSize == null)
+            {
+                return null;
+            }
+
+            int size;
+            try
+            {
+                size = Convert.ToInt32(cloudGetFileSize.Invoke(null, new object[] { fileName }));
+            }
+            catch
+            {
+                return null;
+            }
+
+            if (size <= 0)
+            {
+                return null;
+            }
+
+            byte[] buffer = new byte[size];
+            try
+            {
+                object readResult = cloudFileRead.Invoke(null, new object[] { fileName, buffer, size });
+                if (readResult is int readBytes)
+                {
+                    if (readBytes <= 0)
+                    {
+                        return null;
+                    }
+
+                    if (readBytes != size)
+                    {
+                        Array.Resize(ref buffer, readBytes);
+                    }
+
+                    return buffer;
+                }
+
+                if (ConvertToBool(readResult))
+                {
+                    return buffer;
+                }
+            }
+            catch
+            {
+            }
+
+            return null;
+        }
+
+        public bool WriteCloudFile(string fileName, byte[] data)
+        {
+            if (!initialized || string.IsNullOrWhiteSpace(fileName) || data == null || data.Length == 0 || cloudFileWrite == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                object result = cloudFileWrite.Invoke(null, new object[] { fileName, data, data.Length });
+                return ConvertToBool(result);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public long GetCloudFileTimestamp(string fileName)
+        {
+            if (!initialized || string.IsNullOrWhiteSpace(fileName) || cloudGetFileTimestamp == null)
+            {
+                return 0L;
+            }
+
+            try
+            {
+                object value = cloudGetFileTimestamp.Invoke(null, new object[] { fileName });
+                return Convert.ToInt64(value);
+            }
+            catch
+            {
+                return 0L;
+            }
+        }
+
+        private bool InvokeBool(MethodInfo method, bool fallback)
+        {
+            if (method == null)
+            {
+                return fallback;
+            }
+
+            try
+            {
+                return ConvertToBool(method.Invoke(null, null));
+            }
+            catch
+            {
+                return fallback;
+            }
+        }
+
+        private static bool ConvertToBool(object value)
+        {
+            if (value == null)
+            {
+                return false;
+            }
+
+            if (value is bool boolValue)
+            {
+                return boolValue;
+            }
+
+            if (value is int intValue)
+            {
+                return intValue != 0;
+            }
+
+            try
+            {
+                return Convert.ToBoolean(value);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static Type FindType(string fullName)
+        {
+            Type direct = Type.GetType(fullName, throwOnError: false);
+            if (direct != null)
+            {
+                return direct;
+            }
+
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            for (int i = 0; i < assemblies.Length; i++)
+            {
+                Assembly assembly = assemblies[i];
+                if (assembly == null)
+                {
+                    continue;
+                }
+
+                Type match = assembly.GetType(fullName, throwOnError: false);
+                if (match != null)
+                {
+                    return match;
+                }
+            }
+
+            return null;
+        }
     }
 
 #if STEAMWORKS && STEAMWORKS_NET

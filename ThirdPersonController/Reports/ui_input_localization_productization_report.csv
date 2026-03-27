@@ -1,0 +1,8 @@
+check_id,status,value,note
+script.tokens.ui_hud_hints_dynamic,Ok,Assets/ThirdPersonController/Scripts/UI/UI_HudHints.cs,token_set_present
+script.tokens.ui_skill_bar_dynamic,Ok,Assets/ThirdPersonController/Scripts/UI/UI_SkillBar.cs,token_set_present
+script.tokens.ui_economy_overlay_dynamic,Ok,Assets/ThirdPersonController/Scripts/UI/UI_EconomyOverlay.cs,token_set_present
+script.tokens.ui_talent_overlay_dynamic,Ok,Assets/ThirdPersonController/Scripts/UI/UI_TalentEquipmentOverlay.cs,token_set_present
+script.tokens.ui_level_flow_dynamic,Ok,Assets/ThirdPersonController/Scripts/Core/LevelFlowUIController.cs,token_set_present
+script.tokens.ui_main_menu_dynamic,Ok,Assets/ThirdPersonController/Scripts/Core/MainMenuController.cs,token_set_present
+summary,Ok,rules=6,gap=0

@@ -20,6 +20,7 @@ namespace ThirdPersonController.Tests
             bool oldEnableSteam = service.enableSteam;
             bool oldLogWhenUnavailable = service.logWhenUnavailable;
             uint oldAppId = service.appId;
+            bool oldPreferReflectionBackend = service.preferReflectionBackend;
             bool oldEnableAchievements = tracker != null && tracker.enableAchievements;
             bool oldEnableStats = stats != null && stats.enableStats;
             float oldFlushInterval = stats != null ? stats.flushInterval : 20f;
@@ -38,6 +39,7 @@ namespace ThirdPersonController.Tests
             config.enableSteam = false;
             config.logWhenUnavailable = false;
             config.appId = 13579u;
+            config.preferReflectionBackend = false;
             config.enableAchievements = false;
             config.enableStats = false;
             config.statsFlushInterval = 4f;
@@ -76,6 +78,7 @@ namespace ThirdPersonController.Tests
                 Assert.IsFalse(service.enableSteam);
                 Assert.IsFalse(service.logWhenUnavailable);
                 Assert.AreEqual(13579u, service.appId);
+                Assert.IsFalse(service.preferReflectionBackend);
                 Assert.IsFalse(tracker.enableAchievements);
                 Assert.IsFalse(stats.enableStats);
                 Assert.AreEqual(4f, stats.flushInterval, 0.0001f);
@@ -94,6 +97,7 @@ namespace ThirdPersonController.Tests
                 service.enableSteam = oldEnableSteam;
                 service.logWhenUnavailable = oldLogWhenUnavailable;
                 service.appId = oldAppId;
+                service.preferReflectionBackend = oldPreferReflectionBackend;
 
                 tracker = service.GetComponent<SteamAchievementTracker>();
                 if (tracker != null)

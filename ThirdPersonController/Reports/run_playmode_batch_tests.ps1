@@ -30,6 +30,18 @@ param(
     [string]$LevelProgressionCurveValidateMethod = "ThirdPersonController.Editor.LevelProgressionCurveConsistencyValidator.ValidateForBatch",
     [string]$LevelProgressionCurveLogFile = "C:\test\Shrimp\Logs\LevelProgressionCurveConsistencyValidate.log",
     [string]$LevelProgressionCurveReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\level_progression_curve_consistency_report.csv",
+    [string]$LevelQuestBeatLinkageValidateMethod = "ThirdPersonController.Editor.LevelQuestBeatLinkageGateValidator.ValidateForBatch",
+    [string]$LevelQuestBeatLinkageLogFile = "C:\test\Shrimp\Logs\LevelQuestBeatLinkageGate.log",
+    [string]$LevelQuestBeatLinkageReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\level_quest_beat_linkage_report.csv",
+    [string]$WaveEventRotationValidateMethod = "ThirdPersonController.Editor.WaveEventRotationGateValidator.ValidateForBatch",
+    [string]$WaveEventRotationLogFile = "C:\test\Shrimp\Logs\WaveEventRotationGate.log",
+    [string]$WaveEventRotationReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\wave_event_rotation_gate_report.csv",
+    [string]$QuestFailureLearningValidateMethod = "ThirdPersonController.Editor.QuestFailureLearningGateValidator.ValidateForBatch",
+    [string]$QuestFailureLearningLogFile = "C:\test\Shrimp\Logs\QuestFailureLearningGate.log",
+    [string]$QuestFailureLearningReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\quest_failure_learning_gate_report.csv",
+    [string]$CombatCurveBaselineValidateMethod = "ThirdPersonController.Editor.CombatCurveBaselineGateValidator.ValidateForBatch",
+    [string]$CombatCurveBaselineLogFile = "C:\test\Shrimp\Logs\CombatCurveBaselineGate.log",
+    [string]$CombatCurveBaselineReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\combat_curve_baseline_gate_report.csv",
     [string]$BossFlowCouplingValidateMethod = "ThirdPersonController.Editor.BossFlowCouplingValidator.ValidateForBatch",
     [string]$BossFlowCouplingLogFile = "C:\test\Shrimp\Logs\BossFlowCouplingValidate.log",
     [string]$BossFlowCouplingReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\boss_level_flow_coupling_report.csv",
@@ -68,6 +80,9 @@ param(
     [string]$UICrossDeviceReadabilityValidateMethod = "ThirdPersonController.Editor.UICrossDeviceReadabilityValidator.ValidateForBatch",
     [string]$UICrossDeviceReadabilityLogFile = "C:\test\Shrimp\Logs\UICrossDeviceReadabilityValidate.log",
     [string]$UICrossDeviceReadabilityReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\ui_cross_device_readability_report.csv",
+    [string]$UIInputLocalizationProductizationValidateMethod = "ThirdPersonController.Editor.UIInputLocalizationProductizationValidator.ValidateForBatch",
+    [string]$UIInputLocalizationProductizationLogFile = "C:\test\Shrimp\Logs\UIInputLocalizationProductizationGate.log",
+    [string]$UIInputLocalizationProductizationReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\ui_input_localization_productization_report.csv",
     [string]$CommentLogQualityValidateMethod = "ThirdPersonController.Editor.CommentLogQualityGate.ValidateForBatch",
     [string]$CommentLogQualityLogFile = "C:\test\Shrimp\Logs\CommentLogQualityGate.log",
     [string]$CommentLogQualityReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\comment_log_quality_gate_report.csv",
@@ -84,6 +99,12 @@ param(
     [string]$LocalizationCoverageValidateMethod = "ThirdPersonController.Editor.LocalizationCoverageGateValidator.ValidateForBatch",
     [string]$LocalizationCoverageLogFile = "C:\test\Shrimp\Logs\LocalizationCoverageGate.log",
     [string]$LocalizationCoverageReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\localization_coverage_gate_report.csv",
+    [string]$LocalizationKeyLifecycleValidateMethod = "ThirdPersonController.Editor.LocalizationKeyLifecycleGateValidator.ValidateForBatch",
+    [string]$LocalizationKeyLifecycleLogFile = "C:\test\Shrimp\Logs\LocalizationKeyLifecycleGate.log",
+    [string]$LocalizationKeyLifecycleReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\localization_key_lifecycle_gate_report.csv",
+    [string]$SaveMigrationMatrixValidateMethod = "ThirdPersonController.Editor.SaveMigrationMatrixGateValidator.ValidateForBatch",
+    [string]$SaveMigrationMatrixLogFile = "C:\test\Shrimp\Logs\SaveMigrationMatrixGate.log",
+    [string]$SaveMigrationMatrixReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\save_migration_matrix_gate_report.csv",
     [string]$LocalizationPseudoLocValidateMethod = "ThirdPersonController.Editor.LocalizationPseudoLocGateValidator.ValidateForBatch",
     [string]$LocalizationPseudoLocLogFile = "C:\test\Shrimp\Logs\LocalizationPseudoLocGate.log",
     [string]$LocalizationPseudoLocReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\localization_pseudoloc_gate_report.csv",
@@ -108,8 +129,15 @@ param(
     [string]$P2InputProductizationGateReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\p2_input_productization_gate_report.csv",
     [string]$P2UIReadabilityGateReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\p2_ui_readability_gate_report.csv",
     [string]$P2LocalizationGateReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\p2_localization_regression_gate_report.csv",
+    [string]$P2LocalizationLifecycleGateReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\p2_localization_lifecycle_regression_gate_report.csv",
     [string]$P2SteamRuntimeGateReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\p2_steam_runtime_regression_gate_report.csv",
+    [string]$P2SaveMigrationGateReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\p2_save_migration_regression_gate_report.csv",
+    [string]$P3BossBehaviorDepthGateReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\p3_boss_behavior_depth_gate_report.csv",
+    [string]$P3BossSceneClosureGateReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\p3_boss_scene_closure_gate_report.csv",
+    [string]$P3BossGrammarConsistencyGateReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\p3_boss_grammar_consistency_gate_report.csv",
     [string]$P3BossDepthGateReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\p3_boss_depth_gate_report.csv",
+    [string]$P4EnemyAILongRunGateReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\p4_enemy_ai_longrun_regression_gate_report.csv",
+    [string]$P4CrossSystemPerfGateReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\p4_cross_system_perf_gate_report.csv",
     [string]$P5GrowthEconomyGateReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\p5_growth_economy_gate_report.csv",
     [string]$GateMatrixReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\playmode_gate_matrix_report.csv",
     [string]$GateMatrixSummaryMd = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\playmode_gate_matrix_summary.md",
@@ -118,6 +146,18 @@ param(
     [string]$EnemyTypeSceneGateLogFile = "",
     [string]$BossStrictDrillGateScript = "",
     [string]$BossStrictDrillGateReport = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\boss_choreography_strict_gate_drill_round8_report_2026-03-19.md",
+    [string]$EnemyAIP4LongRunGateScript = "",
+    [string]$EnemyAIP4LongRunGateReport = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\enemy_ai_p4_longrun_gate_report.md",
+    [string]$EnemyAIP4HistoryAppendScript = "",
+    [string]$EnemyAIP4HistoryCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\enemy_ai_p4_longrun_history.csv",
+    [string]$EnemyAIP4TrendGateScript = "",
+    [string]$EnemyAIP4TrendGateReport = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\enemy_ai_p4_trend_gate_report.md",
+    [string]$BossP3SubsetHistoryAppendScript = "",
+    [string]$BossP3SubsetTrendGateScript = "",
+    [string]$BossP3SubsetHistoryCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\boss_p3_subset_history.csv",
+    [string]$BossP3SubsetTrendGateReport = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\boss_p3_subset_trend_gate_report.md",
+    [string]$CrossSystemPerfGateScript = "",
+    [string]$CrossSystemPerfGateReport = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\cross_system_perf_gate_report.md",
     [string]$TestFilter = "",
     [string]$AssemblyFilter = "",
     [int]$RetryCount = 1,
@@ -129,6 +169,10 @@ param(
     [int]$LevelBeatProgressionTimeoutSeconds = 1200,
     [int]$LevelBeatSheetTimeoutSeconds = 1200,
     [int]$LevelProgressionCurveTimeoutSeconds = 1200,
+    [int]$LevelQuestBeatLinkageTimeoutSeconds = 1200,
+    [int]$WaveEventRotationTimeoutSeconds = 1200,
+    [int]$QuestFailureLearningTimeoutSeconds = 1200,
+    [int]$CombatCurveBaselineTimeoutSeconds = 1200,
     [int]$BossFlowCouplingTimeoutSeconds = 1200,
     [int]$BossEncounterRound3TimeoutSeconds = 1200,
     [int]$BossPhaseAttackTimeoutSeconds = 1200,
@@ -138,16 +182,23 @@ param(
     [int]$InputRound3TimeoutSeconds = 1200,
     [int]$InputMirrorTimeoutSeconds = 1200,
     [int]$UICrossDeviceReadabilityTimeoutSeconds = 1200,
+    [int]$UIInputLocalizationProductizationTimeoutSeconds = 1200,
     [int]$CommentLogQualityTimeoutSeconds = 1200,
     [int]$CombatFeedbackCoverageTimeoutSeconds = 1200,
     [int]$SkillResourceGapTimeoutSeconds = 1200,
     [int]$LocalizationCoverageTimeoutSeconds = 1200,
+    [int]$LocalizationKeyLifecycleTimeoutSeconds = 1200,
+    [int]$SaveMigrationMatrixTimeoutSeconds = 1200,
     [int]$LocalizationPseudoLocTimeoutSeconds = 1200,
     [int]$GrowthEconomyConfigTimeoutSeconds = 1200,
     [int]$SteamConfigEnsureTimeoutSeconds = 1200,
     [int]$SteamRuntimeModeTimeoutSeconds = 1200,
     [int]$EnemyTypeSceneGateTimeoutSeconds = 1200,
     [int]$BossStrictDrillGateTimeoutSeconds = 1200,
+    [int]$EnemyAIP4LongRunGateTimeoutSeconds = 1800,
+    [int]$EnemyAIP4TrendGateTimeoutSeconds = 1200,
+    [int]$BossP3SubsetTrendGateTimeoutSeconds = 1200,
+    [int]$CrossSystemPerfGateTimeoutSeconds = 1200,
     [int]$CommentLogQualityWarningBudget = 3,
     [switch]$SkipLevelContentGate,
     [switch]$SkipLevelCombatDensityGate,
@@ -155,6 +206,10 @@ param(
     [switch]$SkipLevelBeatProgressionGate,
     [switch]$SkipLevelBeatSheetGate,
     [switch]$SkipLevelProgressionCurveGate,
+    [switch]$SkipLevelQuestBeatLinkageGate,
+    [switch]$SkipWaveEventRotationGate,
+    [switch]$SkipQuestFailureLearningGate,
+    [switch]$SkipCombatCurveBaselineGate,
     [switch]$SkipBossFlowCouplingGate,
     [switch]$SkipBossEncounterRound3Gate,
     [switch]$SkipBossPhaseAttackGate,
@@ -164,10 +219,13 @@ param(
     [switch]$SkipInputRound3Gate,
     [switch]$SkipInputMirrorGate,
     [switch]$SkipUICrossDeviceReadabilityGate,
+    [switch]$SkipUIInputLocalizationProductizationGate,
     [switch]$SkipCommentLogQualityGate,
     [switch]$SkipCombatFeedbackCoverageGate,
     [switch]$SkipSkillResourceGapGate,
     [switch]$SkipLocalizationCoverageGate,
+    [switch]$SkipLocalizationKeyLifecycleGate,
+    [switch]$SkipSaveMigrationMatrixGate,
     [switch]$SkipLocalizationPseudoLocGate,
     [switch]$SkipGrowthEconomyConfigGate,
     [switch]$SkipSteamConfigEnsure,
@@ -175,6 +233,10 @@ param(
     [switch]$SkipWarmupCompile,
     [switch]$SkipEnemyTypeSceneGate,
     [switch]$SkipBossStrictDrillGate,
+    [switch]$SkipEnemyAIP4LongRunGate,
+    [switch]$SkipEnemyAIP4TrendGate,
+    [switch]$SkipBossP3SubsetTrendGate,
+    [switch]$SkipCrossSystemPerfGate,
     [switch]$RunBossStrictDrillGate,
     [switch]$DisableGateMatrixHardFail,
     [switch]$ValidateOnly,
@@ -1191,6 +1253,50 @@ if ([string]::IsNullOrWhiteSpace($BossStrictDrillGateReport)) {
     $BossStrictDrillGateReport = Join-Path $projectPathResolved "Assets\ThirdPersonController\Reports\boss_choreography_strict_gate_drill_round8_report_2026-03-19.md"
 }
 
+if ([string]::IsNullOrWhiteSpace($EnemyAIP4LongRunGateScript)) {
+    $EnemyAIP4LongRunGateScript = Join-Path $projectPathResolved "Assets\ThirdPersonController\Reports\evaluate_enemy_ai_p4_longrun.ps1"
+}
+
+if ([string]::IsNullOrWhiteSpace($EnemyAIP4LongRunGateReport)) {
+    $EnemyAIP4LongRunGateReport = Join-Path $projectPathResolved "Assets\ThirdPersonController\Reports\enemy_ai_p4_longrun_gate_report.md"
+}
+
+if ([string]::IsNullOrWhiteSpace($EnemyAIP4HistoryAppendScript)) {
+    $EnemyAIP4HistoryAppendScript = Join-Path $projectPathResolved "Assets\ThirdPersonController\Reports\append_enemy_ai_p4_metrics_history.ps1"
+}
+
+if ([string]::IsNullOrWhiteSpace($EnemyAIP4TrendGateScript)) {
+    $EnemyAIP4TrendGateScript = Join-Path $projectPathResolved "Assets\ThirdPersonController\Reports\evaluate_enemy_ai_p4_trend_gate.ps1"
+}
+
+if ([string]::IsNullOrWhiteSpace($EnemyAIP4TrendGateReport)) {
+    $EnemyAIP4TrendGateReport = Join-Path $projectPathResolved "Assets\ThirdPersonController\Reports\enemy_ai_p4_trend_gate_report.md"
+}
+
+if ([string]::IsNullOrWhiteSpace($BossP3SubsetHistoryAppendScript)) {
+    $BossP3SubsetHistoryAppendScript = Join-Path $projectPathResolved "Assets\ThirdPersonController\Reports\append_boss_p3_subset_history.ps1"
+}
+
+if ([string]::IsNullOrWhiteSpace($BossP3SubsetTrendGateScript)) {
+    $BossP3SubsetTrendGateScript = Join-Path $projectPathResolved "Assets\ThirdPersonController\Reports\evaluate_boss_p3_subset_trend_gate.ps1"
+}
+
+if ([string]::IsNullOrWhiteSpace($BossP3SubsetHistoryCsv)) {
+    $BossP3SubsetHistoryCsv = Join-Path $projectPathResolved "Assets\ThirdPersonController\Reports\boss_p3_subset_history.csv"
+}
+
+if ([string]::IsNullOrWhiteSpace($BossP3SubsetTrendGateReport)) {
+    $BossP3SubsetTrendGateReport = Join-Path $projectPathResolved "Assets\ThirdPersonController\Reports\boss_p3_subset_trend_gate_report.md"
+}
+
+if ([string]::IsNullOrWhiteSpace($CrossSystemPerfGateScript)) {
+    $CrossSystemPerfGateScript = Join-Path $projectPathResolved "Assets\ThirdPersonController\Reports\evaluate_cross_system_perf_gate.ps1"
+}
+
+if ([string]::IsNullOrWhiteSpace($CrossSystemPerfGateReport)) {
+    $CrossSystemPerfGateReport = Join-Path $projectPathResolved "Assets\ThirdPersonController\Reports\cross_system_perf_gate_report.md"
+}
+
 $isFilteredTestRun = (-not [string]::IsNullOrWhiteSpace($TestFilter)) -or (-not [string]::IsNullOrWhiteSpace($AssemblyFilter))
 $skipMutatingApplyPasses = $ValidateOnly.IsPresent
 if ($skipMutatingApplyPasses) {
@@ -1201,6 +1307,11 @@ $shouldRunBossStrictDrillGate = (-not $SkipBossStrictDrillGate.IsPresent) -and (
 if ($RunBossStrictDrillGate.IsPresent) {
     $shouldRunBossStrictDrillGate = $true
 }
+
+$shouldRunEnemyAIP4LongRunGate = (-not $SkipEnemyAIP4LongRunGate.IsPresent) -and (-not $isFilteredTestRun)
+$shouldRunEnemyAIP4TrendGate = (-not $SkipEnemyAIP4TrendGate.IsPresent) -and (-not $isFilteredTestRun)
+$shouldRunBossP3SubsetTrendGate = (-not $SkipBossP3SubsetTrendGate.IsPresent) -and (-not $isFilteredTestRun)
+$shouldRunCrossSystemPerfGate = (-not $SkipCrossSystemPerfGate.IsPresent) -and (-not $isFilteredTestRun)
 
 $resultsDir = Split-Path -Parent $ResultsXml
 if (![string]::IsNullOrWhiteSpace($resultsDir)) {
@@ -1265,6 +1376,26 @@ if (![string]::IsNullOrWhiteSpace($levelBeatSheetLogDir)) {
 $levelProgressionCurveLogDir = Split-Path -Parent $LevelProgressionCurveLogFile
 if (![string]::IsNullOrWhiteSpace($levelProgressionCurveLogDir)) {
     New-Item -ItemType Directory -Force -Path $levelProgressionCurveLogDir | Out-Null
+}
+
+$levelQuestBeatLinkageLogDir = Split-Path -Parent $LevelQuestBeatLinkageLogFile
+if (![string]::IsNullOrWhiteSpace($levelQuestBeatLinkageLogDir)) {
+    New-Item -ItemType Directory -Force -Path $levelQuestBeatLinkageLogDir | Out-Null
+}
+
+$waveEventRotationLogDir = Split-Path -Parent $WaveEventRotationLogFile
+if (![string]::IsNullOrWhiteSpace($waveEventRotationLogDir)) {
+    New-Item -ItemType Directory -Force -Path $waveEventRotationLogDir | Out-Null
+}
+
+$questFailureLearningLogDir = Split-Path -Parent $QuestFailureLearningLogFile
+if (![string]::IsNullOrWhiteSpace($questFailureLearningLogDir)) {
+    New-Item -ItemType Directory -Force -Path $questFailureLearningLogDir | Out-Null
+}
+
+$combatCurveBaselineLogDir = Split-Path -Parent $CombatCurveBaselineLogFile
+if (![string]::IsNullOrWhiteSpace($combatCurveBaselineLogDir)) {
+    New-Item -ItemType Directory -Force -Path $combatCurveBaselineLogDir | Out-Null
 }
 
 $bossFlowCouplingLogDir = Split-Path -Parent $BossFlowCouplingLogFile
@@ -1337,6 +1468,11 @@ if (![string]::IsNullOrWhiteSpace($uiCrossDeviceReadabilityLogDir)) {
     New-Item -ItemType Directory -Force -Path $uiCrossDeviceReadabilityLogDir | Out-Null
 }
 
+$uiInputLocalizationProductizationLogDir = Split-Path -Parent $UIInputLocalizationProductizationLogFile
+if (![string]::IsNullOrWhiteSpace($uiInputLocalizationProductizationLogDir)) {
+    New-Item -ItemType Directory -Force -Path $uiInputLocalizationProductizationLogDir | Out-Null
+}
+
 $commentLogQualityLogDir = Split-Path -Parent $CommentLogQualityLogFile
 if (![string]::IsNullOrWhiteSpace($commentLogQualityLogDir)) {
     New-Item -ItemType Directory -Force -Path $commentLogQualityLogDir | Out-Null
@@ -1365,6 +1501,16 @@ if (![string]::IsNullOrWhiteSpace($localizationCoverageApplyLogDir)) {
 $localizationCoverageLogDir = Split-Path -Parent $LocalizationCoverageLogFile
 if (![string]::IsNullOrWhiteSpace($localizationCoverageLogDir)) {
     New-Item -ItemType Directory -Force -Path $localizationCoverageLogDir | Out-Null
+}
+
+$localizationKeyLifecycleLogDir = Split-Path -Parent $LocalizationKeyLifecycleLogFile
+if (![string]::IsNullOrWhiteSpace($localizationKeyLifecycleLogDir)) {
+    New-Item -ItemType Directory -Force -Path $localizationKeyLifecycleLogDir | Out-Null
+}
+
+$saveMigrationMatrixLogDir = Split-Path -Parent $SaveMigrationMatrixLogFile
+if (![string]::IsNullOrWhiteSpace($saveMigrationMatrixLogDir)) {
+    New-Item -ItemType Directory -Force -Path $saveMigrationMatrixLogDir | Out-Null
 }
 
 $localizationPseudoLocLogDir = Split-Path -Parent $LocalizationPseudoLocLogFile
@@ -1402,6 +1548,36 @@ if (![string]::IsNullOrWhiteSpace($bossStrictDrillGateReportDir)) {
     New-Item -ItemType Directory -Force -Path $bossStrictDrillGateReportDir | Out-Null
 }
 
+$enemyAIP4LongRunGateReportDir = Split-Path -Parent $EnemyAIP4LongRunGateReport
+if (![string]::IsNullOrWhiteSpace($enemyAIP4LongRunGateReportDir)) {
+    New-Item -ItemType Directory -Force -Path $enemyAIP4LongRunGateReportDir | Out-Null
+}
+
+$enemyAIP4HistoryCsvDir = Split-Path -Parent $EnemyAIP4HistoryCsv
+if (![string]::IsNullOrWhiteSpace($enemyAIP4HistoryCsvDir)) {
+    New-Item -ItemType Directory -Force -Path $enemyAIP4HistoryCsvDir | Out-Null
+}
+
+$enemyAIP4TrendGateReportDir = Split-Path -Parent $EnemyAIP4TrendGateReport
+if (![string]::IsNullOrWhiteSpace($enemyAIP4TrendGateReportDir)) {
+    New-Item -ItemType Directory -Force -Path $enemyAIP4TrendGateReportDir | Out-Null
+}
+
+$bossP3SubsetHistoryCsvDir = Split-Path -Parent $BossP3SubsetHistoryCsv
+if (![string]::IsNullOrWhiteSpace($bossP3SubsetHistoryCsvDir)) {
+    New-Item -ItemType Directory -Force -Path $bossP3SubsetHistoryCsvDir | Out-Null
+}
+
+$bossP3SubsetTrendGateReportDir = Split-Path -Parent $BossP3SubsetTrendGateReport
+if (![string]::IsNullOrWhiteSpace($bossP3SubsetTrendGateReportDir)) {
+    New-Item -ItemType Directory -Force -Path $bossP3SubsetTrendGateReportDir | Out-Null
+}
+
+$crossSystemPerfGateReportDir = Split-Path -Parent $CrossSystemPerfGateReport
+if (![string]::IsNullOrWhiteSpace($crossSystemPerfGateReportDir)) {
+    New-Item -ItemType Directory -Force -Path $crossSystemPerfGateReportDir | Out-Null
+}
+
 $inputRound3Timeout = if ($InputRound3TimeoutSeconds -gt 0) {
     $InputRound3TimeoutSeconds
 }
@@ -1418,6 +1594,13 @@ else {
 
 $uiCrossDeviceReadabilityTimeout = if ($UICrossDeviceReadabilityTimeoutSeconds -gt 0) {
     $UICrossDeviceReadabilityTimeoutSeconds
+}
+else {
+    $ProcessTimeoutSeconds
+}
+
+$uiInputLocalizationProductizationTimeout = if ($UIInputLocalizationProductizationTimeoutSeconds -gt 0) {
+    $UIInputLocalizationProductizationTimeoutSeconds
 }
 else {
     $ProcessTimeoutSeconds
@@ -1451,6 +1634,20 @@ else {
     $ProcessTimeoutSeconds
 }
 
+$localizationKeyLifecycleTimeout = if ($LocalizationKeyLifecycleTimeoutSeconds -gt 0) {
+    $LocalizationKeyLifecycleTimeoutSeconds
+}
+else {
+    $ProcessTimeoutSeconds
+}
+
+$saveMigrationMatrixTimeout = if ($SaveMigrationMatrixTimeoutSeconds -gt 0) {
+    $SaveMigrationMatrixTimeoutSeconds
+}
+else {
+    $ProcessTimeoutSeconds
+}
+
 $localizationPseudoLocTimeout = if ($LocalizationPseudoLocTimeoutSeconds -gt 0) {
     $LocalizationPseudoLocTimeoutSeconds
 }
@@ -1474,6 +1671,34 @@ else {
 
 $steamRuntimeModeTimeout = if ($SteamRuntimeModeTimeoutSeconds -gt 0) {
     $SteamRuntimeModeTimeoutSeconds
+}
+else {
+    $ProcessTimeoutSeconds
+}
+
+$enemyAIP4LongRunGateTimeout = if ($EnemyAIP4LongRunGateTimeoutSeconds -gt 0) {
+    $EnemyAIP4LongRunGateTimeoutSeconds
+}
+else {
+    $ProcessTimeoutSeconds
+}
+
+$enemyAIP4TrendGateTimeout = if ($EnemyAIP4TrendGateTimeoutSeconds -gt 0) {
+    $EnemyAIP4TrendGateTimeoutSeconds
+}
+else {
+    $ProcessTimeoutSeconds
+}
+
+$bossP3SubsetTrendGateTimeout = if ($BossP3SubsetTrendGateTimeoutSeconds -gt 0) {
+    $BossP3SubsetTrendGateTimeoutSeconds
+}
+else {
+    $ProcessTimeoutSeconds
+}
+
+$crossSystemPerfGateTimeout = if ($CrossSystemPerfGateTimeoutSeconds -gt 0) {
+    $CrossSystemPerfGateTimeoutSeconds
 }
 else {
     $ProcessTimeoutSeconds
@@ -1516,6 +1741,34 @@ else {
 
 $levelProgressionCurveTimeout = if ($LevelProgressionCurveTimeoutSeconds -gt 0) {
     $LevelProgressionCurveTimeoutSeconds
+}
+else {
+    $ProcessTimeoutSeconds
+}
+
+$levelQuestBeatLinkageTimeout = if ($LevelQuestBeatLinkageTimeoutSeconds -gt 0) {
+    $LevelQuestBeatLinkageTimeoutSeconds
+}
+else {
+    $ProcessTimeoutSeconds
+}
+
+$waveEventRotationTimeout = if ($WaveEventRotationTimeoutSeconds -gt 0) {
+    $WaveEventRotationTimeoutSeconds
+}
+else {
+    $ProcessTimeoutSeconds
+}
+
+$questFailureLearningTimeout = if ($QuestFailureLearningTimeoutSeconds -gt 0) {
+    $QuestFailureLearningTimeoutSeconds
+}
+else {
+    $ProcessTimeoutSeconds
+}
+
+$combatCurveBaselineTimeout = if ($CombatCurveBaselineTimeoutSeconds -gt 0) {
+    $CombatCurveBaselineTimeoutSeconds
 }
 else {
     $ProcessTimeoutSeconds
@@ -2265,6 +2518,138 @@ if (-not $SkipLevelProgressionCurveGate.IsPresent) {
     }
 }
 
+if (-not $SkipLevelQuestBeatLinkageGate.IsPresent) {
+    if (-not (Wait-ForProjectUnlock -projectPath $projectPathResolved -timeoutSeconds $WaitForProjectUnlockSeconds)) {
+        throw "Project is already open by another Unity process: $projectPathResolved"
+    }
+
+    Write-Host "[PlayModeBatch] level-quest-beat-linkage validate method=`"$LevelQuestBeatLinkageValidateMethod`" unity=`"$unityExe`""
+    $levelQuestBeatLinkageExit = Invoke-UnityExecuteMethod `
+        -unityExe $unityExe `
+        -projectPath $projectPathResolved `
+        -executeMethod $LevelQuestBeatLinkageValidateMethod `
+        -logFile $LevelQuestBeatLinkageLogFile `
+        -noGraphics:$NoGraphics `
+        -timeoutSeconds $levelQuestBeatLinkageTimeout
+
+    if ($levelQuestBeatLinkageExit -eq 124) {
+        throw "Level quest beat linkage validate timed out after $levelQuestBeatLinkageTimeout s. See log: $LevelQuestBeatLinkageLogFile"
+    }
+
+    if ($levelQuestBeatLinkageExit -ne 0) {
+        throw "Level quest beat linkage validate failed (exit=$levelQuestBeatLinkageExit). See log: $LevelQuestBeatLinkageLogFile"
+    }
+
+    $levelQuestBeatLinkageSummary = Get-CsvStatusSummary -csvPath $LevelQuestBeatLinkageReportCsv
+    Write-Host "[PlayModeBatch] level-quest-beat-linkage summary: $(Format-CsvStatusSummary -summary $levelQuestBeatLinkageSummary)"
+    if (-not $levelQuestBeatLinkageSummary.Exists) {
+        throw "Level quest beat linkage report missing: $LevelQuestBeatLinkageReportCsv"
+    }
+
+    if ((Get-CsvBlockingCount -summary $levelQuestBeatLinkageSummary) -gt 0) {
+        throw "Level quest beat linkage gate has blocking statuses. csv=$LevelQuestBeatLinkageReportCsv"
+    }
+}
+
+if (-not $SkipWaveEventRotationGate.IsPresent) {
+    if (-not (Wait-ForProjectUnlock -projectPath $projectPathResolved -timeoutSeconds $WaitForProjectUnlockSeconds)) {
+        throw "Project is already open by another Unity process: $projectPathResolved"
+    }
+
+    Write-Host "[PlayModeBatch] wave-event-rotation validate method=`"$WaveEventRotationValidateMethod`" unity=`"$unityExe`""
+    $waveEventRotationExit = Invoke-UnityExecuteMethod `
+        -unityExe $unityExe `
+        -projectPath $projectPathResolved `
+        -executeMethod $WaveEventRotationValidateMethod `
+        -logFile $WaveEventRotationLogFile `
+        -noGraphics:$NoGraphics `
+        -timeoutSeconds $waveEventRotationTimeout
+
+    if ($waveEventRotationExit -eq 124) {
+        throw "Wave event rotation validate timed out after $waveEventRotationTimeout s. See log: $WaveEventRotationLogFile"
+    }
+
+    if ($waveEventRotationExit -ne 0) {
+        throw "Wave event rotation validate failed (exit=$waveEventRotationExit). See log: $WaveEventRotationLogFile"
+    }
+
+    $waveEventRotationSummary = Get-CsvStatusSummary -csvPath $WaveEventRotationReportCsv
+    Write-Host "[PlayModeBatch] wave-event-rotation summary: $(Format-CsvStatusSummary -summary $waveEventRotationSummary)"
+    if (-not $waveEventRotationSummary.Exists) {
+        throw "Wave event rotation report missing: $WaveEventRotationReportCsv"
+    }
+
+    if ((Get-CsvBlockingCount -summary $waveEventRotationSummary) -gt 0) {
+        throw "Wave event rotation gate has blocking statuses. csv=$WaveEventRotationReportCsv"
+    }
+}
+
+if (-not $SkipQuestFailureLearningGate.IsPresent) {
+    if (-not (Wait-ForProjectUnlock -projectPath $projectPathResolved -timeoutSeconds $WaitForProjectUnlockSeconds)) {
+        throw "Project is already open by another Unity process: $projectPathResolved"
+    }
+
+    Write-Host "[PlayModeBatch] quest-failure-learning validate method=`"$QuestFailureLearningValidateMethod`" unity=`"$unityExe`""
+    $questFailureLearningExit = Invoke-UnityExecuteMethod `
+        -unityExe $unityExe `
+        -projectPath $projectPathResolved `
+        -executeMethod $QuestFailureLearningValidateMethod `
+        -logFile $QuestFailureLearningLogFile `
+        -noGraphics:$NoGraphics `
+        -timeoutSeconds $questFailureLearningTimeout
+
+    if ($questFailureLearningExit -eq 124) {
+        throw "Quest failure learning validate timed out after $questFailureLearningTimeout s. See log: $QuestFailureLearningLogFile"
+    }
+
+    if ($questFailureLearningExit -ne 0) {
+        throw "Quest failure learning validate failed (exit=$questFailureLearningExit). See log: $QuestFailureLearningLogFile"
+    }
+
+    $questFailureLearningSummary = Get-CsvStatusSummary -csvPath $QuestFailureLearningReportCsv
+    Write-Host "[PlayModeBatch] quest-failure-learning summary: $(Format-CsvStatusSummary -summary $questFailureLearningSummary)"
+    if (-not $questFailureLearningSummary.Exists) {
+        throw "Quest failure learning report missing: $QuestFailureLearningReportCsv"
+    }
+
+    if ((Get-CsvBlockingCount -summary $questFailureLearningSummary) -gt 0) {
+        throw "Quest failure learning gate has blocking statuses. csv=$QuestFailureLearningReportCsv"
+    }
+}
+
+if (-not $SkipCombatCurveBaselineGate.IsPresent) {
+    if (-not (Wait-ForProjectUnlock -projectPath $projectPathResolved -timeoutSeconds $WaitForProjectUnlockSeconds)) {
+        throw "Project is already open by another Unity process: $projectPathResolved"
+    }
+
+    Write-Host "[PlayModeBatch] combat-curve-baseline validate method=`"$CombatCurveBaselineValidateMethod`" unity=`"$unityExe`""
+    $combatCurveBaselineExit = Invoke-UnityExecuteMethod `
+        -unityExe $unityExe `
+        -projectPath $projectPathResolved `
+        -executeMethod $CombatCurveBaselineValidateMethod `
+        -logFile $CombatCurveBaselineLogFile `
+        -noGraphics:$NoGraphics `
+        -timeoutSeconds $combatCurveBaselineTimeout
+
+    if ($combatCurveBaselineExit -eq 124) {
+        throw "Combat curve baseline validate timed out after $combatCurveBaselineTimeout s. See log: $CombatCurveBaselineLogFile"
+    }
+
+    if ($combatCurveBaselineExit -ne 0) {
+        throw "Combat curve baseline validate failed (exit=$combatCurveBaselineExit). See log: $CombatCurveBaselineLogFile"
+    }
+
+    $combatCurveBaselineSummary = Get-CsvStatusSummary -csvPath $CombatCurveBaselineReportCsv
+    Write-Host "[PlayModeBatch] combat-curve-baseline summary: $(Format-CsvStatusSummary -summary $combatCurveBaselineSummary)"
+    if (-not $combatCurveBaselineSummary.Exists) {
+        throw "Combat curve baseline report missing: $CombatCurveBaselineReportCsv"
+    }
+
+    if ((Get-CsvBlockingCount -summary $combatCurveBaselineSummary) -gt 0) {
+        throw "Combat curve baseline gate has blocking statuses. csv=$CombatCurveBaselineReportCsv"
+    }
+}
+
 if (-not $SkipInputRound3Gate.IsPresent) {
     if (-not (Wait-ForProjectUnlock -projectPath $projectPathResolved -timeoutSeconds $WaitForProjectUnlockSeconds)) {
         throw "Project is already open by another Unity process: $projectPathResolved"
@@ -2401,6 +2786,39 @@ if (-not $SkipUICrossDeviceReadabilityGate.IsPresent) {
 
     if ((Get-CsvBlockingCount -summary $uiCrossDeviceReadabilitySummary) -gt 0) {
         throw "UI cross-device readability gate has blocking statuses. csv=$UICrossDeviceReadabilityReportCsv"
+    }
+}
+
+if (-not $SkipUIInputLocalizationProductizationGate.IsPresent) {
+    if (-not (Wait-ForProjectUnlock -projectPath $projectPathResolved -timeoutSeconds $WaitForProjectUnlockSeconds)) {
+        throw "Project is already open by another Unity process: $projectPathResolved"
+    }
+
+    Write-Host "[PlayModeBatch] ui-input-localization-productization validate method=`"$UIInputLocalizationProductizationValidateMethod`" unity=`"$unityExe`""
+    $uiInputLocalizationProductizationExit = Invoke-UnityExecuteMethod `
+        -unityExe $unityExe `
+        -projectPath $projectPathResolved `
+        -executeMethod $UIInputLocalizationProductizationValidateMethod `
+        -logFile $UIInputLocalizationProductizationLogFile `
+        -noGraphics:$NoGraphics `
+        -timeoutSeconds $uiInputLocalizationProductizationTimeout
+
+    if ($uiInputLocalizationProductizationExit -eq 124) {
+        throw "UI input+localization productization gate timed out after $uiInputLocalizationProductizationTimeout s. See log: $UIInputLocalizationProductizationLogFile"
+    }
+
+    if ($uiInputLocalizationProductizationExit -ne 0) {
+        throw "UI input+localization productization gate failed (exit=$uiInputLocalizationProductizationExit). See log: $UIInputLocalizationProductizationLogFile"
+    }
+
+    $uiInputLocalizationProductizationSummary = Get-CsvStatusSummary -csvPath $UIInputLocalizationProductizationReportCsv
+    Write-Host "[PlayModeBatch] ui-input-localization-productization summary: $(Format-CsvStatusSummary -summary $uiInputLocalizationProductizationSummary)"
+    if (-not $uiInputLocalizationProductizationSummary.Exists) {
+        throw "UI input+localization productization report missing: $UIInputLocalizationProductizationReportCsv"
+    }
+
+    if ((Get-CsvBlockingCount -summary $uiInputLocalizationProductizationSummary) -gt 0) {
+        throw "UI input+localization productization gate has blocking statuses. csv=$UIInputLocalizationProductizationReportCsv"
     }
 }
 
@@ -2605,6 +3023,72 @@ if (-not $SkipLocalizationCoverageGate.IsPresent) {
 
     if ((Get-CsvBlockingCount -summary $localizationCoverageSummary) -gt 0) {
         throw "Localization coverage gate has blocking statuses. csv=$LocalizationCoverageReportCsv"
+    }
+}
+
+if (-not $SkipLocalizationKeyLifecycleGate.IsPresent) {
+    if (-not (Wait-ForProjectUnlock -projectPath $projectPathResolved -timeoutSeconds $WaitForProjectUnlockSeconds)) {
+        throw "Project is already open by another Unity process: $projectPathResolved"
+    }
+
+    Write-Host "[PlayModeBatch] localization-key-lifecycle validate method=`"$LocalizationKeyLifecycleValidateMethod`" unity=`"$unityExe`""
+    $localizationKeyLifecycleExit = Invoke-UnityExecuteMethod `
+        -unityExe $unityExe `
+        -projectPath $projectPathResolved `
+        -executeMethod $LocalizationKeyLifecycleValidateMethod `
+        -logFile $LocalizationKeyLifecycleLogFile `
+        -noGraphics:$NoGraphics `
+        -timeoutSeconds $localizationKeyLifecycleTimeout
+
+    if ($localizationKeyLifecycleExit -eq 124) {
+        throw "Localization key lifecycle validate timed out after $localizationKeyLifecycleTimeout s. See log: $LocalizationKeyLifecycleLogFile"
+    }
+
+    if ($localizationKeyLifecycleExit -ne 0) {
+        throw "Localization key lifecycle validate failed (exit=$localizationKeyLifecycleExit). See log: $LocalizationKeyLifecycleLogFile"
+    }
+
+    $localizationKeyLifecycleSummary = Get-CsvStatusSummary -csvPath $LocalizationKeyLifecycleReportCsv
+    Write-Host "[PlayModeBatch] localization-key-lifecycle summary: $(Format-CsvStatusSummary -summary $localizationKeyLifecycleSummary)"
+    if (-not $localizationKeyLifecycleSummary.Exists) {
+        throw "Localization key lifecycle report missing: $LocalizationKeyLifecycleReportCsv"
+    }
+
+    if ((Get-CsvBlockingCount -summary $localizationKeyLifecycleSummary) -gt 0) {
+        throw "Localization key lifecycle gate has blocking statuses. csv=$LocalizationKeyLifecycleReportCsv"
+    }
+}
+
+if (-not $SkipSaveMigrationMatrixGate.IsPresent) {
+    if (-not (Wait-ForProjectUnlock -projectPath $projectPathResolved -timeoutSeconds $WaitForProjectUnlockSeconds)) {
+        throw "Project is already open by another Unity process: $projectPathResolved"
+    }
+
+    Write-Host "[PlayModeBatch] save-migration-matrix validate method=`"$SaveMigrationMatrixValidateMethod`" unity=`"$unityExe`""
+    $saveMigrationMatrixExit = Invoke-UnityExecuteMethod `
+        -unityExe $unityExe `
+        -projectPath $projectPathResolved `
+        -executeMethod $SaveMigrationMatrixValidateMethod `
+        -logFile $SaveMigrationMatrixLogFile `
+        -noGraphics:$NoGraphics `
+        -timeoutSeconds $saveMigrationMatrixTimeout
+
+    if ($saveMigrationMatrixExit -eq 124) {
+        throw "Save migration matrix gate timed out after $saveMigrationMatrixTimeout s. See log: $SaveMigrationMatrixLogFile"
+    }
+
+    if ($saveMigrationMatrixExit -ne 0) {
+        throw "Save migration matrix gate failed (exit=$saveMigrationMatrixExit). See log: $SaveMigrationMatrixLogFile"
+    }
+
+    $saveMigrationMatrixSummary = Get-CsvStatusSummary -csvPath $SaveMigrationMatrixReportCsv
+    Write-Host "[PlayModeBatch] save-migration-matrix summary: $(Format-CsvStatusSummary -summary $saveMigrationMatrixSummary)"
+    if (-not $saveMigrationMatrixSummary.Exists) {
+        throw "Save migration matrix report missing: $SaveMigrationMatrixReportCsv"
+    }
+
+    if ((Get-CsvBlockingCount -summary $saveMigrationMatrixSummary) -gt 0) {
+        throw "Save migration matrix gate has blocking statuses. csv=$SaveMigrationMatrixReportCsv"
     }
 }
 
@@ -2902,6 +3386,161 @@ Write-Host "[PlayModeBatch] result xml: $ResultsXml"
 Write-Host "[PlayModeBatch] summary: $summary"
 Write-Host "[PlayModeBatch] log file: $LogFile"
 
+$enemyAIP4LongRunGateExit = $null
+$enemyAIP4HistoryAppendExit = $null
+$enemyAIP4TrendGateExit = $null
+$bossP3SubsetHistoryAppendExit = $null
+$bossP3SubsetTrendGateExit = $null
+$crossSystemPerfGateExit = $null
+$longRunMetricsCsvPath = Join-Path $projectPathResolved "Assets\ThirdPersonController\Reports\enemy_ai_p4_longrun_metrics.csv"
+
+if ($shouldRunEnemyAIP4LongRunGate) {
+    if (!(Test-Path $EnemyAIP4LongRunGateScript)) {
+        throw "Enemy AI P4 long-run gate script missing: $EnemyAIP4LongRunGateScript"
+    }
+
+    $powershellExe = Join-Path $env:WINDIR "System32\WindowsPowerShell\v1.0\powershell.exe"
+    if (!(Test-Path $powershellExe)) {
+        $powershellExe = "powershell.exe"
+    }
+
+    $longRunArgs = New-Object System.Collections.Generic.List[string]
+    $longRunArgs.Add("-ExecutionPolicy")
+    $longRunArgs.Add("Bypass")
+    $longRunArgs.Add("-File")
+    $longRunArgs.Add($EnemyAIP4LongRunGateScript)
+    $longRunArgs.Add("-MetricsCsv")
+    $longRunArgs.Add($longRunMetricsCsvPath)
+    $longRunArgs.Add("-OutputMd")
+    $longRunArgs.Add($EnemyAIP4LongRunGateReport)
+
+    Write-Host "[PlayModeBatch] enemy-ai-p4-longrun gate script=`"$EnemyAIP4LongRunGateScript`""
+    $enemyAIP4LongRunGateExit = Invoke-ScriptProcess `
+        -scriptHostExe $powershellExe `
+        -arguments $longRunArgs `
+        -timeoutSeconds $enemyAIP4LongRunGateTimeout
+
+    if ($enemyAIP4LongRunGateExit -eq 124) {
+        throw "Enemy AI P4 long-run gate timed out after $enemyAIP4LongRunGateTimeout s. See report: $EnemyAIP4LongRunGateReport"
+    }
+
+    if ($enemyAIP4LongRunGateExit -ne 0) {
+        throw "Enemy AI P4 long-run gate failed (exit=$enemyAIP4LongRunGateExit). See report: $EnemyAIP4LongRunGateReport"
+    }
+
+    if (!(Test-Path $EnemyAIP4LongRunGateReport)) {
+        throw "Enemy AI P4 long-run gate report missing: $EnemyAIP4LongRunGateReport"
+    }
+}
+
+if ($shouldRunEnemyAIP4TrendGate) {
+    $powershellExe = Join-Path $env:WINDIR "System32\WindowsPowerShell\v1.0\powershell.exe"
+    if (!(Test-Path $powershellExe)) {
+        $powershellExe = "powershell.exe"
+    }
+
+    if ($shouldRunEnemyAIP4LongRunGate) {
+        if (!(Test-Path $EnemyAIP4HistoryAppendScript)) {
+            throw "Enemy AI P4 history append script missing: $EnemyAIP4HistoryAppendScript"
+        }
+
+        $historyAppendArgs = New-Object System.Collections.Generic.List[string]
+        $historyAppendArgs.Add("-ExecutionPolicy")
+        $historyAppendArgs.Add("Bypass")
+        $historyAppendArgs.Add("-File")
+        $historyAppendArgs.Add($EnemyAIP4HistoryAppendScript)
+        $historyAppendArgs.Add("-MetricsCsv")
+        $historyAppendArgs.Add($longRunMetricsCsvPath)
+        $historyAppendArgs.Add("-HistoryCsv")
+        $historyAppendArgs.Add($EnemyAIP4HistoryCsv)
+
+        Write-Host "[PlayModeBatch] enemy-ai-p4-history append script=`"$EnemyAIP4HistoryAppendScript`""
+        $enemyAIP4HistoryAppendExit = Invoke-ScriptProcess `
+            -scriptHostExe $powershellExe `
+            -arguments $historyAppendArgs `
+            -timeoutSeconds $enemyAIP4TrendGateTimeout
+
+        if ($enemyAIP4HistoryAppendExit -eq 124) {
+            throw "Enemy AI P4 history append timed out after $enemyAIP4TrendGateTimeout s. history=$EnemyAIP4HistoryCsv"
+        }
+
+        if ($enemyAIP4HistoryAppendExit -ne 0) {
+            throw "Enemy AI P4 history append failed (exit=$enemyAIP4HistoryAppendExit). history=$EnemyAIP4HistoryCsv"
+        }
+    }
+
+    if (!(Test-Path $EnemyAIP4TrendGateScript)) {
+        throw "Enemy AI P4 trend gate script missing: $EnemyAIP4TrendGateScript"
+    }
+
+    $trendGateArgs = New-Object System.Collections.Generic.List[string]
+    $trendGateArgs.Add("-ExecutionPolicy")
+    $trendGateArgs.Add("Bypass")
+    $trendGateArgs.Add("-File")
+    $trendGateArgs.Add($EnemyAIP4TrendGateScript)
+    $trendGateArgs.Add("-HistoryCsv")
+    $trendGateArgs.Add($EnemyAIP4HistoryCsv)
+    $trendGateArgs.Add("-OutputMd")
+    $trendGateArgs.Add($EnemyAIP4TrendGateReport)
+
+    Write-Host "[PlayModeBatch] enemy-ai-p4-trend gate script=`"$EnemyAIP4TrendGateScript`""
+    $enemyAIP4TrendGateExit = Invoke-ScriptProcess `
+        -scriptHostExe $powershellExe `
+        -arguments $trendGateArgs `
+        -timeoutSeconds $enemyAIP4TrendGateTimeout
+
+    if ($enemyAIP4TrendGateExit -eq 124) {
+        throw "Enemy AI P4 trend gate timed out after $enemyAIP4TrendGateTimeout s. See report: $EnemyAIP4TrendGateReport"
+    }
+
+    if ($enemyAIP4TrendGateExit -ne 0) {
+        throw "Enemy AI P4 trend gate failed (exit=$enemyAIP4TrendGateExit). See report: $EnemyAIP4TrendGateReport"
+    }
+
+    if (!(Test-Path $EnemyAIP4TrendGateReport)) {
+        throw "Enemy AI P4 trend gate report missing: $EnemyAIP4TrendGateReport"
+    }
+}
+
+if ($shouldRunCrossSystemPerfGate) {
+    if (!(Test-Path $CrossSystemPerfGateScript)) {
+        throw "Cross-system perf gate script missing: $CrossSystemPerfGateScript"
+    }
+
+    $powershellExe = Join-Path $env:WINDIR "System32\WindowsPowerShell\v1.0\powershell.exe"
+    if (!(Test-Path $powershellExe)) {
+        $powershellExe = "powershell.exe"
+    }
+
+    $crossPerfArgs = New-Object System.Collections.Generic.List[string]
+    $crossPerfArgs.Add("-ExecutionPolicy")
+    $crossPerfArgs.Add("Bypass")
+    $crossPerfArgs.Add("-File")
+    $crossPerfArgs.Add($CrossSystemPerfGateScript)
+    $crossPerfArgs.Add("-MetricsCsv")
+    $crossPerfArgs.Add($longRunMetricsCsvPath)
+    $crossPerfArgs.Add("-OutputMd")
+    $crossPerfArgs.Add($CrossSystemPerfGateReport)
+
+    Write-Host "[PlayModeBatch] cross-system-perf gate script=`"$CrossSystemPerfGateScript`""
+    $crossSystemPerfGateExit = Invoke-ScriptProcess `
+        -scriptHostExe $powershellExe `
+        -arguments $crossPerfArgs `
+        -timeoutSeconds $crossSystemPerfGateTimeout
+
+    if ($crossSystemPerfGateExit -eq 124) {
+        throw "Cross-system perf gate timed out after $crossSystemPerfGateTimeout s. See report: $CrossSystemPerfGateReport"
+    }
+
+    if ($crossSystemPerfGateExit -ne 0) {
+        throw "Cross-system perf gate failed (exit=$crossSystemPerfGateExit). See report: $CrossSystemPerfGateReport"
+    }
+
+    if (!(Test-Path $CrossSystemPerfGateReport)) {
+        throw "Cross-system perf gate report missing: $CrossSystemPerfGateReport"
+    }
+}
+
 Export-TestSubsetReport `
     -resultsXmlPath $ResultsXml `
     -reportCsvPath $P0BossGateReportCsv `
@@ -2981,19 +3620,132 @@ Export-TestSubsetReport `
 
 Export-TestSubsetReport `
     -resultsXmlPath $ResultsXml `
+    -reportCsvPath $P2SaveMigrationGateReportCsv `
+    -reportName "P2 Save Migration Regression Gate" `
+    -matchTokens @("ThirdPersonController.Tests.SaveMigrationRegressionTests")
+
+Export-TestSubsetReport `
+    -resultsXmlPath $ResultsXml `
+    -reportCsvPath $P3BossBehaviorDepthGateReportCsv `
+    -reportName "P3 Boss Behavior Depth Gate" `
+    -matchTokens @("ThirdPersonController.Tests.BossCombatDepthRegressionTests")
+
+Export-TestSubsetReport `
+    -resultsXmlPath $ResultsXml `
+    -reportCsvPath $P3BossSceneClosureGateReportCsv `
+    -reportName "P3 Boss Scene Closure Gate" `
+    -matchTokens @(
+        "ThirdPersonController.Tests.BossLevel10GateRegressionTests",
+        "ThirdPersonController.Tests.BossLevelFlowEndToEndRegressionTests",
+        "ThirdPersonController.Tests.BossSceneLocalBindingRegressionTests",
+        "ThirdPersonController.Tests.BossMidTierFlowLongChainRegressionTests",
+        "ThirdPersonController.Tests.BossChaosStressRegressionTests"
+    )
+
+Export-TestSubsetReport `
+    -resultsXmlPath $ResultsXml `
+    -reportCsvPath $P3BossGrammarConsistencyGateReportCsv `
+    -reportName "P3 Boss Grammar Consistency Gate" `
+    -matchTokens @("ThirdPersonController.Tests.BossPhaseGrammarRegressionTests")
+
+Export-TestSubsetReport `
+    -resultsXmlPath $ResultsXml `
     -reportCsvPath $P3BossDepthGateReportCsv `
     -reportName "P3 Boss Depth Gate" `
     -matchTokens @(
         "ThirdPersonController.Tests.BossCombatDepthRegressionTests",
         "ThirdPersonController.Tests.BossLevel10GateRegressionTests",
-        "ThirdPersonController.Tests.BossPhaseGrammarRegressionTests"
+        "ThirdPersonController.Tests.BossPhaseGrammarRegressionTests",
+        "ThirdPersonController.Tests.BossLevelFlowEndToEndRegressionTests",
+        "ThirdPersonController.Tests.BossSceneLocalBindingRegressionTests",
+        "ThirdPersonController.Tests.BossMidTierFlowLongChainRegressionTests",
+        "ThirdPersonController.Tests.BossChaosStressRegressionTests"
     )
+
+Export-TestSubsetReport `
+    -resultsXmlPath $ResultsXml `
+    -reportCsvPath $P4EnemyAILongRunGateReportCsv `
+    -reportName "P4 Enemy AI Long-Run Gate" `
+    -matchTokens @("ThirdPersonController.Tests.EnemyAIP4AcceptanceTests.P4_RealScene_LongRun_StressHarness_ExportsMetricsCsv")
 
 Export-TestSubsetReport `
     -resultsXmlPath $ResultsXml `
     -reportCsvPath $P5GrowthEconomyGateReportCsv `
     -reportName "P5 Growth Economy Gate" `
     -matchTokens @("ThirdPersonController.Tests.GrowthEconomyP5RegressionTests")
+
+if ($shouldRunBossP3SubsetTrendGate) {
+    if (!(Test-Path $BossP3SubsetHistoryAppendScript)) {
+        throw "Boss P3 subset history append script missing: $BossP3SubsetHistoryAppendScript"
+    }
+
+    if (!(Test-Path $BossP3SubsetTrendGateScript)) {
+        throw "Boss P3 subset trend gate script missing: $BossP3SubsetTrendGateScript"
+    }
+
+    $powershellExe = Join-Path $env:WINDIR "System32\WindowsPowerShell\v1.0\powershell.exe"
+    if (!(Test-Path $powershellExe)) {
+        $powershellExe = "powershell.exe"
+    }
+
+    $bossSubsetHistoryArgs = New-Object System.Collections.Generic.List[string]
+    $bossSubsetHistoryArgs.Add("-ExecutionPolicy")
+    $bossSubsetHistoryArgs.Add("Bypass")
+    $bossSubsetHistoryArgs.Add("-File")
+    $bossSubsetHistoryArgs.Add($BossP3SubsetHistoryAppendScript)
+    $bossSubsetHistoryArgs.Add("-BehaviorCsv")
+    $bossSubsetHistoryArgs.Add($P3BossBehaviorDepthGateReportCsv)
+    $bossSubsetHistoryArgs.Add("-SceneClosureCsv")
+    $bossSubsetHistoryArgs.Add($P3BossSceneClosureGateReportCsv)
+    $bossSubsetHistoryArgs.Add("-GrammarCsv")
+    $bossSubsetHistoryArgs.Add($P3BossGrammarConsistencyGateReportCsv)
+    $bossSubsetHistoryArgs.Add("-AggregateCsv")
+    $bossSubsetHistoryArgs.Add($P3BossDepthGateReportCsv)
+    $bossSubsetHistoryArgs.Add("-HistoryCsv")
+    $bossSubsetHistoryArgs.Add($BossP3SubsetHistoryCsv)
+
+    Write-Host "[PlayModeBatch] boss-p3-subset history append script=`"$BossP3SubsetHistoryAppendScript`""
+    $bossP3SubsetHistoryAppendExit = Invoke-ScriptProcess `
+        -scriptHostExe $powershellExe `
+        -arguments $bossSubsetHistoryArgs `
+        -timeoutSeconds $bossP3SubsetTrendGateTimeout
+
+    if ($bossP3SubsetHistoryAppendExit -eq 124) {
+        throw "Boss P3 subset history append timed out after $bossP3SubsetTrendGateTimeout s. history=$BossP3SubsetHistoryCsv"
+    }
+
+    if ($bossP3SubsetHistoryAppendExit -ne 0) {
+        throw "Boss P3 subset history append failed (exit=$bossP3SubsetHistoryAppendExit). history=$BossP3SubsetHistoryCsv"
+    }
+
+    $bossSubsetTrendArgs = New-Object System.Collections.Generic.List[string]
+    $bossSubsetTrendArgs.Add("-ExecutionPolicy")
+    $bossSubsetTrendArgs.Add("Bypass")
+    $bossSubsetTrendArgs.Add("-File")
+    $bossSubsetTrendArgs.Add($BossP3SubsetTrendGateScript)
+    $bossSubsetTrendArgs.Add("-HistoryCsv")
+    $bossSubsetTrendArgs.Add($BossP3SubsetHistoryCsv)
+    $bossSubsetTrendArgs.Add("-OutputMd")
+    $bossSubsetTrendArgs.Add($BossP3SubsetTrendGateReport)
+
+    Write-Host "[PlayModeBatch] boss-p3-subset trend gate script=`"$BossP3SubsetTrendGateScript`""
+    $bossP3SubsetTrendGateExit = Invoke-ScriptProcess `
+        -scriptHostExe $powershellExe `
+        -arguments $bossSubsetTrendArgs `
+        -timeoutSeconds $bossP3SubsetTrendGateTimeout
+
+    if ($bossP3SubsetTrendGateExit -eq 124) {
+        throw "Boss P3 subset trend gate timed out after $bossP3SubsetTrendGateTimeout s. report=$BossP3SubsetTrendGateReport"
+    }
+
+    if ($bossP3SubsetTrendGateExit -ne 0) {
+        throw "Boss P3 subset trend gate failed (exit=$bossP3SubsetTrendGateExit). report=$BossP3SubsetTrendGateReport"
+    }
+
+    if (!(Test-Path $BossP3SubsetTrendGateReport)) {
+        throw "Boss P3 subset trend gate report missing: $BossP3SubsetTrendGateReport"
+    }
+}
 
 $gateMatrixRows = New-Object System.Collections.Generic.List[object]
 $gateMatrixRows.Add((New-GateMatrixRowFromPlayModeSummary -gateName "PlayMode Tests" -summaryText $summary -resultsXmlPath $ResultsXml))
@@ -3003,6 +3755,10 @@ $gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Level Combat Den
 $gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Level Beat Progression Tuning Gate" -isSkipped $SkipLevelBeatProgressionGate.IsPresent -summaryVariableName "levelBeatProgressionSummary" -csvPath $LevelBeatProgressionReportCsv))
 $gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Level Beat Sheet Gate" -isSkipped $SkipLevelBeatSheetGate.IsPresent -summaryVariableName "levelBeatSheetSummary" -csvPath $LevelBeatSheetReportCsv))
 $gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Level Progression Curve Gate" -isSkipped $SkipLevelProgressionCurveGate.IsPresent -summaryVariableName "levelProgressionCurveSummary" -csvPath $LevelProgressionCurveReportCsv))
+$gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Level Quest Beat Linkage Gate" -isSkipped $SkipLevelQuestBeatLinkageGate.IsPresent -summaryVariableName "levelQuestBeatLinkageSummary" -csvPath $LevelQuestBeatLinkageReportCsv))
+$gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Wave Event Rotation Gate" -isSkipped $SkipWaveEventRotationGate.IsPresent -summaryVariableName "waveEventRotationSummary" -csvPath $WaveEventRotationReportCsv))
+$gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Quest Failure Learning Gate" -isSkipped $SkipQuestFailureLearningGate.IsPresent -summaryVariableName "questFailureLearningSummary" -csvPath $QuestFailureLearningReportCsv))
+$gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Combat Curve Baseline Gate" -isSkipped $SkipCombatCurveBaselineGate.IsPresent -summaryVariableName "combatCurveBaselineSummary" -csvPath $CombatCurveBaselineReportCsv))
 $gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Boss Flow Coupling Gate" -isSkipped $SkipBossFlowCouplingGate.IsPresent -summaryVariableName "bossFlowCouplingSummary" -csvPath $BossFlowCouplingReportCsv))
 $gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Boss Encounter Round3 Gate" -isSkipped $SkipBossEncounterRound3Gate.IsPresent -summaryVariableName "bossRound3ValidateSummary" -csvPath $BossEncounterRound3ReportCsv))
 $gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Boss Phase Attack Gate" -isSkipped $SkipBossPhaseAttackGate.IsPresent -summaryVariableName "bossPhaseValidateSummary" -csvPath $BossPhaseAttackReportCsv))
@@ -3013,16 +3769,23 @@ $gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Input Round3 Sce
 $gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Input Round3 Full Gate" -isSkipped $SkipInputRound3Gate.IsPresent -summaryVariableName "fullGateSummary" -csvPath $InputRound3FullGateCsv))
 $gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Input Mirror Gate" -isSkipped $SkipInputMirrorGate.IsPresent -summaryVariableName "inputMirrorSummary" -csvPath $InputMirrorReportCsv))
 $gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "UI Cross-Device Readability Gate" -isSkipped $SkipUICrossDeviceReadabilityGate.IsPresent -summaryVariableName "uiCrossDeviceReadabilitySummary" -csvPath $UICrossDeviceReadabilityReportCsv))
+$gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "UI Input+Localization Productization Gate" -isSkipped $SkipUIInputLocalizationProductizationGate.IsPresent -summaryVariableName "uiInputLocalizationProductizationSummary" -csvPath $UIInputLocalizationProductizationReportCsv))
 $gateMatrixRows.Add((New-GateMatrixRowFromCommentSummary -gateName "Comment/Log Quality Gate" -isSkipped $SkipCommentLogQualityGate.IsPresent -summaryVariableName "commentSummary" -csvPath $CommentLogQualityReportCsv -warningBudget $CommentLogQualityWarningBudget))
 $gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Combat Feedback Coverage Gate" -isSkipped $SkipCombatFeedbackCoverageGate.IsPresent -summaryVariableName "combatFeedbackCoverageSummary" -csvPath $CombatFeedbackCoverageReportCsv))
 $gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Skill Resource Gap Gate" -isSkipped $SkipSkillResourceGapGate.IsPresent -summaryVariableName "skillResourceValidateSummary" -csvPath $SkillResourceGapReportCsv))
 $gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Localization Coverage Gate" -isSkipped $SkipLocalizationCoverageGate.IsPresent -summaryVariableName "localizationCoverageSummary" -csvPath $LocalizationCoverageReportCsv))
+$gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Localization Key Lifecycle Gate" -isSkipped $SkipLocalizationKeyLifecycleGate.IsPresent -summaryVariableName "localizationKeyLifecycleSummary" -csvPath $LocalizationKeyLifecycleReportCsv))
+$gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Save Migration Matrix Gate" -isSkipped $SkipSaveMigrationMatrixGate.IsPresent -summaryVariableName "saveMigrationMatrixSummary" -csvPath $SaveMigrationMatrixReportCsv))
 $gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Localization Pseudo-Loc Gate" -isSkipped $SkipLocalizationPseudoLocGate.IsPresent -summaryVariableName "localizationPseudoLocSummary" -csvPath $LocalizationPseudoLocReportCsv))
 $gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Growth Economy Config Gate" -isSkipped $SkipGrowthEconomyConfigGate.IsPresent -summaryVariableName "growthEconomyConfigSummary" -csvPath $GrowthEconomyConfigReportCsv))
 $gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Steam Config Provision Gate" -isSkipped ($SkipSteamRuntimeModeGate.IsPresent -or $SkipSteamConfigEnsure.IsPresent -or $skipMutatingApplyPasses) -summaryVariableName "steamConfigEnsureSummary" -csvPath $SteamConfigEnsureReportCsv))
 $gateMatrixRows.Add((New-GateMatrixRowFromCsvSummary -gateName "Steam Runtime Mode Gate" -isSkipped $SkipSteamRuntimeModeGate.IsPresent -summaryVariableName "steamRuntimeModeSummary" -csvPath $SteamRuntimeModeReportCsv))
 $gateMatrixRows.Add((New-GateMatrixRowFromExitCode -gateName "Enemy Type Scene Gate" -isSkipped $SkipEnemyTypeSceneGate.IsPresent -exitCodeVariableName "gateExit" -evidencePath $EnemyTypeSceneGateLogFile))
 $gateMatrixRows.Add((New-GateMatrixRowFromExitCode -gateName "Boss Strict Drill Gate" -isSkipped (-not $shouldRunBossStrictDrillGate) -exitCodeVariableName "bossStrictDrillExit" -evidencePath $BossStrictDrillGateReport))
+$gateMatrixRows.Add((New-GateMatrixRowFromExitCode -gateName "P4 Enemy AI Long-Run Gate" -isSkipped (-not $shouldRunEnemyAIP4LongRunGate) -exitCodeVariableName "enemyAIP4LongRunGateExit" -evidencePath $EnemyAIP4LongRunGateReport))
+$gateMatrixRows.Add((New-GateMatrixRowFromExitCode -gateName "P4 Enemy AI Trend Gate" -isSkipped (-not $shouldRunEnemyAIP4TrendGate) -exitCodeVariableName "enemyAIP4TrendGateExit" -evidencePath $EnemyAIP4TrendGateReport))
+$gateMatrixRows.Add((New-GateMatrixRowFromExitCode -gateName "P3 Boss Subset Trend Gate" -isSkipped (-not $shouldRunBossP3SubsetTrendGate) -exitCodeVariableName "bossP3SubsetTrendGateExit" -evidencePath $BossP3SubsetTrendGateReport))
+$gateMatrixRows.Add((New-GateMatrixRowFromExitCode -gateName "P4 Cross-System Perf Gate" -isSkipped (-not $shouldRunCrossSystemPerfGate) -exitCodeVariableName "crossSystemPerfGateExit" -evidencePath $CrossSystemPerfGateReport))
 $gateMatrixRows.Add((New-GateMatrixRowFromTestSubset -gateName "P0 Boss Depth Subset" -csvPath $P0BossGateReportCsv -allowNoMatchesAsSkipped $isFilteredTestRun))
 $gateMatrixRows.Add((New-GateMatrixRowFromTestSubset -gateName "P0 Quest Economy Subset" -csvPath $P0QuestEconomyGateReportCsv -allowNoMatchesAsSkipped $isFilteredTestRun))
 $gateMatrixRows.Add((New-GateMatrixRowFromTestSubset -gateName "P0 Input Hint Subset" -csvPath $P0InputHintGateReportCsv -allowNoMatchesAsSkipped $isFilteredTestRun))
@@ -3034,7 +3797,12 @@ $gateMatrixRows.Add((New-GateMatrixRowFromTestSubset -gateName "P2 Input Product
 $gateMatrixRows.Add((New-GateMatrixRowFromTestSubset -gateName "P2 UI Readability Subset" -csvPath $P2UIReadabilityGateReportCsv -allowNoMatchesAsSkipped $isFilteredTestRun))
 $gateMatrixRows.Add((New-GateMatrixRowFromTestSubset -gateName "P2 Localization Subset" -csvPath $P2LocalizationGateReportCsv -allowNoMatchesAsSkipped $isFilteredTestRun))
 $gateMatrixRows.Add((New-GateMatrixRowFromTestSubset -gateName "P2 Steam Runtime Subset" -csvPath $P2SteamRuntimeGateReportCsv -allowNoMatchesAsSkipped $isFilteredTestRun))
+$gateMatrixRows.Add((New-GateMatrixRowFromTestSubset -gateName "P2 Save Migration Subset" -csvPath $P2SaveMigrationGateReportCsv -allowNoMatchesAsSkipped $isFilteredTestRun))
+$gateMatrixRows.Add((New-GateMatrixRowFromTestSubset -gateName "P3 Boss Behavior Depth Subset" -csvPath $P3BossBehaviorDepthGateReportCsv -allowNoMatchesAsSkipped $isFilteredTestRun))
+$gateMatrixRows.Add((New-GateMatrixRowFromTestSubset -gateName "P3 Boss Scene Closure Subset" -csvPath $P3BossSceneClosureGateReportCsv -allowNoMatchesAsSkipped $isFilteredTestRun))
+$gateMatrixRows.Add((New-GateMatrixRowFromTestSubset -gateName "P3 Boss Grammar Consistency Subset" -csvPath $P3BossGrammarConsistencyGateReportCsv -allowNoMatchesAsSkipped $isFilteredTestRun))
 $gateMatrixRows.Add((New-GateMatrixRowFromTestSubset -gateName "P3 Boss Depth Subset" -csvPath $P3BossDepthGateReportCsv -allowNoMatchesAsSkipped $isFilteredTestRun))
+$gateMatrixRows.Add((New-GateMatrixRowFromTestSubset -gateName "P4 Enemy AI Long-Run Subset" -csvPath $P4EnemyAILongRunGateReportCsv -allowNoMatchesAsSkipped $isFilteredTestRun))
 $gateMatrixRows.Add((New-GateMatrixRowFromTestSubset -gateName "P5 Growth Economy Subset" -csvPath $P5GrowthEconomyGateReportCsv -allowNoMatchesAsSkipped $isFilteredTestRun))
 
 Write-GateMatrixReports `

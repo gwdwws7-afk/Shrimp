@@ -1,7 +1,7 @@
 # Boss Flow Coupling Summary
 
-- Timestamp: 2026-03-25 17:07:14 +08:00
-- Targets: 3
+- Timestamp: 2026-03-27 19:43:12 +08:00
+- Targets: 8
 - Error Scenes: 0
 - Warning Scenes: 0
 - Blocking Errors: 0
@@ -10,6 +10,11 @@
 
 | Level | Scene | Status | Blocking | Warnings | Strongholds | BossSpawn | RequiredQuests | CouplingScore | Note |
 |---|---|---|---:|---:|---:|---:|---:|---:|---|
-| LEVEL_08 | Level_08_MoltenRift | Ok | 0 | 0 | 2 | 1 | 1 | 4 |  |
-| LEVEL_09 | Level_09_StillTideSanctum | Ok | 0 | 0 | 2 | 1 | 1 | 4 |  |
-| LEVEL_10 | Level_10_HiveCore | Ok | 0 | 0 | 2 | 1 | 1 | 5 |  |
+| LEVEL_03 | Level_03_ThermalVents | Ok | 0 | 0 | 3 | 1 | 1 | 4 |  |
+| LEVEL_04 | Level_04_CoralGrove | Ok | 0 | 0 | 3 | 1 | 1 | 4 |  |
+| LEVEL_05 | Level_05_SunkenCity | Ok | 0 | 0 | 3 | 1 | 1 | 5 |  |
+| LEVEL_06 | Level_06_BlackTidePipes | Ok | 0 | 0 | 3 | 1 | 1 | 5 |  |
+| LEVEL_07 | Level_07_AbyssHangar | Ok | 0 | 0 | 3 | 1 | 1 | 5 |  |
+| LEVEL_08 | Level_08_MoltenRift | Ok | 0 | 0 | 3 | 1 | 1 | 4 |  |
+| LEVEL_09 | Level_09_StillTideSanctum | Ok | 0 | 0 | 3 | 1 | 1 | 4 |  |
+| LEVEL_10 | Level_10_HiveCore | Ok | 0 | 0 | 3 | 1 | 1 | 5 |  |

@@ -323,6 +323,17 @@ namespace ThirdPersonController.Editor
                 value = config.appId.ToString(),
                 note = validAppId ? "AppId is configured." : "AppId must be greater than zero."
             });
+
+            bool reflectionPreferred = config.preferReflectionBackend;
+            rows.Add(new ValidationRow
+            {
+                checkId = "config.prefer_reflection_backend",
+                status = reflectionPreferred ? "Ok" : "Warning",
+                value = reflectionPreferred.ToString(),
+                note = reflectionPreferred
+                    ? "Reflection fallback backend is enabled for package-late runtime hookup."
+                    : "Reflection fallback backend is disabled; runtime depends on compile-time Steamworks path."
+            });
         }
 
         private static void EvaluateSteamAppIdFile(

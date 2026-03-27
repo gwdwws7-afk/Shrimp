@@ -1,0 +1,6 @@
+check_id,status,source_version,target_version,note
+save_manager.migration_wiring,Ok,1,2,SaveManager load path invokes migration utility.
+matrix.v1_minimal_to_latest,Ok,1,2,assume_legacy_v1;v1_to_v2_create_quick_slots;v1_to_v2_pad_quick_slots_to_3;v1_to_v2_default_progression_route;v1_to_v2_create_quest_states;v1_to_v2_create_consumables;migrate_v1_to_v2
+matrix.v1_invalid_language_to_latest,Ok,1,2,v1_to_v2_pad_quick_slots_to_3;v1_to_v2_normalize_localization_language;migrate_v1_to_v2
+matrix.latest_noop,Ok,2,2,noop
+summary,Ok,0,2,rows=4; gaps=0

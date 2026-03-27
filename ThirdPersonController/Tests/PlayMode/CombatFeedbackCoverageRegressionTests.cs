@@ -107,5 +107,38 @@ namespace ThirdPersonController.Tests
                 Object.DestroyImmediate(clip);
             }
         }
+
+        [Test]
+        public void AudioManager_CombatEvents_EnemyKilled_TriggersDeathClip()
+        {
+            AudioManager manager = AudioManager.Instance;
+            Assert.NotNull(manager);
+
+            bool oldListen = manager.listenToCombatEvents;
+            AudioClip[] oldDeath = manager.enemyDeathSounds;
+            int beforeCount = manager.DebugPlaySfxCallCount;
+
+            AudioClip clip = AudioClip.Create("enemy-death-event-test", 2205, 1, 22050, false);
+            try
+            {
+                manager.listenToCombatEvents = true;
+                manager.enabled = false;
+                manager.enabled = true;
+                manager.enemyDeathSounds = new[] { clip };
+
+                GameEvents.EnemyKilled(EnemyType.Grunt, Vector3.zero, 10);
+
+                Assert.Greater(manager.DebugPlaySfxCallCount, beforeCount);
+                Assert.AreEqual(clip.name, manager.LastSfxClipName);
+            }
+            finally
+            {
+                manager.enemyDeathSounds = oldDeath;
+                manager.listenToCombatEvents = oldListen;
+                manager.enabled = false;
+                manager.enabled = true;
+                Object.DestroyImmediate(clip);
+            }
+        }
     }
 }

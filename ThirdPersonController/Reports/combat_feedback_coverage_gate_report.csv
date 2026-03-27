@@ -8,3 +8,8 @@ audio.required_handlers,Ok,Assets/ThirdPersonController/Scripts/Core/AudioManage
 audio.priority_path,Ok,Assets/ThirdPersonController/Scripts/Core/AudioManager.cs,Audio high-priority playback path is available for key events.
 vfx.required_subscriptions,Ok,Assets/ThirdPersonController/Scripts/Core/ScreenEffectManager.cs,ScreenEffectManager subscribes/unsubscribes all required visual feedback events.
 vfx.required_handlers,Ok,Assets/ThirdPersonController/Scripts/Core/ScreenEffectManager.cs,ScreenEffectManager has handlers for required visual feedback events.
+mapping.enemy_hit_knockdown,Ok,Enemy knockdown hit should route to high-priority audio and screen shake.,mapping_ok
+mapping.enemy_hit_knockback,Ok,Enemy knockback hit should route to heavy-hit feedback.,mapping_ok
+mapping.enemy_killed,Ok,Enemy kill should route to death audio feedback path.,mapping_ok
+mapping.berserk_state_changed,Ok,Berserk state should route to audio cue + berserk screen treatment.,mapping_ok
+mapping.boss_break_window,Ok,Boss break window should route to dedicated high-priority audio cue.,mapping_ok

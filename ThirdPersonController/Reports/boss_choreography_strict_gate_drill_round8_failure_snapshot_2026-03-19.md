@@ -1,6 +1,6 @@
 # Boss Choreography Strict Gate Drill Snapshot (Round8)
 
-- Timestamp: 2026-03-25 16:08:29 +08:00
+- Timestamp: 2026-03-26 14:41:41 +08:00
 - Phase1 Exit: 1
 - Phase2 Exit: 0
 - Restore Exit: 0

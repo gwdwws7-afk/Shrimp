@@ -68,6 +68,7 @@ namespace ThirdPersonController.Tests
             bool oldStrictAppIdValidation = service.strictAppIdValidation;
             bool oldRequireCloudWhenEnabled = service.requireCloudWhenSteamEnabled;
             bool oldReportRuntimeDiagnostics = service.reportRuntimeDiagnostics;
+            bool oldPreferReflectionBackend = service.preferReflectionBackend;
 
             SteamIntegrationConfig config = ScriptableObject.CreateInstance<SteamIntegrationConfig>();
             config.enableSteam = false;
@@ -77,6 +78,7 @@ namespace ThirdPersonController.Tests
             config.strictAppIdValidation = false;
             config.requireCloudWhenSteamEnabled = true;
             config.reportRuntimeDiagnostics = false;
+            config.preferReflectionBackend = false;
 
             try
             {
@@ -89,6 +91,7 @@ namespace ThirdPersonController.Tests
                 Assert.IsFalse(service.strictAppIdValidation);
                 Assert.IsTrue(service.requireCloudWhenSteamEnabled);
                 Assert.IsFalse(service.reportRuntimeDiagnostics);
+                Assert.IsFalse(service.preferReflectionBackend);
 
                 SteamRuntimeStatus status = service.GetRuntimeStatus();
                 Assert.IsFalse(status.steamEnabledByConfig, "Runtime status should reflect applied config.");
@@ -102,8 +105,63 @@ namespace ThirdPersonController.Tests
                 config.strictAppIdValidation = oldStrictAppIdValidation;
                 config.requireCloudWhenSteamEnabled = oldRequireCloudWhenEnabled;
                 config.reportRuntimeDiagnostics = oldReportRuntimeDiagnostics;
+                config.preferReflectionBackend = oldPreferReflectionBackend;
                 service.ApplyConfig(config, reinitializeClient: false);
                 Object.DestroyImmediate(config);
+            }
+        }
+
+        [Test]
+        public void SteamIntegrationService_ReflectionFallbackFactory_WhenRealBackendRequired_ReportsValid()
+        {
+            SteamIntegrationService service = SteamIntegrationService.Instance;
+            Assert.NotNull(service);
+
+            bool oldEnableSteam = service.enableSteam;
+            bool oldRequireRealBackend = service.requireRealBackend;
+            bool oldStrictAppIdValidation = service.strictAppIdValidation;
+            bool oldPreferReflectionBackend = service.preferReflectionBackend;
+            uint oldAppId = service.appId;
+            ISteamClient oldClient = GetClient(service);
+
+            FieldInfo reflectionFactoryField = typeof(SteamIntegrationService).GetField(
+                "reflectionClientFactoryOverride",
+                BindingFlags.Static | BindingFlags.NonPublic);
+            Assert.NotNull(reflectionFactoryField);
+            object oldFactory = reflectionFactoryField.GetValue(null);
+
+            try
+            {
+                service.enableSteam = true;
+                service.requireRealBackend = true;
+                service.strictAppIdValidation = false;
+                service.preferReflectionBackend = true;
+                service.appId = oldAppId == 0u ? 480u : oldAppId;
+
+                reflectionFactoryField.SetValue(
+                    null,
+                    new System.Func<uint, bool, bool, ISteamClient>((_, __, ___) => new FakeSteamClient(true, true)));
+
+                service.InitializeClient();
+                service.RefreshRuntimeStatus(force: true);
+                SteamRuntimeStatus status = service.GetRuntimeStatus();
+
+                Assert.IsTrue(status.realBackendRequired);
+                Assert.IsTrue(status.realBackendReady);
+                Assert.IsFalse(status.stubMode);
+                Assert.IsTrue(status.runtimeValid);
+            }
+            finally
+            {
+                service.enableSteam = oldEnableSteam;
+                service.requireRealBackend = oldRequireRealBackend;
+                service.strictAppIdValidation = oldStrictAppIdValidation;
+                service.preferReflectionBackend = oldPreferReflectionBackend;
+                service.appId = oldAppId;
+                reflectionFactoryField.SetValue(null, oldFactory);
+                SetClient(service, oldClient);
+                service.InitializeClient();
+                service.RefreshRuntimeStatus(force: true);
             }
         }
 

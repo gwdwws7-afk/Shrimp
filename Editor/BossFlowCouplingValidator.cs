@@ -12,13 +12,13 @@ namespace ThirdPersonController.Editor
 {
     public static class BossFlowCouplingValidator
     {
-        private const string ValidateMenuPath = "Tools/Boss/P1/Validate Level 08-10 Boss Flow Coupling (CSV)";
-        private const string ValidateGateMenuPath = "Tools/Boss/P1/Validate Level 08-10 Boss Flow Coupling (CI Gate)";
+        private const string ValidateMenuPath = "Tools/Boss/P1/Validate Level 03-10 Boss Flow Coupling (CSV)";
+        private const string ValidateGateMenuPath = "Tools/Boss/P1/Validate Level 03-10 Boss Flow Coupling (CI Gate)";
         private const string SceneFolderPath = "Assets/Scenes";
         private const string ReportCsvPath = "Assets/ThirdPersonController/Reports/boss_level_flow_coupling_report.csv";
         private const string SummaryMdPath = "Assets/ThirdPersonController/Reports/boss_level_flow_coupling_summary.md";
         private const string LogPrefix = "[BossFlowCoupling]";
-        private const int MinLevelIndex = 8;
+        private const int MinLevelIndex = 3;
         private const int MaxLevelIndex = 10;
 
         [MenuItem(ValidateMenuPath)]

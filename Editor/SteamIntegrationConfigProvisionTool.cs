@@ -11,6 +11,7 @@ namespace ThirdPersonController.Editor
         private const string MenuPath = "Tools/Productization/P4/Ensure Default Steam Integration Config";
         private const string AssetPath = "Assets/ThirdPersonController/Resources/Steam/DefaultSteamIntegrationConfig.asset";
         private const string ReportCsvPath = "Assets/ThirdPersonController/Reports/steam_config_provision_report.csv";
+        private const string SteamAppIdFileName = "steam_appid.txt";
 
         [MenuItem(MenuPath)]
         public static void EnsureFromMenu()
@@ -54,9 +55,24 @@ namespace ThirdPersonController.Editor
                 fixedCount++;
             }
 
+            if (!config.preferReflectionBackend)
+            {
+                config.preferReflectionBackend = true;
+                fixedCount++;
+            }
+
+            bool appIdFileChanged;
+            string appIdFileValue;
+            string appIdFileNote;
+            bool appIdFileOk = EnsureSteamAppIdFile(config.appId, out appIdFileChanged, out appIdFileValue, out appIdFileNote);
+            if (appIdFileChanged)
+            {
+                fixedCount++;
+            }
+
             EditorUtility.SetDirty(config);
             AssetDatabase.SaveAssets();
-            WriteCsv(created, fixedCount, config);
+            WriteCsv(created, fixedCount, config, appIdFileOk, appIdFileValue, appIdFileNote);
             AssetDatabase.Refresh();
 
             string summary = created
@@ -74,7 +90,47 @@ namespace ThirdPersonController.Editor
             }
         }
 
-        private static void WriteCsv(bool created, int fixedCount, SteamIntegrationConfig config)
+        private static bool EnsureSteamAppIdFile(
+            uint appId,
+            out bool changed,
+            out string value,
+            out string note)
+        {
+            changed = false;
+            string projectRoot = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+            string appIdPath = Path.Combine(projectRoot, SteamAppIdFileName);
+            value = appIdPath;
+
+            if (appId == 0u)
+            {
+                note = "config appId is zero; skip appid file sync";
+                return false;
+            }
+
+            string expected = appId.ToString();
+            string existing = string.Empty;
+            if (File.Exists(appIdPath))
+            {
+                existing = (File.ReadAllText(appIdPath) ?? string.Empty).Trim();
+            }
+
+            if (!File.Exists(appIdPath) || !existing.Equals(expected, System.StringComparison.Ordinal))
+            {
+                File.WriteAllText(appIdPath, expected + "\n", new UTF8Encoding(false));
+                changed = true;
+            }
+
+            note = changed ? "written_or_updated" : "already_synced";
+            return true;
+        }
+
+        private static void WriteCsv(
+            bool created,
+            int fixedCount,
+            SteamIntegrationConfig config,
+            bool appIdFileOk,
+            string appIdFileValue,
+            string appIdFileNote)
         {
             string fullPath = Path.GetFullPath(ReportCsvPath);
             string dir = Path.GetDirectoryName(fullPath);
@@ -90,12 +146,17 @@ namespace ThirdPersonController.Editor
                 note += $";normalized={fixedCount}";
             }
 
-            var sb = new StringBuilder(256);
+            var sb = new StringBuilder(384);
             sb.AppendLine("check_id,status,value,note");
             sb.Append("config.provision").Append(',')
                 .Append(status).Append(',')
                 .Append(Escape(AssetPath)).Append(',')
                 .Append(Escape(note))
+                .AppendLine();
+            sb.Append("appid.file.provision").Append(',')
+                .Append(appIdFileOk ? "Ok" : "Gap").Append(',')
+                .Append(Escape(appIdFileValue)).Append(',')
+                .Append(Escape(appIdFileNote))
                 .AppendLine();
 
             File.WriteAllText(fullPath, sb.ToString(), new UTF8Encoding(false));

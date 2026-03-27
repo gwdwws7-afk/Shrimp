@@ -16,6 +16,12 @@ namespace ThirdPersonController
         [Min(1)] public int expectedPhaseCount = 2;
         [Min(1)] public int expectedSkillCount = 3;
         public bool definesBreakRule = true;
+        public bool requireDistinctPhaseIntents = true;
+        [TextArea(2, 4)] public string phase1Intent = "Establish baseline pressure and telegraph core threats.";
+        [TextArea(2, 4)] public string phase2Intent = "Escalate pressure with tighter punish windows and combo threat.";
+        [TextArea(2, 4)] public string phase3Intent = "Force high-clarity clutch decisions under time pressure.";
+        [TextArea(2, 4)] public string signaturePunishWindow = "Punish after guarded opener recovery or interrupted chain end.";
+        [TextArea(2, 4)] public string antiPatternHint = "Do not over-commit during armored startup or chain continuation.";
 
         [Header("Spawn Stats")]
         public bool overrideSpawnStats = true;

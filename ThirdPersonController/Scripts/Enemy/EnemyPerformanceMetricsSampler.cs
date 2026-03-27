@@ -39,6 +39,9 @@ namespace ThirdPersonController
         private readonly List<float> frameTimeSamplesMs = new List<float>(4096);
         private readonly List<float> aiDecisionRateSamples = new List<float>(512);
         private readonly List<int> aiActiveEnemySamples = new List<int>(512);
+        private readonly List<int> projectileActiveSamples = new List<int>(512);
+        private readonly List<int> uiDamageTextActiveSamples = new List<int>(512);
+        private readonly List<int> activeParticleSamples = new List<int>(512);
         private readonly List<long> gcAllocSamplesBytes = new List<long>(4096);
         private readonly List<StepRecord> recordedSteps = new List<StepRecord>(16);
         private readonly Dictionary<int, int> previousDecisionCounts = new Dictionary<int, int>(512);
@@ -81,6 +84,12 @@ namespace ThirdPersonController
             public float p95AiDecisionsPerSecond;
             public float peakAiDecisionsPerSecond;
             public float avgActiveEnemies;
+            public float avgActiveProjectiles;
+            public int p95ActiveProjectiles;
+            public float avgActiveDamageTexts;
+            public int p95ActiveDamageTexts;
+            public float avgActiveParticles;
+            public int p95ActiveParticles;
         }
 
         private void OnEnable()
@@ -124,6 +133,9 @@ namespace ThirdPersonController
             frameTimeSamplesMs.Clear();
             aiDecisionRateSamples.Clear();
             aiActiveEnemySamples.Clear();
+            projectileActiveSamples.Clear();
+            uiDamageTextActiveSamples.Clear();
+            activeParticleSamples.Clear();
             gcAllocSamplesBytes.Clear();
             previousDecisionCounts.Clear();
 
@@ -356,6 +368,21 @@ namespace ThirdPersonController
             {
                 aiActiveEnemySamples.Add(activeEnemyCount);
             }
+
+            if (projectileActiveSamples.Count < maxAiSamples)
+            {
+                projectileActiveSamples.Add(CountActiveComponents<EnemyProjectile>());
+            }
+
+            if (uiDamageTextActiveSamples.Count < maxAiSamples)
+            {
+                uiDamageTextActiveSamples.Add(CountActiveDamageTexts());
+            }
+
+            if (activeParticleSamples.Count < maxAiSamples)
+            {
+                activeParticleSamples.Add(CountActiveParticles());
+            }
         }
 
         private StepRecord BuildStepRecord()
@@ -389,13 +416,19 @@ namespace ThirdPersonController
             record.p95AiDecisionsPerSecond = ComputePercentile(aiDecisionRateSamples, 0.95f);
             record.peakAiDecisionsPerSecond = ComputeMax(aiDecisionRateSamples);
             record.avgActiveEnemies = ComputeAverageInt(aiActiveEnemySamples);
+            record.avgActiveProjectiles = ComputeAverageInt(projectileActiveSamples);
+            record.p95ActiveProjectiles = ComputePercentileInt(projectileActiveSamples, 0.95f);
+            record.avgActiveDamageTexts = ComputeAverageInt(uiDamageTextActiveSamples);
+            record.p95ActiveDamageTexts = ComputePercentileInt(uiDamageTextActiveSamples, 0.95f);
+            record.avgActiveParticles = ComputeAverageInt(activeParticleSamples);
+            record.p95ActiveParticles = ComputePercentileInt(activeParticleSamples, 0.95f);
             return record;
         }
 
         private string BuildCsv()
         {
             StringBuilder sb = new StringBuilder(4096);
-            sb.AppendLine("step_label,target_count,duration_s,frame_samples,avg_frame_ms,p95_frame_ms,p99_frame_ms,max_frame_ms,avg_fps,p1_fps,avg_gc_alloc_bytes_per_frame,p95_gc_alloc_bytes_per_frame,max_gc_alloc_bytes_per_frame,total_gc_alloc_bytes,gc_collections_gen0,gc_collections_gen1,gc_collections_gen2,avg_ai_decisions_per_s,p95_ai_decisions_per_s,peak_ai_decisions_per_s,avg_active_enemies");
+            sb.AppendLine("step_label,target_count,duration_s,frame_samples,avg_frame_ms,p95_frame_ms,p99_frame_ms,max_frame_ms,avg_fps,p1_fps,avg_gc_alloc_bytes_per_frame,p95_gc_alloc_bytes_per_frame,max_gc_alloc_bytes_per_frame,total_gc_alloc_bytes,gc_collections_gen0,gc_collections_gen1,gc_collections_gen2,avg_ai_decisions_per_s,p95_ai_decisions_per_s,peak_ai_decisions_per_s,avg_active_enemies,avg_active_projectiles,p95_active_projectiles,avg_active_damage_texts,p95_active_damage_texts,avg_active_particles,p95_active_particles");
 
             for (int i = 0; i < recordedSteps.Count; i++)
             {
@@ -420,7 +453,13 @@ namespace ThirdPersonController
                 sb.Append(FormatFloat(record.avgAiDecisionsPerSecond)).Append(',');
                 sb.Append(FormatFloat(record.p95AiDecisionsPerSecond)).Append(',');
                 sb.Append(FormatFloat(record.peakAiDecisionsPerSecond)).Append(',');
-                sb.Append(FormatFloat(record.avgActiveEnemies));
+                sb.Append(FormatFloat(record.avgActiveEnemies)).Append(',');
+                sb.Append(FormatFloat(record.avgActiveProjectiles)).Append(',');
+                sb.Append(record.p95ActiveProjectiles).Append(',');
+                sb.Append(FormatFloat(record.avgActiveDamageTexts)).Append(',');
+                sb.Append(record.p95ActiveDamageTexts).Append(',');
+                sb.Append(FormatFloat(record.avgActiveParticles)).Append(',');
+                sb.Append(record.p95ActiveParticles);
                 sb.AppendLine();
             }
 
@@ -454,8 +493,79 @@ namespace ThirdPersonController
                 .Append("B/frame")
                 .Append(" aiAvg=").Append(FormatFloat(record.avgAiDecisionsPerSecond))
                 .Append("/s")
-                .Append(" enemiesAvg=").Append(FormatFloat(record.avgActiveEnemies));
+                .Append(" enemiesAvg=").Append(FormatFloat(record.avgActiveEnemies))
+                .Append(" projectilesAvg=").Append(FormatFloat(record.avgActiveProjectiles))
+                .Append(" uiDamageAvg=").Append(FormatFloat(record.avgActiveDamageTexts))
+                .Append(" particlesAvg=").Append(FormatFloat(record.avgActiveParticles));
             return sb.ToString();
+        }
+
+        private static int CountActiveComponents<T>() where T : Component
+        {
+            T[] components = FindObjectsOfType<T>();
+            int count = 0;
+            for (int i = 0; i < components.Length; i++)
+            {
+                T component = components[i];
+                if (component == null)
+                {
+                    continue;
+                }
+
+                if (component is Behaviour behaviour)
+                {
+                    if (behaviour.isActiveAndEnabled)
+                    {
+                        count++;
+                    }
+
+                    continue;
+                }
+
+                if (component.gameObject.activeInHierarchy)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        private static int CountActiveDamageTexts()
+        {
+            UI_DamageText[] damageTexts = FindObjectsOfType<UI_DamageText>();
+            int count = 0;
+            for (int i = 0; i < damageTexts.Length; i++)
+            {
+                UI_DamageText damageText = damageTexts[i];
+                if (damageText != null && damageText.IsPlaying && damageText.gameObject.activeInHierarchy)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        private static int CountActiveParticles()
+        {
+            ParticleSystem[] particleSystems = FindObjectsOfType<ParticleSystem>();
+            int count = 0;
+            for (int i = 0; i < particleSystems.Length; i++)
+            {
+                ParticleSystem particleSystem = particleSystems[i];
+                if (particleSystem == null || !particleSystem.gameObject.activeInHierarchy)
+                {
+                    continue;
+                }
+
+                if (particleSystem.isPlaying || particleSystem.particleCount > 0)
+                {
+                    count++;
+                }
+            }
+
+            return count;
         }
 
         private static float ComputeAverage(List<float> samples)
@@ -543,6 +653,19 @@ namespace ThirdPersonController
             }
 
             long[] buffer = samples.ToArray();
+            Array.Sort(buffer);
+            int index = Mathf.Clamp(Mathf.CeilToInt((buffer.Length - 1) * percentile), 0, buffer.Length - 1);
+            return buffer[index];
+        }
+
+        private static int ComputePercentileInt(List<int> samples, float percentile)
+        {
+            if (samples == null || samples.Count == 0)
+            {
+                return 0;
+            }
+
+            int[] buffer = samples.ToArray();
             Array.Sort(buffer);
             int index = Mathf.Clamp(Mathf.CeilToInt((buffer.Length - 1) * percentile), 0, buffer.Length - 1);
             return buffer[index];

@@ -19,6 +19,14 @@ namespace ThirdPersonController.Editor
         private const string ReportCsvPath = "Assets/ThirdPersonController/Reports/level_content_completeness_report.csv";
         private const string SummaryMdPath = "Assets/ThirdPersonController/Reports/level_content_completeness_summary.md";
         private const string LogPrefix = "[LevelContentCompleteness]";
+        private const string AutoStrongholdRootName = "AutoStrongholds_P0";
+
+        private static readonly string[] FallbackEnemyPrefabPaths =
+        {
+            "Assets/Prefabs/Enemies/ENM_DeepseaFish_01.prefab",
+            "Assets/Prefabs/Enemies/ENM_MantisShrimp_01.prefab",
+            "Assets/Prefabs/Enemies/ENM_HermitCrab_01.prefab"
+        };
 
         [MenuItem(ValidateMenuPath)]
         public static void Validate()
@@ -186,6 +194,16 @@ namespace ThirdPersonController.Editor
             StrongholdSequenceController sequence = FindComponentInScene<StrongholdSequenceController>(scene);
             BossSpawnPoint bossSpawnPoint = FindComponentInScene<BossSpawnPoint>(scene);
             List<StrongholdController> allStrongholds = FindComponentsInScene<StrongholdController>(scene);
+            if (applyFix && entry.levelData.strongholds != null && entry.levelData.strongholds.Count > 0)
+            {
+                fixedCount += EnsureRequiredStrongholdsInScene(
+                    scene,
+                    entry.levelData,
+                    sequence,
+                    allStrongholds,
+                    ref sceneDirty);
+            }
+
             strongholdCount = allStrongholds.Count;
 
             bool hasPlayerCombat = FindComponentInScene<PlayerCombat>(scene) != null;
@@ -820,6 +838,698 @@ namespace ThirdPersonController.Editor
             }
 
             return -1;
+        }
+
+        private static int EnsureRequiredStrongholdsInScene(
+            Scene scene,
+            LevelData levelData,
+            StrongholdSequenceController sequence,
+            List<StrongholdController> allStrongholds,
+            ref bool sceneDirty)
+        {
+            if (!scene.IsValid() || !scene.isLoaded || levelData == null || allStrongholds == null)
+            {
+                return 0;
+            }
+
+            var strongholdById = new Dictionary<string, StrongholdController>(StringComparer.Ordinal);
+            for (int i = 0; i < allStrongholds.Count; i++)
+            {
+                StrongholdController stronghold = allStrongholds[i];
+                if (stronghold == null)
+                {
+                    continue;
+                }
+
+                string id = stronghold.StrongholdId;
+                if (string.IsNullOrWhiteSpace(id))
+                {
+                    continue;
+                }
+
+                if (!strongholdById.ContainsKey(id))
+                {
+                    strongholdById.Add(id, stronghold);
+                }
+            }
+
+            StrongholdController templateStronghold = ResolveTemplateStronghold(allStrongholds);
+            GameObject fallbackEnemyPrefab = ResolveFallbackEnemyPrefab(allStrongholds);
+
+            var sortedConfigs = new List<StrongholdConfig>(levelData.strongholds);
+            sortedConfigs.Sort((left, right) =>
+            {
+                int leftOrder = left != null ? left.order : int.MaxValue;
+                int rightOrder = right != null ? right.order : int.MaxValue;
+                return leftOrder.CompareTo(rightOrder);
+            });
+
+            int ops = 0;
+            for (int i = 0; i < sortedConfigs.Count; i++)
+            {
+                StrongholdConfig config = sortedConfigs[i];
+                if (config == null || !config.required || string.IsNullOrWhiteSpace(config.strongholdId))
+                {
+                    continue;
+                }
+
+                if (strongholdById.ContainsKey(config.strongholdId))
+                {
+                    if (strongholdById.TryGetValue(config.strongholdId, out StrongholdController existingStronghold))
+                    {
+                        ops += EnsureStrongholdSpawnPoints(scene, existingStronghold, ref sceneDirty);
+                    }
+
+                    continue;
+                }
+
+                StrongholdController created = CreateStrongholdSkeleton(
+                    scene,
+                    levelData,
+                    config.strongholdId,
+                    templateStronghold,
+                    fallbackEnemyPrefab);
+
+                if (created == null)
+                {
+                    continue;
+                }
+
+                allStrongholds.Add(created);
+                strongholdById[config.strongholdId] = created;
+                sceneDirty = true;
+                ops++;
+                ops += EnsureStrongholdSpawnPoints(scene, created, ref sceneDirty);
+            }
+
+            ops += RebuildSequenceStrongholds(sequence, levelData, strongholdById, ref sceneDirty);
+            return ops;
+        }
+
+        private static StrongholdController ResolveTemplateStronghold(List<StrongholdController> allStrongholds)
+        {
+            if (allStrongholds == null || allStrongholds.Count == 0)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < allStrongholds.Count; i++)
+            {
+                StrongholdController stronghold = allStrongholds[i];
+                if (stronghold == null)
+                {
+                    continue;
+                }
+
+                if (string.Equals(stronghold.StrongholdId, "Stronghold_02", StringComparison.Ordinal))
+                {
+                    return stronghold;
+                }
+            }
+
+            for (int i = 0; i < allStrongholds.Count; i++)
+            {
+                if (allStrongholds[i] != null)
+                {
+                    return allStrongholds[i];
+                }
+            }
+
+            return null;
+        }
+
+        private static GameObject ResolveFallbackEnemyPrefab(List<StrongholdController> allStrongholds)
+        {
+            if (allStrongholds != null)
+            {
+                for (int s = 0; s < allStrongholds.Count; s++)
+                {
+                    StrongholdController stronghold = allStrongholds[s];
+                    if (stronghold == null || stronghold.waves == null)
+                    {
+                        continue;
+                    }
+
+                    for (int w = 0; w < stronghold.waves.Count; w++)
+                    {
+                        StrongholdWave wave = stronghold.waves[w];
+                        if (wave == null || wave.groups == null)
+                        {
+                            continue;
+                        }
+
+                        for (int g = 0; g < wave.groups.Count; g++)
+                        {
+                            WaveSpawnGroup group = wave.groups[g];
+                            if (group != null && group.prefab != null)
+                            {
+                                return group.prefab;
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (int i = 0; i < FallbackEnemyPrefabPaths.Length; i++)
+            {
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(FallbackEnemyPrefabPaths[i]);
+                if (prefab != null)
+                {
+                    return prefab;
+                }
+            }
+
+            return null;
+        }
+
+        private static StrongholdController CreateStrongholdSkeleton(
+            Scene scene,
+            LevelData levelData,
+            string strongholdId,
+            StrongholdController templateStronghold,
+            GameObject fallbackEnemyPrefab)
+        {
+            if (string.IsNullOrWhiteSpace(strongholdId))
+            {
+                return null;
+            }
+
+            GameObject root = GetOrCreateSceneRoot(scene, AutoStrongholdRootName);
+            var go = new GameObject(strongholdId);
+            SceneManager.MoveGameObjectToScene(go, scene);
+            if (root != null)
+            {
+                go.transform.SetParent(root.transform, false);
+            }
+
+            int ordinal = ParseStrongholdOrdinal(strongholdId);
+            Vector3 fallbackPosition = templateStronghold != null
+                ? templateStronghold.transform.position + new Vector3(ordinal * 10f, 0f, 16f)
+                : new Vector3(ordinal * 16f, 0f, ordinal * 6f);
+            go.transform.position = ResolveStrongholdAnchorPosition(scene, strongholdId, fallbackPosition);
+
+            SphereCollider trigger = go.AddComponent<SphereCollider>();
+            trigger.isTrigger = true;
+            trigger.radius = templateStronghold != null
+                ? Mathf.Max(8f, templateStronghold.spawnRadius + 1.5f)
+                : 9f;
+
+            StrongholdController stronghold = go.AddComponent<StrongholdController>();
+            stronghold.strongholdId = strongholdId;
+            stronghold.activeOnStart = false;
+            stronghold.startOnPlayerEnter = true;
+            stronghold.playerTag = templateStronghold != null ? templateStronghold.playerTag : "Player";
+            stronghold.center = go.transform;
+            stronghold.triggerArea = trigger;
+            stronghold.spawnRadius = templateStronghold != null ? Mathf.Max(5f, templateStronghold.spawnRadius) : 7f;
+            stronghold.spawnHeight = templateStronghold != null ? templateStronghold.spawnHeight : 0.5f;
+            stronghold.spawnPointJitter = templateStronghold != null ? templateStronghold.spawnPointJitter : 0.4f;
+            stronghold.useGroundSnap = templateStronghold != null && templateStronghold.useGroundSnap;
+            stronghold.groundLayer = templateStronghold != null ? templateStronghold.groundLayer : default;
+            stronghold.facePlayerOnSpawn = templateStronghold == null || templateStronghold.facePlayerOnSpawn;
+            stronghold.usePooling = templateStronghold == null || templateStronghold.usePooling;
+            stronghold.waveCompleteDelay = templateStronghold != null ? templateStronghold.waveCompleteDelay : 1f;
+            stronghold.autoFindDirector = true;
+            stronghold.spawnDirector = null;
+            stronghold.useObjectives = templateStronghold == null || templateStronghold.useObjectives;
+            stronghold.comboTarget = templateStronghold != null ? templateStronghold.comboTarget : 50;
+            stronghold.requireNoDamage = templateStronghold != null && templateStronghold.requireNoDamage;
+            stronghold.strongholdObjective = CloneWaveObjective(
+                templateStronghold != null ? templateStronghold.strongholdObjective : null);
+
+            int fallbackWaveCount = 3;
+            if (templateStronghold != null && templateStronghold.waves != null && templateStronghold.waves.Count > 0)
+            {
+                fallbackWaveCount = templateStronghold.waves.Count;
+            }
+
+            int targetWaveCount = ResolveTargetWaveCount(levelData, strongholdId, fallbackWaveCount);
+            stronghold.waves = new List<StrongholdWave>(targetWaveCount);
+            for (int waveIndex = 0; waveIndex < targetWaveCount; waveIndex++)
+            {
+                StrongholdWave templateWave = ResolveTemplateWave(templateStronghold, waveIndex);
+                stronghold.waves.Add(CreateWaveSkeleton(templateWave, fallbackEnemyPrefab, waveIndex + 1));
+            }
+
+            return stronghold;
+        }
+
+        private static int EnsureStrongholdSpawnPoints(
+            Scene scene,
+            StrongholdController stronghold,
+            ref bool sceneDirty)
+        {
+            if (stronghold == null)
+            {
+                return 0;
+            }
+
+            int ops = 0;
+            if (stronghold.spawnPoints == null)
+            {
+                stronghold.spawnPoints = new List<Transform>();
+                sceneDirty = true;
+                ops++;
+            }
+
+            if (stronghold.reinforcementPoints == null)
+            {
+                stronghold.reinforcementPoints = new List<Transform>();
+                sceneDirty = true;
+                ops++;
+            }
+
+            Transform pointRoot = GetOrCreateSpawnPointRoot(scene, stronghold.transform, "AutoSpawnPoints", ref sceneDirty, ref ops);
+            Transform reinforcementRoot = GetOrCreateSpawnPointRoot(scene, stronghold.transform, "AutoReinforcementPoints", ref sceneDirty, ref ops);
+
+            int spawnOps = EnsureSpawnPointRing(
+                scene,
+                stronghold,
+                pointRoot,
+                stronghold.spawnPoints,
+                "SP",
+                desiredCount: 6,
+                radiusScale: 0.85f);
+            if (spawnOps > 0)
+            {
+                sceneDirty = true;
+                ops += spawnOps;
+            }
+
+            int reinforcementOps = EnsureSpawnPointRing(
+                scene,
+                stronghold,
+                reinforcementRoot,
+                stronghold.reinforcementPoints,
+                "RSP",
+                desiredCount: 3,
+                radiusScale: 1.1f);
+            if (reinforcementOps > 0)
+            {
+                sceneDirty = true;
+                ops += reinforcementOps;
+            }
+
+            return ops;
+        }
+
+        private static Transform GetOrCreateSpawnPointRoot(
+            Scene scene,
+            Transform strongholdTransform,
+            string rootName,
+            ref bool sceneDirty,
+            ref int ops)
+        {
+            if (strongholdTransform == null || string.IsNullOrWhiteSpace(rootName))
+            {
+                return strongholdTransform;
+            }
+
+            Transform existing = strongholdTransform.Find(rootName);
+            if (existing != null)
+            {
+                return existing;
+            }
+
+            var go = new GameObject(rootName);
+            SceneManager.MoveGameObjectToScene(go, scene);
+            go.transform.SetParent(strongholdTransform, false);
+            go.transform.localPosition = Vector3.zero;
+            sceneDirty = true;
+            ops++;
+            return go.transform;
+        }
+
+        private static int EnsureSpawnPointRing(
+            Scene scene,
+            StrongholdController stronghold,
+            Transform parent,
+            List<Transform> targetList,
+            string prefix,
+            int desiredCount,
+            float radiusScale)
+        {
+            if (stronghold == null || parent == null || targetList == null)
+            {
+                return 0;
+            }
+
+            int ops = 0;
+            Vector3 center = stronghold.center != null ? stronghold.center.position : stronghold.transform.position;
+            float radius = Mathf.Max(2.5f, stronghold.spawnRadius * Mathf.Max(0.3f, radiusScale));
+            float y = center.y;
+
+            for (int i = 0; i < targetList.Count; i++)
+            {
+                Transform tr = targetList[i];
+                if (tr != null)
+                {
+                    continue;
+                }
+
+                float theta = desiredCount > 1 ? (Mathf.PI * 2f * i / desiredCount) : 0f;
+                Vector3 pos = center + new Vector3(Mathf.Cos(theta) * radius, 0f, Mathf.Sin(theta) * radius);
+                var point = new GameObject($"{prefix}_{i + 1:D2}");
+                SceneManager.MoveGameObjectToScene(point, scene);
+                point.transform.SetParent(parent, false);
+                point.transform.position = new Vector3(pos.x, y, pos.z);
+                targetList[i] = point.transform;
+                ops++;
+            }
+
+            for (int i = targetList.Count; i < desiredCount; i++)
+            {
+                float theta = desiredCount > 1 ? (Mathf.PI * 2f * i / desiredCount) : 0f;
+                Vector3 pos = center + new Vector3(Mathf.Cos(theta) * radius, 0f, Mathf.Sin(theta) * radius);
+                var point = new GameObject($"{prefix}_{i + 1:D2}");
+                SceneManager.MoveGameObjectToScene(point, scene);
+                point.transform.SetParent(parent, false);
+                point.transform.position = new Vector3(pos.x, y, pos.z);
+                targetList.Add(point.transform);
+                ops++;
+            }
+
+            return ops;
+        }
+
+        private static StrongholdWave ResolveTemplateWave(StrongholdController templateStronghold, int waveIndex)
+        {
+            if (templateStronghold == null || templateStronghold.waves == null || templateStronghold.waves.Count == 0)
+            {
+                return null;
+            }
+
+            int index = Mathf.Clamp(waveIndex, 0, templateStronghold.waves.Count - 1);
+            return templateStronghold.waves[index];
+        }
+
+        private static StrongholdWave CreateWaveSkeleton(
+            StrongholdWave templateWave,
+            GameObject fallbackEnemyPrefab,
+            int waveNumber)
+        {
+            var wave = new StrongholdWave
+            {
+                name = !string.IsNullOrWhiteSpace(templateWave != null ? templateWave.name : string.Empty)
+                    ? templateWave.name
+                    : $"Wave {waveNumber}",
+                startDelay = templateWave != null ? templateWave.startDelay : 0.4f,
+                spawnInterval = templateWave != null ? Mathf.Max(0.1f, templateWave.spawnInterval) : 0.35f,
+                shuffleSpawnPoints = templateWave == null || templateWave.shuffleSpawnPoints,
+                useTimeLimit = templateWave != null && templateWave.useTimeLimit,
+                waveTimeLimit = templateWave != null ? Mathf.Max(1f, templateWave.waveTimeLimit) : 120f,
+                objective = CloneWaveObjective(templateWave != null ? templateWave.objective : null),
+                groups = BuildWaveGroups(templateWave, fallbackEnemyPrefab),
+                events = new List<WaveEvent>()
+            };
+
+            if (templateWave != null && templateWave.eliteTrigger != null)
+            {
+                wave.eliteTrigger.enabled = templateWave.eliteTrigger.enabled;
+                wave.eliteTrigger.triggerOnRemaining = templateWave.eliteTrigger.triggerOnRemaining;
+                wave.eliteTrigger.triggerDelay = templateWave.eliteTrigger.triggerDelay;
+                wave.eliteTrigger.spawnInterval = templateWave.eliteTrigger.spawnInterval;
+            }
+
+            return wave;
+        }
+
+        private static WaveObjective CloneWaveObjective(WaveObjective template)
+        {
+            if (template == null)
+            {
+                return new WaveObjective();
+            }
+
+            return new WaveObjective
+            {
+                objectiveType = template.objectiveType,
+                targetValue = template.targetValue,
+                timeLimit = template.timeLimit,
+                isOptional = template.isOptional
+            };
+        }
+
+        private static List<WaveSpawnGroup> BuildWaveGroups(StrongholdWave templateWave, GameObject fallbackEnemyPrefab)
+        {
+            var groups = new List<WaveSpawnGroup>();
+            if (templateWave != null && templateWave.groups != null)
+            {
+                for (int i = 0; i < templateWave.groups.Count; i++)
+                {
+                    WaveSpawnGroup templateGroup = templateWave.groups[i];
+                    if (templateGroup == null || templateGroup.prefab == null || templateGroup.count <= 0)
+                    {
+                        continue;
+                    }
+
+                    groups.Add(new WaveSpawnGroup
+                    {
+                        prefab = templateGroup.prefab,
+                        count = Mathf.Max(1, templateGroup.count),
+                        spawnIntervalOverride = templateGroup.spawnIntervalOverride,
+                        archetypeOverride = templateGroup.archetypeOverride
+                    });
+                }
+            }
+
+            if (groups.Count == 0)
+            {
+                groups.Add(new WaveSpawnGroup
+                {
+                    prefab = fallbackEnemyPrefab,
+                    count = 8
+                });
+            }
+
+            return groups;
+        }
+
+        private static int ResolveTargetWaveCount(LevelData levelData, string strongholdId, int fallbackCount)
+        {
+            int targetCount = Mathf.Max(1, fallbackCount);
+            if (levelData == null || levelData.strongholdOverrides == null)
+            {
+                return targetCount;
+            }
+
+            for (int i = 0; i < levelData.strongholdOverrides.Count; i++)
+            {
+                StrongholdOverride overrideData = levelData.strongholdOverrides[i];
+                if (overrideData == null ||
+                    !string.Equals(overrideData.strongholdId, strongholdId, StringComparison.Ordinal) ||
+                    overrideData.waves == null)
+                {
+                    continue;
+                }
+
+                for (int w = 0; w < overrideData.waves.Count; w++)
+                {
+                    StrongholdWaveOverride waveOverride = overrideData.waves[w];
+                    if (waveOverride == null)
+                    {
+                        continue;
+                    }
+
+                    targetCount = Mathf.Max(targetCount, waveOverride.waveIndex + 1);
+                }
+            }
+
+            return Mathf.Max(1, targetCount);
+        }
+
+        private static int RebuildSequenceStrongholds(
+            StrongholdSequenceController sequence,
+            LevelData levelData,
+            Dictionary<string, StrongholdController> strongholdById,
+            ref bool sceneDirty)
+        {
+            if (sequence == null || levelData == null || strongholdById == null)
+            {
+                return 0;
+            }
+
+            var desired = new List<StrongholdController>();
+            if (levelData.strongholds != null)
+            {
+                var sortedConfigs = new List<StrongholdConfig>(levelData.strongholds);
+                sortedConfigs.Sort((left, right) =>
+                {
+                    int leftOrder = left != null ? left.order : int.MaxValue;
+                    int rightOrder = right != null ? right.order : int.MaxValue;
+                    return leftOrder.CompareTo(rightOrder);
+                });
+
+                for (int i = 0; i < sortedConfigs.Count; i++)
+                {
+                    StrongholdConfig config = sortedConfigs[i];
+                    if (config == null || string.IsNullOrWhiteSpace(config.strongholdId))
+                    {
+                        continue;
+                    }
+
+                    if (strongholdById.TryGetValue(config.strongholdId, out StrongholdController stronghold) &&
+                        stronghold != null &&
+                        !desired.Contains(stronghold))
+                    {
+                        desired.Add(stronghold);
+                    }
+                }
+            }
+
+            if (sequence.strongholds != null)
+            {
+                for (int i = 0; i < sequence.strongholds.Count; i++)
+                {
+                    StrongholdController stronghold = sequence.strongholds[i];
+                    if (stronghold != null && !desired.Contains(stronghold))
+                    {
+                        desired.Add(stronghold);
+                    }
+                }
+            }
+
+            if (desired.Count == 0)
+            {
+                return 0;
+            }
+
+            if (HasSameReferenceOrder(sequence.strongholds, desired))
+            {
+                return 0;
+            }
+
+            sequence.strongholds = desired;
+            sceneDirty = true;
+            return 1;
+        }
+
+        private static bool HasSameReferenceOrder(List<StrongholdController> left, List<StrongholdController> right)
+        {
+            if (left == null || right == null)
+            {
+                return left == right;
+            }
+
+            if (left.Count != right.Count)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < left.Count; i++)
+            {
+                if (left[i] != right[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static GameObject GetOrCreateSceneRoot(Scene scene, string rootName)
+        {
+            if (!scene.IsValid() || !scene.isLoaded || string.IsNullOrWhiteSpace(rootName))
+            {
+                return null;
+            }
+
+            GameObject[] roots = scene.GetRootGameObjects();
+            for (int i = 0; i < roots.Length; i++)
+            {
+                GameObject root = roots[i];
+                if (root != null && string.Equals(root.name, rootName, StringComparison.Ordinal))
+                {
+                    return root;
+                }
+            }
+
+            var created = new GameObject(rootName);
+            SceneManager.MoveGameObjectToScene(created, scene);
+            return created;
+        }
+
+        private static Vector3 ResolveStrongholdAnchorPosition(Scene scene, string strongholdId, Vector3 fallback)
+        {
+            int ordinal = ParseStrongholdOrdinal(strongholdId);
+            string[] candidates = BuildStrongholdAnchorCandidates(ordinal);
+            for (int i = 0; i < candidates.Length; i++)
+            {
+                Transform anchor = FindTransformInScene(scene, candidates[i]);
+                if (anchor != null)
+                {
+                    Vector3 anchored = anchor.position;
+                    anchored.y = fallback.y;
+                    return anchored;
+                }
+            }
+
+            return fallback;
+        }
+
+        private static int ParseStrongholdOrdinal(string strongholdId)
+        {
+            if (string.IsNullOrWhiteSpace(strongholdId))
+            {
+                return 1;
+            }
+
+            int underscore = strongholdId.LastIndexOf('_');
+            if (underscore >= 0 && underscore < strongholdId.Length - 1)
+            {
+                string suffix = strongholdId.Substring(underscore + 1);
+                if (int.TryParse(suffix, out int parsed) && parsed > 0)
+                {
+                    return parsed;
+                }
+            }
+
+            return 1;
+        }
+
+        private static string[] BuildStrongholdAnchorCandidates(int ordinal)
+        {
+            switch (ordinal)
+            {
+                case 1:
+                    return new[] { "StrongholdA_Anchor", "Stronghold_01_Anchor", "Stronghold_01" };
+                case 2:
+                    return new[] { "StrongholdB_Anchor", "Stronghold_02_Anchor", "Stronghold_02" };
+                case 3:
+                    return new[] { "StrongholdC_Anchor", "Stronghold_03_Anchor", "Stronghold_03" };
+                default:
+                    return new[] { $"Stronghold_{ordinal:D2}_Anchor", $"Stronghold_{ordinal:D2}" };
+            }
+        }
+
+        private static Transform FindTransformInScene(Scene scene, string objectName)
+        {
+            if (!scene.IsValid() || !scene.isLoaded || string.IsNullOrWhiteSpace(objectName))
+            {
+                return null;
+            }
+
+            GameObject[] roots = scene.GetRootGameObjects();
+            for (int i = 0; i < roots.Length; i++)
+            {
+                GameObject root = roots[i];
+                if (root == null)
+                {
+                    continue;
+                }
+
+                Transform[] transforms = root.GetComponentsInChildren<Transform>(true);
+                for (int t = 0; t < transforms.Length; t++)
+                {
+                    Transform tr = transforms[t];
+                    if (tr != null && string.Equals(tr.name, objectName, StringComparison.Ordinal))
+                    {
+                        return tr;
+                    }
+                }
+            }
+
+            return null;
         }
 
         private static bool TryGetEnabledBuildIndex(string scenePath, out int buildIndex, out bool presentButDisabled)

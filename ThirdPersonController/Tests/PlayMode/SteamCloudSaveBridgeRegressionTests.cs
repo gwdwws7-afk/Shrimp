@@ -116,7 +116,10 @@ namespace ThirdPersonController.Tests
 
             GameData cloudSettings = new GameData
             {
-                localizationLanguage = (int)LocalizationLanguage.English
+                localizationLanguage = (int)LocalizationLanguage.English,
+                saveSchemaVersion = 0,
+                quickConsumableSlots = null,
+                activeProgressionRoute = string.Empty
             };
             byte[] settingsPayload = System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(cloudSettings));
             fakeClient.SetCloudFile("settings.dat", settingsPayload, timestamp: 2000);
@@ -142,6 +145,10 @@ namespace ThirdPersonController.Tests
 
             Assert.IsTrue(File.Exists(settingsPath), "Cloud settings should be downloaded to local file.");
             Assert.AreEqual(LocalizationLanguage.English, service.CurrentLanguage, "Pulled settings should apply language.");
+            Assert.AreEqual(
+                SaveManager.CurrentSaveSchemaVersion,
+                SaveManager.Instance.CurrentData.saveSchemaVersion,
+                "Pulled legacy settings should be migrated to current save schema.");
         }
 
         [Test]

@@ -1,0 +1,5 @@
+step_label,min_active_enemies,min_avg_fps,max_p95_frame_ms,max_p99_frame_ms,max_avg_gc_alloc_bytes_per_frame,max_p95_gc_alloc_bytes_per_frame,min_ai_decisions_per_s,max_ai_decisions_per_s,max_avg_active_projectiles,max_p95_active_projectiles,max_avg_active_damage_texts,max_p95_active_damage_texts,max_avg_active_particles,max_p95_active_particles,note
+P4_LONG_100_R1,95,50,22,30,4096,16384,50,500,48,80,20,36,140,220,100同屏跨系统门槛（R1）
+P4_LONG_100_R2,95,50,22,30,4096,16384,50,500,48,80,20,36,140,220,100同屏跨系统门槛（R2）
+P4_LONG_150_R1,140,45,26,36,6144,24576,70,700,68,110,30,48,220,320,150同屏跨系统门槛（R1）
+P4_LONG_150_R2,140,45,26,36,6144,24576,70,700,68,110,30,48,220,320,150同屏跨系统门槛（R2）

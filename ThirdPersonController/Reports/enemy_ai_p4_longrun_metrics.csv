@@ -1,5 +1,5 @@
-﻿step_label,target_count,duration_s,frame_samples,avg_frame_ms,p95_frame_ms,p99_frame_ms,max_frame_ms,avg_fps,p1_fps,avg_gc_alloc_bytes_per_frame,p95_gc_alloc_bytes_per_frame,max_gc_alloc_bytes_per_frame,total_gc_alloc_bytes,gc_collections_gen0,gc_collections_gen1,gc_collections_gen2,avg_ai_decisions_per_s,p95_ai_decisions_per_s,peak_ai_decisions_per_s,avg_active_enemies
-P4_LONG_100_R1,100,120.001,30000,2.116,4.222,5.617,16.671,472.534,178.037,0,0,0,0,6,6,6,418.492,434.04,446.759,106
-P4_LONG_100_R2,100,120.002,30000,2.051,4.202,4.963,16.449,487.537,201.499,0,0,0,0,6,6,6,430.886,446.827,463.66,109
-P4_LONG_150_R1,150,180.001,30000,5.68,10.926,20.654,68.408,176.071,48.417,0,0,0,0,5,5,5,587.159,622.906,679.027,152
-P4_LONG_150_R2,150,180.001,30000,4.451,9.705,12.006,26.273,224.677,83.295,0,0,0,0,6,6,6,628.326,654.725,686.157,161
+﻿step_label,target_count,duration_s,frame_samples,avg_frame_ms,p95_frame_ms,p99_frame_ms,max_frame_ms,avg_fps,p1_fps,avg_gc_alloc_bytes_per_frame,p95_gc_alloc_bytes_per_frame,max_gc_alloc_bytes_per_frame,total_gc_alloc_bytes,gc_collections_gen0,gc_collections_gen1,gc_collections_gen2,avg_ai_decisions_per_s,p95_ai_decisions_per_s,peak_ai_decisions_per_s,avg_active_enemies,avg_active_projectiles,p95_active_projectiles,avg_active_damage_texts,p95_active_damage_texts,avg_active_particles,p95_active_particles
+P4_LONG_100_R1,100,120.001,30000,2.477,5.42,7.479,18.589,403.647,133.701,0,0,0,0,12,12,12,418.538,435.468,450.954,106,0,0,0,0,0,0
+P4_LONG_100_R2,100,120.003,30000,3.244,7.187,9.957,47.742,308.221,100.431,0,0,0,0,10,10,10,396.941,409.724,423.897,101,0,0,0,0,0,0
+P4_LONG_150_R1,150,180.001,30000,5.601,10.739,14.739,57.609,178.549,67.846,0,0,0,0,15,15,15,679.484,710.007,733.404,175,0,0,0,0,0,0
+P4_LONG_150_R2,150,180.003,30000,4.86,10.25,12.296,36.77,205.755,81.331,0,0,0,0,15,15,15,628.23,654.737,681.017,161,0,0,0,0,0,0

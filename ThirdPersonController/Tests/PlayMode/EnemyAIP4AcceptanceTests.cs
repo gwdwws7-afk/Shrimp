@@ -60,7 +60,6 @@ namespace ThirdPersonController.Tests
         }
 
         [UnityTest]
-        [Explicit("Manual long-run acceptance for real-device coverage.")]
         [Timeout(1800000)]
         public IEnumerator P4_RealScene_LongRun_StressHarness_ExportsMetricsCsv()
         {

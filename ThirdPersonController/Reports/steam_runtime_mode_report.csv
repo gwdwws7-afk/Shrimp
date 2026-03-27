@@ -7,6 +7,7 @@ cloud.branch_methods,Ok,ResolveSync=True; ResolveNewest=True; Upload=True; Downl
 cloud.branch_regression_tests,Ok,Assets/ThirdPersonController/Tests/PlayMode/SteamCloudSaveBridgeRegressionTests.cs,Conflict branch regression tests are present for pull/push/newest paths.
 config.default_asset_exists,Ok,Assets/ThirdPersonController/Resources/Steam/DefaultSteamIntegrationConfig.asset,Default steam integration config asset is present.
 config.app_id,Ok,480,AppId is configured.
+config.prefer_reflection_backend,Ok,True,Reflection fallback backend is enabled for package-late runtime hookup.
 appid.file_sync,Ok,480,steam_appid.txt is present and consistent with steam config.
 bootstrap.config_wiring,Ok,ResolverField=True; ResolveConfig=True; Bootstrap=True,Bootstrap exposes config resolver override and resolve pipeline.
 config.regression_tests,Ok,Assets/ThirdPersonController/Tests/PlayMode/SteamIntegrationConfigRegressionTests.cs,Config mapping regression tests are present.

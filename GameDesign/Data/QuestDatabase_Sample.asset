@@ -636,6 +636,20 @@ MonoBehaviour:
       targetWaveEventType: 3
       useTimeLimit: 0
       timeLimit: 0
+    - stageId: l03_defeat_boss
+      title: Defeat the Vent Boss
+      description: Defeat the sulfur king to stabilize the vent line.
+      questType: 11
+      targetCount: 1
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      targetStrongholdId: 
+      targetBossId: Boss_SulfurKing
+      matchAnyWaveEventType: 1
+      targetWaveEventType: 0
+      useTimeLimit: 0
+      timeLimit: 0
     nextQuestIds: []
     autoStartNextQuests: 1
     timeLimit: 0
@@ -703,6 +717,20 @@ MonoBehaviour:
       targetBossId: 
       matchAnyWaveEventType: 0
       targetWaveEventType: 3
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l04_defeat_boss
+      title: Defeat the Coral Boss
+      description: Defeat the coral core to secure the cleansing zone.
+      questType: 11
+      targetCount: 1
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      targetStrongholdId: 
+      targetBossId: Boss_CoralCore
+      matchAnyWaveEventType: 1
+      targetWaveEventType: 0
       useTimeLimit: 0
       timeLimit: 0
     nextQuestIds: []
@@ -784,6 +812,20 @@ MonoBehaviour:
       targetLocationId: 
       targetStrongholdId: Stronghold_02
       targetBossId: 
+      matchAnyWaveEventType: 1
+      targetWaveEventType: 0
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l05_defeat_boss
+      title: Defeat the City Boss
+      description: Defeat the tide arbiter to restore relay control.
+      questType: 11
+      targetCount: 1
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      targetStrongholdId: 
+      targetBossId: Boss_TideArbiter
       matchAnyWaveEventType: 1
       targetWaveEventType: 0
       useTimeLimit: 0
@@ -871,6 +913,20 @@ MonoBehaviour:
       targetWaveEventType: 0
       useTimeLimit: 0
       timeLimit: 0
+    - stageId: l06_defeat_boss
+      title: Defeat the Pipeline Boss
+      description: Defeat the corrosion train to complete shutdown.
+      questType: 11
+      targetCount: 1
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      targetStrongholdId: 
+      targetBossId: Boss_CorrosionTrain
+      matchAnyWaveEventType: 1
+      targetWaveEventType: 0
+      useTimeLimit: 0
+      timeLimit: 0
     nextQuestIds: []
     autoStartNextQuests: 1
     timeLimit: 0
@@ -950,6 +1006,20 @@ MonoBehaviour:
       targetLocationId: 
       targetStrongholdId: Stronghold_02
       targetBossId: 
+      matchAnyWaveEventType: 1
+      targetWaveEventType: 0
+      useTimeLimit: 0
+      timeLimit: 0
+    - stageId: l07_defeat_boss
+      title: Defeat the Hangar Boss
+      description: Defeat the chain colossus to complete lockdown.
+      questType: 11
+      targetCount: 1
+      targetEnemyType: 0
+      targetTime: 0
+      targetLocationId: 
+      targetStrongholdId: 
+      targetBossId: Boss_ChainColossus
       matchAnyWaveEventType: 1
       targetWaveEventType: 0
       useTimeLimit: 0

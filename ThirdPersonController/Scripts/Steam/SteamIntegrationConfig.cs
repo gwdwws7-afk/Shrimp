@@ -15,6 +15,7 @@ namespace ThirdPersonController
         public bool strictAppIdValidation = true;
         public bool requireCloudWhenSteamEnabled = false;
         public bool reportRuntimeDiagnostics = true;
+        public bool preferReflectionBackend = true;
 
         [Header("Achievement / Stats")]
         public bool enableAchievements = true;

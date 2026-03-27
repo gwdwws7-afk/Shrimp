@@ -1,2 +1,3 @@
 check_id,status,value,note
 config.provision,Ok,Assets/ThirdPersonController/Resources/Steam/DefaultSteamIntegrationConfig.asset,existing
+appid.file.provision,Ok,C:\test\Shrimp\steam_appid.txt,already_synced

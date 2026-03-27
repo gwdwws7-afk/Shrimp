@@ -248,6 +248,13 @@ namespace ThirdPersonController
                 PlaySFX(clip, volume, 1f, priority);
                 return;
             }
+
+            // Keep debug telemetry consistent with PlaySFX so tests can observe
+            // normal-priority one-shot feedback routes (e.g. enemy death path).
+            debugPlaySfxCallCount++;
+            debugLastSfxClipName = clip.name ?? string.Empty;
+            debugLastPriority = priority;
+            debugLastUsedPriorityChannel = false;
             
             AudioSource.PlayClipAtPoint(clip, position, volume * sfxVolume * masterVolume);
         }

@@ -332,7 +332,27 @@ namespace ThirdPersonController.Editor
             {
                 if (peakWindow.Contains(i))
                 {
-                    total += waveRefs[i].baseSpawn;
+                    total += SumGroupSpawn(waveRefs[i].groups);
+                }
+            }
+
+            return total;
+        }
+
+        private static int SumGroupSpawn(List<WaveSpawnGroup> groups)
+        {
+            if (groups == null || groups.Count == 0)
+            {
+                return 0;
+            }
+
+            int total = 0;
+            for (int i = 0; i < groups.Count; i++)
+            {
+                WaveSpawnGroup group = groups[i];
+                if (group != null && group.prefab != null && group.count > 0)
+                {
+                    total += group.count;
                 }
             }
 

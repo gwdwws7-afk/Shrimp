@@ -1,6 +1,6 @@
 # Boss Choreography Coverage Summary
 
-- Timestamp: 2026-03-25 17:08:03 +08:00
+- Timestamp: 2026-03-27 19:43:57 +08:00
 - Targets: 3
 - Failed Rows: 0
 - Blocking Errors: 0

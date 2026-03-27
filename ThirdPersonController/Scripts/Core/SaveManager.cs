@@ -106,6 +106,7 @@ namespace ThirdPersonController
         public string saveTime = "";
         public float totalPlayTime = 0f;
         public string lastPlayedDate = "";
+        public int saveSchemaVersion = SaveDataMigrationUtility.LatestSchemaVersion;
         
         public GameData()
         {
@@ -119,6 +120,8 @@ namespace ThirdPersonController
     /// </summary>
     public class SaveManager : Singleton<SaveManager>
     {
+        public const int CurrentSaveSchemaVersion = SaveDataMigrationUtility.LatestSchemaVersion;
+
         [Header("存档设置")]
         public bool encryptSave = true;
         public string encryptionKey = "AbyssHunter2026"; // 运行时配置项，用于驱动模块行为并保持可调性。
@@ -235,6 +238,7 @@ namespace ThirdPersonController
             
 // 围绕 CurrentData 执行该步骤，用于保证流程状态与后续分支一致。
             CurrentData.saveTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            CurrentData.saveSchemaVersion = CurrentSaveSchemaVersion;
         }
         
         #endregion
@@ -257,6 +261,7 @@ namespace ThirdPersonController
                 }
 
                 CurrentData = loadedData;
+                ApplyMigrationIfNeeded(CurrentData, loadedFromBackup ? "save_backup" : "save_primary");
                 EnsureProgressionLists();
 
                 string sourcePath = loadedFromBackup ? GetBackupPath(SavePath) : SavePath;
@@ -312,6 +317,7 @@ namespace ThirdPersonController
                 CurrentData.musicVolume = AudioManager.Instance?.musicVolume ?? 0.7f;
                 CurrentData.sfxVolume = AudioManager.Instance?.sfxVolume ?? 0.8f;
                 SyncLocalizationFromService();
+                CurrentData.saveSchemaVersion = CurrentSaveSchemaVersion;
                 
 // 围绕 string 执行该步骤，用于保证流程状态与后续分支一致。
                 string json = JsonUtility.ToJson(CurrentData);
@@ -346,6 +352,8 @@ namespace ThirdPersonController
                 CurrentData.fullscreen = settings.fullscreen;
                 CurrentData.resolutionIndex = settings.resolutionIndex;
                 CurrentData.localizationLanguage = settings.localizationLanguage;
+                CurrentData.saveSchemaVersion = settings.saveSchemaVersion;
+                ApplyMigrationIfNeeded(CurrentData, loadedFromBackup ? "settings_backup" : "settings_primary");
                 ApplyLocalizationFromData();
 
                 if (loadedFromBackup)
@@ -600,6 +608,19 @@ namespace ThirdPersonController
             }
 
             return parsedData != null;
+        }
+
+        private static void ApplyMigrationIfNeeded(GameData data, string sourceTag)
+        {
+            if (data == null)
+            {
+                return;
+            }
+
+            if (SaveDataMigrationUtility.TryMigrate(data, out string migrationSummary))
+            {
+                Debug.Log($"[Save] Applied migration ({sourceTag}) -> schema={data.saveSchemaVersion} | {migrationSummary}");
+            }
         }
 
         private static bool TryReadTextFile(string filePath, out string content)
