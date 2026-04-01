@@ -1,2 +1,4 @@
 ﻿"name","fullname","result","duration"
-"P5 Growth Economy Gate (no matches)","","Skipped","0"
+"EconomyService_P5QuestAdjust_FallsBackToIdentity_WhenChapterAndStrongholdMissing","ThirdPersonController.Tests.GrowthEconomyP5RegressionTests.EconomyService_P5QuestAdjust_FallsBackToIdentity_WhenChapterAndStrongholdMissing","Passed","0.002795"
+"QuestSystem_P5CompleteQuest_UsesLastStrongholdId_ForRewardRouting","ThirdPersonController.Tests.GrowthEconomyP5RegressionTests.QuestSystem_P5CompleteQuest_UsesLastStrongholdId_ForRewardRouting","Passed","0.004875"
+"ShopManager_P5Purchase_WhenInventoryAtMax_RefundsWallet","ThirdPersonController.Tests.GrowthEconomyP5RegressionTests.ShopManager_P5Purchase_WhenInventoryAtMax_RefundsWallet","Passed","0.003246"

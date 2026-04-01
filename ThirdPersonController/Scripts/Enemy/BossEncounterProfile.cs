@@ -77,6 +77,17 @@ namespace ThirdPersonController
         public float phase3SpecialPriorityDuration = 6f;
         public float phase3SpecialPriorityWeightMultiplier = 1.7f;
         public bool forceSpecialQueueDuringPhase3Priority = true;
+        public bool enablePhaseIntentStyle = true;
+        public BossPhaseIntentStyle phase1IntentStyle = BossPhaseIntentStyle.Balanced;
+        public BossPhaseIntentStyle phase2IntentStyle = BossPhaseIntentStyle.PressureClose;
+        public BossPhaseIntentStyle phase3IntentStyle = BossPhaseIntentStyle.SpecialBurst;
+        public float closeRangeIntentThreshold = 4f;
+        public float intentCloseWeightBoost = 1.45f;
+        public float intentRangedWeightBoost = 1.35f;
+        public float intentAoeWeightBoost = 1.25f;
+        public float intentSpecialWeightBoost = 1.55f;
+        public float intentFastDecisionMultiplier = 0.88f;
+        public float intentSlowDecisionMultiplier = 1.14f;
 
         public void ApplyTo(BossSpawnPoint spawnPoint)
         {
@@ -149,6 +160,17 @@ namespace ThirdPersonController
             spawnPoint.phase3SpecialPriorityDuration = phase3SpecialPriorityDuration;
             spawnPoint.phase3SpecialPriorityWeightMultiplier = phase3SpecialPriorityWeightMultiplier;
             spawnPoint.forceSpecialQueueDuringPhase3Priority = forceSpecialQueueDuringPhase3Priority;
+            spawnPoint.enablePhaseIntentStyle = enablePhaseIntentStyle;
+            spawnPoint.phase1IntentStyle = phase1IntentStyle;
+            spawnPoint.phase2IntentStyle = phase2IntentStyle;
+            spawnPoint.phase3IntentStyle = phase3IntentStyle;
+            spawnPoint.closeRangeIntentThreshold = closeRangeIntentThreshold;
+            spawnPoint.intentCloseWeightBoost = intentCloseWeightBoost;
+            spawnPoint.intentRangedWeightBoost = intentRangedWeightBoost;
+            spawnPoint.intentAoeWeightBoost = intentAoeWeightBoost;
+            spawnPoint.intentSpecialWeightBoost = intentSpecialWeightBoost;
+            spawnPoint.intentFastDecisionMultiplier = intentFastDecisionMultiplier;
+            spawnPoint.intentSlowDecisionMultiplier = intentSlowDecisionMultiplier;
         }
     }
 }

@@ -16,6 +16,7 @@ namespace ThirdPersonController.Editor
         private const string GameEventsPath = "Assets/ThirdPersonController/Scripts/Core/GameEvents.cs";
         private const string AudioManagerPath = "Assets/ThirdPersonController/Scripts/Core/AudioManager.cs";
         private const string ScreenEffectManagerPath = "Assets/ThirdPersonController/Scripts/Core/ScreenEffectManager.cs";
+        private const string CombatFeedbackRoutingPath = "Assets/ThirdPersonController/Scripts/Core/CombatFeedbackRouting.cs";
 
         private struct ValidationRow
         {
@@ -38,43 +39,67 @@ namespace ThirdPersonController.Editor
         {
             new FeedbackMappingDefinition
             {
-                id = "enemy_hit_knockdown",
-                description = "Enemy knockdown hit should route to high-priority audio and screen shake.",
+                id = "enemy_hit_flinch",
+                description = "Enemy flinch hit should route to base hit feedback.",
                 eventToken = "OnEnemyHit",
-                audioToken = "EnemyHitReactionType.Knockdown",
-                vfxToken = "EnemyHitReactionType.Knockdown"
+                audioToken = "CombatFeedbackEventId.EnemyHitFlinch",
+                vfxToken = "CombatFeedbackEventId.EnemyHitFlinch"
             },
             new FeedbackMappingDefinition
             {
                 id = "enemy_hit_knockback",
                 description = "Enemy knockback hit should route to heavy-hit feedback.",
                 eventToken = "OnEnemyHit",
-                audioToken = "EnemyHitReactionType.Knockback",
-                vfxToken = "EnemyHitReactionType.Knockback"
+                audioToken = "CombatFeedbackEventId.EnemyHitKnockback",
+                vfxToken = "CombatFeedbackEventId.EnemyHitKnockback"
+            },
+            new FeedbackMappingDefinition
+            {
+                id = "enemy_hit_knockdown",
+                description = "Enemy knockdown hit should route to high-priority audio and screen shake.",
+                eventToken = "OnEnemyHit",
+                audioToken = "CombatFeedbackEventId.EnemyHitKnockdown",
+                vfxToken = "CombatFeedbackEventId.EnemyHitKnockdown"
             },
             new FeedbackMappingDefinition
             {
                 id = "enemy_killed",
                 description = "Enemy kill should route to death audio feedback path.",
                 eventToken = "OnEnemyKilled",
-                audioToken = "PlayEnemyDeathSound",
-                vfxToken = ""
+                audioToken = "CombatFeedbackEventId.EnemyKilled",
+                vfxToken = "CombatFeedbackEventId.EnemyKilled"
             },
             new FeedbackMappingDefinition
             {
                 id = "berserk_state_changed",
                 description = "Berserk state should route to audio cue + berserk screen treatment.",
                 eventToken = "OnBerserkStateChanged",
-                audioToken = "PlayBerserkSound",
-                vfxToken = "EnterBerserkMode"
+                audioToken = "CombatFeedbackEventId.BerserkStart",
+                vfxToken = "CombatFeedbackEventId.BerserkStart"
             },
             new FeedbackMappingDefinition
             {
                 id = "boss_break_window",
                 description = "Boss break window should route to dedicated high-priority audio cue.",
                 eventToken = "OnBossBreakWindowStart",
-                audioToken = "PlayBossBreakWindowSound",
-                vfxToken = ""
+                audioToken = "CombatFeedbackEventId.BossBreakWindowStart",
+                vfxToken = "CombatFeedbackEventId.BossBreakWindowStart"
+            },
+            new FeedbackMappingDefinition
+            {
+                id = "skill_used",
+                description = "Skill cast should route into unified combat feedback bus.",
+                eventToken = "OnSkillUsed",
+                audioToken = "CombatFeedbackEventId.SkillUsed",
+                vfxToken = "CombatFeedbackEventId.SkillUsed"
+            },
+            new FeedbackMappingDefinition
+            {
+                id = "stamina_depleted",
+                description = "Stamina depleted should route into pressure feedback path.",
+                eventToken = "OnStaminaDepleted",
+                audioToken = "CombatFeedbackEventId.StaminaDepleted",
+                vfxToken = "CombatFeedbackEventId.StaminaDepleted"
             }
         };
 
@@ -103,6 +128,30 @@ namespace ThirdPersonController.Editor
             string gameEventsContent = ReadAssetText(GameEventsPath, rows, ref gapTotal);
             string audioContent = ReadAssetText(AudioManagerPath, rows, ref gapTotal);
             string screenEffectContent = ReadAssetText(ScreenEffectManagerPath, rows, ref gapTotal);
+            string routingContent = ReadAssetText(CombatFeedbackRoutingPath, rows, ref gapTotal);
+
+            EvaluateTokenSet(
+                rows,
+                ref gapTotal,
+                "routing.model_declared",
+                CombatFeedbackRoutingPath,
+                routingContent,
+                new[]
+                {
+                    "public enum CombatFeedbackEventId",
+                    "public class CombatFeedbackAudioRoute",
+                    "public class CombatFeedbackVfxRoute",
+                    "EnemyHitFlinch",
+                    "EnemyHitKnockback",
+                    "EnemyHitKnockdown",
+                    "EnemyKilled",
+                    "BerserkStart",
+                    "BossBreakWindowStart",
+                    "SkillUsed",
+                    "StaminaDepleted"
+                },
+                "Combat feedback routing model declares all required event ids and route payloads.",
+                "Missing routing model tokens");
 
             EvaluateTokenSet(
                 rows,
@@ -115,7 +164,9 @@ namespace ThirdPersonController.Editor
                     "public static event Action<int, Vector3, EnemyHitReactionType> OnEnemyHit;",
                     "public static event Action<EnemyType, Vector3, int> OnEnemyKilled;",
                     "public static event Action<bool> OnBerserkStateChanged;",
-                    "public static event Action OnBossBreakWindowStart;"
+                    "public static event Action OnBossBreakWindowStart;",
+                    "public static event Action<string, float> OnSkillUsed;",
+                    "public static event Action OnStaminaDepleted;"
                 },
                 "Core combat feedback events are declared.",
                 "Missing required GameEvents declarations");
@@ -132,10 +183,14 @@ namespace ThirdPersonController.Editor
                     "GameEvents.OnEnemyKilled += HandleEnemyKilled;",
                     "GameEvents.OnBerserkStateChanged += HandleBerserkStateChanged;",
                     "GameEvents.OnBossBreakWindowStart += HandleBossBreakWindowStart;",
+                    "GameEvents.OnSkillUsed += HandleSkillUsed;",
+                    "GameEvents.OnStaminaDepleted += HandleStaminaDepleted;",
                     "GameEvents.OnEnemyHit -= HandleEnemyHit;",
                     "GameEvents.OnEnemyKilled -= HandleEnemyKilled;",
                     "GameEvents.OnBerserkStateChanged -= HandleBerserkStateChanged;",
-                    "GameEvents.OnBossBreakWindowStart -= HandleBossBreakWindowStart;"
+                    "GameEvents.OnBossBreakWindowStart -= HandleBossBreakWindowStart;",
+                    "GameEvents.OnSkillUsed -= HandleSkillUsed;",
+                    "GameEvents.OnStaminaDepleted -= HandleStaminaDepleted;"
                 },
                 "AudioManager subscribes/unsubscribes all required combat feedback events.",
                 "Missing required AudioManager event bindings");
@@ -152,6 +207,8 @@ namespace ThirdPersonController.Editor
                     "private void HandleEnemyKilled(",
                     "private void HandleBerserkStateChanged(",
                     "private void HandleBossBreakWindowStart(",
+                    "private void HandleSkillUsed(",
+                    "private void HandleStaminaDepleted(",
                     "public void PlayBossBreakWindowSound()"
                 },
                 "AudioManager has handlers for all required feedback events.",
@@ -175,6 +232,27 @@ namespace ThirdPersonController.Editor
             EvaluateTokenSet(
                 rows,
                 ref gapTotal,
+                "audio.routing_bootstrap",
+                AudioManagerPath,
+                audioContent,
+                new[]
+                {
+                    "EnsureAudioRoute(CombatFeedbackEventId.EnemyHitFlinch",
+                    "EnsureAudioRoute(CombatFeedbackEventId.EnemyHitKnockback",
+                    "EnsureAudioRoute(CombatFeedbackEventId.EnemyHitKnockdown",
+                    "EnsureAudioRoute(CombatFeedbackEventId.EnemyKilled",
+                    "EnsureAudioRoute(CombatFeedbackEventId.BerserkStart",
+                    "EnsureAudioRoute(CombatFeedbackEventId.BossBreakWindowStart",
+                    "EnsureAudioRoute(CombatFeedbackEventId.SkillUsed",
+                    "EnsureAudioRoute(CombatFeedbackEventId.StaminaDepleted",
+                    "TryPlayMappedRoute("
+                },
+                "Audio routing table covers all required combat feedback events.",
+                "Missing audio routing bootstrap tokens");
+
+            EvaluateTokenSet(
+                rows,
+                ref gapTotal,
                 "vfx.required_subscriptions",
                 ScreenEffectManagerPath,
                 screenEffectContent,
@@ -185,11 +263,19 @@ namespace ThirdPersonController.Editor
                     "GameEvents.OnBerserkStateChanged += OnBerserkStateChanged;",
                     "GameEvents.OnDamageDealt += OnDamageDealt;",
                     "GameEvents.OnEnemyHit += OnEnemyHit;",
+                    "GameEvents.OnEnemyKilled += OnEnemyKilled;",
+                    "GameEvents.OnBossBreakWindowStart += OnBossBreakWindowStart;",
+                    "GameEvents.OnSkillUsed += OnSkillUsed;",
+                    "GameEvents.OnStaminaDepleted += OnStaminaDepleted;",
                     "GameEvents.OnPlayerDamaged -= OnPlayerDamaged;",
                     "GameEvents.OnComboChanged -= OnComboChanged;",
                     "GameEvents.OnBerserkStateChanged -= OnBerserkStateChanged;",
                     "GameEvents.OnDamageDealt -= OnDamageDealt;",
-                    "GameEvents.OnEnemyHit -= OnEnemyHit;"
+                    "GameEvents.OnEnemyHit -= OnEnemyHit;",
+                    "GameEvents.OnEnemyKilled -= OnEnemyKilled;",
+                    "GameEvents.OnBossBreakWindowStart -= OnBossBreakWindowStart;",
+                    "GameEvents.OnSkillUsed -= OnSkillUsed;",
+                    "GameEvents.OnStaminaDepleted -= OnStaminaDepleted;"
                 },
                 "ScreenEffectManager subscribes/unsubscribes all required visual feedback events.",
                 "Missing required ScreenEffectManager event bindings");
@@ -206,10 +292,35 @@ namespace ThirdPersonController.Editor
                     "private void OnComboChanged(",
                     "private void OnBerserkStateChanged(",
                     "private void OnDamageDealt(",
-                    "private void OnEnemyHit("
+                    "private void OnEnemyHit(",
+                    "private void OnEnemyKilled(",
+                    "private void OnBossBreakWindowStart(",
+                    "private void OnSkillUsed(",
+                    "private void OnStaminaDepleted("
                 },
                 "ScreenEffectManager has handlers for required visual feedback events.",
                 "Missing required ScreenEffectManager handlers");
+
+            EvaluateTokenSet(
+                rows,
+                ref gapTotal,
+                "vfx.routing_bootstrap",
+                ScreenEffectManagerPath,
+                screenEffectContent,
+                new[]
+                {
+                    "EnsureVfxRoute(CombatFeedbackEventId.EnemyHitFlinch",
+                    "EnsureVfxRoute(CombatFeedbackEventId.EnemyHitKnockback",
+                    "EnsureVfxRoute(CombatFeedbackEventId.EnemyHitKnockdown",
+                    "EnsureVfxRoute(CombatFeedbackEventId.EnemyKilled",
+                    "EnsureVfxRoute(CombatFeedbackEventId.BerserkStart",
+                    "EnsureVfxRoute(CombatFeedbackEventId.BossBreakWindowStart",
+                    "EnsureVfxRoute(CombatFeedbackEventId.SkillUsed",
+                    "EnsureVfxRoute(CombatFeedbackEventId.StaminaDepleted",
+                    "TryApplyMappedVfx("
+                },
+                "VFX routing table covers all required combat feedback events.",
+                "Missing vfx routing bootstrap tokens");
 
             EvaluateMappings(rows, ref gapTotal, gameEventsContent, audioContent, screenEffectContent);
 

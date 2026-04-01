@@ -864,7 +864,7 @@ GameObject:
   - component: {fileID: 5547784804453351938}
   m_Layer: 0
   m_Name: Meshy_AI_Animation_Walking_frame_rate_60
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -900,7 +900,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: c19445a27e7a14548a50578ce2e42552, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -982,7 +982,7 @@ MonoBehaviour:
   groundCheckRadius: 0.4
   groundLayer:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 9
   crouchHeight: 1
   standHeight: 2
   crouchTransitionSpeed: 10

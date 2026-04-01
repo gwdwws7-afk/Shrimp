@@ -94,7 +94,7 @@ param(
     [string]$SkillResourceGapApplyLogFile = "C:\test\Shrimp\Logs\SkillResourceGapApply.log",
     [string]$SkillResourceGapValidateLogFile = "C:\test\Shrimp\Logs\SkillResourceGapValidate.log",
     [string]$SkillResourceGapReportCsv = "C:\test\Shrimp\Assets\ThirdPersonController\Reports\skill_resource_gap_report.csv",
-    [string]$LocalizationCoverageApplyMethod = "ThirdPersonController.Editor.LocalizationEncodingRepairTool.ApplyForBatch",
+    [string]$LocalizationCoverageApplyMethod = "ThirdPersonController.Editor.LocalizationKeyExtractionTool.ApplyForBatch",
     [string]$LocalizationCoverageApplyLogFile = "C:\test\Shrimp\Logs\LocalizationCoverageApply.log",
     [string]$LocalizationCoverageValidateMethod = "ThirdPersonController.Editor.LocalizationCoverageGateValidator.ValidateForBatch",
     [string]$LocalizationCoverageLogFile = "C:\test\Shrimp\Logs\LocalizationCoverageGate.log",
@@ -1309,9 +1309,13 @@ if ($RunBossStrictDrillGate.IsPresent) {
 }
 
 $shouldRunEnemyAIP4LongRunGate = (-not $SkipEnemyAIP4LongRunGate.IsPresent) -and (-not $isFilteredTestRun)
-$shouldRunEnemyAIP4TrendGate = (-not $SkipEnemyAIP4TrendGate.IsPresent) -and (-not $isFilteredTestRun)
+$shouldRunEnemyAIP4TrendGate = (-not $SkipEnemyAIP4TrendGate.IsPresent) -and $shouldRunEnemyAIP4LongRunGate
 $shouldRunBossP3SubsetTrendGate = (-not $SkipBossP3SubsetTrendGate.IsPresent) -and (-not $isFilteredTestRun)
-$shouldRunCrossSystemPerfGate = (-not $SkipCrossSystemPerfGate.IsPresent) -and (-not $isFilteredTestRun)
+$shouldRunCrossSystemPerfGate = (-not $SkipCrossSystemPerfGate.IsPresent) -and $shouldRunEnemyAIP4LongRunGate
+
+if ($isFilteredTestRun) {
+    Write-Host "[PlayModeBatch] filtered run detected; long-run/trend/cross-system perf gates are skipped to avoid stale-metric gating."
+}
 
 $resultsDir = Split-Path -Parent $ResultsXml
 if (![string]::IsNullOrWhiteSpace($resultsDir)) {
@@ -3584,7 +3588,16 @@ Export-TestSubsetReport `
     -resultsXmlPath $ResultsXml `
     -reportCsvPath $P1QuestEconomyMidLateGateReportCsv `
     -reportName "P1 Quest Economy Mid-Late Gate" `
-    -matchTokens @("ThirdPersonController.Tests.QuestEconomyP1MidLateSimulationRegressionTests")
+    -matchTokens @(
+        "ThirdPersonController.Tests.QuestEconomyP1MidLateSimulationRegressionTests",
+        "ThirdPersonController.Tests.QuestEconomyP1MidLateRound15RegressionTests",
+        "ThirdPersonController.Tests.QuestFailureEconomyRound16RegressionTests",
+        "ThirdPersonController.Tests.QuestFailureEconomyRound17RegressionTests",
+        "ThirdPersonController.Tests.QuestFailureEconomyRound18RegressionTests",
+        "ThirdPersonController.Tests.QuestFailureEconomyRound19RegressionTests",
+        "ThirdPersonController.Tests.QuestFailureEconomyRound20RegressionTests",
+        "ThirdPersonController.Tests.QuestFailureEconomyRound21RegressionTests"
+    )
 
 Export-TestSubsetReport `
     -resultsXmlPath $ResultsXml `

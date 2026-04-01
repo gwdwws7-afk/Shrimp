@@ -181,6 +181,40 @@ namespace ThirdPersonController
                 changed = true;
             }
 
+            int normalizedFailureStreak = Math.Max(0, data.questFailureStreak);
+            if (normalizedFailureStreak != data.questFailureStreak)
+            {
+                data.questFailureStreak = normalizedFailureStreak;
+                changed = true;
+            }
+
+            float normalizedFailureDebtExp = Math.Max(0f, data.questFailureDebtExp);
+            if (Math.Abs(normalizedFailureDebtExp - data.questFailureDebtExp) > 0.0001f)
+            {
+                data.questFailureDebtExp = normalizedFailureDebtExp;
+                changed = true;
+            }
+
+            float normalizedFailureDebtCredits = Math.Max(0f, data.questFailureDebtCredits);
+            if (Math.Abs(normalizedFailureDebtCredits - data.questFailureDebtCredits) > 0.0001f)
+            {
+                data.questFailureDebtCredits = normalizedFailureDebtCredits;
+                changed = true;
+            }
+
+            int normalizedFailureChapter = Math.Max(0, data.questFailureLastChapterId);
+            if (normalizedFailureChapter != data.questFailureLastChapterId)
+            {
+                data.questFailureLastChapterId = normalizedFailureChapter;
+                changed = true;
+            }
+
+            if (data.questFailureLastStrongholdId == null)
+            {
+                data.questFailureLastStrongholdId = string.Empty;
+                changed = true;
+            }
+
             if (!Enum.IsDefined(typeof(LocalizationLanguage), data.localizationLanguage))
             {
                 data.localizationLanguage = (int)LocalizationLanguage.SimplifiedChinese;

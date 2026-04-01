@@ -14,7 +14,7 @@ namespace ThirdPersonController
         }
 
         [Header("Display")]
-        public bool show = true;
+        public bool show = false;
         public bool allowToggle = true;
         public string toggleHintsActionName = "ToggleHints";
         public string toggleEconomyActionName = "ToggleEconomy";

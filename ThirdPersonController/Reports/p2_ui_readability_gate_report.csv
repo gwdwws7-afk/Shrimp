@@ -1,2 +1,4 @@
 ﻿"name","fullname","result","duration"
-"P2 UI Readability Gate (no matches)","","Skipped","0"
+"UICanvasScaler_DefaultReference_UsesCrossDeviceBaseline","ThirdPersonController.Tests.UICrossDeviceReadabilityRegressionTests.UICanvasScaler_DefaultReference_UsesCrossDeviceBaseline","Passed","0.001443"
+"UIHudHints_ReadabilityBaseline_RemainsInSafeRange","ThirdPersonController.Tests.UICrossDeviceReadabilityRegressionTests.UIHudHints_ReadabilityBaseline_RemainsInSafeRange","Passed","0.004487"
+"UISkillBar_AttackHintText_BaselineIsReadable","ThirdPersonController.Tests.UICrossDeviceReadabilityRegressionTests.UISkillBar_AttackHintText_BaselineIsReadable","Passed","0.001349"

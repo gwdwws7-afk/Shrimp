@@ -1,2 +1,7 @@
 ﻿"name","fullname","result","duration"
-"P1 Skill Boundary Gate (no matches)","","Skipped","0"
+"DashAttackSkill_OnInterrupted_RestoresMovementAndClearsDashHitGate","ThirdPersonController.Tests.SkillBoundaryP1RegressionTests.DashAttackSkill_OnInterrupted_RestoresMovementAndClearsDashHitGate","Passed","0.004174"
+"SkillBase_CooldownLifecycle_TransitionsToReady","ThirdPersonController.Tests.SkillBoundaryP1RegressionTests.SkillBase_CooldownLifecycle_TransitionsToReady","Passed","0.002841"
+"SkillManager_TryUseSkill_ExecutesAndStartsCooldown","ThirdPersonController.Tests.SkillBoundaryP1RegressionTests.SkillManager_TryUseSkill_ExecutesAndStartsCooldown","Passed","0.011212"
+"SkillManager_TryUseSkill_InvalidOrEmptySlot_ReturnsFalse","ThirdPersonController.Tests.SkillBoundaryP1RegressionTests.SkillManager_TryUseSkill_InvalidOrEmptySlot_ReturnsFalse","Passed","0.007606"
+"Skills_DefaultCategory_AssignedWhenUnset","ThirdPersonController.Tests.SkillBoundaryP1RegressionTests.Skills_DefaultCategory_AssignedWhenUnset","Passed","0.000966"
+"UltimateSkill_OnInterrupted_RestoresTimeScale","ThirdPersonController.Tests.SkillBoundaryP1RegressionTests.UltimateSkill_OnInterrupted_RestoresTimeScale","Passed","0.000749"

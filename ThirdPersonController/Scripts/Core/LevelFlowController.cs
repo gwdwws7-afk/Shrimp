@@ -27,7 +27,7 @@ namespace ThirdPersonController
         public bool showOverlay = true;
 
         [Header("Level Prep")]
-        public bool showLevelIntro = true;
+        public bool showLevelIntro = false;
         public float introDuration = 3f;
 
         [Header("Flow UI")]

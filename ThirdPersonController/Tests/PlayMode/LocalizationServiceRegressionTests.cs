@@ -187,5 +187,70 @@ namespace ThirdPersonController.Tests
                 service.SetLanguage(oldLanguage);
             }
         }
+
+        [Test]
+        public void LocalizationService_PseudoLanguage_UsesPseudoLocalizerOnEnglishSource()
+        {
+            LocalizationService service = LocalizationService.Instance;
+            Assert.NotNull(service);
+
+            LocalizationLanguage oldLanguage = service.CurrentLanguage;
+            LocalizationTable oldTable = service.table;
+
+            LocalizationTable table = ScriptableObject.CreateInstance<LocalizationTable>();
+            table.entries.Add(new LocalizationEntry
+            {
+                key = "ui.test.pseudo",
+                zhCN = "中文占位",
+                enUS = "Press {0} To Start"
+            });
+
+            try
+            {
+                service.SetTable(table);
+                service.SetLanguage(LocalizationLanguage.Pseudo);
+                string pseudo = service.Get("ui.test.pseudo", "fallback");
+                Assert.IsTrue(pseudo.Contains("{0}"), "Pseudo result should preserve format placeholder.");
+                Assert.AreNotEqual("Press {0} To Start", pseudo);
+                Assert.Greater(pseudo.Length, "Press {0} To Start".Length);
+            }
+            finally
+            {
+                service.SetTable(oldTable);
+                service.SetLanguage(oldLanguage);
+            }
+        }
+
+        [Test]
+        public void LocalizationService_PseudoLanguage_FallsBackToChineseWhenEnglishMissing()
+        {
+            LocalizationService service = LocalizationService.Instance;
+            Assert.NotNull(service);
+
+            LocalizationLanguage oldLanguage = service.CurrentLanguage;
+            LocalizationTable oldTable = service.table;
+
+            LocalizationTable table = ScriptableObject.CreateInstance<LocalizationTable>();
+            table.entries.Add(new LocalizationEntry
+            {
+                key = "ui.test.pseudo.zh_only",
+                zhCN = "中文按钮",
+                enUS = string.Empty
+            });
+
+            try
+            {
+                service.SetTable(table);
+                service.SetLanguage(LocalizationLanguage.Pseudo);
+                string pseudo = service.Get("ui.test.pseudo.zh_only", "fallback");
+                Assert.IsTrue(pseudo.Contains("中文按钮"), "Pseudo source should fallback to zhCN when enUS is empty.");
+                Assert.Greater(pseudo.Length, "中文按钮".Length);
+            }
+            finally
+            {
+                service.SetTable(oldTable);
+                service.SetLanguage(oldLanguage);
+            }
+        }
     }
 }

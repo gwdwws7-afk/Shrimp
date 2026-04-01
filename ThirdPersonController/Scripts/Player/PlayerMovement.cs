@@ -91,6 +91,16 @@ namespace ThirdPersonController
             combat = GetComponent<PlayerCombat>();
             actionController = GetComponent<PlayerActionController>();
 
+            if (animator != null)
+            {
+                // This controller is driven by physics velocity, not animation root motion.
+                animator.applyRootMotion = false;
+                if (animator.avatar == null || !animator.avatar.isValid)
+                {
+                    Debug.LogError("[PlayerMovement] Animator avatar is missing or invalid. Movement/attack animations may fail.");
+                }
+            }
+
             rb.freezeRotation = true;
             rb.interpolation = RigidbodyInterpolation.Interpolate;
             

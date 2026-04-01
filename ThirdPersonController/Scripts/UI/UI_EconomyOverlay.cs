@@ -9,7 +9,7 @@ namespace ThirdPersonController
         public KeyCode toggleKey = KeyCode.Y;
         public bool allowToggle = true;
         public bool pauseGameWhenOpen = false;
-        public bool startOpen = true;
+        public bool startOpen = false;
 
         [Header("Layout")]
         public float panelWidth = 520f;

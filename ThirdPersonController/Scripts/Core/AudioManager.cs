@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
 
 namespace ThirdPersonController
@@ -48,6 +49,11 @@ namespace ThirdPersonController
         public AudioClip[] skillSounds;
         public AudioClip[] footstepSounds;
 
+        [Header("反馈事件映射")]
+        public bool useAudioEventRouting = true;
+        public bool autoPopulateAudioRoutes = true;
+        public List<CombatFeedbackAudioRoute> audioEventRoutes = new List<CombatFeedbackAudioRoute>();
+
         [Header("事件监听")]
         public bool listenToCombatEvents = true;
         
@@ -62,16 +68,21 @@ namespace ThirdPersonController
         [SerializeField] private bool debugLastUsedPriorityChannel = false;
         [SerializeField] private int debugPlaySfxCallCount = 0;
         [SerializeField] private string debugLastSfxClipName = string.Empty;
+        [SerializeField] private bool debugLastRouteApplied = false;
+        [SerializeField] private CombatFeedbackEventId debugLastRoutedEvent = CombatFeedbackEventId.EnemyHitFlinch;
         public AudioEventPriority LastPlayedPriority => debugLastPriority;
         public bool LastUsedPriorityChannel => debugLastUsedPriorityChannel;
         public int DebugPlaySfxCallCount => debugPlaySfxCallCount;
         public string LastSfxClipName => debugLastSfxClipName;
+        public bool LastRouteApplied => debugLastRouteApplied;
+        public CombatFeedbackEventId LastRoutedEvent => debugLastRoutedEvent;
         
         protected override void OnAwake()
         {
             base.OnAwake();
             InitializeAudioSources();
             InitializeSFXPool();
+            EnsureDefaultAudioRoutes();
         }
 
         private void OnEnable()
@@ -85,6 +96,8 @@ namespace ThirdPersonController
             GameEvents.OnEnemyKilled += HandleEnemyKilled;
             GameEvents.OnBerserkStateChanged += HandleBerserkStateChanged;
             GameEvents.OnBossBreakWindowStart += HandleBossBreakWindowStart;
+            GameEvents.OnSkillUsed += HandleSkillUsed;
+            GameEvents.OnStaminaDepleted += HandleStaminaDepleted;
         }
 
         private void OnDisable()
@@ -93,6 +106,8 @@ namespace ThirdPersonController
             GameEvents.OnEnemyKilled -= HandleEnemyKilled;
             GameEvents.OnBerserkStateChanged -= HandleBerserkStateChanged;
             GameEvents.OnBossBreakWindowStart -= HandleBossBreakWindowStart;
+            GameEvents.OnSkillUsed -= HandleSkillUsed;
+            GameEvents.OnStaminaDepleted -= HandleStaminaDepleted;
         }
         
         private void InitializeAudioSources()
@@ -266,7 +281,7 @@ namespace ThirdPersonController
         {
             if (attackSounds.Length == 0) return;
             
-            int index = Random.Range(0, attackSounds.Length);
+            int index = UnityEngine.Random.Range(0, attackSounds.Length);
             float pitch = 1f + (comboTier * 0.1f);
             
             PlaySFX(attackSounds[index], 1f, pitch);
@@ -279,7 +294,7 @@ namespace ThirdPersonController
         {
             if (hitSounds.Length == 0) return;
             
-            int index = Random.Range(0, hitSounds.Length);
+            int index = UnityEngine.Random.Range(0, hitSounds.Length);
             PlaySFXAtPosition(hitSounds[index], position);
         }
 
@@ -300,7 +315,7 @@ namespace ThirdPersonController
                 return;
             }
 
-            int index = Random.Range(0, source.Length);
+            int index = UnityEngine.Random.Range(0, source.Length);
             AudioEventPriority priority = reactionType == EnemyHitReactionType.Flinch
                 ? AudioEventPriority.Normal
                 : AudioEventPriority.High;
@@ -314,7 +329,7 @@ namespace ThirdPersonController
         {
             if (enemyDeathSounds.Length == 0) return;
             
-            int index = Random.Range(0, enemyDeathSounds.Length);
+            int index = UnityEngine.Random.Range(0, enemyDeathSounds.Length);
             PlaySFXAtPosition(enemyDeathSounds[index], position);
         }
         
@@ -365,7 +380,7 @@ namespace ThirdPersonController
         {
             if (footstepSounds.Length == 0) return;
             
-            int index = Random.Range(0, footstepSounds.Length);
+            int index = UnityEngine.Random.Range(0, footstepSounds.Length);
             PlaySFX(footstepSounds[index], 0.5f);
         }
         
@@ -379,16 +394,172 @@ namespace ThirdPersonController
             uiSource.volume = uiVolume * masterVolume;
             uiSource.PlayOneShot(clip);
         }
+
+        private void EnsureDefaultAudioRoutes()
+        {
+            if (!autoPopulateAudioRoutes)
+            {
+                return;
+            }
+
+            EnsureAudioRoute(CombatFeedbackEventId.EnemyHitFlinch, hitSounds, AudioEventPriority.Normal, true, 1f, 1f);
+            EnsureAudioRoute(CombatFeedbackEventId.EnemyHitKnockback, heavyHitSounds, AudioEventPriority.High, true, 1f, 1f);
+            EnsureAudioRoute(CombatFeedbackEventId.EnemyHitKnockdown, knockdownHitSounds, AudioEventPriority.High, true, 1f, 1f);
+            EnsureAudioRoute(CombatFeedbackEventId.EnemyKilled, enemyDeathSounds, AudioEventPriority.Normal, true, 1f, 1f);
+            EnsureAudioRoute(CombatFeedbackEventId.BerserkStart, new[] { berserkStartSound }, AudioEventPriority.High, false, 1.2f, 1f);
+            EnsureAudioRoute(CombatFeedbackEventId.BossBreakWindowStart, new[] { bossBreakWindowSound }, AudioEventPriority.High, false, 1.1f, 1f);
+            EnsureAudioRoute(CombatFeedbackEventId.SkillUsed, skillSounds, AudioEventPriority.High, false, 1f, 1f);
+            EnsureAudioRoute(CombatFeedbackEventId.StaminaDepleted, heavyHitSounds, AudioEventPriority.High, false, 1f, 1f);
+        }
+
+        private void EnsureAudioRoute(
+            CombatFeedbackEventId eventId,
+            AudioClip[] clips,
+            AudioEventPriority priority,
+            bool playAtPosition,
+            float volume,
+            float pitch)
+        {
+            if (audioEventRoutes == null)
+            {
+                audioEventRoutes = new List<CombatFeedbackAudioRoute>();
+            }
+
+            CombatFeedbackAudioRoute existing = null;
+            for (int i = 0; i < audioEventRoutes.Count; i++)
+            {
+                CombatFeedbackAudioRoute candidate = audioEventRoutes[i];
+                if (candidate != null && candidate.eventId == eventId)
+                {
+                    existing = candidate;
+                    break;
+                }
+            }
+
+            if (existing == null)
+            {
+                audioEventRoutes.Add(new CombatFeedbackAudioRoute
+                {
+                    eventId = eventId,
+                    clips = clips ?? Array.Empty<AudioClip>(),
+                    priority = priority,
+                    playAtEventPosition = playAtPosition,
+                    volume = volume,
+                    pitch = pitch
+                });
+                return;
+            }
+
+            if (clips != null && clips.Length > 0)
+            {
+                existing.clips = clips;
+            }
+
+            existing.priority = priority;
+            existing.playAtEventPosition = playAtPosition;
+            existing.volume = volume;
+            existing.pitch = pitch;
+        }
+
+        private bool TryPlayMappedRoute(CombatFeedbackEventId eventId, Vector3 eventPosition)
+        {
+            debugLastRouteApplied = false;
+            EnsureDefaultAudioRoutes();
+            if (!useAudioEventRouting || audioEventRoutes == null || audioEventRoutes.Count == 0)
+            {
+                return false;
+            }
+
+            CombatFeedbackAudioRoute route = null;
+            for (int i = 0; i < audioEventRoutes.Count; i++)
+            {
+                CombatFeedbackAudioRoute candidate = audioEventRoutes[i];
+                if (candidate != null && candidate.eventId == eventId)
+                {
+                    route = candidate;
+                    break;
+                }
+            }
+
+            if (route == null)
+            {
+                return false;
+            }
+
+            AudioClip clip = PickRouteClip(route.clips);
+            if (clip == null)
+            {
+                return false;
+            }
+
+            float volume = Mathf.Max(0f, route.volume);
+            float pitch = Mathf.Clamp(route.pitch, 0.5f, 2f);
+            if (route.playAtEventPosition)
+            {
+                PlaySFXAtPosition(clip, eventPosition, volume, route.priority);
+            }
+            else
+            {
+                PlaySFX(clip, volume, pitch, route.priority);
+            }
+
+            debugLastRouteApplied = true;
+            debugLastRoutedEvent = eventId;
+            return true;
+        }
+
+        private static AudioClip PickRouteClip(AudioClip[] clips)
+        {
+            if (clips == null || clips.Length == 0)
+            {
+                return null;
+            }
+
+            int start = UnityEngine.Random.Range(0, clips.Length);
+            for (int i = 0; i < clips.Length; i++)
+            {
+                int index = (start + i) % clips.Length;
+                if (clips[index] != null)
+                {
+                    return clips[index];
+                }
+            }
+
+            return null;
+        }
+
+        private static CombatFeedbackEventId ResolveEnemyHitRoute(EnemyHitReactionType reactionType)
+        {
+            switch (reactionType)
+            {
+                case EnemyHitReactionType.Knockback:
+                    return CombatFeedbackEventId.EnemyHitKnockback;
+                case EnemyHitReactionType.Knockdown:
+                    return CombatFeedbackEventId.EnemyHitKnockdown;
+                default:
+                    return CombatFeedbackEventId.EnemyHitFlinch;
+            }
+        }
         
         #endregion
 
         private void HandleEnemyHit(int damage, Vector3 position, EnemyHitReactionType reactionType)
         {
+            if (TryPlayMappedRoute(ResolveEnemyHitRoute(reactionType), position))
+            {
+                return;
+            }
+
             PlayHitSound(position, reactionType);
         }
 
         private void HandleEnemyKilled(EnemyType type, Vector3 position, int expReward)
         {
+            if (TryPlayMappedRoute(CombatFeedbackEventId.EnemyKilled, position))
+            {
+                return;
+            }
+
             PlayEnemyDeathSound(position);
         }
 
@@ -399,12 +570,32 @@ namespace ThirdPersonController
                 return;
             }
 
+            if (TryPlayMappedRoute(CombatFeedbackEventId.BerserkStart, transform.position))
+            {
+                return;
+            }
+
             PlayBerserkSound();
         }
 
         private void HandleBossBreakWindowStart()
         {
+            if (TryPlayMappedRoute(CombatFeedbackEventId.BossBreakWindowStart, transform.position))
+            {
+                return;
+            }
+
             PlayBossBreakWindowSound();
+        }
+
+        private void HandleSkillUsed(string skillName, float cooldown)
+        {
+            TryPlayMappedRoute(CombatFeedbackEventId.SkillUsed, transform.position);
+        }
+
+        private void HandleStaminaDepleted()
+        {
+            TryPlayMappedRoute(CombatFeedbackEventId.StaminaDepleted, transform.position);
         }
         
         #region 闊抽噺鎺у埗
@@ -498,3 +689,6 @@ namespace ThirdPersonController
         #endregion
     }
 }
+
+
+

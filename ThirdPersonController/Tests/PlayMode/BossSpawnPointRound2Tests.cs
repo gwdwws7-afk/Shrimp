@@ -119,6 +119,17 @@ namespace ThirdPersonController.Tests
             spawnPoint.timePressureRampDuration = 32f;
             spawnPoint.maxTimePressureDamageMultiplier = 1.42f;
             spawnPoint.maxTimePressureSpeedMultiplier = 1.25f;
+            spawnPoint.enablePhaseIntentStyle = true;
+            spawnPoint.phase1IntentStyle = BossPhaseIntentStyle.Balanced;
+            spawnPoint.phase2IntentStyle = BossPhaseIntentStyle.PressureClose;
+            spawnPoint.phase3IntentStyle = BossPhaseIntentStyle.SpecialBurst;
+            spawnPoint.closeRangeIntentThreshold = 5.2f;
+            spawnPoint.intentCloseWeightBoost = 1.8f;
+            spawnPoint.intentRangedWeightBoost = 1.45f;
+            spawnPoint.intentAoeWeightBoost = 1.3f;
+            spawnPoint.intentSpecialWeightBoost = 1.9f;
+            spawnPoint.intentFastDecisionMultiplier = 0.82f;
+            spawnPoint.intentSlowDecisionMultiplier = 1.22f;
 
             spawnPoint.SpawnBoss();
 
@@ -155,6 +166,17 @@ namespace ThirdPersonController.Tests
             Assert.AreEqual(32f, controller.timePressureRampDuration, 0.0001f);
             Assert.AreEqual(1.42f, controller.maxTimePressureDamageMultiplier, 0.0001f);
             Assert.AreEqual(1.25f, controller.maxTimePressureSpeedMultiplier, 0.0001f);
+            Assert.IsTrue(controller.enablePhaseIntentStyle);
+            Assert.AreEqual(BossPhaseIntentStyle.Balanced, controller.phase1IntentStyle);
+            Assert.AreEqual(BossPhaseIntentStyle.PressureClose, controller.phase2IntentStyle);
+            Assert.AreEqual(BossPhaseIntentStyle.SpecialBurst, controller.phase3IntentStyle);
+            Assert.AreEqual(5.2f, controller.closeRangeIntentThreshold, 0.0001f);
+            Assert.AreEqual(1.8f, controller.intentCloseWeightBoost, 0.0001f);
+            Assert.AreEqual(1.45f, controller.intentRangedWeightBoost, 0.0001f);
+            Assert.AreEqual(1.3f, controller.intentAoeWeightBoost, 0.0001f);
+            Assert.AreEqual(1.9f, controller.intentSpecialWeightBoost, 0.0001f);
+            Assert.AreEqual(0.82f, controller.intentFastDecisionMultiplier, 0.0001f);
+            Assert.AreEqual(1.22f, controller.intentSlowDecisionMultiplier, 0.0001f);
         }
 
         [Test]
@@ -176,6 +198,17 @@ namespace ThirdPersonController.Tests
             profile.queuedAttackLimit = 5;
             profile.phase2HealthThreshold = 0.61f;
             profile.phase3HealthThreshold = 0.29f;
+            profile.enablePhaseIntentStyle = true;
+            profile.phase1IntentStyle = BossPhaseIntentStyle.Zoning;
+            profile.phase2IntentStyle = BossPhaseIntentStyle.PressureClose;
+            profile.phase3IntentStyle = BossPhaseIntentStyle.SpecialBurst;
+            profile.closeRangeIntentThreshold = 5.5f;
+            profile.intentCloseWeightBoost = 1.6f;
+            profile.intentRangedWeightBoost = 1.7f;
+            profile.intentAoeWeightBoost = 1.35f;
+            profile.intentSpecialWeightBoost = 1.95f;
+            profile.intentFastDecisionMultiplier = 0.8f;
+            profile.intentSlowDecisionMultiplier = 1.25f;
 
             GameObject spawnerGo = new GameObject("BossSpawnPoint_ProfilePath");
             createdObjects.Add(spawnerGo);
@@ -216,6 +249,17 @@ namespace ThirdPersonController.Tests
             Assert.IsTrue(controller.phases != null && controller.phases.Count >= 3);
             Assert.AreEqual(0.61f, controller.phases[1].healthPercentThreshold, 0.0001f);
             Assert.AreEqual(0.29f, controller.phases[2].healthPercentThreshold, 0.0001f);
+            Assert.IsTrue(controller.enablePhaseIntentStyle);
+            Assert.AreEqual(BossPhaseIntentStyle.Zoning, controller.phase1IntentStyle);
+            Assert.AreEqual(BossPhaseIntentStyle.PressureClose, controller.phase2IntentStyle);
+            Assert.AreEqual(BossPhaseIntentStyle.SpecialBurst, controller.phase3IntentStyle);
+            Assert.AreEqual(5.5f, controller.closeRangeIntentThreshold, 0.0001f);
+            Assert.AreEqual(1.6f, controller.intentCloseWeightBoost, 0.0001f);
+            Assert.AreEqual(1.7f, controller.intentRangedWeightBoost, 0.0001f);
+            Assert.AreEqual(1.35f, controller.intentAoeWeightBoost, 0.0001f);
+            Assert.AreEqual(1.95f, controller.intentSpecialWeightBoost, 0.0001f);
+            Assert.AreEqual(0.8f, controller.intentFastDecisionMultiplier, 0.0001f);
+            Assert.AreEqual(1.25f, controller.intentSlowDecisionMultiplier, 0.0001f);
         }
 
         private GameObject CreateBossSource(string name, bool withController)

@@ -10148,7 +10148,7 @@ MonoBehaviour:
   burstColor: {r: 1, g: 0.5, b: 0.4, a: 1}
   mobilityColor: {r: 0.5, g: 1, b: 0.6, a: 1}
   gatherColor: {r: 0.8, g: 0.6, b: 1, a: 1}
-  showLegend: 1
+  showLegend: 0
   legendOffsetY: -90
   attackInputHintText: {fileID: 0}
   attackInputHintLabel: "A: \u5DE6\u952E  B: \u53F3\u952E"
@@ -16037,7 +16037,7 @@ MonoBehaviour:
   inputHandler: {fileID: 0}
   levelTitle: "\u5931\u4E8B\u7814\u7A76\u7AD9"
   showOverlay: 1
-  showLevelIntro: 1
+  showLevelIntro: 0
   introDuration: 3
   flowUI: {fileID: 0}
   comboRewards: {fileID: 0}
@@ -16797,7 +16797,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2085776811}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 5f5dc41dfc093d9478372f2e7dc7233b, type: 3}
+  m_Avatar: {fileID: 9000000, guid: 77dde49a3e6ac07438f47f9fe5a10b11, type: 3}
   m_Controller: {fileID: 9100000, guid: 9a124949527149e6ba77bc23f6bcbe7e, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
@@ -16905,6 +16905,14 @@ PrefabInstance:
       propertyPath: groundCheckDistance
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2686407324696158845, guid: 8732ca168c916584cb02e6ff6b83b2ff, type: 3}
+      propertyPath: m_Avatar
+      value: 
+      objectReference: {fileID: 9000000, guid: 77dde49a3e6ac07438f47f9fe5a10b11, type: 3}
+    - target: {fileID: 2686407324696158845, guid: 8732ca168c916584cb02e6ff6b83b2ff, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: c19445a27e7a14548a50578ce2e42552, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

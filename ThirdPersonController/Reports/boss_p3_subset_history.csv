@@ -11,3 +11,7 @@
 "boss_p3_round14_fullboss_20260327","2026-03-27 19:45:19","scene_closure","13","13","0","0","1","C:\test\Shrimp\Assets\ThirdPersonController\Reports\p3_boss_scene_closure_gate_report.csv"
 "boss_p3_round14_fullboss_20260327","2026-03-27 19:45:19","grammar_consistency","3","3","0","0","1","C:\test\Shrimp\Assets\ThirdPersonController\Reports\p3_boss_grammar_consistency_gate_report.csv"
 "boss_p3_round14_fullboss_20260327","2026-03-27 19:45:19","depth_aggregate","39","39","0","0","1","C:\test\Shrimp\Assets\ThirdPersonController\Reports\p3_boss_depth_gate_report.csv"
+"20260330-182323","2026-03-30 18:23:23","behavior_depth","25","25","0","0","1","C:\test\Shrimp\Assets\ThirdPersonController\Reports\p3_boss_behavior_depth_gate_report.csv"
+"20260330-182323","2026-03-30 18:23:23","scene_closure","13","13","0","0","1","C:\test\Shrimp\Assets\ThirdPersonController\Reports\p3_boss_scene_closure_gate_report.csv"
+"20260330-182323","2026-03-30 18:23:23","grammar_consistency","3","3","0","0","1","C:\test\Shrimp\Assets\ThirdPersonController\Reports\p3_boss_grammar_consistency_gate_report.csv"
+"20260330-182323","2026-03-30 18:23:23","depth_aggregate","41","41","0","0","1","C:\test\Shrimp\Assets\ThirdPersonController\Reports\p3_boss_depth_gate_report.csv"

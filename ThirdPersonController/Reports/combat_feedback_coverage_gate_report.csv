@@ -2,14 +2,21 @@ check_id,status,value,note
 file.exists.GameEvents.cs,Ok,Assets/ThirdPersonController/Scripts/Core/GameEvents.cs,source_found
 file.exists.AudioManager.cs,Ok,Assets/ThirdPersonController/Scripts/Core/AudioManager.cs,source_found
 file.exists.ScreenEffectManager.cs,Ok,Assets/ThirdPersonController/Scripts/Core/ScreenEffectManager.cs,source_found
+file.exists.CombatFeedbackRouting.cs,Ok,Assets/ThirdPersonController/Scripts/Core/CombatFeedbackRouting.cs,source_found
+routing.model_declared,Ok,Assets/ThirdPersonController/Scripts/Core/CombatFeedbackRouting.cs,Combat feedback routing model declares all required event ids and route payloads.
 events.required_declared,Ok,Assets/ThirdPersonController/Scripts/Core/GameEvents.cs,Core combat feedback events are declared.
 audio.required_subscriptions,Ok,Assets/ThirdPersonController/Scripts/Core/AudioManager.cs,AudioManager subscribes/unsubscribes all required combat feedback events.
 audio.required_handlers,Ok,Assets/ThirdPersonController/Scripts/Core/AudioManager.cs,AudioManager has handlers for all required feedback events.
 audio.priority_path,Ok,Assets/ThirdPersonController/Scripts/Core/AudioManager.cs,Audio high-priority playback path is available for key events.
+audio.routing_bootstrap,Ok,Assets/ThirdPersonController/Scripts/Core/AudioManager.cs,Audio routing table covers all required combat feedback events.
 vfx.required_subscriptions,Ok,Assets/ThirdPersonController/Scripts/Core/ScreenEffectManager.cs,ScreenEffectManager subscribes/unsubscribes all required visual feedback events.
 vfx.required_handlers,Ok,Assets/ThirdPersonController/Scripts/Core/ScreenEffectManager.cs,ScreenEffectManager has handlers for required visual feedback events.
-mapping.enemy_hit_knockdown,Ok,Enemy knockdown hit should route to high-priority audio and screen shake.,mapping_ok
+vfx.routing_bootstrap,Ok,Assets/ThirdPersonController/Scripts/Core/ScreenEffectManager.cs,VFX routing table covers all required combat feedback events.
+mapping.enemy_hit_flinch,Ok,Enemy flinch hit should route to base hit feedback.,mapping_ok
 mapping.enemy_hit_knockback,Ok,Enemy knockback hit should route to heavy-hit feedback.,mapping_ok
+mapping.enemy_hit_knockdown,Ok,Enemy knockdown hit should route to high-priority audio and screen shake.,mapping_ok
 mapping.enemy_killed,Ok,Enemy kill should route to death audio feedback path.,mapping_ok
 mapping.berserk_state_changed,Ok,Berserk state should route to audio cue + berserk screen treatment.,mapping_ok
 mapping.boss_break_window,Ok,Boss break window should route to dedicated high-priority audio cue.,mapping_ok
+mapping.skill_used,Ok,Skill cast should route into unified combat feedback bus.,mapping_ok
+mapping.stamina_depleted,Ok,Stamina depleted should route into pressure feedback path.,mapping_ok

@@ -85,6 +85,17 @@ namespace ThirdPersonController
         public float phase3SpecialPriorityDuration = 6f;
         public float phase3SpecialPriorityWeightMultiplier = 1.7f;
         public bool forceSpecialQueueDuringPhase3Priority = true;
+        public bool enablePhaseIntentStyle = true;
+        public BossPhaseIntentStyle phase1IntentStyle = BossPhaseIntentStyle.Balanced;
+        public BossPhaseIntentStyle phase2IntentStyle = BossPhaseIntentStyle.PressureClose;
+        public BossPhaseIntentStyle phase3IntentStyle = BossPhaseIntentStyle.SpecialBurst;
+        public float closeRangeIntentThreshold = 4f;
+        public float intentCloseWeightBoost = 1.45f;
+        public float intentRangedWeightBoost = 1.35f;
+        public float intentAoeWeightBoost = 1.25f;
+        public float intentSpecialWeightBoost = 1.55f;
+        public float intentFastDecisionMultiplier = 0.88f;
+        public float intentSlowDecisionMultiplier = 1.14f;
 
         [Header("UI")]
         public UI_BossHealthBar bossHealthBar;
@@ -292,6 +303,17 @@ namespace ThirdPersonController
             controller.phase3SpecialPriorityDuration = Mathf.Max(0f, phase3SpecialPriorityDuration);
             controller.phase3SpecialPriorityWeightMultiplier = Mathf.Max(1f, phase3SpecialPriorityWeightMultiplier);
             controller.forceSpecialQueueDuringPhase3Priority = forceSpecialQueueDuringPhase3Priority;
+            controller.enablePhaseIntentStyle = enablePhaseIntentStyle;
+            controller.phase1IntentStyle = phase1IntentStyle;
+            controller.phase2IntentStyle = phase2IntentStyle;
+            controller.phase3IntentStyle = phase3IntentStyle;
+            controller.closeRangeIntentThreshold = Mathf.Max(0.5f, closeRangeIntentThreshold);
+            controller.intentCloseWeightBoost = Mathf.Clamp(intentCloseWeightBoost, 0.1f, 3f);
+            controller.intentRangedWeightBoost = Mathf.Clamp(intentRangedWeightBoost, 0.1f, 3f);
+            controller.intentAoeWeightBoost = Mathf.Clamp(intentAoeWeightBoost, 0.1f, 3f);
+            controller.intentSpecialWeightBoost = Mathf.Clamp(intentSpecialWeightBoost, 0.1f, 3f);
+            controller.intentFastDecisionMultiplier = Mathf.Clamp(intentFastDecisionMultiplier, 0.5f, 2f);
+            controller.intentSlowDecisionMultiplier = Mathf.Clamp(intentSlowDecisionMultiplier, 0.5f, 2f);
             ApplyPhaseThresholds(controller.phases);
         }
 

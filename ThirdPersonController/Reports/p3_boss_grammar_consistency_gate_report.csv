@@ -1,4 +1,4 @@
 ﻿"name","fullname","result","duration"
-"BossScenes_PhaseGrammar_IsRuntimeValid","ThirdPersonController.Tests.BossPhaseGrammarRegressionTests.BossScenes_PhaseGrammar_IsRuntimeValid","Passed","0.330004"
-"BossSpawnPoint_ApplyEncounterTuning_ClampsPhaseGrammarToSafeRange","ThirdPersonController.Tests.BossPhaseGrammarRegressionTests.BossSpawnPoint_ApplyEncounterTuning_ClampsPhaseGrammarToSafeRange","Passed","0.001294"
-"LevelRuntimeConfigurator_Apply_BossGrammarFieldsAreSynchronized","ThirdPersonController.Tests.BossPhaseGrammarRegressionTests.LevelRuntimeConfigurator_Apply_BossGrammarFieldsAreSynchronized","Passed","0.005855"
+"BossScenes_PhaseGrammar_IsRuntimeValid","ThirdPersonController.Tests.BossPhaseGrammarRegressionTests.BossScenes_PhaseGrammar_IsRuntimeValid","Passed","0.463208"
+"BossSpawnPoint_ApplyEncounterTuning_ClampsPhaseGrammarToSafeRange","ThirdPersonController.Tests.BossPhaseGrammarRegressionTests.BossSpawnPoint_ApplyEncounterTuning_ClampsPhaseGrammarToSafeRange","Passed","0.001719"
+"LevelRuntimeConfigurator_Apply_BossGrammarFieldsAreSynchronized","ThirdPersonController.Tests.BossPhaseGrammarRegressionTests.LevelRuntimeConfigurator_Apply_BossGrammarFieldsAreSynchronized","Passed","0.009141"

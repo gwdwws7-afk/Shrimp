@@ -205,6 +205,60 @@ namespace ThirdPersonController.Tests
         }
 
         [Test]
+        public void BossController_PhaseIntentWeighting_PressureClose_BiasesCloseAttacks()
+        {
+            GameObject bossGo = new GameObject("Boss_Controller_IntentWeight");
+            createdObjects.Add(bossGo);
+            BossController boss = bossGo.AddComponent<BossController>();
+
+            boss.enablePhaseIntentStyle = true;
+            boss.phase1IntentStyle = BossPhaseIntentStyle.PressureClose;
+            boss.closeRangeIntentThreshold = 4f;
+            boss.intentCloseWeightBoost = 2.1f;
+            SetPrivateField(boss, "currentPhaseIndex", 0);
+
+            var closeAttack = new BossAttack
+            {
+                attackId = "close",
+                range = 2f,
+                aoe = false,
+                isSpecial = false
+            };
+            var rangedSpecialAttack = new BossAttack
+            {
+                attackId = "ranged_special",
+                range = 9f,
+                aoe = false,
+                isSpecial = true
+            };
+
+            float closeWeight = (float)InvokePrivateMethod(boss, "GetPhaseIntentWeightMultiplier", closeAttack, 2f);
+            float rangedSpecialWeight = (float)InvokePrivateMethod(boss, "GetPhaseIntentWeightMultiplier", rangedSpecialAttack, 9f);
+            Assert.Greater(closeWeight, rangedSpecialWeight,
+                "PressureClose intent should give higher planning weight to close-range non-special attacks.");
+        }
+
+        [Test]
+        public void BossController_PhaseIntentDecisionMultiplier_SpecialBurst_FasterThanZoning()
+        {
+            GameObject bossGo = new GameObject("Boss_Controller_IntentTempo");
+            createdObjects.Add(bossGo);
+            BossController boss = bossGo.AddComponent<BossController>();
+
+            boss.enablePhaseIntentStyle = true;
+            SetPrivateField(boss, "currentPhaseIndex", 0);
+
+            boss.phase1IntentStyle = BossPhaseIntentStyle.SpecialBurst;
+            float burstMultiplier = (float)InvokePrivateMethod(boss, "GetPhaseIntentDecisionMultiplier");
+
+            boss.phase1IntentStyle = BossPhaseIntentStyle.Zoning;
+            float zoningMultiplier = (float)InvokePrivateMethod(boss, "GetPhaseIntentDecisionMultiplier");
+
+            Assert.Less(burstMultiplier, zoningMultiplier,
+                "SpecialBurst should produce a faster decision cadence than Zoning.");
+        }
+
+        [Test]
         public void BossController_PhaseTransition_QueuesConfiguredOpenerAttack()
         {
             GameObject bossGo = new GameObject("Boss_Controller_PhaseOpener");

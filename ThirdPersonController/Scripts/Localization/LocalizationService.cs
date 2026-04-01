@@ -50,6 +50,22 @@ namespace ThirdPersonController
 
             if (table != null && table.TryGet(key, out LocalizationEntry entry))
             {
+                if (CurrentLanguage == LocalizationLanguage.Pseudo)
+                {
+                    string pseudoSource = entry.Get(LocalizationLanguage.English);
+                    if (string.IsNullOrEmpty(pseudoSource))
+                    {
+                        pseudoSource = entry.Get(LocalizationLanguage.SimplifiedChinese);
+                    }
+
+                    if (!string.IsNullOrEmpty(pseudoSource))
+                    {
+                        return LocalizationPseudoLocalizer.PseudoLocalize(pseudoSource);
+                    }
+
+                    ReportMissingLocalization(key, CurrentLanguage, "MissingPseudoSourceText");
+                }
+
                 string text = entry.Get(CurrentLanguage);
                 if (!string.IsNullOrEmpty(text))
                 {
@@ -75,7 +91,17 @@ namespace ThirdPersonController
 
             if (!string.IsNullOrEmpty(fallback))
             {
+                if (CurrentLanguage == LocalizationLanguage.Pseudo)
+                {
+                    return LocalizationPseudoLocalizer.PseudoLocalize(fallback);
+                }
+
                 return fallback;
+            }
+
+            if (CurrentLanguage == LocalizationLanguage.Pseudo)
+            {
+                return LocalizationPseudoLocalizer.PseudoLocalize(string.IsNullOrEmpty(key) ? string.Empty : key);
             }
 
             return string.IsNullOrEmpty(key) ? string.Empty : key;

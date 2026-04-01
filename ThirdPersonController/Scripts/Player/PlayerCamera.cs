@@ -10,6 +10,14 @@ namespace ThirdPersonController
 
         [Header("Rotation Settings")]
         public float mouseSensitivity = 3f;
+        [Tooltip("Converts Input System mouse delta (pixels/frame) into camera degrees.")]
+        [Range(0.001f, 0.2f)]
+        public float mouseDeltaScale = 0.035f;
+        [Tooltip("Clamp extreme mouse spikes to keep camera stable at low FPS or focus switches.")]
+        public float maxMouseDeltaPerFrame = 150f;
+        [Tooltip("Only rotate camera with mouse while this button is held.")]
+        public bool requireMouseLookHold = true;
+        public KeyCode mouseLookHoldKey = KeyCode.Mouse1;
         public float rotationSmoothTime = 0.1f;
         public float minVerticalAngle = -30f;
         public float maxVerticalAngle = 60f;
@@ -287,7 +295,25 @@ namespace ThirdPersonController
                 return Vector2.zero;
             }
 
-            return handler.LookInput * mouseSensitivity;
+            if (handler.CurrentPromptDevice == InputPromptDevice.Gamepad)
+            {
+                // Gamepad look is already time-scaled in PlayerInputHandler.
+                return handler.LookInput;
+            }
+
+            if (requireMouseLookHold && !PlayerInputHandler.ReadUnifiedKey(mouseLookHoldKey))
+            {
+                return Vector2.zero;
+            }
+
+            Vector2 mouseDelta = handler.LookInput;
+            float clamp = Mathf.Max(1f, maxMouseDeltaPerFrame);
+            if (mouseDelta.sqrMagnitude > clamp * clamp)
+            {
+                mouseDelta = mouseDelta.normalized * clamp;
+            }
+
+            return mouseDelta * mouseSensitivity * mouseDeltaScale;
         }
 
         private Vector2 ApplyStickCurve(Vector2 stick)

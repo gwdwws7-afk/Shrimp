@@ -1,2 +1,6 @@
 ﻿"name","fullname","result","duration"
-"P2 Save Migration Regression Gate (no matches)","","Skipped","0"
+"SaveDataMigrationUtility_LegacySnapshot_MigratesToLatestSchema","ThirdPersonController.Tests.SaveMigrationRegressionTests.SaveDataMigrationUtility_LegacySnapshot_MigratesToLatestSchema","Passed","0.001756"
+"SaveManager_LoadGame_MigratesLegacyFileToLatestSchema","ThirdPersonController.Tests.SaveMigrationRegressionTests.SaveManager_LoadGame_MigratesLegacyFileToLatestSchema","Passed","0.023785"
+"SaveManager_LoadGame_PrimaryCorrupted_UsesBackupAndMigrates","ThirdPersonController.Tests.SaveMigrationRegressionTests.SaveManager_LoadGame_PrimaryCorrupted_UsesBackupAndMigrates","Passed","0.025919"
+"SaveManager_LoadSettings_MigratesLegacySettingsAndAppliesLanguage","ThirdPersonController.Tests.SaveMigrationRegressionTests.SaveManager_LoadSettings_MigratesLegacySettingsAndAppliesLanguage","Passed","0.024271"
+"SaveManager_LoadSettings_PrimaryCorrupted_UsesBackupAndMigrates","ThirdPersonController.Tests.SaveMigrationRegressionTests.SaveManager_LoadSettings_PrimaryCorrupted_UsesBackupAndMigrates","Passed","0.023677"

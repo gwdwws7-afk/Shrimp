@@ -70,6 +70,12 @@ namespace ThirdPersonController
         [Min(1)] public int longRunBurstPerFrame100 = 14;
         [Min(1)] public int longRunBurstPerFrame150 = 16;
 
+        [Header("Population Maintenance")]
+        public bool maintainPopulationDuringSampling = true;
+        [Min(0.1f)] public float maintainPopulationInterval = 0.5f;
+        [Range(0f, 1f)] public float maintainPopulationTopUpRatio = 0.98f;
+        [Min(1)] public int maintainPopulationMaxTopUpPerTick = 48;
+
         [Header("Debug (Runtime)")]
         [SerializeField] private bool isRunning = false;
         [SerializeField] private int activeEnemyCount = 0;
@@ -301,7 +307,14 @@ namespace ThirdPersonController
                     }
 
                     metricsSampler.BeginStep(stepLabel, step.targetEnemyCount);
-                    yield return WaitUnscaled(step.sampleSeconds);
+                    if (maintainPopulationDuringSampling)
+                    {
+                        yield return SampleAndMaintainPopulation(step);
+                    }
+                    else
+                    {
+                        yield return WaitUnscaled(step.sampleSeconds);
+                    }
                     metricsSampler.EndStep();
                 }
             }
@@ -334,6 +347,39 @@ namespace ThirdPersonController
             }
 
             activeEnemyCount = CountActiveEnemies();
+        }
+
+        private IEnumerator SampleAndMaintainPopulation(StressStepConfig step)
+        {
+            float remaining = Mathf.Max(0f, step.sampleSeconds);
+            float interval = Mathf.Max(0.1f, maintainPopulationInterval);
+            int topUpBurst = Mathf.Max(1, Mathf.Max(maintainPopulationMaxTopUpPerTick, step.spawnBurstPerFrame));
+            float topUpRatio = Mathf.Clamp01(maintainPopulationTopUpRatio);
+            int desiredCount = Mathf.Max(1, step.targetEnemyCount);
+
+            while (remaining > 0f)
+            {
+                float waitTime = Mathf.Min(interval, remaining);
+                yield return WaitUnscaled(waitTime);
+                remaining -= waitTime;
+
+                int activeCount = CountActiveEnemies();
+                int threshold = Mathf.CeilToInt(desiredCount * topUpRatio);
+                if (activeCount >= threshold)
+                {
+                    continue;
+                }
+
+                int deficit = Mathf.Max(0, desiredCount - activeCount);
+                int spawnNow = Mathf.Min(deficit, topUpBurst);
+                if (spawnNow <= 0)
+                {
+                    continue;
+                }
+
+                SpawnBurst(spawnNow, activeCount, desiredCount);
+                activeEnemyCount = CountActiveEnemies();
+            }
         }
 
         private void SpawnBurst(int count, int existingCount, int targetCount)
@@ -424,7 +470,9 @@ namespace ThirdPersonController
                 }
             }
 
-            return false;
+            // Stress gate prefers stable population over strict navmesh-only placement.
+            resolvedPos = desiredPos;
+            return true;
         }
 
         private static StressStepConfig CreateStep(string label, int targetCount, float warmupSeconds, float sampleSeconds, int burstPerFrame)

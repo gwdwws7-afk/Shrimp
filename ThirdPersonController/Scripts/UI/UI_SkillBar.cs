@@ -41,7 +41,7 @@ namespace ThirdPersonController
         public Color gatherColor = new Color(0.8f, 0.6f, 1f);
 
         [Header("Legend")]
-        public bool showLegend = true;
+        public bool showLegend = false;
         public float legendOffsetY = -90f;
 
         [Header("Attack Input")]

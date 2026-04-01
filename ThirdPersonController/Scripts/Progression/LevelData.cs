@@ -125,6 +125,17 @@ namespace ThirdPersonController
         public float bossPhase3SpecialPriorityDuration = 6f;
         public float bossPhase3SpecialPriorityWeightMultiplier = 1.7f;
         public bool bossForceSpecialQueueDuringPhase3Priority = true;
+        public bool bossEnablePhaseIntentStyle = true;
+        public BossPhaseIntentStyle bossPhase1IntentStyle = BossPhaseIntentStyle.Balanced;
+        public BossPhaseIntentStyle bossPhase2IntentStyle = BossPhaseIntentStyle.PressureClose;
+        public BossPhaseIntentStyle bossPhase3IntentStyle = BossPhaseIntentStyle.SpecialBurst;
+        public float bossCloseRangeIntentThreshold = 4f;
+        public float bossIntentCloseWeightBoost = 1.45f;
+        public float bossIntentRangedWeightBoost = 1.35f;
+        public float bossIntentAoeWeightBoost = 1.25f;
+        public float bossIntentSpecialWeightBoost = 1.55f;
+        public float bossIntentFastDecisionMultiplier = 0.88f;
+        public float bossIntentSlowDecisionMultiplier = 1.14f;
         
         public string GetId()
         {

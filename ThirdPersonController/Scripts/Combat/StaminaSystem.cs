@@ -28,6 +28,9 @@ namespace ThirdPersonController
 
         [Header("力竭恢复")]
         public bool allowRecoveryWhileExhausted = true;
+
+        [Header("Debug")]
+        public bool showEditorDebugOverlay = false;
         
 // 对外事件，用于模块解耦并同步关键节点。
         public System.Action<float, float> OnStaminaChanged;
@@ -264,7 +267,7 @@ namespace ThirdPersonController
         
         private void OnGUI()
         {
-            if (!Application.isEditor) return;
+            if (!Application.isEditor || !showEditorDebugOverlay) return;
             
             // 编辑器下显示实时耐力状态
             GUILayout.BeginArea(new Rect(10, Screen.height - 60, 200, 50));

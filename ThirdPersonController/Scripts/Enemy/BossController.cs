@@ -13,6 +13,15 @@ namespace ThirdPersonController
         Final
     }
 
+    public enum BossPhaseIntentStyle
+    {
+        Balanced,
+        PressureClose,
+        Zoning,
+        SpecialBurst,
+        Attrition
+    }
+
     [Serializable]
     public class BossPhase
     {
@@ -85,6 +94,19 @@ namespace ThirdPersonController
         public bool weightAttacksByDistance = true;
         [Range(0f, 2f)] public float inRangeWeightMultiplier = 1.15f;
         [Range(0f, 1f)] public float outOfRangeWeightMultiplier = 0.35f;
+
+        [Header("Phase Intent")]
+        public bool enablePhaseIntentStyle = true;
+        public BossPhaseIntentStyle phase1IntentStyle = BossPhaseIntentStyle.Balanced;
+        public BossPhaseIntentStyle phase2IntentStyle = BossPhaseIntentStyle.PressureClose;
+        public BossPhaseIntentStyle phase3IntentStyle = BossPhaseIntentStyle.SpecialBurst;
+        [Min(0.1f)] public float closeRangeIntentThreshold = 4f;
+        [Range(0.1f, 3f)] public float intentCloseWeightBoost = 1.45f;
+        [Range(0.1f, 3f)] public float intentRangedWeightBoost = 1.35f;
+        [Range(0.1f, 3f)] public float intentAoeWeightBoost = 1.25f;
+        [Range(0.1f, 3f)] public float intentSpecialWeightBoost = 1.55f;
+        [Range(0.5f, 2f)] public float intentFastDecisionMultiplier = 0.88f;
+        [Range(0.5f, 2f)] public float intentSlowDecisionMultiplier = 1.14f;
 
         [Header("Post Break Punish")]
         public bool enablePostBreakPunishWindow = true;
@@ -180,6 +202,7 @@ namespace ThirdPersonController
         [SerializeField] private float debugEffectiveDecisionInterval = 0f;
         [SerializeField] private float debugLastPlanningDistance = 0f;
         [SerializeField] private float debugPostBreakPunishFactor = 0f;
+        [SerializeField] private BossPhaseIntentStyle debugCurrentIntentStyle = BossPhaseIntentStyle.Balanced;
         [SerializeField] private bool debugLastComboTriggered = false;
         [SerializeField] private float debugInterruptRecoveryTimer = 0f;
         [SerializeField] private float debugComboStartDelayTimer = 0f;
@@ -898,6 +921,8 @@ namespace ThirdPersonController
             float interval = Mathf.Max(0.05f, decisionInterval);
             float result = interval;
 
+            result *= GetPhaseIntentDecisionMultiplier();
+
             if (scaleDecisionIntervalWithTimePressure)
             {
                 float pressureFactor = GetTimePressureFactor();
@@ -922,6 +947,149 @@ namespace ThirdPersonController
 
             float punishMultiplier = Mathf.Lerp(1f, Mathf.Clamp(postBreakAttackIntervalMultiplier, 0.3f, 1f), punishFactor);
             return Mathf.Max(0f, interval * punishMultiplier);
+        }
+
+        private BossPhaseIntentStyle GetCurrentPhaseIntentStyle()
+        {
+            if (!enablePhaseIntentStyle)
+            {
+                return BossPhaseIntentStyle.Balanced;
+            }
+
+            if (currentPhaseIndex >= 2)
+            {
+                return phase3IntentStyle;
+            }
+
+            if (currentPhaseIndex >= 1)
+            {
+                return phase2IntentStyle;
+            }
+
+            return phase1IntentStyle;
+        }
+
+        private float GetPhaseIntentDecisionMultiplier()
+        {
+            if (!enablePhaseIntentStyle)
+            {
+                return 1f;
+            }
+
+            BossPhaseIntentStyle style = GetCurrentPhaseIntentStyle();
+            switch (style)
+            {
+                case BossPhaseIntentStyle.PressureClose:
+                case BossPhaseIntentStyle.SpecialBurst:
+                    return Mathf.Clamp(intentFastDecisionMultiplier, 0.5f, 2f);
+                case BossPhaseIntentStyle.Zoning:
+                case BossPhaseIntentStyle.Attrition:
+                    return Mathf.Clamp(intentSlowDecisionMultiplier, 0.5f, 2f);
+                default:
+                    return 1f;
+            }
+        }
+
+        private float GetPhaseIntentWeightMultiplier(BossAttack attack, float distanceToPlayer)
+        {
+            if (!enablePhaseIntentStyle || attack == null)
+            {
+                return 1f;
+            }
+
+            bool isCloseRange = IsCloseRangeAttack(attack);
+            bool isRanged = IsRangedAttack(attack);
+            BossPhaseIntentStyle style = GetCurrentPhaseIntentStyle();
+            float multiplier = 1f;
+
+            switch (style)
+            {
+                case BossPhaseIntentStyle.PressureClose:
+                    if (isCloseRange)
+                    {
+                        multiplier *= Mathf.Max(0.1f, intentCloseWeightBoost);
+                    }
+
+                    if (isRanged)
+                    {
+                        multiplier *= 0.72f;
+                    }
+
+                    if (attack.isSpecial)
+                    {
+                        multiplier *= 0.86f;
+                    }
+                    break;
+                case BossPhaseIntentStyle.Zoning:
+                    if (isRanged)
+                    {
+                        multiplier *= Mathf.Max(0.1f, intentRangedWeightBoost);
+                    }
+
+                    if (attack.aoe)
+                    {
+                        multiplier *= Mathf.Max(0.1f, intentAoeWeightBoost);
+                    }
+
+                    if (isCloseRange)
+                    {
+                        multiplier *= 0.74f;
+                    }
+                    break;
+                case BossPhaseIntentStyle.SpecialBurst:
+                    if (attack.isSpecial)
+                    {
+                        multiplier *= Mathf.Max(0.1f, intentSpecialWeightBoost);
+                    }
+                    else
+                    {
+                        multiplier *= 0.78f;
+                    }
+
+                    if (distanceToPlayer <= Mathf.Max(0.5f, closeRangeIntentThreshold) && attack.aoe)
+                    {
+                        multiplier *= 1.1f;
+                    }
+                    break;
+                case BossPhaseIntentStyle.Attrition:
+                    if (attack.aoe)
+                    {
+                        multiplier *= 1.14f;
+                    }
+
+                    if (isRanged)
+                    {
+                        multiplier *= 1.08f;
+                    }
+
+                    if (attack.isSpecial)
+                    {
+                        multiplier *= 0.84f;
+                    }
+                    break;
+            }
+
+            return Mathf.Clamp(multiplier, 0.1f, 5f);
+        }
+
+        private bool IsCloseRangeAttack(BossAttack attack)
+        {
+            if (attack == null || attack.aoe)
+            {
+                return false;
+            }
+
+            return attack.range <= Mathf.Max(0.5f, closeRangeIntentThreshold);
+        }
+
+        private bool IsRangedAttack(BossAttack attack)
+        {
+            if (attack == null || attack.aoe)
+            {
+                return false;
+            }
+
+            return attack.range > Mathf.Max(0.5f, closeRangeIntentThreshold);
         }
 
         private void ApplyPhasePresentation(BossPhase phase)
@@ -1168,6 +1336,8 @@ namespace ThirdPersonController
                 {
                     weight *= GetDistanceWeightMultiplier(attack, distanceToPlayer);
                 }
+
+                weight *= GetPhaseIntentWeightMultiplier(attack, distanceToPlayer);
 
                 dynamicWeights.Add(weight);
                 totalWeight += weight;
@@ -1531,6 +1701,8 @@ namespace ThirdPersonController
                     weight *= GetDistanceWeightMultiplier(attack, distanceToPlayer);
                 }
 
+                weight *= GetPhaseIntentWeightMultiplier(attack, distanceToPlayer);
+
                 if (weight <= 0.001f)
                 {
                     continue;
@@ -1810,6 +1982,7 @@ namespace ThirdPersonController
             debugTimePressure = GetTimePressureFactor();
             debugEffectiveDecisionInterval = GetEffectiveDecisionInterval();
             debugPostBreakPunishFactor = GetPostBreakPunishFactor();
+            debugCurrentIntentStyle = GetCurrentPhaseIntentStyle();
             debugInterruptRecoveryTimer = interruptRecoveryTimer;
             debugComboStartDelayTimer = comboStartDelayTimer;
             debugPhase3SpecialPriorityTimer = phase3SpecialPriorityTimer;

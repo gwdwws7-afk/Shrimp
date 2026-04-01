@@ -50,6 +50,11 @@ namespace ThirdPersonController
         public List<ConsumableStack> consumables = new List<ConsumableStack>();
         public List<string> quickConsumableSlots = new List<string>();
         public List<QuestStateData> questStates = new List<QuestStateData>();
+        public int questFailureStreak = 0;
+        public float questFailureDebtExp = 0f;
+        public float questFailureDebtCredits = 0f;
+        public int questFailureLastChapterId = 0;
+        public string questFailureLastStrongholdId = "";
         
 // 系统配置项，用于驱动模块行为并保持可调性。
         public int currentChapter = 1;
@@ -726,6 +731,15 @@ namespace ThirdPersonController
             if (string.IsNullOrEmpty(CurrentData.activeProgressionRoute))
             {
                 CurrentData.activeProgressionRoute = "Offense";
+            }
+
+            CurrentData.questFailureStreak = Mathf.Max(0, CurrentData.questFailureStreak);
+            CurrentData.questFailureDebtExp = Mathf.Max(0f, CurrentData.questFailureDebtExp);
+            CurrentData.questFailureDebtCredits = Mathf.Max(0f, CurrentData.questFailureDebtCredits);
+            CurrentData.questFailureLastChapterId = Mathf.Max(0, CurrentData.questFailureLastChapterId);
+            if (CurrentData.questFailureLastStrongholdId == null)
+            {
+                CurrentData.questFailureLastStrongholdId = string.Empty;
             }
         }
 

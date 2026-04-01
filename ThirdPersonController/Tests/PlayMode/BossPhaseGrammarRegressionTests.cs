@@ -240,6 +240,17 @@ namespace ThirdPersonController.Tests
             levelData.bossPhase3SpecialPriorityDuration = 6.5f;
             levelData.bossPhase3SpecialPriorityWeightMultiplier = 1.8f;
             levelData.bossForceSpecialQueueDuringPhase3Priority = true;
+            levelData.bossEnablePhaseIntentStyle = true;
+            levelData.bossPhase1IntentStyle = BossPhaseIntentStyle.Zoning;
+            levelData.bossPhase2IntentStyle = BossPhaseIntentStyle.PressureClose;
+            levelData.bossPhase3IntentStyle = BossPhaseIntentStyle.SpecialBurst;
+            levelData.bossCloseRangeIntentThreshold = 5.2f;
+            levelData.bossIntentCloseWeightBoost = 1.8f;
+            levelData.bossIntentRangedWeightBoost = 1.45f;
+            levelData.bossIntentAoeWeightBoost = 1.3f;
+            levelData.bossIntentSpecialWeightBoost = 1.9f;
+            levelData.bossIntentFastDecisionMultiplier = 0.82f;
+            levelData.bossIntentSlowDecisionMultiplier = 1.22f;
 
             LevelRuntimeConfigurator configurator = flowGo.AddComponent<LevelRuntimeConfigurator>();
             configurator.autoApplyOnAwake = false;
@@ -280,6 +291,17 @@ namespace ThirdPersonController.Tests
             Assert.AreEqual(levelData.bossPhase3SpecialPriorityDuration, spawnPoint.phase3SpecialPriorityDuration, 0.0001f);
             Assert.AreEqual(levelData.bossPhase3SpecialPriorityWeightMultiplier, spawnPoint.phase3SpecialPriorityWeightMultiplier, 0.0001f);
             Assert.IsTrue(spawnPoint.forceSpecialQueueDuringPhase3Priority);
+            Assert.AreEqual(levelData.bossEnablePhaseIntentStyle, spawnPoint.enablePhaseIntentStyle);
+            Assert.AreEqual(levelData.bossPhase1IntentStyle, spawnPoint.phase1IntentStyle);
+            Assert.AreEqual(levelData.bossPhase2IntentStyle, spawnPoint.phase2IntentStyle);
+            Assert.AreEqual(levelData.bossPhase3IntentStyle, spawnPoint.phase3IntentStyle);
+            Assert.AreEqual(levelData.bossCloseRangeIntentThreshold, spawnPoint.closeRangeIntentThreshold, 0.0001f);
+            Assert.AreEqual(levelData.bossIntentCloseWeightBoost, spawnPoint.intentCloseWeightBoost, 0.0001f);
+            Assert.AreEqual(levelData.bossIntentRangedWeightBoost, spawnPoint.intentRangedWeightBoost, 0.0001f);
+            Assert.AreEqual(levelData.bossIntentAoeWeightBoost, spawnPoint.intentAoeWeightBoost, 0.0001f);
+            Assert.AreEqual(levelData.bossIntentSpecialWeightBoost, spawnPoint.intentSpecialWeightBoost, 0.0001f);
+            Assert.AreEqual(levelData.bossIntentFastDecisionMultiplier, spawnPoint.intentFastDecisionMultiplier, 0.0001f);
+            Assert.AreEqual(levelData.bossIntentSlowDecisionMultiplier, spawnPoint.intentSlowDecisionMultiplier, 0.0001f);
         }
 
         private static void ValidateLevelDataGrammar(string sceneName, LevelData levelData, List<string> errors)

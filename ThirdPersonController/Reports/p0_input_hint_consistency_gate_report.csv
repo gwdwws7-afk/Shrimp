@@ -1,2 +1,4 @@
 ﻿"name","fullname","result","duration"
-"P0 Input Hint Gate (no matches)","","Skipped","0"
+"MainMenuController_P0Subtitle_UsesUnifiedActionBindingLabel","ThirdPersonController.Tests.InputHintConsistencyP0RegressionTests.MainMenuController_P0Subtitle_UsesUnifiedActionBindingLabel","Passed","0.003571"
+"UIHudHints_P0DisplayHints_UseSameActionLabelsAsInputLayer","ThirdPersonController.Tests.InputHintConsistencyP0RegressionTests.UIHudHints_P0DisplayHints_UseSameActionLabelsAsInputLayer","Passed","0.015927"
+"UISkillBar_P0BindingLabels_StayConsistentWithInputLayer","ThirdPersonController.Tests.InputHintConsistencyP0RegressionTests.UISkillBar_P0BindingLabels_StayConsistentWithInputLayer","Passed","0.031132"

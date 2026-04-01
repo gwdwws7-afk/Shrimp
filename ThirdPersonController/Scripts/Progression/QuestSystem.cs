@@ -99,6 +99,15 @@ namespace ThirdPersonController
         public bool failOnPlayerDeath = false;
         public bool failOnGameOver = false;
         public bool failOnDefenseTargetDestroyed = false;
+
+        [Header("Failure Compensation")]
+        public bool allowFailureCompensation = false;
+        public int compensationMinFailureStreak = 2;
+        public float compensationBonusPerFailure = 0.08f;
+        public float compensationBonusCap = 0.35f;
+        public float compensationDebtPayoutCap = 0.7f;
+        public int compensationChapterWindow = 1;
+        public int compensationStreakDecayOnComplete = 1;
         
         [Header("Rewards")]
         public QuestReward reward = new QuestReward();
@@ -202,6 +211,9 @@ namespace ThirdPersonController
         public float questStateWriteInterval = 0.5f;
         public bool logQuestStateSync = false;
         public bool logStartupStatus = true;
+        public bool enableFailureCompensation = true;
+        public int maxTrackedFailureStreak = 8;
+        public bool logFailureCompensation = false;
         
         [Header("State")]
         public List<QuestProgress> activeQuests = new List<QuestProgress>();
@@ -216,6 +228,11 @@ namespace ThirdPersonController
         private bool startupLogged;
         private int questStateSaveSuspendCount;
         private float questStateWriteTimer;
+        private int consecutiveFailureCount;
+        private float pendingFailureDebtExp;
+        private float pendingFailureDebtCredits;
+        private int lastFailureChapterId;
+        private string lastFailureStrongholdId = string.Empty;
         
         private void Awake()
         {
@@ -348,6 +365,8 @@ namespace ThirdPersonController
                 });
             }
 
+            SaveFailureCompensationState(save.CurrentData);
+
             if (logQuestStateSync)
             {
                 Debug.Log($"[QuestSystem] Saved quest runtime state entries={states.Count}");
@@ -358,9 +377,15 @@ namespace ThirdPersonController
         {
             EnsureCollections();
             SaveManager save = SaveManager.Instance;
-            if (save == null || save.CurrentData == null || save.CurrentData.questStates == null || save.CurrentData.questStates.Count == 0)
+            if (save == null || save.CurrentData == null)
             {
                 return false;
+            }
+
+            bool restoredFailureCompensationState = RestoreFailureCompensationState(save.CurrentData);
+            if (save.CurrentData.questStates == null || save.CurrentData.questStates.Count == 0)
+            {
+                return restoredFailureCompensationState;
             }
 
             int restoredCount = 0;
@@ -425,7 +450,7 @@ namespace ThirdPersonController
 
             if (restoredCount <= 0)
             {
-                return false;
+                return restoredFailureCompensationState;
             }
 
             if (notifyListeners)
@@ -928,10 +953,6 @@ namespace ThirdPersonController
             string rewardStrongholdId = ResolveQuestStrongholdId(quest);
             float rewardMultiplier = Mathf.Max(0f, expRewardMultiplier) * Mathf.Max(0f, levelRewardMultiplier);
             int expReward = EconomyService.AdjustQuestExp(reward.exp, quest.data.questType, quest.data.difficultyRating, levelDifficulty, rewardMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
-            if (experienceSystem != null && expReward > 0)
-            {
-                experienceSystem.GrantExperience(expReward);
-            }
 
             float pearlMultiplier = Mathf.Max(0f, pearlRewardMultiplier) * Mathf.Max(0f, levelRewardMultiplier);
             int pearlReward = EconomyService.AdjustQuestPearls(reward.pearls, quest.data.questType, quest.data.difficultyRating, levelDifficulty, pearlMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
@@ -941,9 +962,31 @@ namespace ThirdPersonController
             }
 
             int creditReward = EconomyService.AdjustQuestCredits(reward.credits, quest.data.questType, quest.data.difficultyRating, levelDifficulty, levelRewardMultiplier, quest.data.rewardTier, levelChapterId, rewardStrongholdId);
+
+            int compensationBonusExp = 0;
+            int compensationBonusCredits = 0;
+            TryApplyFailureCompensationBonus(quest, rewardStrongholdId, expReward, creditReward, out compensationBonusExp, out compensationBonusCredits);
+            expReward += compensationBonusExp;
+            creditReward += compensationBonusCredits;
+
+            if (experienceSystem != null && expReward > 0)
+            {
+                experienceSystem.GrantExperience(expReward);
+            }
+
             if (wallet != null && creditReward > 0)
             {
                 wallet.AddCredits(creditReward);
+            }
+
+            if (showRewardMessages && (compensationBonusExp > 0 || compensationBonusCredits > 0))
+            {
+                string bonusMsg = $"Recovery Bonus: EXP +{compensationBonusExp}";
+                if (compensationBonusCredits > 0)
+                {
+                    bonusMsg += $" | Credits +{compensationBonusCredits}";
+                }
+                GameEvents.ShowMessage(bonusMsg, 2f);
             }
 
             GameEvents.ShowMessage($"Quest Complete: {quest.data.questName}!", 3f);
@@ -1004,11 +1047,12 @@ namespace ThirdPersonController
         
         public void FailQuest(QuestProgress quest, string reason = "")
         {
-            if (quest == null)
+            if (!IsInProgressQuest(quest))
             {
                 return;
             }
 
+            CaptureFailureDebt(quest);
             quest.status = QuestStatus.Failed;
             if (quest.data != null)
             {
@@ -1291,12 +1335,17 @@ namespace ThirdPersonController
             }
             if (creditReward > 0)
             {
-                parts.Add($"深渊币 +{creditReward}");
+                parts.Add($"Credits +{creditReward}");
+            }
+
+            if (CanQuestUseFailureCompensation(quest.data, rewardStrongholdId) && (pendingFailureDebtExp > 0f || pendingFailureDebtCredits > 0f))
+            {
+                parts.Add("Recovery Bonus Ready");
             }
 
             return parts.Count > 0 ? string.Join(" | ", parts) : string.Empty;
         }
-        
+
         public List<QuestProgress> GetActiveQuests()
         {
             EnsureCollections();
@@ -1386,6 +1435,193 @@ namespace ThirdPersonController
             }
 
             return data.reward;
+        }
+
+        private void CaptureFailureDebt(QuestProgress quest)
+        {
+            if (!enableFailureCompensation || !IsValidQuest(quest))
+            {
+                return;
+            }
+
+            QuestReward reward = EnsureRewardData(quest.data);
+            string rewardStrongholdId = ResolveQuestStrongholdId(quest);
+            float expMultiplier = Mathf.Max(0f, expRewardMultiplier) * Mathf.Max(0f, levelRewardMultiplier);
+            int expectedExp = EconomyService.AdjustQuestExp(
+                reward.exp,
+                quest.data.questType,
+                quest.data.difficultyRating,
+                levelDifficulty,
+                expMultiplier,
+                quest.data.rewardTier,
+                levelChapterId,
+                rewardStrongholdId);
+
+            int expectedCredits = EconomyService.AdjustQuestCredits(
+                reward.credits,
+                quest.data.questType,
+                quest.data.difficultyRating,
+                levelDifficulty,
+                levelRewardMultiplier,
+                quest.data.rewardTier,
+                levelChapterId,
+                rewardStrongholdId);
+
+            if (expectedExp <= 0 && expectedCredits <= 0)
+            {
+                return;
+            }
+
+            int maxStreak = Mathf.Max(1, maxTrackedFailureStreak);
+            consecutiveFailureCount = Mathf.Clamp(consecutiveFailureCount + 1, 0, maxStreak);
+            pendingFailureDebtExp = Mathf.Max(0f, pendingFailureDebtExp + expectedExp);
+            pendingFailureDebtCredits = Mathf.Max(0f, pendingFailureDebtCredits + expectedCredits);
+            lastFailureChapterId = levelChapterId;
+            lastFailureStrongholdId = rewardStrongholdId ?? string.Empty;
+
+            if (logFailureCompensation)
+            {
+                Debug.Log($"[QuestSystem] Failure debt captured | streak={consecutiveFailureCount} expDebt={pendingFailureDebtExp} creditDebt={pendingFailureDebtCredits} chapter={lastFailureChapterId} stronghold={lastFailureStrongholdId}");
+            }
+        }
+
+        private bool TryApplyFailureCompensationBonus(QuestProgress quest, string rewardStrongholdId, int baseExpReward, int baseCreditReward, out int bonusExp, out int bonusCredits)
+        {
+            bonusExp = 0;
+            bonusCredits = 0;
+
+            if (!enableFailureCompensation || !IsValidQuest(quest))
+            {
+                return false;
+            }
+
+            if (!CanQuestUseFailureCompensation(quest.data, rewardStrongholdId))
+            {
+                return false;
+            }
+
+            if (pendingFailureDebtExp <= 0f && pendingFailureDebtCredits <= 0f)
+            {
+                return false;
+            }
+
+            int minStreak = Mathf.Max(1, quest.data.compensationMinFailureStreak);
+            if (consecutiveFailureCount < minStreak)
+            {
+                return false;
+            }
+
+            float bonusPerFailure = Mathf.Clamp01(quest.data.compensationBonusPerFailure);
+            float bonusCap = Mathf.Clamp01(quest.data.compensationBonusCap);
+            float payoutCap = Mathf.Clamp01(quest.data.compensationDebtPayoutCap);
+            int effectiveStreak = Mathf.Clamp(consecutiveFailureCount - minStreak + 1, 1, Mathf.Max(1, maxTrackedFailureStreak));
+            float streakBonus = Mathf.Min(bonusCap, effectiveStreak * bonusPerFailure);
+
+            int maxBonusExpByReward = Mathf.RoundToInt(Mathf.Max(0, baseExpReward) * streakBonus);
+            int maxBonusCreditsByReward = Mathf.RoundToInt(Mathf.Max(0, baseCreditReward) * streakBonus);
+            int maxBonusExpByDebt = Mathf.RoundToInt(Mathf.Max(0f, pendingFailureDebtExp) * payoutCap);
+            int maxBonusCreditsByDebt = Mathf.RoundToInt(Mathf.Max(0f, pendingFailureDebtCredits) * payoutCap);
+
+            bonusExp = Mathf.Max(0, Mathf.Min(maxBonusExpByReward, maxBonusExpByDebt));
+            bonusCredits = Mathf.Max(0, Mathf.Min(maxBonusCreditsByReward, maxBonusCreditsByDebt));
+
+            if (bonusExp <= 0 && bonusCredits <= 0)
+            {
+                return false;
+            }
+
+            pendingFailureDebtExp = Mathf.Max(0f, pendingFailureDebtExp - bonusExp);
+            pendingFailureDebtCredits = Mathf.Max(0f, pendingFailureDebtCredits - bonusCredits);
+            DecayFailureCompensationStreak(quest.data);
+
+            if (pendingFailureDebtExp <= 0.001f && pendingFailureDebtCredits <= 0.001f)
+            {
+                ResetFailureCompensationState();
+            }
+
+            if (logFailureCompensation)
+            {
+                Debug.Log($"[QuestSystem] Failure compensation applied | bonusExp={bonusExp} bonusCredits={bonusCredits} remainingExpDebt={pendingFailureDebtExp} remainingCreditDebt={pendingFailureDebtCredits} streak={consecutiveFailureCount}");
+            }
+
+            return true;
+        }
+
+        private bool CanQuestUseFailureCompensation(QuestData data, string rewardStrongholdId)
+        {
+            if (!enableFailureCompensation || data == null || !data.allowFailureCompensation)
+            {
+                return false;
+            }
+
+            int chapterWindow = Mathf.Max(0, data.compensationChapterWindow);
+            if (lastFailureChapterId > 0 && levelChapterId > 0)
+            {
+                int chapterDelta = Mathf.Abs(levelChapterId - lastFailureChapterId);
+                if (chapterDelta > chapterWindow)
+                {
+                    return false;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(lastFailureStrongholdId) && !string.IsNullOrEmpty(rewardStrongholdId) && chapterWindow <= 0)
+            {
+                // chapterWindow=0 时要求同据点补偿，避免把局部失败债务扩散到其他战区。
+                return rewardStrongholdId == lastFailureStrongholdId;
+            }
+
+            return true;
+        }
+
+        private void DecayFailureCompensationStreak(QuestData data)
+        {
+            int decay = 1;
+            if (data != null)
+            {
+                decay = Mathf.Max(0, data.compensationStreakDecayOnComplete);
+            }
+
+            consecutiveFailureCount = Mathf.Max(0, consecutiveFailureCount - decay);
+        }
+
+        private void ResetFailureCompensationState()
+        {
+            consecutiveFailureCount = 0;
+            pendingFailureDebtExp = 0f;
+            pendingFailureDebtCredits = 0f;
+            lastFailureChapterId = 0;
+            lastFailureStrongholdId = string.Empty;
+        }
+
+        private void SaveFailureCompensationState(GameData data)
+        {
+            if (data == null)
+            {
+                return;
+            }
+
+            data.questFailureStreak = Mathf.Max(0, consecutiveFailureCount);
+            data.questFailureDebtExp = Mathf.Max(0f, pendingFailureDebtExp);
+            data.questFailureDebtCredits = Mathf.Max(0f, pendingFailureDebtCredits);
+            data.questFailureLastChapterId = Mathf.Max(0, lastFailureChapterId);
+            data.questFailureLastStrongholdId = lastFailureStrongholdId ?? string.Empty;
+        }
+
+        private bool RestoreFailureCompensationState(GameData data)
+        {
+            if (data == null)
+            {
+                ResetFailureCompensationState();
+                return false;
+            }
+
+            consecutiveFailureCount = Mathf.Max(0, data.questFailureStreak);
+            pendingFailureDebtExp = Mathf.Max(0f, data.questFailureDebtExp);
+            pendingFailureDebtCredits = Mathf.Max(0f, data.questFailureDebtCredits);
+            lastFailureChapterId = Mathf.Max(0, data.questFailureLastChapterId);
+            lastFailureStrongholdId = data.questFailureLastStrongholdId ?? string.Empty;
+
+            return consecutiveFailureCount > 0 || pendingFailureDebtExp > 0f || pendingFailureDebtCredits > 0f;
         }
 
         private void SaveQuestRuntimeStateIfEnabled()

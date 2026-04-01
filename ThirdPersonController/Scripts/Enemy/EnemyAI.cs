@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -20,6 +20,10 @@ namespace ThirdPersonController
         public float chaseSpeed = 5f;
         public float rotationSpeed = 5f;
         public float stoppingDistance = 1.5f;
+
+        [Header("Navigation Safety")]
+        public float navMeshAttachRadius = 4f;
+        public float navMeshRetryInterval = 1f;
 
         [Header("Attack")]
         public float attackCooldown = 1.5f;
@@ -180,6 +184,8 @@ namespace ThirdPersonController
         private State debugLastState = State.Patrol;
         private int decisionBatchOffset = 0;
         private float nextMinimalTargetRescanTime = 0f;
+        private bool navMeshMissingLogged = false;
+        private float nextNavMeshRetryTime = 0f;
 
         private EnemyAttackPattern currentPattern;
         private readonly List<EnemyAttackPattern> patternBuffer = new List<EnemyAttackPattern>();
@@ -248,7 +254,11 @@ namespace ThirdPersonController
         {
             agent = GetComponent<NavMeshAgent>();
             health = GetComponent<EnemyHealth>();
-            agent.stoppingDistance = stoppingDistance;
+            if (agent != null)
+            {
+                agent.stoppingDistance = stoppingDistance;
+                EnsureAgentReady(allowSample: true);
+            }
 
             if (animator == null)
                 animator = GetComponent<Animator>();
@@ -449,6 +459,63 @@ namespace ThirdPersonController
             {
                 SetAgentStoppedSafe(true);
             }
+        }
+
+        private bool EnsureAgentReady(bool allowSample)
+        {
+            if (agent == null || !agent.enabled)
+            {
+                return false;
+            }
+
+            if (agent.isOnNavMesh)
+            {
+                return true;
+            }
+
+            if (!allowSample || Time.time < nextNavMeshRetryTime)
+            {
+                return false;
+            }
+
+            nextNavMeshRetryTime = Time.time + Mathf.Max(0.2f, navMeshRetryInterval);
+            float sampleRadius = Mathf.Max(0.5f, navMeshAttachRadius);
+            if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, sampleRadius, NavMesh.AllAreas))
+            {
+                if (agent.Warp(hit.position))
+                {
+                    navMeshMissingLogged = false;
+                    return agent.isOnNavMesh;
+                }
+            }
+
+            if (!navMeshMissingLogged)
+            {
+                navMeshMissingLogged = true;
+                Debug.LogWarning($"[EnemyAI] {name} has no valid NavMesh within {sampleRadius:F1}m. Movement will resume automatically once NavMesh becomes available.");
+            }
+
+            return false;
+        }
+
+        private bool TrySetDestinationSafe(Vector3 destination)
+        {
+            if (!EnsureAgentReady(allowSample: true))
+            {
+                return false;
+            }
+
+            return agent.SetDestination(destination);
+        }
+
+        private void SetAgentSpeedSafe(float speed)
+        {
+            if (!EnsureAgentReady(allowSample: false))
+            {
+                return;
+            }
+
+            agent.speed = speed;
         }
 
         private void SetAgentStoppedSafe(bool stopped)
@@ -844,10 +911,14 @@ namespace ThirdPersonController
         private void Patrol()
         {
             if (patrolPoints.Length == 0) return;
+            if (!EnsureAgentReady(allowSample: true))
+            {
+                return;
+            }
 
             SetAgentStoppedSafe(false);
 
-            agent.speed = patrolSpeed;
+            SetAgentSpeedSafe(patrolSpeed);
 
             if (agent.remainingDistance <= agent.stoppingDistance)
             {
@@ -872,19 +943,19 @@ namespace ThirdPersonController
                 currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
             }
 
-            agent.SetDestination(patrolPoints[currentPatrolIndex].position);
+            TrySetDestinationSafe(patrolPoints[currentPatrolIndex].position);
         }
 
         private void Chase()
         {
             SetAgentStoppedSafe(false);
-            agent.speed = chaseSpeed;
+            SetAgentSpeedSafe(chaseSpeed);
             if (currentTarget == null)
             {
                 return;
             }
 
-            agent.SetDestination(currentTarget.position);
+            TrySetDestinationSafe(currentTarget.position);
 
             // Rotate towards player
             Vector3 directionToTarget = (currentTarget.position - transform.position).normalized;
@@ -1019,8 +1090,8 @@ namespace ThirdPersonController
             }
 
             SetAgentStoppedSafe(false);
-            agent.speed = Mathf.Max(chaseSpeed, chaseSpeed * 1.35f);
-            agent.SetDestination(dodgeDestination);
+            SetAgentSpeedSafe(Mathf.Max(chaseSpeed, chaseSpeed * 1.35f));
+            TrySetDestinationSafe(dodgeDestination);
             dodgeTimer -= Time.deltaTime;
 
             float remaining = Vector3.Distance(transform.position, dodgeDestination);
@@ -1101,12 +1172,12 @@ namespace ThirdPersonController
             else
             {
                 SetAgentStoppedSafe(false);
-                agent.speed = Mathf.Max(chaseSpeed, chargeSpeed);
+                SetAgentSpeedSafe(Mathf.Max(chaseSpeed, chargeSpeed));
                 if (currentTarget != null)
                 {
                     chargeTarget = currentTarget.position;
                 }
-                agent.SetDestination(chargeTarget);
+                TrySetDestinationSafe(chargeTarget);
 
                 if (!chargeHitApplied && currentTarget != null)
                 {
@@ -1155,9 +1226,9 @@ namespace ThirdPersonController
             }
 
             SetAgentStoppedSafe(false);
-            agent.speed = Mathf.Max(patrolSpeed, chaseSpeed * 0.9f);
+            SetAgentSpeedSafe(Mathf.Max(patrolSpeed, chaseSpeed * 0.9f));
             UpdateFleeDestination();
-            agent.SetDestination(fleeDestination);
+            TrySetDestinationSafe(fleeDestination);
             fleeTimer -= Time.deltaTime;
 
             if (fleeTimer <= 0f)
@@ -1268,7 +1339,7 @@ namespace ThirdPersonController
         private void Circle()
         {
             SetAgentStoppedSafe(false);
-            agent.speed = chaseSpeed * 0.85f;
+            SetAgentSpeedSafe(chaseSpeed * 0.85f);
 
             if (currentTarget == null)
             {
@@ -1281,7 +1352,7 @@ namespace ThirdPersonController
                 targetPosition = crowdCoordinator.GetRingPosition(this);
             }
 
-            agent.SetDestination(targetPosition);
+            TrySetDestinationSafe(targetPosition);
         }
 
         private void StartAttackSequence()
@@ -1790,7 +1861,11 @@ namespace ThirdPersonController
                 nextAnimationTime = Time.time + Mathf.Max(0.02f, farAnimationUpdateInterval * lodMultiplier);
             }
 
-            float moveSpeed = chaseSpeed > 0.01f ? agent.velocity.magnitude / chaseSpeed : 0f;
+            float moveSpeed = 0f;
+            if (EnsureAgentReady(allowSample: false) && chaseSpeed > 0.01f)
+            {
+                moveSpeed = agent.velocity.magnitude / chaseSpeed;
+            }
             animator.SetFloat("MoveSpeed", moveSpeed);
             animator.SetBool("IsChasing", isChasing);
         }

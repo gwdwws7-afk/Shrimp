@@ -547,6 +547,17 @@ namespace ThirdPersonController
                 bossSpawnPoint.phase3SpecialPriorityDuration = levelData.bossPhase3SpecialPriorityDuration;
                 bossSpawnPoint.phase3SpecialPriorityWeightMultiplier = levelData.bossPhase3SpecialPriorityWeightMultiplier;
                 bossSpawnPoint.forceSpecialQueueDuringPhase3Priority = levelData.bossForceSpecialQueueDuringPhase3Priority;
+                bossSpawnPoint.enablePhaseIntentStyle = levelData.bossEnablePhaseIntentStyle;
+                bossSpawnPoint.phase1IntentStyle = levelData.bossPhase1IntentStyle;
+                bossSpawnPoint.phase2IntentStyle = levelData.bossPhase2IntentStyle;
+                bossSpawnPoint.phase3IntentStyle = levelData.bossPhase3IntentStyle;
+                bossSpawnPoint.closeRangeIntentThreshold = levelData.bossCloseRangeIntentThreshold;
+                bossSpawnPoint.intentCloseWeightBoost = levelData.bossIntentCloseWeightBoost;
+                bossSpawnPoint.intentRangedWeightBoost = levelData.bossIntentRangedWeightBoost;
+                bossSpawnPoint.intentAoeWeightBoost = levelData.bossIntentAoeWeightBoost;
+                bossSpawnPoint.intentSpecialWeightBoost = levelData.bossIntentSpecialWeightBoost;
+                bossSpawnPoint.intentFastDecisionMultiplier = levelData.bossIntentFastDecisionMultiplier;
+                bossSpawnPoint.intentSlowDecisionMultiplier = levelData.bossIntentSlowDecisionMultiplier;
             }
 
             if (sequenceController == null)
